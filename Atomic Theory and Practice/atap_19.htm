@@ -1,0 +1,337 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Type"
+content="text/html; charset=iso-8859-1">
+<meta name="GENERATOR" content="Microsoft FrontPage Express 2.0">
+<title>19 Cassette Operating System</title>
+</head>
+
+<body bgcolor="#FFFFFF">
+
+<h1><font color="#0000FF">19 Cassette Operating System</font></h1>
+
+<p>The Cassette Operating System, or COS, saves and loads data to
+and from tape using the Computer Users Tape Standard (CUTS),
+which is also known as Kansas City Standard. Data is coded as
+audio tones on the tape. A logic 0 consists of 4 cycles of a 1.2
+kHz tone, and a logic 1 consists of 8 cycles of a 2.4 kHz tone.
+Each byte of data is preceeded by a logic zero start bit, and is
+terminated by a logic 1 stop bit. Each bit lasts for 3.33 mS,
+giving an operating speed of 300 bits/second.</p>
+
+<h2><font color="#0000FF">19.1 Named Files</font></h2>
+
+<p>Named files are stored as a number of blocks, each of which is
+256 bytes or less, and includes a checksum over all the bytes in
+the block. Each block is identified by a name header, and
+includes the start address for loading that block, the execution
+address for that block, and the number of bytes in that block
+minus one.</p>
+
+<h2><font color="#0000FF">19.2 Unnamed Files</font></h2>
+
+<p>Unnamed files are stored as a two-byte start address, a
+two-byte end address, and end minus start bytes of data. An
+unnamed file could have no name at all (when using *LOAD and
+*SAVE), or it may have a zero length name denoted by
+&quot;&quot;. Unnamed files may thus be used anywhere that named
+files could be used. The format of an unnamed file on tape
+corresponds to the format of an Acorn System One computer.</p>
+
+<h2><font color="#0000FF">19.3 Commands</font></h2>
+
+<p>All COS commands start with an asterisk to distinguish them
+from BASIC commands. Note the difference between SAVE and *SAVE,
+and LOAD and *LOAD:</p>
+
+<p>SAVE creates text files from the ATOM's text space. No start
+address is specified. The execution address is automatically set
+to #C2B2, the entry point to BASIC.</p>
+
+<p>*SAVE saves a block of memory whose start and end addresses
+must be specified.</p>
+
+<p>LOAD loads text files to the current text space.</p>
+
+<p>*LOAD loads a block of memory to a fixed address, or to an
+address specified in the command.</p>
+
+<table border="0" width="100%">
+    <tr>
+        <td><font color="#0000FF"><strong>*CAT Catalogue tape</strong></font></td>
+        <td align="right"><font color="#0000FF"><strong>*.</strong></font></td>
+    </tr>
+</table>
+
+<p>The *CAT command gives a catalogue of a tape. Each block of a
+named file will appear in the catalogue as follows:</p>
+
+<pre>FILENAME             SSSS EEEE NNNN BB</pre>
+
+<table border="0">
+    <tr>
+        <td valign="top">where</td>
+        <td valign="top">FILENAME is the name of the file<br>
+        SSSS is the start address of the block<br>
+        EEEE is the execution address of the file (used by RUN)<br>
+        NNNN is the block number, startinq at zero</td>
+    </tr>
+    <tr>
+        <td valign="top">and</td>
+        <td valign="top">BB is the number of data bytes in the
+        block, minus one.</td>
+    </tr>
+</table>
+
+<p>All the numbers are in hexadecimal.</p>
+
+<p>Unnamed files will appear in the catalogue as:</p>
+
+<pre>               SSSS LLLL</pre>
+
+<p>where SSSS is the start address<br>
+and LLLL is the last address, plus one. Again, both numbers are
+in hexadecimal.</p>
+
+<table border="0" width="100%">
+    <tr>
+        <td><font color="#0000FF"><strong>*LOAD Load file</strong></font></td>
+        <td align="right"><font color="#0000FF"><strong>*L.</strong></font></td>
+    </tr>
+</table>
+
+<p>To load a named file the syntax is:</p>
+
+<pre>      *LOAD &quot;FILENAME&quot; XXXX</pre>
+
+<p>where XXXX is a hexadecimal address specifying where the data
+is to be loaded. If XXXX is omitted the data will be loaded back
+to the address from which it was originally saved. On pressing
+RETURN the system will reply:</p>
+
+<pre>PLAY TAPE</pre>
+
+<p>The cassette recorder should be played, and the ATOM's space
+bar pressed to indicate that this has been done.</p>
+
+<p>The COS will display the names of any files that are
+encountered on the tape before the specified file is found. When
+the file is found it will be loaded and on completion the '&gt;'
+prompt will reappear.</p>
+
+<p>If the file to be loaded is part way past the tape heads the
+COS will display:</p>
+
+<pre>REWIND TAPE</pre>
+
+<p>The tape should then be rewound and the space bar pressed
+again, to which the COS will reply:</p>
+
+<pre>PLAY TAPE</pre>
+
+<p>and the loading process can be repeated.</p>
+
+<p>To load an unnamed file the syntax is:</p>
+
+<pre>      *LOAD &quot;&quot; XXXX  or
+      *LOAD XXXX</pre>
+
+<p>where XXXX is again the optional, hexadecimal, start address.
+Since there is no name search the space bar should only be
+pressed during the hiqh-tone leader, and the first file
+encountered will be loaded. Unnamed files consist of a single
+block, a R there is no error checking; however they provide the
+fastest way of having and loading data or programs.</p>
+
+<table border="0" width="100%">
+    <tr>
+        <td><font color="#0000FF"><strong>CTRL and SHIFT</strong></font></td>
+        <td align="right">&nbsp;</td>
+    </tr>
+</table>
+
+<p>During loading and *CAT:</p>
+
+<p>CTRL will cause a return to the ATOM '&gt;' prompt. If pressed
+during loading an error message will be given to indicate that
+part of the file being loaded was lost.</p>
+
+<p>SHIFT will override the search for the high-tone leader, and
+can thus be used to load and catalogue files with very short
+periods of high-tone leader.</p>
+
+<p>Note that there is no way to exit from SAVE or *SAVE except by
+BREAK.</p>
+
+<table border="0" width="100%">
+    <tr>
+        <td><font color="#0000FF"><strong>*SAVE Save file</strong></font></td>
+        <td align="right"><font color="#0000FF"><strong>*S.</strong></font></td>
+    </tr>
+</table>
+
+<p>To save a named file on tape the syntax is:</p>
+
+<pre>      *SAVE &quot;FILENAME&quot; SSSS LLLL EEEE</pre>
+
+<pre>where FILENAME is the filename of up to 16 characters
+      SSSS is the start address
+      LLLL is the end address plus one
+      EEEE is the optional execution address</pre>
+
+<p>The execution address is used by the RUN command, and if
+omitted will default to the start address.</p>
+
+<p>On pressing return the COS will respond with:</p>
+
+<pre>RECORD TAPE</pre>
+
+<p>The tape recorder should now be started in record mode, and
+the space bar pressed to indicate that this has been done. Once
+started, SAVE cannot be aborted except by BREAK.</p>
+
+<p>To save an unnamed file the syntax is:</p>
+
+<pre>      *SAVE &quot;&quot; SSSS LLLL   or
+      *SAVE SSSS LLLL</pre>
+
+<p>where SSSS and LLLL are as above, and the data will be saved
+as one continuous block.</p>
+
+<table border="0" width="100%">
+    <tr>
+        <td><font color="#0000FF"><strong>*MON Enable messages </strong></font></td>
+        <td align="right"><font color="#0000FF"><strong>*M.</strong></font></td>
+    </tr>
+</table>
+
+<p>The usual condition after switch-on and BREAK is for the
+messages:</p>
+
+<pre>PLAY/RECORD/REWIND TAPE</pre>
+
+<p>to be produced. The MON command may be used to enable messages
+if they have been disabled.</p>
+
+<table border="0" width="100%">
+    <tr>
+        <td><font color="#0000FF"><strong>*NOMON Disable messages</strong></font></td>
+        <td align="right"><font color="#0000FF"><strong>*N.</strong></font></td>
+    </tr>
+</table>
+
+<p>This command turns off messages produced by the COS.</p>
+
+<table border="0" width="100%">
+    <tr>
+        <td><font color="#0000FF"><strong>*PLOAD Finish loading </strong></font></td>
+        <td align="right"><font color="#0000FF"><strong>*F.</strong></font></td>
+    </tr>
+</table>
+
+<p>The normal LOAD command demands that files are loaded from the
+start of the first block, and will request that the tape be
+rewound if started in the middle of the file. FLOAD allows
+loading to commence from the start of any block in the file, and
+the syntax of the command is:</p>
+
+<pre>      FLOAD &quot;FILENAME&quot; SSSS</pre>
+
+<p>where SSSS is an optional start address specifying the address
+to which the start of the first block is loaded if relocation is
+required.</p>
+
+<p>FLOAD is useful after a checksum error has been encountered.
+The tape may be stopped and rewound to any point before the block
+that produced the error. FLOAD is then used to allow loadinq to
+continue, and the block headers will ensure that the blocks are
+being loaded in the correct place.</p>
+
+<table border="0" width="100%">
+    <tr>
+        <td><font color="#0000FF"><strong>*RUN Load and execute
+        machine code file </strong></font></td>
+        <td align="right"><font color="#0000FF"><strong>*R.</strong></font></td>
+    </tr>
+</table>
+
+<p>The syntax of this command is:</p>
+
+<pre>      RUN &quot;FILENAME&quot; SSSS</pre>
+
+<p>The function is exactly as for LOAD, but on completion of
+loading execution is transferred to the execution address
+specified when the file was created. The optional start address
+SSSS may be used to relocate the file. The execution address is
+not affected by relocation.</p>
+
+<table border="0" width="100%">
+    <tr>
+        <td><font color="#0000FF"><strong>*DOS Link to Disk
+        Operating System</strong></font></td>
+        <td align="right"><font color="#0000FF"><strong>*D.</strong></font></td>
+    </tr>
+</table>
+
+<p>This command initialises the Disk Operating System, if
+present, by linking to #E000.</p>
+
+<h2><font color="#0000FF">19.4 Errors</font></h2>
+
+<p>The following error messages are given for errors in commands
+to the COS; i.e. for commands starting with '*':</p>
+
+<pre>SUM
+ERROR 6      Checksum error</pre>
+
+<pre>COM?
+ERROR 48     Command error</pre>
+
+<pre>NAME
+ERROR 118    Name error</pre>
+
+<pre>SYN?
+ERROR 135    Syntax error</pre>
+
+<pre>ERROR 165    Premature exit from loading</pre>
+
+<h2><font color="#0000FF">19.5 Appending Text from Several Files</font></h2>
+
+<p>A BASIC or Assembler subroutine may often be required for
+several different programs. In this case it is possible to store
+the subroutine text on a separate file, and append this text to
+the text in memory every time the subroutine is needed in a
+program.</p>
+
+<p>The subroutine text should be entered in memory on its own,
+and should be written with fairly high line numbers, such as
+9000-9999. The subroutine is then saved as usual; e.g.:</p>
+
+<pre>      SAVE &quot;SUB9&quot;</pre>
+
+<p>A later date a program is written which needs a copy of this
+subroutine. First check that the program does not use any line
+numbers above the first line of the program. Then find the
+address of the end of the program by typing:</p>
+
+<pre>      PRINT &amp;TOP-2</pre>
+
+<p>Remember that this address will be in hexadecimal. Now, using
+*LOAD, load the subroutine into memory starting at the address
+printed out in the above step:</p>
+
+<pre>      *LOAD &quot;SUB9&quot; XXXX</pre>
+
+<p>where XXXX is the address that was printed out. Finally, to
+reset TOP to the end of the subroutine, type:</p>
+
+<pre>      END</pre>
+
+<p>Any number of text files can be appended in this way, but note
+that, unless the resulting text is to be renumbered, the parts
+appended should use line numbers which are larger than any line
+number in the text file already in memory.</p>
+<p align="right"><a href="atap_20.htm">Next chapter</a></p>
+</body>
+</html>

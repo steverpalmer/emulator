@@ -1,0 +1,194 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Type"
+content="text/html; charset=iso-8859-1">
+<meta name="GENERATOR" content="Microsoft FrontPage Express 2.0">
+<title>12 What to do if Baffled</title>
+</head>
+
+<body bgcolor="#FFFFFF">
+
+<h1><font color="#0000FF">12 What to do if Baffled</font></h1>
+
+<p>This section is the section to read if all else fails; you
+have studied your program, and the rest of the manual, and you
+still cannot see anything wrong, but the program refuses to work.</p>
+
+<p>There are two types of programming errors; errors of syntax,
+and errors of logic.</p>
+
+<h2><font color="#0000FF">12.1 Syntax Errors</font></h2>
+
+<p>Syntax errors are caused by writing something in the program
+that is not legal, and that is therefore not understood by the
+BASIC interpreter. Usually this will give rise to an error, and
+reading the description of that error code in Chapter 27 should
+make the mistake obvious.</p>
+
+<p>Typical causes of syntax errors are:</p>
+
+<p>1. Mistyping a digit '0' for a letter 'O', and vice-versa.
+E.g.:</p>
+
+<pre>      F0R N=1 T0 3</pre>
+
+<p>2. Mistyping a digit '1' for a letter 'I', and vice-versa.
+E.g.:</p>
+
+<pre>      1F J=2 PR1NT &quot;TWO&quot;</pre>
+
+<p>3. Forgetting to enclose an expression in brackets when it is
+used as a parameter in a statement. E.g.:</p>
+
+<pre>      MOVE X+32,Y</pre>
+
+<p>In some cases a syntax error is interpreted as legal by BASIC,
+but with a different meaning from that intended by the
+programmer, and no error message will be given. E.g.:</p>
+
+<pre>      MOVE O,O</pre>
+
+<p>was intended to move to the origin, but in fact moves to some
+coordinates dependent on the value of the variable O. </p>
+
+<h2><font color="#0000FF">12.2 Logical Errors</font></h2>
+
+<p>Errors of logic arise when a program is perfectly legal, but
+does not do what the programmer intended, probably because the
+programmer misinterpreted something in this manual, or because a
+situation arose that was not forseen by the programmer. Common
+logical errors are:</p>
+
+<p>l. Unitialised variables. Remember that the variables A-Z
+initially contain unpredictable values, and so all the variables
+used in a program should appear on the left hand side of an
+assignment statement, in an INPUT statement, dimensioned by a DIM
+statement, or as the control variable in a FOR...NEXT loop, at
+least once in the program. These are the only places where the
+values of variables are changed.</p>
+
+<p>2. The same variable is used for two purposes. It is very easy
+to forget that a variable has been used for one purpose at one
+point in the program, and to use it for another purpose when it
+was intended to save the variable's original value. It is good
+practice to keep a list of the variables used in a program,
+similar to the list given after the application programs in this
+manual, to avoid this error.</p>
+
+<p>3. Location counter P not set up when assembling. The value of
+P should be set before assembling a program to the address of an
+unused area of memory large enough to receive the machine code,
+and P should not be used for any other purpose in the program.</p>
+
+<p>4. Graphics statements used without initialising graphics. The
+CLEAR statement must precede use of any graphics statements.</p>
+
+<p>5. Assigning to a string variable and exceeding the allocated
+space. Care should be taken that enough space has been allocated
+to string variables, with DIM, to receive the strings allocated
+to them.</p>
+
+<p>6. Assigning outside the bounds of an array or vector.
+Assigning to array or vector elements above the range dimensioned
+in the DIM statement will overwrite other arrays, vectors, or
+strings.</p>
+
+<h2><font color="#0000FF">12.3 Suspected Hardware Faults</font></h2>
+
+<p>This section deals with faults on an ATOM which is
+substantially working, but which exhibits faults which are
+thought to be due to hardware faults rather than programming
+faults. Hardware fault-finding details are provided in the
+Technical Manual; this section describes only those hardware
+problems that can be tested by running software diagnostics.</p>
+
+<h3><font color="#0000FF">12.3.1 RAM Memory Faults</font></h3>
+
+<p>The following BASIC program can be used to verify that the
+ATOM's memory is working correctly:</p>
+
+<pre>    1 REM MEMORY TEST
+   10 INPUT&quot;FROM&quot;A,&quot;  TO&quot;B
+   20 DO ?12=0; R=!8
+   30 FOR N=A TO B STEP4;!N=RND; NEXT N
+   35 ?12=0; !8=R
+   40 FOR N=A TO B STEP4
+   50 IF !N&lt;&gt;RND PRINT'&quot;FAIL AT &quot;&amp;N'
+   60 NEXT N
+   70 P.&quot; OK&quot;; UNTIL 0</pre>
+
+<p>The first address entered should be the lowest address to be
+tested, and the second address entered should be four less than
+the highest address to be tested. For example, to test the screen
+memory enter:</p>
+
+<pre>&gt;RUN
+FROM?#8000
+  TO?#81FC</pre>
+
+<p>The program stores random numbers in the memory locations, and
+then re-seeds the random-number generator and checks each
+location is correct. </p>
+
+<h3><font color="#0000FF">12.3.2 ROM Memory Faults</font></h3>
+
+<p>The BASIC interpreter, operating system, and assembler, are
+all contained in a single 8K ROM, and as all ROMs are thoroughly
+tested before despatch it is very unlikely that a fault could be
+present. However, if a user suspects a ROM fault the following
+program should be entered and run; the program obtains a
+'signature' for the whole ROM, this signature consistinq of a
+four-digit hexadecimal number. The program should be run for each
+4K half of the ROM.</p>
+
+<pre>    1 REM CRC Signature
+   10 INPUT &quot;PROM ADDRESS&quot;, P
+   20 C=0;Z=#FFFF;Y=#2D
+   30 FOR Q=0 TO #FFF
+   35 A=P?Q
+   40 FOR B=l TO 8
+   60 C=C*2+A&amp;1;A=A/2;IFC&gt;Z C=C:Y;C=C&amp;Z
+   80 NEXT B; NEXT Q
+  110 PRINT &quot;SIGNATURE IS&quot; &amp;C'
+  120 END</pre>
+
+<pre>Program size: 213 bytes Sample run:</pre>
+
+<pre>&gt;RUN
+PROM ADDRESS?#C000 
+SIGNATURE IS    D67D 
+&gt;RUN
+PROM ADDRESS?#F000 
+SIGNATURE IS    E386</pre>
+
+<p>The program takes about 6 minutes to run, and if these
+signatures are obtained the ROM is correct.</p>
+
+<p>The Atom extension ROM, described in chapter 22, can be tested
+by giving the reply #D000 to the prompt. It should give a
+signature of AAA1.</p>
+
+<h2><font color="#0000FF">12.3 Programming Service</font></h2>
+
+<p>If all else fails, owners of an ATOM may make use of the free
+Programming Service provided by Acorn. To ensure a rapid reply to
+any queries the special Programming Service Forms, supplied with
+the ATOM, must be used to submit the problem. New forms will be
+supplied with the reply to any queries, or on request.</p>
+
+<p>All reports should be accompanied by a full description of the
+problem or fault, and the occasions when it occurs. Please also
+enclose a stamped addressed envelope for the reply. A program
+should be supplied which illustrates the problem or suspected
+fault. This program should preferably be only four or five lines
+long, and should be written in the space provided on the
+Programming Service Form, with any spaces in the original
+carefully included. If the problem or fault is only exhibited by
+a longer program the report form should be accompanied by a
+cassette tape recording of the program, and the title of the file
+on the tape should be entered on the form. The cassette will be
+returned with the reply. </p>
+<p align="right"><a href="atap_13.htm">Next chapter</a></p>
+</body>
+</html>

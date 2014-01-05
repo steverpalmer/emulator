@@ -1,0 +1,627 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Type"
+content="text/html; charset=iso-8859-1">
+<meta name="GENERATOR" content="Microsoft FrontPage Express 2.0">
+<title>23 Mnemonic Assembler</title>
+</head>
+
+<body bgcolor="#FFFFFF">
+
+<h1><font color="#0000FF">23 Mnemonic Assembler</font></h1>
+
+<p>The ATOM mnemonic assembler is a full 6502 assembler; by
+virtue of its close relationship with the BASIC interpreter the
+mnemonic assembler provides many facilities found only on
+assemblers for much larger computers, including conditional
+assembly and macros.</p>
+
+<h2><font color="#0000FF">23.1 Location Counter -- P</font></h2>
+
+<p>The assembler uses the BASlC variable P as a location counter
+to specify the next free address of the program being assembled.
+Before running the assembler P should be set to the address of a
+free area of memory. This will normally be the free space above
+the program, and may be conveniently done with the statement:</p>
+
+<pre>       DIM P(-1)</pre>
+
+<p>which sets P to the address of the first free location in
+memory after the program, effectively reserving zero bytes for
+it. Note that P should be the last variable dimensioned.</p>
+
+<p>The location counter may also appear in the operand field of
+instructions. For example:</p>
+
+<pre>       LDX 00
+       DEX
+       BNE P-1
+       RTS</pre>
+
+<p>will cause a branch back to the DEX instruction. The program
+gives a 1279-cycle delay.</p>
+
+<h2><font color="#0000FF">23.2 Assembler Delimiters '[' and ']'.</font></h2>
+
+<p>All assembler statements are enclosed inside square brackets
+'[' and ']'. When RUN is typed each assembler statement is
+assembled, the assembled code is inserted directly in memory at
+the address specified by P, the value of P is incremented by the
+number of bytes in the instruction, and a line of the assembler
+listing is printed out. A typical line of the listing might be:</p>
+
+<blockquote>
+    <table border="0">
+        <tr>
+            <td><font face="Courier New">120</font></td>
+            <td><font face="Courier New">2A31</font></td>
+            <td><font face="Courier New">6D</font></td>
+            <td><font face="Courier New">34 12</font></td>
+            <td><font face="Courier New">:LL1</font></td>
+            <td><font face="Courier New">ADC #1234</font></td>
+        </tr>
+        <tr>
+            <td>^</td>
+            <td>^</td>
+            <td>^</td>
+            <td>^</td>
+            <td>^</td>
+            <td>mnemonic statement</td>
+        </tr>
+        <tr>
+            <td>|</td>
+            <td>|</td>
+            <td>|</td>
+            <td>|</td>
+            <td colspan="2">assembler label</td>
+        </tr>
+        <tr>
+            <td>|</td>
+            <td>|</td>
+            <td>|</td>
+            <td colspan="3">data/address</td>
+        </tr>
+        <tr>
+            <td>|</td>
+            <td>|</td>
+            <td colspan="4">instruction </td>
+        </tr>
+        <tr>
+            <td>|</td>
+            <td colspan="5">location counter</td>
+        </tr>
+        <tr>
+            <td colspan="6">statement line number.</td>
+        </tr>
+    </table>
+</blockquote>
+
+<p>Note that '#' denotes a hexadecimal number.</p>
+
+<h2><font color="#0000FF">23.3 Labels</font></h2>
+
+<p>Any of the array variables AA-ZZ may be used as labels in the
+assembler. The label is specified by preceding the array element
+by a colon ':'. Note that the brackets enclosing the array
+subscript may be omitted. The labels must be declared in a DIM
+statement.</p>
+
+<p>The effect of a label is to assign the value of the location
+counter, P, at that point to the label variable. The label can
+then be used as an argument in instructions. For example the
+following program will assemble a branch back to the DEX
+instruction::</p>
+
+<pre>   10 DIM ZZ(2),P(-1)
+   20[
+   30 LDX 00
+   40:ZZ1 DEX
+   50 BNE ZZ1
+   60 RTS
+   70]
+   80 END</pre>
+
+<h2><font color="#0000FF">23.4 Comments</font></h2>
+
+<p>Assembler instructions may be followed by a comment, separated
+from the instruction by a space:</p>
+
+<pre>   101 LDA 07 bell character</pre>
+
+<p>Alternatively a statement may start with a '\' backslash, in
+which case the remainder of the statement is ignored:</p>
+
+<pre>   112 \ routine to multiply two bytes</pre>
+
+<h2><font color="#0000FF">23.5 Backward References</font></h2>
+
+<p>When an assembler program is assembled, by typing RUN,
+backward references are resolved automatically the first time the
+assembler is RUN, because the associated labels receive their
+values before their value is needed by the instruction.</p>
+
+<h2><font color="#0000FF">23.6 Forward References</font></h2>
+
+<p>In a forward reference the label appears as the argument to an
+instruction before its value is known. Therefore two passes of
+the assembler are required; one to assign the correct value to
+the label, and the second to use that value to generate the
+correct instruction codes.</p>
+
+<p>On the first pass through the assembler branches containing
+forward references will give the warning message:</p>
+
+<pre> OUT OF RANGE:</pre>
+
+<p>indicating that a second pass is needed. The second byte of
+the branch will be set to zero. </p>
+
+<h2><font color="#0000FF">23.7 Two-Pass Assembly</font></h2>
+
+<p>A two-pass assembly can be achieved simply by typing RUN twice
+before executing the machine code program. Alternatively it is
+possible to make the two-pass assembly occur automatically by
+incorporating the statements to be assembled within a FOR...NEXT
+loop. The following program assembles instructions to perform a
+two-byte increment:</p>
+
+<pre>   10 REM Two-Pass Assembly
+   20 DIM M(3),JJ(2)
+   30 FOR N=1 TO 2
+   40 PRINT '&quot;PASS &quot;N '
+   50 DIM P(-1)
+   ss[
+   60:JJ0 INC M
+   70 BNE JJ1
+   80 INC M+1
+   90:JJ1 RTS
+  100]
+  110 NEXT N
+  120 INPUT L
+  130 !M=L
+  140 LINK JJ0
+  150 P. &amp;!M
+  160 END</pre>
+
+<p>Note that the statement DIM P(-1) is enclosed within the loop
+so that P is reset to the correct value at the start of each
+pass.</p>
+
+<p>The listing produced by this program is as follows; note that
+the first pass is unable to resolve the reference to JJ1 in the
+instruction of line 70:</p>
+
+<pre>PASS        1
+   55 29DE
+   60 29DE EE CE 29 :JJ0 INC M
+OUT OF RANGE:
+   70 29E1 D0 00     BNE JJ1
+   80 29E3 EE CF 29  INC M+1
+   90 29E6 60       :JJ1 RTS</pre>
+
+<pre>PASS        2
+   55 29DE
+   60 29DE EE CE 29 :JJ0 INC M
+   70 29E1 D0 03     BNE JJ1
+   80 29E3 EE CF 29  INC M+1
+   90 29E6 60       :JJ1 RTS</pre>
+
+<h2><font color="#0000FF">23.8 Suppression of Assembly Listing</font></h2>
+
+<p>The assembly listing may be suppressed by disabling the output
+stream with a NAK character, and enabling it again with an ACK at
+the end of the assembly. The codes for NAK and ACK are 21 and 6
+respectively. The following program assembles instructions to
+print an &quot;X&quot; using a call to the operating-system
+write-character routine, OSWRCH at #FFF4:</p>
+
+<pre>    10 REM Turn off Assembly Listing
+    20 DIM P(-1)
+    30 PRINT $21; REM TURN OFF
+    40[LDA @#58; JSR #FFF4; RTS;]
+    50 PRINT $6 ; REM TURN ON
+    60 LINK TOP
+    70 END</pre>
+
+<h2><font color="#0000FF">23.9 Executing Programs</font></h2>
+
+<p>The LINK statement should be used to transfer control from a
+BASIC program to a machine-code program. The operation of the
+LINK statement is as follows:</p>
+
+<p>1. The low-order bytes of the BASIC variables A, X, and Y are
+transferred to the A, X, and Y registers respectively.</p>
+
+<p>2. Control is transferred to the address given after the LINK
+statement. </p>
+
+<p>The argument to the LINK statement will normally either be
+TOP, when no arrays have been declared in the space after the
+program, or a label corresponding to the entry-point in the
+assembler program (which need not be the first instruction in the
+program). For examples see the example programs in this chapter,
+and in Chapter 17.</p>
+
+<h2><font color="#0000FF">23.10 Breakpoints</font></h2>
+
+<p>During debugging of a machine-code program it may be
+convenient to discover whether sections of the program are being
+executed. A convenient way to do this is to insert breakpoints in
+the program. The BRK instruction (op-code 000) is used as a
+breakpoint, and execution of this instruction will return control
+to the system, with the message:</p>
+
+<pre>ERROR XX LINE LL</pre>
+
+<p>where XX is two greater than the lower byte of the program
+counter, in decimal, where the BRK occurred, and the line number
+is the last BASIC line executed before the BRK occurred. Any
+number of BRK instructions may be inserted, and the value of the
+program counter in the ERROR message will indicate which one
+caused the break.</p>
+
+<p>To provide more information on each BRK, such as the contents
+of all the processor's registers, the break vector can be altered
+to indirect control to a user routine, as shown in the following
+section.</p>
+
+<h3><font color="#0000FF">23.10.1 Breakpoint Routine</font></h3>
+
+<p>The BRK instruction can be used to show which parts of a
+machine-code routine are being executed. By adding a small
+assembler program it is possible to keep a record of the register
+contents when the BRK occurred, and, if required, print these
+out.</p>
+
+<p>The memory locations #202 and #203 contain the address to
+which control is transferred on a BRK instruction. This address
+can be redefined to point to a routine which will save the
+register contents in a vector K. The registers are saved as
+follows:</p>
+
+<blockquote>
+    <table border="0">
+        <tr>
+            <td align="center">&nbsp;</td>
+            <td align="center" bgcolor="#C0C0C0">PCL</td>
+            <td align="center" bgcolor="#C0C0C0">PCH</td>
+            <td align="center" bgcolor="#C0C0C0">A</td>
+            <td align="center" bgcolor="#C0C0C0">X</td>
+            <td align="center" bgcolor="#C0C0C0">Y</td>
+            <td align="center" bgcolor="#C0C0C0">S</td>
+            <td align="center" bgcolor="#C0C0C0">P</td>
+        </tr>
+        <tr>
+            <td align="center">K:</td>
+            <td align="center">0</td>
+            <td align="center">1</td>
+            <td align="center">2</td>
+            <td align="center">3</td>
+            <td align="center">4</td>
+            <td align="center">5</td>
+            <td align="center">6</td>
+        </tr>
+    </table>
+</blockquote>
+
+<p>After the registers have been saved in the vector K, the
+routine jumps to the standard BRK handler, the address previously
+in locations #202 and #203:</p>
+
+<pre>   10 REM Print Registers on BRK
+   30 DIM K(6),AA(1),A(8),P(-1)
+   35 B=?#202+256*?#203
+   40 ?16=A;?17=A&amp;#FFFF/256;$A=&quot;GOT0150&quot;
+   45[
+   50:AA0 STA K+2; STX K+3
+   60 PLA; STA K+6; PLA; STA K
+   80 PLA; STA K+1
+   90 STY K+4; TSX; STX K+5
+  100 JMP B
+  110]
+  120 REM INSTALL BRK ROUTINE
+  130 ?#202=AA0; ?#203=AAO&amp;#FFFF/256
+  135 GOTO 200
+  140 REM PRINT REGISTERS
+  150 @=5
+  160 PRINT&quot;  PC   A  X  Y  S  P&quot;'
+  170 PRINT&amp;!K&amp;#FFFF-2;FORN=2T06
+  175 @=3
+  180 PRINT&amp;K?N;N.
+  190 PRINT'; END
+  200 REM DEMONSTRATE USE
+  210[
+  220:AA1 LDA @#12; LDX #34
+  230 LDY @#56; BRK
+  240]
+  250 REM EXECUTE TEST PROGRAM
+  260 LINK AA1</pre>
+
+<pre>Description of Program:
+30        Declare vectors and array
+35        Set B to BRK handler address
+40        Point error line handler to &quot;GOTO 150&quot;
+50-100    Assemble code to save registers in vector K
+130       Point BRK handler to register-save routine.
+150-190   Print out vector K, with heading.
+220-240   Assemble test program to give a BRK
+260       Execute test program.</pre>
+
+<pre>Variables:
+$A -- String to contain BASIC line.
+AA(0..1) -- Labels for assembler routines.
+AA0 -- Entry point to routine to save registers in vector K.
+AA1 -- Entry point to test program.
+B -- Address of BRK routine.
+K?0..6 -- Vector to hold registers on BRK.</pre>
+
+<p>lf this program is compiled, the following will be printed out
+after the assembler listing:</p>
+
+<pre>       PC   A  X  Y  S  P
+      2B60 12 34 56 FD 35</pre>
+
+<h2><font color="#0000FF">23.11 Conditional Assembly</font></h2>
+
+<p>The simplest facility is conditional assembly; the assembler
+source text can contain tests, and assemble different statements
+depending on the outcome of these tests. This is especially
+useful where slightly different versions of a program are needed
+for many different purposes. Rather than creating a different
+source file for each different version, a single variable can
+determine the changes using conditional assembly. For example,
+two printers are driven from a parallel port. They differ as
+follows:</p>
+
+<p>1. The first printer needs a 12 microsecond strobe, and true
+data. 2. The second printer needs an 8 microsecond strobe and
+inverted data.</p>
+
+<p>The variable V is used to denote the version number (1 or 2).
+H contains the address of the 8-bit output port, and the top bit
+of location H+1 is the strobe bit; D is the address of the data
+to be output.</p>
+
+<pre>   10 DIM P(-1)
+   20 H=#B800; D=#80
+  300[ LDA D;]
+  310 IF V=2 [ EOR #FF invert;]
+  320[ STA H to port
+  330 LDA @#80
+  340 STA H+1
+  360 NOP strobe delay;]
+  370 IF V=l [ NOP; NOP extra delay;]
+  380[ LDA @0
+  390 STA H+1
+  400]
+  410 END</pre>
+
+<p>If this segment of the program is first executed with V=1 the
+assembled code is as required for printer 1:</p>
+
+<pre>&gt;V=l;RUN
+   300 29BB A5 80     LDA D
+   320 29BD 8D 00 B8  STA H to port
+   330 29CO A9 80     LDA @#80
+   340 29C2 8D 01 B8  STA H+1
+   360 29C5 EA        NOP strobe delay
+   370 29C6 EA        NOP
+   370 29C7 EA        NOP extra delay
+   380 29C8 A9 00     LDA @0
+   390 29CA 8D 01 B8  STA H+1</pre>
+
+<p>Extra NOP instructions have been inserted to give the required
+strobe delay. If now the program is executed with V=2 the code
+generated is suitable for printer 2:</p>
+
+<pre>&gt;V=2;RUN
+   300 29BB A5 80     LDA D
+   310 29BD 45 FF     EOR #FF invert
+   320 29BF SD 00 BS  STA H to port
+   330 29C2 A9 80     LDA @#80
+   340 29C4 8D 01 BS  STA H+1
+   360 29C7 EA        NOP strobe delay
+   380 29C8 A9 00     LDA @0
+   390 29CA 8D 01 B8  STA H+1</pre>
+
+<p>An instruction to invert the data has been added before
+writing it to the port.</p>
+
+<p>Conditional assembly is also useful for the insertion of extra
+instructions to print out intermediate values during debugging;
+these statements will be removed when the proqram is finally
+assembled. To do this a logical variable, D in the following
+example, is given the value 1 (true) during debugging and the
+value 0 (false) otherwise. If D=1 a routine to print the value of
+the aecumulator in hex is assembled, and calls to this routine
+are inserted at two relevant points in the test program:</p>
+
+<pre>   10 REM Print Hex Digits
+   20 DIM GG(3),P(-1)
+   30 IF D=0 GOTO m
+   50[
+   55 \ print hex digit
+   60:GG1 AND @#F
+   70 CMP @#A; BCC P+4
+   80 ADC @6; ADC @#30
+   90 JMP #FFF4
+   95 \ print A in hex
+  100:GG2 PHA; PHA; LSRA; LSRA
+  110 LSRA; LSRA; JSR GG1
+  120 PLA; JSR GG1; PLA; RTS
+  130]
+  140mREM main program
+  150[
+  170:GG0 CLC; ADC @#40;J
+  190 IF D [ JSR GG2;]
+  200[
+  210 BEQ GG3; SBC @#10;]
+  220 IF D [ JSR GG2;]
+  230[
+  240:GG3 RTS;]
+  250 END</pre>
+
+<p>For debugging purposes this program is assembled by typing:</p>
+
+<pre>&gt;D=l
+&gt;RUN
+&gt;RUN</pre>
+
+<p>The program can then be executed for various values of A by
+typing:</p>
+
+<pre>         A=#12; LINK GGO</pre>
+
+<p>The final version of the program is assembled, without the
+debugging aids, by typing:</p>
+
+<pre>&gt;D=0
+&gt;RUN
+&gt;RUN</pre>
+
+<h2><font color="#0000FF">23.12 Macros</font></h2>
+
+<p>Macros permit a name to be associated with a number of
+assembler instructions. This name can then be used as an
+abbreviation for those instructions; whenever the macro is
+called, the effect is as if the corresponding lines of assembler
+had been inserted at that point.</p>
+
+<p>In their simplest form macros just save typing. For example,
+the sequence:</p>
+
+<pre>          LSR A; LSR A; LSR A; LSR A</pre>
+
+<p>occurs frequently in assembler programs (to shift the upper
+nibble of the accumulator into the lower nibble), but it is not
+worth making the instructions into a subroutine. A macro, with
+the name s in the following example, can be set up as follows:</p>
+
+<pre> 1000s[LSR A; LSR A; LSR A; LSR A;]
+ 1010 RETURN</pre>
+
+<p>Then the above four instructions can be replaced by the
+following call to the macro s:</p>
+
+<pre>GOSUB s</pre>
+
+<h3><font color="#0000FF">23.12.1 Macro Parameters</font></h3>
+
+<p>The great power of macros lies in the ability to pass
+parameters to them so that the assembler lines they generate will
+be determined by the values of the parameters.</p>
+
+<p>The simplest type of parameter would simply be an address; for
+example, the macro r below will rotate right any location, zero
+page or absolute, whose address is passed over in L:</p>
+
+<pre> 2000r[ROR L: ROR L; ROR L; ROR L:]
+ 2010 RETURN</pre>
+
+<p>A typical call in a proqram might be:</p>
+
+<pre>         L=#80; GOSUB r</pre>
+
+<p>The following program illustrates the use of two macros. Macro
+i increments a 16-bit number in locations J and J+1. Macro c
+performs an unsigned compare between two 16-bit numbers in J,J+1
+and K,K+1. The program uses these two macros to move a block of
+memory from one starting address to a lower starting address.</p>
+
+<pre>   10 REM Block Move
+   20 DIM LL(2),P(100)
+   30 F=#80; L=#82; T=#84
+   40[:LL0 LDY @0
+   45:LL1 LDA (F),Y; STA (T),Y;]
+   50 J=T; GOSUB i
+   60 J=F; GOSUB i
+   70 K=L; GOSUB c
+   80[ BNE LL1; RTS;]
+   90
+  100 REM TRY IT OUT
+  110 REM F=first address
+  112 REM L=last address
+  114 REM T=address moved to (T&lt;F)
+  120 !F=#500;!L=#800;!T=#400
+  130 LINK LL0
+  140 END
+ 8000 
+ 8100 REM MACRO - INC  J,J+1
+ 8105i[INC J;BNE P+4+(J&gt;254)&amp;1;]
+ 8110 INC J+1;]
+ 8120 RETURN
+ 8130
+ 8140 REM MACRO -- CMP J,J+1 WITH K,K+1
+ 8145c[LDA J+1; CMP K+1
+ 8150 BNE P+6+(J&gt;255)&amp;1+(K&gt;255)&amp;1
+ 8160 LDA J; CMP K;]
+ 8170 RETURN</pre>
+
+<p>Note that both macros are designed to work whether J and K are
+absolute addresses or zero-page addresses; to avoid the need for
+labels in these macros they test for the size of the address, and
+generate the correct argument for the branch instruction. The
+expression:</p>
+
+<pre>(J&gt;255)&amp;1</pre>
+
+<p>has the value 1 if J is greater than 255, and the value 0 if J
+is 255 or less.</p>
+
+<h3><font color="#0000FF">23.12.2 In-Line Assembly</font></h3>
+
+<p>In critical sections of programs, where speed is important, it
+may be necessary to code repetitative calculations by actually
+repeating the instructions as many times as necessary, rather
+than using a loop, thereby avoiding the overhead associated with
+the loop calculations. The following macro compiles a routine to
+multiply a 7-bit number in the A register by a fractional
+constant between 0/256 and 255/256. The numerator of the constant
+is passed to the macro in C:</p>
+
+<pre>    1 REM Fractional Multiplication
+    5 J=#80; DIM P(-1)
+   10 C=#AA
+   20 GOSUBm
+   30 [STA J;RTS;] 
+   40 INPUT A
+   50 LINK TOP
+   60 P.&amp;A,&amp;?J
+   70 END
+ 2000mREM macro -- multiply by constant
+ 2010 REM A = A * C/256
+ 2020 REM uses J
+ 2030 B=#80
+ 2040 [STA J;LDA 00;]
+ 2050 DO [LSR J;]
+ 2060 IF C&amp;B&lt;&gt;0 [CLC;ADC J;]
+ 2070 C=(C*2)&amp;#FF; UNTIL C=0
+ 2080 RETURN</pre>
+
+<p>The macro is tested with C=#AA. In this case the code produced
+will be:</p>
+
+<pre> 2040 2A42 85 80    STA J
+ 2040 2A44 A9 00    LDA 00
+ 2050 2A46 46 80    LSR J
+ 2060 2A48 18       CLC
+ 2060 2A49 65 80    ADC J
+ 2070 2A4B 46 80    LSR J
+ 2070 2A4D 46 80    LSR J
+ 2060 2A4F 18       CLC
+ 2060 2A50 65 80    ADC J
+ 2070 2A52 46 80    LSR J
+ 2070 2A54 46 80    LSR J
+ 2060 2A56 18       CLC
+ 2060 2A57 65 80    ADC J
+ 2070 2A59 46 80    LSR J
+ 2070 2A5B 46 80    LSR J
+ 2060 2A5D 18       CLC
+ 2060 2A5E 65 80    ADC J
+ 2080 2A60 85 80    STA J
+ 2080 2A62 60       RTS</pre>
+
+<p align="right"><a href="atap_24.htm">Next chapter</a></p>
+</body>
+</html>

@@ -1,0 +1,655 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Type"
+content="text/html; charset=iso-8859-1">
+<meta name="GENERATOR" content="Microsoft FrontPage Express 2.0">
+<title>11 Advanced Graphics</title>
+</head>
+
+<body bgcolor="#FFFFFF">
+
+<h1><font color="#0000FF">11 Advanced Graphics</font></h1>
+
+<p>The ATOM provides nine different graphics modes, up to a
+resolution of 256x192 in black and white, and 128x192 in four
+selectable colours. The graphics modes use the BASIC statements
+PLOT, DRAW, and MOVE in an identical way. All the black-and-white
+graphics commands are present in the unexpanded ATOM, although
+extra memory will be required for the higher-resolution graphics
+modes. Colour plotting requires the addition of an assembler
+routine, or the COLOUR statement provided in the extension ROM.</p>
+
+<h2><font color="#0000FF">11.1 Graphics Modes</font></h2>
+
+<p>The ATOM provides nine different graphics modes, up to a
+resolution of 256x192 in black and white, and 128x192 in four
+selectable colours. The graphics modes use the BASIC statements
+PLOT, DRAW, and MOVE in an identical way. All the black-and-white
+graphics commands are present in the unexpanded ATOM, although
+extra memory will be required for the higher-resolution graphics
+modes. Colour plotting requires the addition of an assembler
+routine, or the COLOUR statement provided in the extension ROM. </p>
+
+<h2><font color="#0000FF">11.1 Graphics Modes</font></h2>
+
+<p>The nine graphics modes are listed below: </p>
+
+<pre>      Mode:       Resolution:          Memory:
+                  X:       Y:
+       0          64       48           0.5 K
+       1a         64       64             1 K
+       1         128       64             1 K
+       2a        128       64             2 K
+       2         128       96           1.5 K
+       3a        128       96             3 K
+       3         128      192             3 K
+       4a        128      192             6 K
+       4         256      192             6 K
+       </pre>
+
+<h2><font color="#0000FF">11.2 CLEAR</font></h2>
+
+<p>This statement clears the screen and puts it into graphics
+mode. It is followed by a number, or expression in brackets, to
+specify the mode. The graphics screen is labelled as follows:</p>
+
+<table border="0" cellspacing="0">
+    <tr>
+        <td align="center">^<br>
+        |<br>
+        Y<br>
+        |</td>
+        <td><img src="atom_1.png" width="256" height="192"> </td>
+    </tr>
+    <tr>
+        <td>0,0</td>
+        <td align="center">-- X --&gt;</td>
+    </tr>
+</table>
+
+<p>The smallest square which can be plotted on the display is
+referred to as a 'pixel' (or 'picture element'). </p>
+
+<h2><font color="#0000FF">11.3 PLOT</font></h2>
+
+<p>The graphics statements include a versatile 'PLOT K,X,Y'
+statement, the value of K determining whether to draw or move,
+plot lines or points, whether to set, clear, or invert, and
+whether to take the parameters X and Y as the absolute screen
+position, or as a displacement from the last point. The values K,
+X, and Y can be arbitrarily-complicated expressions. </p>
+
+<pre>       K:   Function:
+       0  Move relative to last position
+       1  Draw line in white relative to last position
+       2  Invert line relative to last position
+       3  Draw line in black relative to last position
+
+       4  Move to absolute position
+       5  Draw line in white to absolute position 
+       6  Invert line to absolute position
+       7  Draw line in black to absolute position
+
+       8  Move relative to last position
+       9  Plot point in white relative to last position
+      10  Invert point relative to last position
+      11  Plot point in black relative to last position
+
+      12  Move to absolute position
+      13  Plot point in white at absolute position 
+      14  Invert point at absolute position
+      15  Plot point in black at absolute position
+</pre>
+
+<h2><font color="#0000FF">11.4 DRAW and MOVE</font></h2>
+
+<p>In addition DRAW and MOVE statements are provided as
+convenient aliases for drawing a line and moving to an absolute
+X,Y position. MOVE X,Y is equivalent to PLOT 12, X, Y. DRAW X,Y
+is equivalent to PLOT 5, X, Y. </p>
+
+<h3><font color="#0000FF">11.4.1 Random Rectangles</font></h3>
+
+<p>The following program illustrates the use of relative plotting
+using the PLOT statement, and draws random rectangles on the
+display. The program will work in any of the graphics modes. </p>
+
+<pre>   10 REM Random Rectangles
+   13 S=20
+   16 Z=1;B=0
+   17 W=64;H=48
+   18 E=W-S;F=H-S
+   20 CLEARB
+   30 FORQ=0TO7
+   32 MOVE(ABSRND%E),(ABSRND%F)
+   35 C=ABSRND%S+1;D=ABSRNDSS+1;GOSUBs
+   37 NEXTQ;FOR Q=0TO20000;NEXTQ
+   38 GOTO20
+  100sPLOTZ,C,0
+  110 PLOTZ,0,D
+  120 PLOTZ,-C,0
+  130 PLOTZ,0,-D
+  140 RETURN</pre>
+
+<p>Description of Program: </p>
+
+<pre>13-18     Set up constants
+20        Initialise graphics
+30        Draw 41 rectangles
+32        Move to random point, leaving margin for size of largest
+          rectangle.
+35        Choose random rectangle
+37        Wait; then repeat.
+100 140   s: Draw rectangle.
+</pre>
+
+<p>Variables: C,D - Dimensions of rectangle E,F - Dimensions of
+safe part of screen to start drawing rectangle. H - Screen height
+Q - Counter S - Size of squares W - Screen width Z - Plot mode;
+draw relative. Program size: 278 bytes </p>
+
+<h2><font color="#0000FF">11.5 Advanced Graphics Examples</font></h2>
+
+<p>The following examples are designed for use with the
+higher-resolution graphics modes, and illustrate some of the
+applications that are possible using the ATOM's graphics
+facilities. </p>
+
+<h3><font color="#0000FF">11.5.1 The Sierpinski Curve</font></h3>
+
+<p>This curve is of interest to mathematicians because it has the
+property that it encloses every interior point of a square, and
+yet it is a closed curve whose area is less than half that of the
+square. This program draws successive generations to illustrate
+how the Sierpinski curve, which is the limit of these polygonal
+drawings, is constructed. </p>
+
+<pre>    1 REM Sierpinski Curve
+   10 INPUT&quot;MODE&quot;0
+   15 INPUT&quot;SIZE&quot;K
+   20 CLEAR0
+   30 S=5
+   40 J=l
+   50 FOR I=1 TO 5
+   60 J=J*2;D=K/J/4
+   70 X=K-5*D; Y=K-2*D
+   80 T=l; MOVE X,Y
+   90 X=X+D; A=J; B=J; GOTO s
+  100aIF A=J AND B=J GOTO z
+  110sP=J; Q=a; R=B
+  120vIF P&lt;2 GOTO z
+  130 IF P=2 GOSUB o; GOTO a
+  140 P=P/2
+  150 IF Q&lt;P OR P+1&lt;Q GOTO n
+  170 IF R&lt;P OR P+1&lt;R GOTO n
+  190 GOSUB c; GOTO a
+  200nIF Q&gt;=p THEN Q=Q-P
+  210 IF R&gt;=P THEN R=R-P
+  220 GOTO v
+  230zREM end of loop
+  240 FOR N=1 TQ 1000;NEXT
+  250 CLEARO
+  260 NEXT I
+  270 END</pre>
+
+<pre> 1000cGOTO(1000+100*T)
+ 1100 X=X+D
+ 1105 PLOTS,X,Y
+ 1110 X=X+D;Y=Y+D;PLOTS,X,Y
+ 1120 Y=Y+D;B=B+1;T=4;RETURN 
+ 1200 Y=Y-D
+ 1205 PLOTS,X,Y
+ 1210 X=X+D;Y=Y-D;PLOTS,X,Y
+ 1220 X=X+D;A=A+1;T=1;RETURN 
+ 1300 X=X-D
+ 1305 PLOTS,X,Y
+ 1310 X=X-D;Y=Y-D;PLOTS,X,Y
+ 1320 Y=Y-D;B=B-1;T=2;RETURN
+ 1400 Y=Y+D
+ 1405 PLOTS,X,Y
+ 1410 X=X-D;Y=Y+D;PLOTS,X,Y
+ 1420 X=X-D;A=A-1;T=3;RETURN 
+ 2000oGOTO(2000+100*T)</pre>
+
+<pre> 2100 X=X+D;PLOTS,X,Y
+ 2110 X=X+D;Y=Y+D;PLOTS,X,Y 2120 X=X+D;Y=Y-D;GOTO 1305 
+ 2200 Y=Y-D;PLOTS,X,Y
+ 2210 X=X+D;Y=Y-D;PLOTS,X,Y 2220 X=X-D;Y=Y-D;GOTO 1405 
+ 2300 X=X-D;PLOTS,X,Y
+ 2310 X=X-D;Y=Y-9;PLOTS,X,Y 2320 X=X-D;Y=Y+D;GOTO 1105 
+ 2400 Y=Y+D;PLOTS,X,Y
+ 2410 X=X-D;Y=Y+D;PLOTS,X,Y 2420 X=X+D;Y=Y+D;GOTO 1205
+
+Description of Program:
+50 Plot five generations
+l000-1420 Plot centre square
+2000-2420 Not a centre square
+Variables:
+A,B - Coordinates of current square
+D   - Number of cells in a quarter of a square
+J   - Number of squares in picture
+K   - Resolution of screen
+O   - Graphics mode
+S   - Argument for PLOT statement
+T   - Angle in units of 90 degrees.
+X,Y - Current drawing position
+Program size: 1047 bytes</pre>
+
+<p>Sample plot: </p>
+
+<p><img src="sierpinski.png" align="center" width="512"
+height="384"> </p>
+
+<h3><font color="#0000FF">11.5.2 Three-Dimensional Plotting</font></h3>
+
+<p>The following program will plot a perspective view of a
+three-dimensional object or curve as viewed from any specified
+point in space. The program is simply provided with a subroutine
+giving the coordinates of the object to be drawn, or the equation
+of the curve. The program below plots a perspective view of the
+curve 1/(1+x^2+y^2) for a range of values of x and y. The
+function has been scaled up by a factor of 300 to bring the
+interesting part of the curve into the correct range. The program
+is provided with an equation of the curve, specifying z (the
+vertical axis) in terms of x, and y (the two horizontal axes),
+and the view position. It projects every point on the surface
+onto a plane perpendicular to the line joining the view position
+to the origin. The example given here draws line of equal y, and
+the surface is drawn as if viewed from the point x=30, y=40, z=8;
+i.e. slightly above the surface. </p>
+
+<pre>    1 REM Three-Dimensional Plotting
+   50 L=30;M=40;N=8
+  110 Z=0;CLEAR4
+  120 A=#8000;B=#9800
+  130 FORJ=A TO B STEP4;!J=-1;N.
+  150 S=L*L+M*M;GOS.s;R=Q
+  160 S=S+N*N;GOS.s;S=L*L+M*M
+  170 T=L*L+M*M+N*N
+  200 F.U=-20TO20
+  210 V=-20;GOS.c;GOS.b
+  220 F.V=-19TO20;GOS.c;GOS.a;N.;N.
+  230 END
+  400sQ=S/2
+  410 DOQ=(Q+S/Q)/2
+  415 U.(Q-1)*(Q-1)&amp;LTS AND(Q+1)*(Q+1)&gt;S
+  420 R.
+  500 REM DRAWTO(U,V,W)
+  510aZ=3
+  520k&gt;0=T-U*L-V*M-W*N
+  530 C=T*(V*L-U*M)*4/(R*0)+128
+  540 D=96+3*Q*(W*S-N*(U*L+V*M))/(R*0)
+  560 PLOT(2+4),C,D;Z=0;R.
+  600cW=300/(10+U*U+V*V)-10;R.</pre>
+
+<p>Description of Program:</p>
+
+<pre>50      Set up view position 
+110     Set move mode, and clear screen 
+120-130 Invert screen 
+150-170 Calculate constants for linear projection 
+200-230 Scan X,Y plane evaluating function and plotting projected lines. 
+400-420 s: Square root routine (see Section 5.2.2). 
+500-560 a: Calculate projected position of next point and move to it (Z=0) or draw to it (Z=3) 
+600     c: Function for evaluation</pre>
+
+<p>Variables:</p>
+
+<pre>A - Display area start 
+B - Display area end 
+C,D - Coordinates of projected point 
+J - Display location to be cleared 
+Q,R,S,T - Constants for projection
+U,V - Scan variables 
+W - Function value</pre>
+
+<p>Program size: 491 bytes. Sample Plot:</p>
+<p><img src="3dplot.png" align="center" width="512" height="384">
+</p>
+
+<h2><font color="#0000FF">11.6 Plotting Hex Characters</font></h2>
+
+<p>In the higher graphics modes, modes 1 to 4, characters cannot
+be plotted on the screen directly but it is fairly simple to draw
+characters using the graphics statements. The following simple
+routines will draw the hex characters 0 to F, with any desired
+scaling, and with an optional slope. The routines are useful for
+labelling graphs drawn in the higher-resolution graphics modes.
+Routine p plots a single hex character; routine q plots two hex
+characters. The routine is demonstrated by drawing random hex
+characters in a circle. </p>
+
+<pre>    1 REM Plotting Hex Characters
+   10 N=TOP; !N=06E3E4477; N!4=#467B6B4D
+   12 N!8=#795F4F7F; N!12=#1B3B7C33
+   20 V=2; H=2; S=0
+   25 CLEAR 0
+   30 X=30; Y=0
+   40 MOVE (32+X),(24+Y)
+   50 X=X+Y/6;Y=Y-X/6
+   60 A=ABSRND&amp;#F
+   70 GOSUBp
+   90 GOTO 40
+ 1000qREN Plot B as 2 hex digits
+ 1010 A=B/16; GOSUB p
+ 1020 A=B&amp;#F
+ 2000pREM Plot A in hex
+ 2001 REM uses:A,H,J,K,L,N,Q,V
+ 2010 Q=N?A
+ 2020 FOR J=1 TO 7
+ 2030 K=(2-J%6)%2;L=(2-(J'-1)%4)%2
+ 2040 PLOT(Q&amp;1),(L*H+K*S),(K*V)
+ 2050 Q=Q/2; NEXT J
+ 2060 PLOTO,((H+2)/2),0; RETURN</pre>
+
+<pre>Description of Program: 
+10-12     Set up plotting statements for the 16 characters. 
+20        Scales for letters 30-50 Move X,Y around a circle 
+60-70     Plot random character 
+1000-1020 q: Plot low-order byte of B as two hex digits 
+2000-2060 p: Plot low-order hex digit of A in hex 
+Variables: 
+A - Hex digit to be plotted 
+B - Byte to be plotted 
+H - Horizontal scaling
+N - Vector containing character plotting statements 
+Q - Next plot statement; low-order bit determines whether to draw or move. 
+S - Slope factor 
+V - Vertical scaling 
+X,Y - Coordinates of point on circle. 
+Program size: 457 bytes Vector: 16 bytes </pre>
+
+<h2><font color="#0000FF">11.7 Animated Graphics</font></h2>
+
+<p>The graphics statements are optimised for speed. For example,
+to draw a diagonal across the screen using: MOVE 0,0 ; DRAW
+255,191 takes under 40 msec. The following program uses animated
+graphics to display a clock whose hands move to show the correct
+time. The hands are drawn using the statement PLOT 6, and the
+same statement is repeated to remove each hand&#146;s old
+position before drawing its new position. The clock keeps
+accurate time by executing the WAIT statement: </p>
+
+<pre>    1 REM Clock
+   10 CLEAR4;E=128;F=96
+   15 J=71;K=678;Q=100;R=#B001
+   20 X=0;Y=8000;G=90
+   30 MOVE(X/Q+E),(Y/Q+F)
+   40 FORL=0 TO 59
+   45 IF L%5&lt;&gt;0 GOTO c
+   50 DRAW(X/G+E),(Y/G+F)
+   55 MOVE(X/Q+E),(Y/Q+F)
+   60cGOSUBi;GOSUBp
+   68 NEXTL
+   70 X=0;Y=5000;S=0
+   72 DO A=0;B=6600
+   80 FOR H=0 TO 4
+   82 GOSUBh;C=X;D=Y;X=A;Y=B
+   84 FOR M=0 TO 11
+   85 GOSUBh;A=X;B=Y
+   87 X=0;Y=7000
+   88 IF ?R&lt;&gt;#FF GOTO b
+   90 FOR L=0 TO 59
+  110 GOSUB s
+  120 FOR N=S TO 55;WAIT;NEXT N 130 S=0
+  140 GOSUBs;GOSUBi
+  150 NEXT L
+  155bX=A;Y=B
+  160 GOSUBh;GOSUBi
+  170 NEXT M
+  175 A=X;B=Y;X=C;Y=D
+  180 GOSUBh;GOSUBi
+  200 NEXT H; UNTIL 0
+  399 REM
+  400hMOVE E,F
+  410 V=X/2/Q;U=Y/2/Q;W=V/5;T=U/5
+  415 WAIT
+  420 PLQT6,(V-T+E),(U+W+F)
+  430 PLOT6,(X/Q+E),(Y/Q+F)
+  440 PLOT6,(V4T+E),(U-W+F)
+  450 PLOT6,E,F;S=S+5;RETURN
+  500iWAIT;X=X+J*Y/K
+  510 Y=Y-J*X/K;S=S+1;RETURN
+  600sMOVE E,F
+  620pWAIT;PLOT6,(X/Q+E),(Y/Q+F)
+  630 S=S+1;RETURN</pre>
+
+<pre>Description of Program: 
+40-68   Draw clock face 
+80-84   Do hours and minutes 
+88      If shift key down miss out seconds 
+90-150  Do seconds 
+120     Use up remainder of each second 
+400-450 h: Draw hour/minute hand from centre of screen to X,Y
+500-510 i: Increment X,Y one sixtieth of way around circle. 
+600     s: Draw second hand 
+620-630 p: Plot to point X,Y 
+Variables: A,B - Coordinates of tip of minute hand 
+C,D - Coordinates of tip of hour hand 
+E,F - Coordinates of centre of screen 
+H - Twelves of minutes counter 
+J,K - Incremental variables; J/K = 2*PI/60 approx. 
+L - Seconds counter 
+M - Minutes counter 
+N - Counter 
+Q - Scaling factor 
+R - Address of shift key 
+S - Sixtieths of a second used out of current second 
+X,Y - Coordinates on screen scaled by Q 
+Program size: 806 bytes</pre>
+
+<p>Sample Plot:</p>
+<img src="clock.png" align="center" width="512" height="384">
+
+<p>To set the correct time hold the shift key down after typing
+RUN, and release it when the hour and minute hands are in the
+correct positions. </p>
+
+<h2><font color="#0000FF">11.8 Plotting in BASIC</font></h2>
+
+<p>To illustrate how the plotting statements work, the following
+BASIC programs will plot points on the screen in the different
+graphics modes without using PLOT, DRAW, or MOVE. </p>
+
+<h3><font color="#0000FF">11.8.1 Plotting and Testing Points in
+Mode 0</font></h3>
+
+<p>The following BASIC program will plot a point in the graphics
+mode 0; the main program sets up a vector V which contains bytes
+with a single bit set to denote the bit to be plotted. Subroutine
+p plots a point at the coordinates X and Y. </p>
+
+<pre>    1 REM Plot in Mode 0 10 DIM V(5)
+   20 !V=#04081020; V!4=#102
+
+  100 REM Plot point at X,Y
+  110 REM Changes: P; Uses V,X,Y
+  120pP=X/2+(47-Y)/3*32+#8000
+  130 ?P=?P\V?(X&amp;1+(47-Y)%3*2);RETURN</pre>
+
+<p>Using this method it is possible to determine the state of any
+point on the screen, as well as actually plotting points. For
+example, changing line 130 to:</p>
+
+<pre>  130 Q=(?p&amp;(v?(x&amp;1+(47-y)%3*2))&lt;&gt;0)</pre>
+
+<p>uses Q as a logical variable whose value is set to &#146;true'
+if the point X,Y is set, and to 'false' if the point is clear.
+Note that the screen should be cleared by writing #40 in every
+location (or with the statement CLEAR 0) before plotting in
+graphics mode zero with this routine.</p>
+
+<h3><font color="#0000FF">11.8.2 Plotting in Higher Graphics
+Modes</font></h3>
+
+<p>To set the ATOM to a higher graphics mode the following
+character should be stored in location #B000:</p>
+
+<table border="0" cellspacing="0">
+    <tr>
+        <td>Mode:</td>
+        <td>Value: </td>
+    </tr>
+    <tr>
+        <td>0</td>
+        <td>#00</td>
+    </tr>
+    <tr>
+        <td>1a</td>
+        <td>#10</td>
+    </tr>
+    <tr>
+        <td>1</td>
+        <td>#30</td>
+    </tr>
+    <tr>
+        <td>2a</td>
+        <td>#50</td>
+    </tr>
+    <tr>
+        <td>2</td>
+        <td>#70</td>
+    </tr>
+    <tr>
+        <td>3a</td>
+        <td>#90</td>
+    </tr>
+    <tr>
+        <td>3</td>
+        <td>#B0</td>
+    </tr>
+    <tr>
+        <td>4a</td>
+        <td>#D0</td>
+    </tr>
+    <tr>
+        <td>4</td>
+        <td>#F0</td>
+    </tr>
+</table>
+
+<p>This operation is performed automatically for modes 0, 1, 2,
+3, and 4 by the CLEAR statement. Modes 1a, 2a, 3a, and 4a are
+colour graphics modes; see section 11.9 below. To illustrate
+plotting in the higher modes the following BASIC program will
+plot a point on the screen at the coordinates X,Y in the
+highest-resolution graphics mode:</p>
+
+<pre>   10 DIM V(7)
+   20 !V=#10204080; V!4=#1020408
+   30 ?#B000=#F0 
+  100 REM Plot point at X,Y 
+  110 REM Changes: P; Uses: V,X,Y 
+  100pP=X/8+(191-Y)*32+#8000
+  102 ?P=?\V?(X&amp;7);RETURN</pre>
+
+<p>Again the program can be modified to test the state of points
+of the screen. </p>
+
+<h2><font color="#0000FF">11.9 Colour Graphics</font></h2>
+
+<p>The ATOM provides three additional graphics modes which
+provide graphics in four selectable colours up to a maximum
+definition of 128x192. These modes are known as 1a, 2a, 3a, and
+4a. The BASIC's PLOT, DRAW, and MOVE statements can be used in
+the 4-colour modes provided that a point-plotting routine,
+written in assembler, is provided to replace the black-and-white
+point plotting routines. Alternatively the COLOUR statement,
+provided in the extension ROM, can be used; see Section 22.2. The
+address of the point-plotting routine used by PLOT, MOVE, and
+DRAW is stored in RAM at #3FE and #3FF. The following information
+is passed down to the point-plotting routine in zero page: </p>
+
+<table border="0" cellspacing="0">
+    <tr>
+        <td>Location:</td>
+        <td>Function:</td>
+    </tr>
+    <tr>
+        <td>5A</td>
+        <td>X coordinate - low byte</td>
+    </tr>
+    <tr>
+        <td>5B</td>
+        <td>&quot; &quot; high byte</td>
+    </tr>
+    <tr>
+        <td>5C</td>
+        <td>Y coordinate - low byte </td>
+    </tr>
+    <tr>
+        <td>5D</td>
+        <td>&quot; &quot; high byte</td>
+    </tr>
+    <tr>
+        <td>5E </td>
+        <td>1: set bit, 2: invert bit, else, clear bit.</td>
+    </tr>
+    <tr>
+        <td>5F<br>
+        60</td>
+        <td>Free for workspace<br>
+        &quot; &quot; </td>
+    </tr>
+</table>
+
+<p>The following BASIC program demonstrates how an assembler
+point-plotting routine can be provided to give four-colour
+plotting in graphics mode 4a, the highest-resolution colour
+graphics mode: </p>
+
+<pre>   10 REM 4-Colour Plot
+   12 GOSUB 400
+   16 CLEAR4;?#B000=#D0
+   18 ?#3FE=Q;#03FF=Q&amp;#FFFF/256
+   30 FOR J=0 TO 64 STEP 2
+   40 ?C=J%3*4;MOVE J,0
+   50 DRAW 127,J;DRAW(127-J),191
+   60 DRAW 0,(191-J);DRAW J,0
+   70 NEXT J
+   80 END
+  400 DIM V(11),C(0),P(-1),Q(-1)
+  420 !V=#01041040;V!4=#02082080;V!8=#030C30CO 
+  430 P.$21
+  508[
+  510 LDA@0;STA #5F
+  520 LDA#5C;LSR A;ROR #5F
+  530 LSRA;ROR#5F;LSRA;ROR#5F
+  540 STA#60;LDA#5A;LSRA;LSRA
+  550 CLC;ADC#5F;STA#5F
+  560 LDA#60;ADC@#80;STA#60
+  570\#5F AND #60 CONTAIN ADDRESS
+  580 LDA#5A;AND@3;CLC;ADCC;TAY
+  590 LDX@0;LDAV,Y;ORA(#5F,X)
+  600 STA(#5F,X);RTS
+  610]
+  620 P.$6
+  630 RETURN</pre>
+
+<pre>Description of Program: 
+12      Assemble point plotting routine 
+16      Clear display; set mode 3a 
+18      Change point plotter vector 
+30-70   Demonstration program; curve stitching in 4 colours 
+400     Set up variable space 
+420     Vectors for three colours 
+430     Disable assembler listing 
+508-610 Assembler point-plotter program 
+620     Turn screen back on 
+Variables: 
+C - Colour: 0, 4, or 8. 
+P - Location counter 
+Q - Address of point-plotting routine 
+V - Vectors for setting bits 
+Program size: 558 bytes 
+Vectors: 13 bytes</pre>
+
+<p>Note that the routine only sets bits, and plots in three
+colours - the fourth colour being the background colour. It would
+be a simple matter to modify the routine so that it was able to
+set or unset bits; i.e. plot in the background colour. </p>
+
+<p align="right"><a href="atap_12.htm">Next chapter</a></p>
+</body>
+</html>

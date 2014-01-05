@@ -1,0 +1,3007 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Type"
+content="text/html; charset=iso-8859-1">
+<meta name="GENERATOR" content="Microsoft FrontPage Express 2.0">
+<title>24 Assembler Mnemonics</title>
+</head>
+
+<body bgcolor="#FFFFFF">
+
+<h1><font color="#0000FF">24 Assembler Mnemonics</font></h1>
+
+<p>The following section lists all the instruction mnemonics in
+alphabetical order. Each instruction is accompanied by a
+description of the instruction, a symbolic representation of the
+action performed by the instruction, a diagram showing the
+status-register flags affected by the instruction, and a list of
+the permitted addressing modes for the instruction.</p>
+
+<p>The following symbols are used in this section:</p>
+
+<blockquote>
+    <table border="0">
+        <tr>
+            <td align="center"><font color="#0000FF"><strong>Symbol:</strong></font></td>
+            <td><font color="#0000FF"><strong>Definition:</strong></font></td>
+        </tr>
+        <tr>
+            <td align="center">+</td>
+            <td>Addition</td>
+        </tr>
+        <tr>
+            <td align="center">-</td>
+            <td>Subtraction</td>
+        </tr>
+        <tr>
+            <td align="center">&amp;</td>
+            <td>Logical AND</td>
+        </tr>
+        <tr>
+            <td align="center">\</td>
+            <td>Logical OR</td>
+        </tr>
+        <tr>
+            <td align="center">:</td>
+            <td>Logical Exclusive-OR</td>
+        </tr>
+        <tr>
+            <td align="center">!</td>
+            <td>Push onto hardware stack</td>
+        </tr>
+        <tr>
+            <td align="center">^</td>
+            <td>Pull from hardware stack</td>
+        </tr>
+        <tr>
+            <td align="center">=</td>
+            <td>Assignment</td>
+        </tr>
+        <tr>
+            <td align="center">M</td>
+            <td>Memory location</td>
+        </tr>
+        <tr>
+            <td align="center">(PC+1)</td>
+            <td>Contents of location after op-code</td>
+        </tr>
+        <tr>
+            <td align="center">@</td>
+            <td>Immediate addressing mode </td>
+        </tr>
+        <tr>
+            <td align="center">~</td>
+            <td>No change to flag</td>
+        </tr>
+        <tr>
+            <td align="center">%</td>
+            <td>Change to flag</td>
+        </tr>
+        <tr>
+            <td align="center">1</td>
+            <td>Set</td>
+        </tr>
+        <tr>
+            <td align="center">0</td>
+            <td>Cleared</td>
+        </tr>
+        <tr>
+            <td align="center">A</td>
+            <td>Accumulator</td>
+        </tr>
+        <tr>
+            <td align="center">X</td>
+            <td>X Index Register</td>
+        </tr>
+        <tr>
+            <td align="center">Y</td>
+            <td>Y Index Register</td>
+        </tr>
+        <tr>
+            <td align="center">PC</td>
+            <td>Program Counter</td>
+        </tr>
+        <tr>
+            <td align="center">PCH</td>
+            <td>Low byte of Program Counter</td>
+        </tr>
+        <tr>
+            <td align="center">PCL</td>
+            <td>High byte of Program Counter</td>
+        </tr>
+    </table>
+</blockquote>
+<hr size="1">
+<table border="0" width="100%">
+    <tr>
+        <td valign="top" width="10%"><font color="#0000FF"><strong>ADC</strong></font></td>
+        <td valign="top" width="70%"><font color="#0000FF"><strong>Add
+        memory to accumulator with carry<br>
+        </strong></font>A,C=A+M+C</td>
+        <td align="right" valign="top" width="20%"><font
+        color="#0000FF"><strong>ADC<br>
+        </strong></font><font face="Courier New">N Z C I D V<br>
+        % % % ~ ~ %</font></td>
+    </tr>
+    <tr>
+        <td width="10%">&nbsp;</td>
+        <td width="70%"><table border="0" width="70%">
+            <tr>
+                <td><font color="#0000FF">Addressing:</font></td>
+                <td colspan="2"><font color="#0000FF">Assembler
+                format:</font></td>
+                <td align="center"><font color="#0000FF">Bytes:</font></td>
+                <td align="center"><font color="#0000FF">Cycles:</font></td>
+            </tr>
+            <tr>
+                <td>Immediate</td>
+                <td><font face="Courier New">ADC @</font></td>
+                <td><font face="Courier New">Oper</font></td>
+                <td align="center">2</td>
+                <td align="center">2</td>
+            </tr>
+            <tr>
+                <td>Zero Page</td>
+                <td><font face="Courier New">ADC</font></td>
+                <td><font face="Courier New">Oper</font></td>
+                <td align="center">2</td>
+                <td align="center">3</td>
+            </tr>
+            <tr>
+                <td>Zero Page,X</td>
+                <td><font face="Courier New">ADC</font></td>
+                <td><font face="Courier New">Oper,X</font></td>
+                <td align="center">2</td>
+                <td align="center">4</td>
+            </tr>
+            <tr>
+                <td>Absolute</td>
+                <td><font face="Courier New">ADC</font></td>
+                <td><font face="Courier New">Oper</font></td>
+                <td align="center">3</td>
+                <td align="center">4</td>
+            </tr>
+            <tr>
+                <td>Absolute,X</td>
+                <td><font face="Courier New">ADC</font></td>
+                <td><font face="Courier New">Oper,X</font></td>
+                <td align="center">3</td>
+                <td align="center">4*</td>
+            </tr>
+            <tr>
+                <td>Absolute,Y</td>
+                <td><font face="Courier New">ADC</font></td>
+                <td><font face="Courier New">Oper,Y</font></td>
+                <td align="center">3</td>
+                <td align="center">4*</td>
+            </tr>
+            <tr>
+                <td>(Indirect,X)</td>
+                <td><font face="Courier New">ADC</font></td>
+                <td><font face="Courier New">(Oper,X)</font></td>
+                <td align="center">2</td>
+                <td align="center">6</td>
+            </tr>
+            <tr>
+                <td>(Indirect),Y</td>
+                <td><font face="Courier New">ADC</font></td>
+                <td><font face="Courier New">(Oper),Y</font></td>
+                <td align="center">2</td>
+                <td align="center">5*</td>
+            </tr>
+            <tr>
+                <td colspan="5">* Add 1 if page boundary crossed.
+                </td>
+            </tr>
+        </table>
+        </td>
+        <td align="right" width="20%">&nbsp;</td>
+    </tr>
+</table>
+
+<hr size="1">
+
+<table border="0" width="100%">
+    <tr>
+        <td valign="top" width="10%"><font color="#0000FF"><strong>AND</strong></font></td>
+        <td valign="top" width="70%"><font color="#0000FF"><strong>AND
+        memory with accumulator<br>
+        </strong></font>A=A&amp;M</td>
+        <td align="right" valign="top" width="20%"><font
+        color="#0000FF"><strong>AND<br>
+        </strong></font><font face="Courier New">N Z C I D V<br>
+        % % ~ ~ ~ ~</font></td>
+    </tr>
+    <tr>
+        <td width="10%">&nbsp;</td>
+        <td width="70%"><table border="0" width="70%">
+            <tr>
+                <td><font color="#0000FF">Addressing:</font></td>
+                <td colspan="2"><font color="#0000FF">Assembler
+                format:</font></td>
+                <td align="center"><font color="#0000FF">Bytes:</font></td>
+                <td align="center"><font color="#0000FF">Cycles:</font></td>
+            </tr>
+            <tr>
+                <td>Immediate</td>
+                <td><font face="Courier New">AND @</font></td>
+                <td><font face="Courier New">Oper</font></td>
+                <td align="center">2</td>
+                <td align="center">2</td>
+            </tr>
+            <tr>
+                <td>Zero Page</td>
+                <td><font face="Courier New">AND</font></td>
+                <td><font face="Courier New">Oper</font></td>
+                <td align="center">2</td>
+                <td align="center">3</td>
+            </tr>
+            <tr>
+                <td>Zero Page,X</td>
+                <td><font face="Courier New">AND</font></td>
+                <td><font face="Courier New">Oper,X</font></td>
+                <td align="center">2</td>
+                <td align="center">4</td>
+            </tr>
+            <tr>
+                <td>Absolute</td>
+                <td><font face="Courier New">AND</font></td>
+                <td><font face="Courier New">Oper</font></td>
+                <td align="center">3</td>
+                <td align="center">4</td>
+            </tr>
+            <tr>
+                <td>Absolute,X</td>
+                <td><font face="Courier New">AND</font></td>
+                <td><font face="Courier New">Oper,X</font></td>
+                <td align="center">3</td>
+                <td align="center">4*</td>
+            </tr>
+            <tr>
+                <td>Absolute,Y</td>
+                <td><font face="Courier New">AND</font></td>
+                <td><font face="Courier New">Oper,Y</font></td>
+                <td align="center">3</td>
+                <td align="center">4*</td>
+            </tr>
+            <tr>
+                <td>(Indirect,X)</td>
+                <td><font face="Courier New">AND</font></td>
+                <td><font face="Courier New">(Oper,X)</font></td>
+                <td align="center">2</td>
+                <td align="center">6</td>
+            </tr>
+            <tr>
+                <td>(Indirect),Y</td>
+                <td><font face="Courier New">AND</font></td>
+                <td><font face="Courier New">(Oper),Y</font></td>
+                <td align="center">2</td>
+                <td align="center">5*</td>
+            </tr>
+            <tr>
+                <td colspan="5">* Add 1 if page boundary crossed.
+                </td>
+            </tr>
+        </table>
+        </td>
+        <td align="right" width="20%">&nbsp;</td>
+    </tr>
+</table>
+
+<hr size="1">
+
+<table border="0" width="100%">
+    <tr>
+        <td valign="top" width="10%"><font color="#0000FF"><strong>ASL</strong></font></td>
+        <td valign="top" width="70%"><font color="#0000FF"><strong>Arithmetic
+        shift left one bit (memory or accumulator)</strong></font><table
+        border="0">
+            <tr>
+                <td>C</td>
+                <td>&lt;--</td>
+                <td bgcolor="#C0C0C0">7</td>
+                <td bgcolor="#C0C0C0">6</td>
+                <td bgcolor="#C0C0C0">5</td>
+                <td bgcolor="#C0C0C0">4</td>
+                <td bgcolor="#C0C0C0">3</td>
+                <td bgcolor="#C0C0C0">2</td>
+                <td bgcolor="#C0C0C0">1</td>
+                <td bgcolor="#C0C0C0">0</td>
+                <td>&lt;--</td>
+                <td>0</td>
+            </tr>
+        </table>
+        </td>
+        <td align="right" valign="top" width="20%"><font
+        color="#0000FF"><strong>ASL<br>
+        </strong></font><font face="Courier New">N Z C I D V<br>
+        % % % ~ ~ ~</font></td>
+    </tr>
+    <tr>
+        <td width="10%">&nbsp;</td>
+        <td width="70%"><table border="0" width="70%">
+            <tr>
+                <td><font color="#0000FF">Addressing:</font></td>
+                <td colspan="2"><font color="#0000FF">Assembler
+                format:</font></td>
+                <td align="center"><font color="#0000FF">Bytes:</font></td>
+                <td align="center"><font color="#0000FF">Cycles:</font></td>
+            </tr>
+            <tr>
+                <td>Accumulator</td>
+                <td><font face="Courier New">ASL</font></td>
+                <td><font face="Courier New">A</font></td>
+                <td align="center">1</td>
+                <td align="center">2</td>
+            </tr>
+            <tr>
+                <td>Zero Page</td>
+                <td><font face="Courier New">ASL</font></td>
+                <td><font face="Courier New">Oper</font></td>
+                <td align="center">2</td>
+                <td align="center">5</td>
+            </tr>
+            <tr>
+                <td>Zero Page,X</td>
+                <td><font face="Courier New">ASL</font></td>
+                <td><font face="Courier New">Oper,X</font></td>
+                <td align="center">2</td>
+                <td align="center">6</td>
+            </tr>
+            <tr>
+                <td>Absolute</td>
+                <td><font face="Courier New">ASL</font></td>
+                <td><font face="Courier New">Oper</font></td>
+                <td align="center">3</td>
+                <td align="center">6</td>
+            </tr>
+            <tr>
+                <td>Absolute,X</td>
+                <td><font face="Courier New">ASL</font></td>
+                <td><font face="Courier New">Oper,X</font></td>
+                <td align="center">3</td>
+                <td align="center">7</td>
+            </tr>
+        </table>
+        </td>
+        <td align="right" width="20%">&nbsp;</td>
+    </tr>
+</table>
+
+<hr size="1">
+
+<table border="0" width="100%">
+    <tr>
+        <td valign="top" width="10%"><font color="#0000FF"><strong>BCC</strong></font></td>
+        <td valign="top" width="70%"><font color="#0000FF"><strong>Branch
+        if Carry Clear<br>
+        </strong></font>Branch if C=0</td>
+        <td align="right" valign="top" width="20%"><font
+        color="#0000FF"><strong>BCC<br>
+        </strong></font><font face="Courier New">N Z C I D V<br>
+        ~ ~ ~ ~ ~ ~</font></td>
+    </tr>
+    <tr>
+        <td width="10%">&nbsp;</td>
+        <td width="70%"><table border="0" width="70%">
+            <tr>
+                <td><font color="#0000FF">Addressing:</font></td>
+                <td colspan="2"><font color="#0000FF">Assembler
+                format:</font></td>
+                <td align="center"><font color="#0000FF">Bytes:</font></td>
+                <td align="center"><font color="#0000FF">Cycles:</font></td>
+            </tr>
+            <tr>
+                <td>Relative</td>
+                <td><font face="Courier New">BCC</font></td>
+                <td><font face="Courier New">Oper</font></td>
+                <td align="center">2</td>
+                <td align="center">3*</td>
+            </tr>
+            <tr>
+                <td colspan="5">* Add 1 if branch is to different
+                page</td>
+            </tr>
+        </table>
+        </td>
+        <td align="right" width="20%">&nbsp;</td>
+    </tr>
+</table>
+
+<hr size="1">
+
+<table border="0" width="100%">
+    <tr>
+        <td valign="top" width="10%"><font color="#0000FF"><strong>BCS</strong></font></td>
+        <td valign="top" width="70%"><font color="#0000FF"><strong>Branch
+        if Carry Set<br>
+        </strong></font>Branch if C=1</td>
+        <td align="right" valign="top" width="20%"><font
+        color="#0000FF"><strong>BCS<br>
+        </strong></font><font face="Courier New">N Z C I D V<br>
+        ~ ~ ~ ~ ~ ~</font></td>
+    </tr>
+    <tr>
+        <td width="10%">&nbsp;</td>
+        <td width="70%"><table border="0" width="70%">
+            <tr>
+                <td><font color="#0000FF">Addressing:</font></td>
+                <td colspan="2"><font color="#0000FF">Assembler
+                format:</font></td>
+                <td align="center"><font color="#0000FF">Bytes:</font></td>
+                <td align="center"><font color="#0000FF">Cycles:</font></td>
+            </tr>
+            <tr>
+                <td>Relative</td>
+                <td><font face="Courier New">BCS</font></td>
+                <td><font face="Courier New">Oper</font></td>
+                <td align="center">2</td>
+                <td align="center">3*</td>
+            </tr>
+            <tr>
+                <td colspan="5">* Add 1 if branch is to different
+                page</td>
+            </tr>
+        </table>
+        </td>
+        <td align="right" width="20%">&nbsp;</td>
+    </tr>
+</table>
+
+<hr size="1">
+
+<table border="0" width="100%">
+    <tr>
+        <td valign="top" width="10%"><font color="#0000FF"><strong>BEQ</strong></font></td>
+        <td valign="top" width="70%"><font color="#0000FF"><strong>Branch
+        if Carry Set<br>
+        </strong></font>Branch if Z=1</td>
+        <td align="right" valign="top" width="20%"><font
+        color="#0000FF"><strong>BEQ<br>
+        </strong></font><font face="Courier New">N Z C I D V<br>
+        ~ ~ ~ ~ ~ ~</font></td>
+    </tr>
+    <tr>
+        <td width="10%">&nbsp;</td>
+        <td width="70%"><table border="0" width="70%">
+            <tr>
+                <td><font color="#0000FF">Addressing:</font></td>
+                <td colspan="2"><font color="#0000FF">Assembler
+                format:</font></td>
+                <td align="center"><font color="#0000FF">Bytes:</font></td>
+                <td align="center"><font color="#0000FF">Cycles:</font></td>
+            </tr>
+            <tr>
+                <td>Relative</td>
+                <td><font face="Courier New">BEQ</font></td>
+                <td><font face="Courier New">Oper</font></td>
+                <td align="center">2</td>
+                <td align="center">3*</td>
+            </tr>
+            <tr>
+                <td colspan="5">* Add 1 if branch is to different
+                page</td>
+            </tr>
+        </table>
+        </td>
+        <td align="right" width="20%">&nbsp;</td>
+    </tr>
+</table>
+
+<hr size="1">
+
+<table border="0" width="100%">
+    <tr>
+        <td valign="top" width="10%"><font color="#0000FF"><strong>BIT</strong></font></td>
+        <td valign="top" width="70%"><font color="#0000FF"><strong>Test
+        bits in memory with accumulator<br>
+        </strong></font>A&amp;M, N=M<sub>7</sub>, V=M<sub>6</sub><br>
+        Bit 6 and 7 are transferred to the status register. If
+        the result of A&amp;M is zero then Z=l, otherwise Z=0.</td>
+        <td align="right" valign="top" width="20%"><font
+        color="#0000FF"><strong>BIT<br>
+        </strong></font><font face="Courier New">N Z C I D V<br>
+        M<sub>7</sub>% % ~ ~M<sub>6</sub></font></td>
+    </tr>
+    <tr>
+        <td width="10%">&nbsp;</td>
+        <td width="70%"><table border="0" width="70%">
+            <tr>
+                <td><font color="#0000FF">Addressing:</font></td>
+                <td colspan="2"><font color="#0000FF">Assembler
+                format:</font></td>
+                <td align="center"><font color="#0000FF">Bytes:</font></td>
+                <td align="center"><font color="#0000FF">Cycles:</font></td>
+            </tr>
+            <tr>
+                <td>Zero Page</td>
+                <td><font face="Courier New">BIT</font></td>
+                <td><font face="Courier New">Oper</font></td>
+                <td align="center">2</td>
+                <td align="center">3</td>
+            </tr>
+            <tr>
+                <td>Absolute</td>
+                <td><font face="Courier New">BIT</font></td>
+                <td><font face="Courier New">Oper</font></td>
+                <td align="center">3</td>
+                <td align="center">4</td>
+            </tr>
+        </table>
+        </td>
+        <td align="right" width="20%">&nbsp;</td>
+    </tr>
+</table>
+
+<hr size="1">
+
+<table border="0" width="100%">
+    <tr>
+        <td valign="top" width="10%"><font color="#0000FF"><strong>BMI</strong></font></td>
+        <td valign="top" width="70%"><font color="#0000FF"><strong>Branch
+        if result Minus<br>
+        </strong></font>Branch if N=1</td>
+        <td align="right" valign="top" width="20%"><font
+        color="#0000FF"><strong>BMI<br>
+        </strong></font><font face="Courier New">N Z C I D V<br>
+        ~ ~ ~ ~ ~ ~</font></td>
+    </tr>
+    <tr>
+        <td width="10%">&nbsp;</td>
+        <td width="70%"><table border="0" width="70%">
+            <tr>
+                <td><font color="#0000FF">Addressing:</font></td>
+                <td colspan="2"><font color="#0000FF">Assembler
+                format:</font></td>
+                <td align="center"><font color="#0000FF">Bytes:</font></td>
+                <td align="center"><font color="#0000FF">Cycles:</font></td>
+            </tr>
+            <tr>
+                <td>Relative</td>
+                <td><font face="Courier New">BMI</font></td>
+                <td><font face="Courier New">Oper</font></td>
+                <td align="center">2</td>
+                <td align="center">3*</td>
+            </tr>
+            <tr>
+                <td colspan="5">* Add 1 if branch is to different
+                page</td>
+            </tr>
+        </table>
+        </td>
+        <td align="right" width="20%">&nbsp;</td>
+    </tr>
+</table>
+
+<hr size="1">
+
+<table border="0" width="100%">
+    <tr>
+        <td valign="top" width="10%"><font color="#0000FF"><strong>BNE</strong></font></td>
+        <td valign="top" width="70%"><font color="#0000FF"><strong>Branch
+        if result Not Equal to zero<br>
+        </strong></font>Branch if Z=0</td>
+        <td align="right" valign="top" width="20%"><font
+        color="#0000FF"><strong>BNE<br>
+        </strong></font><font face="Courier New">N Z C I D V<br>
+        ~ ~ ~ ~ ~ ~</font></td>
+    </tr>
+    <tr>
+        <td width="10%">&nbsp;</td>
+        <td width="70%"><table border="0" width="70%">
+            <tr>
+                <td><font color="#0000FF">Addressing:</font></td>
+                <td colspan="2"><font color="#0000FF">Assembler
+                format:</font></td>
+                <td align="center"><font color="#0000FF">Bytes:</font></td>
+                <td align="center"><font color="#0000FF">Cycles:</font></td>
+            </tr>
+            <tr>
+                <td>Relative</td>
+                <td><font face="Courier New">BNE</font></td>
+                <td><font face="Courier New">Oper</font></td>
+                <td align="center">2</td>
+                <td align="center">3*</td>
+            </tr>
+            <tr>
+                <td colspan="5">* Add 1 if branch is to different
+                page</td>
+            </tr>
+        </table>
+        </td>
+        <td align="right" width="20%">&nbsp;</td>
+    </tr>
+</table>
+
+<hr size="1">
+
+<table border="0" width="100%">
+    <tr>
+        <td valign="top" width="10%"><font color="#0000FF"><strong>BPL</strong></font></td>
+        <td valign="top" width="70%"><font color="#0000FF"><strong>Branch
+        if result Plus<br>
+        </strong></font>Branch if N=0</td>
+        <td align="right" valign="top" width="20%"><font
+        color="#0000FF"><strong>BPL<br>
+        </strong></font><font face="Courier New">N Z C I D V<br>
+        ~ ~ ~ ~ ~ ~</font></td>
+    </tr>
+    <tr>
+        <td width="10%">&nbsp;</td>
+        <td width="70%"><table border="0" width="70%">
+            <tr>
+                <td><font color="#0000FF">Addressing:</font></td>
+                <td colspan="2"><font color="#0000FF">Assembler
+                format:</font></td>
+                <td align="center"><font color="#0000FF">Bytes:</font></td>
+                <td align="center"><font color="#0000FF">Cycles:</font></td>
+            </tr>
+            <tr>
+                <td>Relative</td>
+                <td><font face="Courier New">BEQ</font></td>
+                <td><font face="Courier New">Oper</font></td>
+                <td align="center">2</td>
+                <td align="center">3*</td>
+            </tr>
+            <tr>
+                <td colspan="5">* Add 1 if branch is to different
+                page</td>
+            </tr>
+        </table>
+        </td>
+        <td align="right" width="20%">&nbsp;</td>
+    </tr>
+</table>
+
+<hr size="1">
+
+<table border="0" width="100%">
+    <tr>
+        <td valign="top" width="10%"><font color="#0000FF"><strong>BRK</strong></font></td>
+        <td valign="top" width="70%"><font color="#0000FF"><strong>Force
+        Break</strong></font><strong><br>
+        </strong>Forced interrupt; PC+2 ! P !</td>
+        <td align="right" valign="top" width="20%"><font
+        color="#0000FF"><strong>X<br>
+        </strong></font><font face="Courier New">N Z C I D V<br>
+        % % % ~ ~ ~</font></td>
+    </tr>
+    <tr>
+        <td width="10%">&nbsp;</td>
+        <td width="70%"><table border="0" width="70%">
+            <tr>
+                <td><font color="#0000FF">Addressing:</font></td>
+                <td colspan="2"><font color="#0000FF">Assembler
+                format:</font></td>
+                <td align="center"><font color="#0000FF">Bytes:</font></td>
+                <td align="center"><font color="#0000FF">Cycles:</font></td>
+            </tr>
+            <tr>
+                <td>Implied</td>
+                <td><font face="Courier New">BRK</font></td>
+                <td><font face="Courier New">Oper</font></td>
+                <td align="center">1</td>
+                <td align="center">7</td>
+            </tr>
+            <tr>
+                <td colspan="5">A BRK command cannot be masked by
+                setting I.</td>
+            </tr>
+        </table>
+        </td>
+    </tr>
+</table>
+
+<hr size="1">
+
+<table border="0" width="100%">
+    <tr>
+        <td valign="top" width="10%"><font color="#0000FF"><strong>BCC</strong></font></td>
+        <td valign="top" width="70%"><font color="#0000FF"><strong>Branch
+        if Carry Clear<br>
+        </strong></font>Branch if C=0</td>
+        <td align="right" valign="top" width="20%"><font
+        color="#0000FF"><strong>BCC<br>
+        </strong></font><font face="Courier New">N Z C I D V<br>
+        ~ ~ ~ ~ ~ ~</font></td>
+    </tr>
+    <tr>
+        <td width="10%">&nbsp;</td>
+        <td width="70%"><table border="0" width="70%">
+            <tr>
+                <td><font color="#0000FF">Addressing:</font></td>
+                <td colspan="2"><font color="#0000FF">Assembler
+                format:</font></td>
+                <td align="center"><font color="#0000FF">Bytes:</font></td>
+                <td align="center"><font color="#0000FF">Cycles:</font></td>
+            </tr>
+            <tr>
+                <td>Relative</td>
+                <td><font face="Courier New">BCC</font></td>
+                <td><font face="Courier New">Oper</font></td>
+                <td align="center">2</td>
+                <td align="center">3*</td>
+            </tr>
+            <tr>
+                <td colspan="5">* Add 1 if branch is to different
+                page</td>
+            </tr>
+        </table>
+        </td>
+        <td align="right" width="20%">&nbsp;</td>
+    </tr>
+</table>
+
+<hr size="1">
+
+<table border="0" width="100%">
+    <tr>
+        <td valign="top" width="10%"><font color="#0000FF"><strong>BVC</strong></font></td>
+        <td valign="top" width="70%"><font color="#0000FF"><strong>Branch
+        if Overflow Clear<br>
+        </strong></font>Branch if V=0</td>
+        <td align="right" valign="top" width="20%"><font
+        color="#0000FF"><strong>BVC<br>
+        </strong></font><font face="Courier New">N Z C I D V<br>
+        ~ ~ ~ ~ ~ ~</font></td>
+    </tr>
+    <tr>
+        <td width="10%">&nbsp;</td>
+        <td width="70%"><table border="0" width="70%">
+            <tr>
+                <td><font color="#0000FF">Addressing:</font></td>
+                <td colspan="2"><font color="#0000FF">Assembler
+                format:</font></td>
+                <td align="center"><font color="#0000FF">Bytes:</font></td>
+                <td align="center"><font color="#0000FF">Cycles:</font></td>
+            </tr>
+            <tr>
+                <td>Relative</td>
+                <td><font face="Courier New">BVC</font></td>
+                <td><font face="Courier New">Oper</font></td>
+                <td align="center">2</td>
+                <td align="center">3*</td>
+            </tr>
+            <tr>
+                <td colspan="5">* Add 1 if branch is to different
+                page</td>
+            </tr>
+        </table>
+        </td>
+        <td align="right" width="20%">&nbsp;</td>
+    </tr>
+</table>
+
+<hr size="1">
+
+<table border="0" width="100%">
+    <tr>
+        <td valign="top" width="10%"><font color="#0000FF"><strong>BVS</strong></font></td>
+        <td valign="top" width="70%"><font color="#0000FF"><strong>Branch
+        if Overflow Set<br>
+        </strong></font>Branch if Z=1</td>
+        <td align="right" valign="top" width="20%"><font
+        color="#0000FF"><strong>BVS<br>
+        </strong></font><font face="Courier New">N Z C I D V<br>
+        ~ ~ ~ ~ ~ ~</font></td>
+    </tr>
+    <tr>
+        <td width="10%">&nbsp;</td>
+        <td width="70%"><table border="0" width="70%">
+            <tr>
+                <td><font color="#0000FF">Addressing:</font></td>
+                <td colspan="2"><font color="#0000FF">Assembler
+                format:</font></td>
+                <td align="center"><font color="#0000FF">Bytes:</font></td>
+                <td align="center"><font color="#0000FF">Cycles:</font></td>
+            </tr>
+            <tr>
+                <td>Relative</td>
+                <td><font face="Courier New">BVS</font></td>
+                <td><font face="Courier New">Oper</font></td>
+                <td align="center">2</td>
+                <td align="center">3*</td>
+            </tr>
+            <tr>
+                <td colspan="5">* Add 1 if branch is to different
+                page</td>
+            </tr>
+        </table>
+        </td>
+        <td align="right" width="20%">&nbsp;</td>
+    </tr>
+</table>
+
+<hr size="1">
+
+<table border="0" width="100%">
+    <tr>
+        <td valign="top" width="10%"><font color="#0000FF"><strong>CLC</strong></font></td>
+        <td valign="top" width="70%"><font color="#0000FF"><strong>Clear
+        Carry flag<br>
+        </strong></font>C=0</td>
+        <td align="right" valign="top" width="20%"><font
+        color="#0000FF"><strong>CLC<br>
+        </strong></font><font face="Courier New">N Z C I D V<br>
+        % % 0 ~ ~ ~</font></td>
+    </tr>
+    <tr>
+        <td width="10%">&nbsp;</td>
+        <td width="70%"><table border="0" width="70%">
+            <tr>
+                <td><font color="#0000FF">Addressing:</font></td>
+                <td colspan="2"><font color="#0000FF">Assembler
+                format:</font></td>
+                <td align="center"><font color="#0000FF">Bytes:</font></td>
+                <td align="center"><font color="#0000FF">Cycles:</font></td>
+            </tr>
+            <tr>
+                <td>Implied</td>
+                <td><font face="Courier New">CLC</font></td>
+                <td>&nbsp;</td>
+                <td align="center">1</td>
+                <td align="center">2</td>
+            </tr>
+        </table>
+        </td>
+        <td align="right" width="20%">&nbsp;</td>
+    </tr>
+</table>
+
+<hr size="1">
+
+<table border="0" width="100%">
+    <tr>
+        <td valign="top" width="10%"><font color="#0000FF"><strong>CLD</strong></font></td>
+        <td valign="top" width="70%"><font color="#0000FF"><strong>Clear
+        Decimal mode<br>
+        </strong></font>D=0</td>
+        <td align="right" valign="top" width="20%"><font
+        color="#0000FF"><strong>CLD<br>
+        </strong></font><font face="Courier New">N Z C I D V<br>
+        % % ~ ~ 0 ~</font></td>
+    </tr>
+    <tr>
+        <td width="10%">&nbsp;</td>
+        <td width="70%"><table border="0" width="70%">
+            <tr>
+                <td><font color="#0000FF">Addressing:</font></td>
+                <td colspan="2"><font color="#0000FF">Assembler
+                format:</font></td>
+                <td align="center"><font color="#0000FF">Bytes:</font></td>
+                <td align="center"><font color="#0000FF">Cycles:</font></td>
+            </tr>
+            <tr>
+                <td>Implied</td>
+                <td><font face="Courier New">CLC</font></td>
+                <td>&nbsp;</td>
+                <td align="center">1</td>
+                <td align="center">2</td>
+            </tr>
+        </table>
+        </td>
+        <td align="right" width="20%">&nbsp;</td>
+    </tr>
+</table>
+
+<hr size="1">
+
+<table border="0" width="100%">
+    <tr>
+        <td valign="top" width="10%"><font color="#0000FF"><strong>CLI</strong></font></td>
+        <td valign="top" width="70%"><font color="#0000FF"><strong>Clear
+        Interrupt disable bit<br>
+        </strong></font>I=0</td>
+        <td align="right" valign="top" width="20%"><font
+        color="#0000FF"><strong>CLI<br>
+        </strong></font><font face="Courier New">N Z C I D V<br>
+        % % ~ 0 ~ ~</font></td>
+    </tr>
+    <tr>
+        <td width="10%">&nbsp;</td>
+        <td width="70%"><table border="0" width="70%">
+            <tr>
+                <td><font color="#0000FF">Addressing:</font></td>
+                <td colspan="2"><font color="#0000FF">Assembler
+                format:</font></td>
+                <td align="center"><font color="#0000FF">Bytes:</font></td>
+                <td align="center"><font color="#0000FF">Cycles:</font></td>
+            </tr>
+            <tr>
+                <td>Implied</td>
+                <td><font face="Courier New">CLI</font></td>
+                <td>&nbsp;</td>
+                <td align="center">1</td>
+                <td align="center">2</td>
+            </tr>
+        </table>
+        </td>
+        <td align="right" width="20%">&nbsp;</td>
+    </tr>
+</table>
+
+<hr size="1">
+
+<table border="0" width="100%">
+    <tr>
+        <td valign="top" width="10%"><font color="#0000FF"><strong>CLV</strong></font></td>
+        <td valign="top" width="70%"><font color="#0000FF"><strong>Clear
+        Overflow flag<br>
+        </strong></font>V=0</td>
+        <td align="right" valign="top" width="20%"><font
+        color="#0000FF"><strong>CLD<br>
+        </strong></font><font face="Courier New">N Z C I D V<br>
+        % % ~ ~ ~ 0</font></td>
+    </tr>
+    <tr>
+        <td width="10%">&nbsp;</td>
+        <td width="70%"><table border="0" width="70%">
+            <tr>
+                <td><font color="#0000FF">Addressing:</font></td>
+                <td colspan="2"><font color="#0000FF">Assembler
+                format:</font></td>
+                <td align="center"><font color="#0000FF">Bytes:</font></td>
+                <td align="center"><font color="#0000FF">Cycles:</font></td>
+            </tr>
+            <tr>
+                <td>Implied</td>
+                <td><font face="Courier New">CLV</font></td>
+                <td>&nbsp;</td>
+                <td align="center">1</td>
+                <td align="center">2</td>
+            </tr>
+        </table>
+        </td>
+        <td align="right" width="20%">&nbsp;</td>
+    </tr>
+</table>
+
+<hr size="1">
+
+<table border="0" width="100%">
+    <tr>
+        <td valign="top" width="10%"><font color="#0000FF"><strong>CMP</strong></font></td>
+        <td valign="top" width="70%"><font color="#0000FF"><strong>Compare
+        memory and accumulator<br>
+        </strong></font>A-M</td>
+        <td align="right" valign="top" width="20%"><font
+        color="#0000FF"><strong>CMP<br>
+        </strong></font><font face="Courier New">N Z C I D V<br>
+        % % % ~ ~ ~</font></td>
+    </tr>
+    <tr>
+        <td width="10%">&nbsp;</td>
+        <td width="70%"><table border="0" width="70%">
+            <tr>
+                <td><font color="#0000FF">Addressing:</font></td>
+                <td colspan="2"><font color="#0000FF">Assembler
+                format:</font></td>
+                <td align="center"><font color="#0000FF">Bytes:</font></td>
+                <td align="center"><font color="#0000FF">Cycles:</font></td>
+            </tr>
+            <tr>
+                <td>Immediate</td>
+                <td><font face="Courier New">CMP @</font></td>
+                <td><font face="Courier New">Oper</font></td>
+                <td align="center">2</td>
+                <td align="center">2</td>
+            </tr>
+            <tr>
+                <td>Zero Page</td>
+                <td><font face="Courier New">CMP</font></td>
+                <td><font face="Courier New">Oper</font></td>
+                <td align="center">2</td>
+                <td align="center">3</td>
+            </tr>
+            <tr>
+                <td>Zero Page,X</td>
+                <td><font face="Courier New">CMP</font></td>
+                <td><font face="Courier New">Oper,X</font></td>
+                <td align="center">2</td>
+                <td align="center">4</td>
+            </tr>
+            <tr>
+                <td>Absolute</td>
+                <td><font face="Courier New">CMP</font></td>
+                <td><font face="Courier New">Oper</font></td>
+                <td align="center">3</td>
+                <td align="center">4</td>
+            </tr>
+            <tr>
+                <td>Absolute,X</td>
+                <td><font face="Courier New">CMP</font></td>
+                <td><font face="Courier New">Oper,X</font></td>
+                <td align="center">3</td>
+                <td align="center">4*</td>
+            </tr>
+            <tr>
+                <td>Absolute,Y</td>
+                <td><font face="Courier New">CMP</font></td>
+                <td><font face="Courier New">Oper,Y</font></td>
+                <td align="center">3</td>
+                <td align="center">4*</td>
+            </tr>
+            <tr>
+                <td>(Indirect,X)</td>
+                <td><font face="Courier New">CMP</font></td>
+                <td><font face="Courier New">(Oper,X)</font></td>
+                <td align="center">2</td>
+                <td align="center">6</td>
+            </tr>
+            <tr>
+                <td>(Indirect),Y</td>
+                <td><font face="Courier New">CMP</font></td>
+                <td><font face="Courier New">(Oper),Y</font></td>
+                <td align="center">2</td>
+                <td align="center">5*</td>
+            </tr>
+            <tr>
+                <td colspan="5">* Add 1 if page boundary crossed.
+                </td>
+            </tr>
+        </table>
+        </td>
+        <td align="right" width="20%">&nbsp;</td>
+    </tr>
+</table>
+
+<hr size="1">
+
+<table border="0" width="100%">
+    <tr>
+        <td valign="top" width="10%"><font color="#0000FF"><strong>CPX</strong></font></td>
+        <td valign="top" width="70%"><font color="#0000FF"><strong>Compare
+        memory and index register X<br>
+        </strong></font>X-M</td>
+        <td align="right" valign="top" width="20%"><font
+        color="#0000FF"><strong>CPX<br>
+        </strong></font><font face="Courier New">N Z C I D V<br>
+        % % % ~ ~ ~</font></td>
+    </tr>
+    <tr>
+        <td width="10%">&nbsp;</td>
+        <td width="70%"><table border="0" width="70%">
+            <tr>
+                <td><font color="#0000FF">Addressing:</font></td>
+                <td colspan="2"><font color="#0000FF">Assembler
+                format:</font></td>
+                <td align="center"><font color="#0000FF">Bytes:</font></td>
+                <td align="center"><font color="#0000FF">Cycles:</font></td>
+            </tr>
+            <tr>
+                <td>Immediate</td>
+                <td><font face="Courier New">CPX @</font></td>
+                <td><font face="Courier New">Oper</font></td>
+                <td align="center">2</td>
+                <td align="center">2</td>
+            </tr>
+            <tr>
+                <td>Zero Page</td>
+                <td><font face="Courier New">CPX</font></td>
+                <td><font face="Courier New">Oper</font></td>
+                <td align="center">2</td>
+                <td align="center">3</td>
+            </tr>
+            <tr>
+                <td>Absolute</td>
+                <td><font face="Courier New">CPX</font></td>
+                <td><font face="Courier New">Oper</font></td>
+                <td align="center">3</td>
+                <td align="center">4</td>
+            </tr>
+        </table>
+        </td>
+        <td align="right" width="20%">&nbsp;</td>
+    </tr>
+</table>
+
+<hr size="1">
+
+<table border="0" width="100%">
+    <tr>
+        <td valign="top" width="10%"><font color="#0000FF"><strong>CPY</strong></font></td>
+        <td valign="top" width="70%"><font color="#0000FF"><strong>Compare
+        memory and index register Y<br>
+        </strong></font>X-M</td>
+        <td align="right" valign="top" width="20%"><font
+        color="#0000FF"><strong>CPY<br>
+        </strong></font><font face="Courier New">N Z C I D V<br>
+        % % % ~ ~ ~</font></td>
+    </tr>
+    <tr>
+        <td width="10%">&nbsp;</td>
+        <td width="70%"><table border="0" width="70%">
+            <tr>
+                <td><font color="#0000FF">Addressing:</font></td>
+                <td colspan="2"><font color="#0000FF">Assembler
+                format:</font></td>
+                <td align="center"><font color="#0000FF">Bytes:</font></td>
+                <td align="center"><font color="#0000FF">Cycles:</font></td>
+            </tr>
+            <tr>
+                <td>Immediate</td>
+                <td><font face="Courier New">CPY @</font></td>
+                <td><font face="Courier New">Oper</font></td>
+                <td align="center">2</td>
+                <td align="center">2</td>
+            </tr>
+            <tr>
+                <td>Zero Page</td>
+                <td><font face="Courier New">CPY</font></td>
+                <td><font face="Courier New">Oper</font></td>
+                <td align="center">2</td>
+                <td align="center">3</td>
+            </tr>
+            <tr>
+                <td>Absolute</td>
+                <td><font face="Courier New">CPY</font></td>
+                <td><font face="Courier New">Oper</font></td>
+                <td align="center">3</td>
+                <td align="center">4</td>
+            </tr>
+        </table>
+        </td>
+        <td align="right" width="20%">&nbsp;</td>
+    </tr>
+</table>
+
+<hr size="1">
+
+<table border="0" width="100%">
+    <tr>
+        <td valign="top" width="10%"><font color="#0000FF"><strong>DEC</strong></font></td>
+        <td valign="top" width="70%"><font color="#0000FF"><strong>Decrement
+        memory by one<br>
+        </strong></font>M=M-1</td>
+        <td align="right" valign="top" width="20%"><font
+        color="#0000FF"><strong>DEC<br>
+        </strong></font><font face="Courier New">N Z C I D V<br>
+        % % ~ ~ ~ ~</font></td>
+    </tr>
+    <tr>
+        <td width="10%">&nbsp;</td>
+        <td width="70%"><table border="0" width="70%">
+            <tr>
+                <td><font color="#0000FF">Addressing:</font></td>
+                <td colspan="2"><font color="#0000FF">Assembler
+                format:</font></td>
+                <td align="center"><font color="#0000FF">Bytes:</font></td>
+                <td align="center"><font color="#0000FF">Cycles:</font></td>
+            </tr>
+            <tr>
+                <td>Zero Page</td>
+                <td><font face="Courier New">CMP</font></td>
+                <td><font face="Courier New">Oper</font></td>
+                <td align="center">2</td>
+                <td align="center">5</td>
+            </tr>
+            <tr>
+                <td>Zero Page,X</td>
+                <td><font face="Courier New">CMP</font></td>
+                <td><font face="Courier New">Oper,X</font></td>
+                <td align="center">2</td>
+                <td align="center">6</td>
+            </tr>
+            <tr>
+                <td>Absolute</td>
+                <td><font face="Courier New">CMP</font></td>
+                <td><font face="Courier New">Oper</font></td>
+                <td align="center">3</td>
+                <td align="center">6</td>
+            </tr>
+            <tr>
+                <td>Absolute,X</td>
+                <td><font face="Courier New">CMP</font></td>
+                <td><font face="Courier New">Oper,X</font></td>
+                <td align="center">3</td>
+                <td align="center">7</td>
+            </tr>
+        </table>
+        </td>
+        <td align="right" width="20%">&nbsp;</td>
+    </tr>
+</table>
+
+<hr size="1">
+
+<table border="0" width="100%">
+    <tr>
+        <td valign="top" width="10%"><font color="#0000FF"><strong>DEX</strong></font></td>
+        <td valign="top" width="70%"><font color="#0000FF"><strong>Decrement
+        index register X by one<br>
+        </strong></font>X=X-1</td>
+        <td align="right" valign="top" width="20%"><font
+        color="#0000FF"><strong>DEX<br>
+        </strong></font><font face="Courier New">N Z C I D V<br>
+        % % ~ ~ ~ ~</font></td>
+    </tr>
+    <tr>
+        <td width="10%">&nbsp;</td>
+        <td width="70%"><table border="0" width="70%">
+            <tr>
+                <td><font color="#0000FF">Addressing:</font></td>
+                <td colspan="2"><font color="#0000FF">Assembler
+                format:</font></td>
+                <td align="center"><font color="#0000FF">Bytes:</font></td>
+                <td align="center"><font color="#0000FF">Cycles:</font></td>
+            </tr>
+            <tr>
+                <td>Implied</td>
+                <td><font face="Courier New">DEX</font></td>
+                <td>&nbsp;</td>
+                <td align="center">1</td>
+                <td align="center">2</td>
+            </tr>
+        </table>
+        </td>
+        <td align="right" width="20%">&nbsp;</td>
+    </tr>
+</table>
+
+<hr size="1">
+
+<table border="0" width="100%">
+    <tr>
+        <td valign="top" width="10%"><font color="#0000FF"><strong>DEY</strong></font></td>
+        <td valign="top" width="70%"><font color="#0000FF"><strong>Decrement
+        index register Y by one<br>
+        </strong></font>Y=Y-1</td>
+        <td align="right" valign="top" width="20%"><font
+        color="#0000FF"><strong>DEY<br>
+        </strong></font><font face="Courier New">N Z C I D V<br>
+        % % ~ ~ ~ ~</font></td>
+    </tr>
+    <tr>
+        <td width="10%">&nbsp;</td>
+        <td width="70%"><table border="0" width="70%">
+            <tr>
+                <td><font color="#0000FF">Addressing:</font></td>
+                <td colspan="2"><font color="#0000FF">Assembler
+                format:</font></td>
+                <td align="center"><font color="#0000FF">Bytes:</font></td>
+                <td align="center"><font color="#0000FF">Cycles:</font></td>
+            </tr>
+            <tr>
+                <td>Implied</td>
+                <td><font face="Courier New">CLI</font></td>
+                <td>&nbsp;</td>
+                <td align="center">1</td>
+                <td align="center">2</td>
+            </tr>
+        </table>
+        </td>
+        <td align="right" width="20%">&nbsp;</td>
+    </tr>
+</table>
+
+<hr size="1">
+
+<table border="0" width="100%">
+    <tr>
+        <td valign="top" width="10%"><font color="#0000FF"><strong>EOR</strong></font></td>
+        <td valign="top" width="70%"><font color="#0000FF"><strong>Exclusive-OR
+        memory with accumulator<br>
+        </strong></font>A=A:M</td>
+        <td align="right" valign="top" width="20%"><font
+        color="#0000FF"><strong>EOR<br>
+        </strong></font><font face="Courier New">N Z C I D V<br>
+        % % ~ ~ ~ ~</font></td>
+    </tr>
+    <tr>
+        <td width="10%">&nbsp;</td>
+        <td width="70%"><table border="0" width="70%">
+            <tr>
+                <td><font color="#0000FF">Addressing:</font></td>
+                <td colspan="2"><font color="#0000FF">Assembler
+                format:</font></td>
+                <td align="center"><font color="#0000FF">Bytes:</font></td>
+                <td align="center"><font color="#0000FF">Cycles:</font></td>
+            </tr>
+            <tr>
+                <td>Immediate</td>
+                <td><font face="Courier New">EOR @</font></td>
+                <td><font face="Courier New">Oper</font></td>
+                <td align="center">2</td>
+                <td align="center">2</td>
+            </tr>
+            <tr>
+                <td>Zero Page</td>
+                <td><font face="Courier New">EOR</font></td>
+                <td><font face="Courier New">Oper</font></td>
+                <td align="center">2</td>
+                <td align="center">3</td>
+            </tr>
+            <tr>
+                <td>Zero Page,X</td>
+                <td><font face="Courier New">EOR</font></td>
+                <td><font face="Courier New">Oper,X</font></td>
+                <td align="center">2</td>
+                <td align="center">4</td>
+            </tr>
+            <tr>
+                <td>Absolute</td>
+                <td><font face="Courier New">EOR</font></td>
+                <td><font face="Courier New">Oper</font></td>
+                <td align="center">3</td>
+                <td align="center">4</td>
+            </tr>
+            <tr>
+                <td>Absolute,X</td>
+                <td><font face="Courier New">EOR</font></td>
+                <td><font face="Courier New">Oper,X</font></td>
+                <td align="center">3</td>
+                <td align="center">4*</td>
+            </tr>
+            <tr>
+                <td>Absolute,Y</td>
+                <td><font face="Courier New">EOR</font></td>
+                <td><font face="Courier New">Oper,Y</font></td>
+                <td align="center">3</td>
+                <td align="center">4*</td>
+            </tr>
+            <tr>
+                <td>(Indirect,X)</td>
+                <td><font face="Courier New">EOR</font></td>
+                <td><font face="Courier New">(Oper,X)</font></td>
+                <td align="center">2</td>
+                <td align="center">6</td>
+            </tr>
+            <tr>
+                <td>(Indirect),Y</td>
+                <td><font face="Courier New">EOR</font></td>
+                <td><font face="Courier New">(Oper),Y</font></td>
+                <td align="center">2</td>
+                <td align="center">5*</td>
+            </tr>
+            <tr>
+                <td colspan="5">* Add 1 if page boundary crossed.
+                </td>
+            </tr>
+        </table>
+        </td>
+        <td align="right" width="20%">&nbsp;</td>
+    </tr>
+</table>
+
+<hr size="1">
+
+<table border="0" width="100%">
+    <tr>
+        <td valign="top" width="10%"><font color="#0000FF"><strong>INC</strong></font></td>
+        <td valign="top" width="70%"><font color="#0000FF"><strong>Increment
+        memory by one <br>
+        </strong></font>M=M+1</td>
+        <td align="right" valign="top" width="20%"><font
+        color="#0000FF"><strong>INC<br>
+        </strong></font><font face="Courier New">N Z C I D V<br>
+        % % ~ ~ ~ ~</font></td>
+    </tr>
+    <tr>
+        <td width="10%">&nbsp;</td>
+        <td width="70%"><table border="0" width="70%">
+            <tr>
+                <td><font color="#0000FF">Addressing:</font></td>
+                <td colspan="2"><font color="#0000FF">Assembler
+                format:</font></td>
+                <td align="center"><font color="#0000FF">Bytes:</font></td>
+                <td align="center"><font color="#0000FF">Cycles:</font></td>
+            </tr>
+            <tr>
+                <td>Zero Page</td>
+                <td><font face="Courier New">INC</font></td>
+                <td><font face="Courier New">Oper</font></td>
+                <td align="center">2</td>
+                <td align="center">5</td>
+            </tr>
+            <tr>
+                <td>Zero Page,X</td>
+                <td><font face="Courier New">INC</font></td>
+                <td><font face="Courier New">Oper,X</font></td>
+                <td align="center">2</td>
+                <td align="center">6</td>
+            </tr>
+            <tr>
+                <td>Absolute</td>
+                <td><font face="Courier New">INC</font></td>
+                <td><font face="Courier New">Oper</font></td>
+                <td align="center">3</td>
+                <td align="center">6</td>
+            </tr>
+            <tr>
+                <td>Absolute,X</td>
+                <td><font face="Courier New">INC</font></td>
+                <td><font face="Courier New">Oper,X</font></td>
+                <td align="center">3</td>
+                <td align="center">7</td>
+            </tr>
+        </table>
+        </td>
+        <td align="right" width="20%">&nbsp;</td>
+    </tr>
+</table>
+
+<hr size="1">
+
+<table border="0" width="100%">
+    <tr>
+        <td valign="top" width="10%"><font color="#0000FF"><strong>INX</strong></font></td>
+        <td valign="top" width="70%"><font color="#0000FF"><strong>Increment
+        index register X by one <br>
+        </strong></font>X=X+1</td>
+        <td align="right" valign="top" width="20%"><font
+        color="#0000FF"><strong>INX<br>
+        </strong></font><font face="Courier New">N Z C I D V<br>
+        % % ~ ~ ~ ~</font></td>
+    </tr>
+    <tr>
+        <td width="10%">&nbsp;</td>
+        <td width="70%"><table border="0" width="70%">
+            <tr>
+                <td><font color="#0000FF">Addressing:</font></td>
+                <td colspan="2"><font color="#0000FF">Assembler
+                format:</font></td>
+                <td align="center"><font color="#0000FF">Bytes:</font></td>
+                <td align="center"><font color="#0000FF">Cycles:</font></td>
+            </tr>
+            <tr>
+                <td>Implied</td>
+                <td><font face="Courier New">INX</font></td>
+                <td>&nbsp;</td>
+                <td align="center">1</td>
+                <td align="center">2</td>
+            </tr>
+        </table>
+        </td>
+        <td align="right" width="20%">&nbsp;</td>
+    </tr>
+</table>
+
+<hr size="1">
+
+<table border="0" width="100%">
+    <tr>
+        <td valign="top" width="10%"><font color="#0000FF"><strong>INY</strong></font></td>
+        <td valign="top" width="70%"><font color="#0000FF"><strong>Increment
+        index register Y by one <br>
+        </strong></font>X=X+1</td>
+        <td align="right" valign="top" width="20%"><font
+        color="#0000FF"><strong>INY<br>
+        </strong></font><font face="Courier New">N Z C I D V<br>
+        % % ~ ~ ~ ~</font></td>
+    </tr>
+    <tr>
+        <td width="10%">&nbsp;</td>
+        <td width="70%"><table border="0" width="70%">
+            <tr>
+                <td><font color="#0000FF">Addressing:</font></td>
+                <td colspan="2"><font color="#0000FF">Assembler
+                format:</font></td>
+                <td align="center"><font color="#0000FF">Bytes:</font></td>
+                <td align="center"><font color="#0000FF">Cycles:</font></td>
+            </tr>
+            <tr>
+                <td>Implied</td>
+                <td><font face="Courier New">INY</font></td>
+                <td>&nbsp;</td>
+                <td align="center">1</td>
+                <td align="center">2</td>
+            </tr>
+        </table>
+        </td>
+        <td align="right" width="20%">&nbsp;</td>
+    </tr>
+</table>
+
+<hr size="1">
+
+<table border="0" width="100%">
+    <tr>
+        <td valign="top" width="10%"><font color="#0000FF"><strong>JMP</strong></font></td>
+        <td valign="top" width="70%"><font color="#0000FF"><strong>Jump
+        to new location<br>
+        </strong></font>PCL=(PC+1), PCH=(PC+2)</td>
+        <td align="right" valign="top" width="20%"><font
+        color="#0000FF"><strong>JMP<br>
+        </strong></font><font face="Courier New">N Z C I D V<br>
+        ~ ~ ~ ~ ~ ~</font></td>
+    </tr>
+    <tr>
+        <td width="10%">&nbsp;</td>
+        <td width="70%"><table border="0" width="70%">
+            <tr>
+                <td><font color="#0000FF">Addressing:</font></td>
+                <td colspan="2"><font color="#0000FF">Assembler
+                format:</font></td>
+                <td align="center"><font color="#0000FF">Bytes:</font></td>
+                <td align="center"><font color="#0000FF">Cycles:</font></td>
+            </tr>
+            <tr>
+                <td>Absolute</td>
+                <td><font face="Courier New">JMP</font></td>
+                <td><font face="Courier New">Oper</font></td>
+                <td align="center">3</td>
+                <td align="center">3</td>
+            </tr>
+            <tr>
+                <td>Indirect</td>
+                <td><font face="Courier New">JMP</font></td>
+                <td><font face="Courier New">(Oper)</font></td>
+                <td align="center">3</td>
+                <td align="center">5</td>
+            </tr>
+        </table>
+        </td>
+        <td align="right" width="20%">&nbsp;</td>
+    </tr>
+</table>
+
+<hr size="1">
+
+<table border="0" width="100%">
+    <tr>
+        <td valign="top" width="10%"><font color="#0000FF"><strong>JSR</strong></font></td>
+        <td valign="top" width="70%"><font color="#0000FF"><strong>Jump
+        to Subroutine saving return address<br>
+        </strong></font>PC+2 !, PCL=(PC+1), PCH=(PC+2)</td>
+        <td align="right" valign="top" width="20%"><font
+        color="#0000FF"><strong>JSR<br>
+        </strong></font><font face="Courier New">N Z C I D V<br>
+        ~ ~ ~ ~ ~ ~</font></td>
+    </tr>
+    <tr>
+        <td width="10%">&nbsp;</td>
+        <td width="70%"><table border="0" width="70%">
+            <tr>
+                <td><font color="#0000FF">Addressing:</font></td>
+                <td colspan="2"><font color="#0000FF">Assembler
+                format:</font></td>
+                <td align="center"><font color="#0000FF">Bytes:</font></td>
+                <td align="center"><font color="#0000FF">Cycles:</font></td>
+            </tr>
+            <tr>
+                <td>Absolute</td>
+                <td><font face="Courier New">JSR</font></td>
+                <td><font face="Courier New">Oper</font></td>
+                <td align="center">3</td>
+                <td align="center">6</td>
+            </tr>
+        </table>
+        </td>
+        <td align="right" width="20%">&nbsp;</td>
+    </tr>
+</table>
+
+<hr size="1">
+
+<table border="0" width="100%">
+    <tr>
+        <td valign="top" width="10%"><font color="#0000FF"><strong>LDA</strong></font></td>
+        <td valign="top" width="70%"><font color="#0000FF"><strong>Load
+        accumulator with memory<br>
+        </strong></font>A=M</td>
+        <td align="right" valign="top" width="20%"><font
+        color="#0000FF"><strong>LDA<br>
+        </strong></font><font face="Courier New">N Z C I D V<br>
+        % % ~ ~ ~ ~</font></td>
+    </tr>
+    <tr>
+        <td width="10%">&nbsp;</td>
+        <td width="70%"><table border="0" width="70%">
+            <tr>
+                <td><font color="#0000FF">Addressing:</font></td>
+                <td colspan="2"><font color="#0000FF">Assembler
+                format:</font></td>
+                <td align="center"><font color="#0000FF">Bytes:</font></td>
+                <td align="center"><font color="#0000FF">Cycles:</font></td>
+            </tr>
+            <tr>
+                <td>Immediate</td>
+                <td><font face="Courier New">LDA @</font></td>
+                <td><font face="Courier New">Oper</font></td>
+                <td align="center">2</td>
+                <td align="center">2</td>
+            </tr>
+            <tr>
+                <td>Zero Page</td>
+                <td><font face="Courier New">LDA</font></td>
+                <td><font face="Courier New">Oper</font></td>
+                <td align="center">2</td>
+                <td align="center">3</td>
+            </tr>
+            <tr>
+                <td>Zero Page,X</td>
+                <td><font face="Courier New">LDA</font></td>
+                <td><font face="Courier New">Oper,X</font></td>
+                <td align="center">2</td>
+                <td align="center">4</td>
+            </tr>
+            <tr>
+                <td>Absolute</td>
+                <td><font face="Courier New">LDA</font></td>
+                <td><font face="Courier New">Oper</font></td>
+                <td align="center">3</td>
+                <td align="center">4</td>
+            </tr>
+            <tr>
+                <td>Absolute,X</td>
+                <td><font face="Courier New">LDA</font></td>
+                <td><font face="Courier New">Oper,X</font></td>
+                <td align="center">3</td>
+                <td align="center">4*</td>
+            </tr>
+            <tr>
+                <td>Absolute,Y</td>
+                <td><font face="Courier New">LDA</font></td>
+                <td><font face="Courier New">Oper,Y</font></td>
+                <td align="center">3</td>
+                <td align="center">4*</td>
+            </tr>
+            <tr>
+                <td>(Indirect,X)</td>
+                <td><font face="Courier New">LDA</font></td>
+                <td><font face="Courier New">(Oper,X)</font></td>
+                <td align="center">2</td>
+                <td align="center">6</td>
+            </tr>
+            <tr>
+                <td>(Indirect),Y</td>
+                <td><font face="Courier New">LDA</font></td>
+                <td><font face="Courier New">(Oper),Y</font></td>
+                <td align="center">2</td>
+                <td align="center">5*</td>
+            </tr>
+            <tr>
+                <td colspan="5">* Add 1 if page boundary crossed.
+                </td>
+            </tr>
+        </table>
+        </td>
+        <td align="right" width="20%">&nbsp;</td>
+    </tr>
+</table>
+
+<hr size="1">
+
+<table border="0" width="100%">
+    <tr>
+        <td valign="top" width="10%"><font color="#0000FF"><strong>LDX</strong></font></td>
+        <td valign="top" width="70%"><font color="#0000FF"><strong>Load
+        index register X with memory<br>
+        </strong></font>X=M</td>
+        <td align="right" valign="top" width="20%"><font
+        color="#0000FF"><strong>LDX<br>
+        </strong></font><font face="Courier New">N Z C I D V<br>
+        % % ~ ~ ~ ~</font></td>
+    </tr>
+    <tr>
+        <td width="10%">&nbsp;</td>
+        <td width="70%"><table border="0" width="70%">
+            <tr>
+                <td><font color="#0000FF">Addressing:</font></td>
+                <td colspan="2"><font color="#0000FF">Assembler
+                format:</font></td>
+                <td align="center"><font color="#0000FF">Bytes:</font></td>
+                <td align="center"><font color="#0000FF">Cycles:</font></td>
+            </tr>
+            <tr>
+                <td>Immediate</td>
+                <td><font face="Courier New">LDX @</font></td>
+                <td><font face="Courier New">Oper</font></td>
+                <td align="center">2</td>
+                <td align="center">2</td>
+            </tr>
+            <tr>
+                <td>Zero Page</td>
+                <td><font face="Courier New">LDX</font></td>
+                <td><font face="Courier New">Oper</font></td>
+                <td align="center">2</td>
+                <td align="center">3</td>
+            </tr>
+            <tr>
+                <td>Zero Page,Y</td>
+                <td><font face="Courier New">LDX</font></td>
+                <td><font face="Courier New">Oper,Y</font></td>
+                <td align="center">2</td>
+                <td align="center">4</td>
+            </tr>
+            <tr>
+                <td>Absolute</td>
+                <td><font face="Courier New">LDX</font></td>
+                <td><font face="Courier New">Oper</font></td>
+                <td align="center">3</td>
+                <td align="center">4</td>
+            </tr>
+            <tr>
+                <td>Absolute,Y</td>
+                <td><font face="Courier New">LDX</font></td>
+                <td><font face="Courier New">Oper,Y</font></td>
+                <td align="center">3</td>
+                <td align="center">4*</td>
+            </tr>
+            <tr>
+                <td colspan="5">* Add 1 if page boundary crossed.
+                </td>
+            </tr>
+        </table>
+        </td>
+        <td align="right" width="20%">&nbsp;</td>
+    </tr>
+</table>
+
+<hr size="1">
+
+<table border="0" width="100%">
+    <tr>
+        <td valign="top" width="10%"><font color="#0000FF"><strong>LDY</strong></font></td>
+        <td valign="top" width="70%"><font color="#0000FF"><strong>Load
+        index register Y with memory<br>
+        </strong></font>Y=M</td>
+        <td align="right" valign="top" width="20%"><font
+        color="#0000FF"><strong>LDY<br>
+        </strong></font><font face="Courier New">N Z C I D V<br>
+        % % ~ ~ ~ ~</font></td>
+    </tr>
+    <tr>
+        <td width="10%">&nbsp;</td>
+        <td width="70%"><table border="0" width="70%">
+            <tr>
+                <td><font color="#0000FF">Addressing:</font></td>
+                <td colspan="2"><font color="#0000FF">Assembler
+                format:</font></td>
+                <td align="center"><font color="#0000FF">Bytes:</font></td>
+                <td align="center"><font color="#0000FF">Cycles:</font></td>
+            </tr>
+            <tr>
+                <td>Immediate</td>
+                <td><font face="Courier New">LDY @</font></td>
+                <td><font face="Courier New">Oper</font></td>
+                <td align="center">2</td>
+                <td align="center">2</td>
+            </tr>
+            <tr>
+                <td>Zero Page</td>
+                <td><font face="Courier New">LDY</font></td>
+                <td><font face="Courier New">Oper</font></td>
+                <td align="center">2</td>
+                <td align="center">3</td>
+            </tr>
+            <tr>
+                <td>Zero Page,X</td>
+                <td><font face="Courier New">LDY</font></td>
+                <td><font face="Courier New">Oper,X</font></td>
+                <td align="center">2</td>
+                <td align="center">4</td>
+            </tr>
+            <tr>
+                <td>Absolute</td>
+                <td><font face="Courier New">LDY</font></td>
+                <td><font face="Courier New">Oper</font></td>
+                <td align="center">3</td>
+                <td align="center">4</td>
+            </tr>
+            <tr>
+                <td>Absolute,X</td>
+                <td><font face="Courier New">LDY</font></td>
+                <td><font face="Courier New">Oper,X</font></td>
+                <td align="center">3</td>
+                <td align="center">4*</td>
+            </tr>
+            <tr>
+                <td colspan="5">* Add 1 if page boundary crossed.
+                </td>
+            </tr>
+        </table>
+        </td>
+        <td align="right" width="20%">&nbsp;</td>
+    </tr>
+</table>
+
+<hr size="1">
+
+<table border="0" width="100%">
+    <tr>
+        <td valign="top" width="10%"><font color="#0000FF"><strong>LSR</strong></font></td>
+        <td valign="top" width="70%"><font color="#0000FF"><strong>Logical
+        shift right one bit (memory or accumulator)</strong></font><table
+        border="0">
+            <tr>
+                <td>0</td>
+                <td>--&gt;</td>
+                <td bgcolor="#C0C0C0">7</td>
+                <td bgcolor="#C0C0C0">6</td>
+                <td bgcolor="#C0C0C0">5</td>
+                <td bgcolor="#C0C0C0">4</td>
+                <td bgcolor="#C0C0C0">3</td>
+                <td bgcolor="#C0C0C0">2</td>
+                <td bgcolor="#C0C0C0">1</td>
+                <td bgcolor="#C0C0C0">0</td>
+                <td>--&gt;</td>
+                <td>C</td>
+            </tr>
+        </table>
+        </td>
+        <td align="right" valign="top" width="20%"><font
+        color="#0000FF"><strong>LSR<br>
+        </strong></font><font face="Courier New">N Z C I D V<br>
+        % % % ~ ~ ~</font></td>
+    </tr>
+    <tr>
+        <td width="10%">&nbsp;</td>
+        <td width="70%"><table border="0" width="70%">
+            <tr>
+                <td><font color="#0000FF">Addressing:</font></td>
+                <td colspan="2"><font color="#0000FF">Assembler
+                format:</font></td>
+                <td align="center"><font color="#0000FF">Bytes:</font></td>
+                <td align="center"><font color="#0000FF">Cycles:</font></td>
+            </tr>
+            <tr>
+                <td>Accumulator</td>
+                <td><font face="Courier New">LSR</font></td>
+                <td><font face="Courier New">A</font></td>
+                <td align="center">1</td>
+                <td align="center">2</td>
+            </tr>
+            <tr>
+                <td>Zero Page</td>
+                <td><font face="Courier New">LSR</font></td>
+                <td><font face="Courier New">Oper</font></td>
+                <td align="center">2</td>
+                <td align="center">5</td>
+            </tr>
+            <tr>
+                <td>Zero Page,X</td>
+                <td><font face="Courier New">LSR</font></td>
+                <td><font face="Courier New">Oper,X</font></td>
+                <td align="center">2</td>
+                <td align="center">6</td>
+            </tr>
+            <tr>
+                <td>Absolute</td>
+                <td><font face="Courier New">LSR</font></td>
+                <td><font face="Courier New">Oper</font></td>
+                <td align="center">3</td>
+                <td align="center">6</td>
+            </tr>
+            <tr>
+                <td>Absolute,X</td>
+                <td><font face="Courier New">LSR</font></td>
+                <td><font face="Courier New">Oper,X</font></td>
+                <td align="center">3</td>
+                <td align="center">7</td>
+            </tr>
+        </table>
+        </td>
+        <td align="right" width="20%">&nbsp;</td>
+    </tr>
+</table>
+
+<hr size="1">
+
+<table border="0" width="100%">
+    <tr>
+        <td valign="top" width="10%"><font color="#0000FF"><strong>NOP</strong></font></td>
+        <td valign="top" width="70%"><font color="#0000FF"><strong>No
+        Operation</strong></font></td>
+        <td align="right" valign="top" width="20%"><font
+        color="#0000FF"><strong>NOP<br>
+        </strong></font><font face="Courier New">N Z C I D V<br>
+        ~ ~ ~ ~ ~ ~</font></td>
+    </tr>
+    <tr>
+        <td width="10%">&nbsp;</td>
+        <td width="70%"><table border="0" width="70%">
+            <tr>
+                <td><font color="#0000FF">Addressing:</font></td>
+                <td colspan="2"><font color="#0000FF">Assembler
+                format:</font></td>
+                <td align="center"><font color="#0000FF">Bytes:</font></td>
+                <td align="center"><font color="#0000FF">Cycles:</font></td>
+            </tr>
+            <tr>
+                <td>Implied</td>
+                <td><font face="Courier New">NOP</font></td>
+                <td>&nbsp;</td>
+                <td align="center">1</td>
+                <td align="center">2</td>
+            </tr>
+        </table>
+        </td>
+        <td align="right" width="20%">&nbsp;</td>
+    </tr>
+</table>
+
+<hr size="1">
+
+<table border="0" width="100%">
+    <tr>
+        <td valign="top" width="10%"><font color="#0000FF"><strong>ORA</strong></font></td>
+        <td valign="top" width="70%"><font color="#0000FF"><strong>Load
+        accumulator with memory<br>
+        </strong></font>A=A\M</td>
+        <td align="right" valign="top" width="20%"><font
+        color="#0000FF"><strong>ORA<br>
+        </strong></font><font face="Courier New">N Z C I D V<br>
+        % % ~ ~ ~ ~</font></td>
+    </tr>
+    <tr>
+        <td width="10%">&nbsp;</td>
+        <td width="70%"><table border="0" width="70%">
+            <tr>
+                <td><font color="#0000FF">Addressing:</font></td>
+                <td colspan="2"><font color="#0000FF">Assembler
+                format:</font></td>
+                <td align="center"><font color="#0000FF">Bytes:</font></td>
+                <td align="center"><font color="#0000FF">Cycles:</font></td>
+            </tr>
+            <tr>
+                <td>Immediate</td>
+                <td><font face="Courier New">ORA @</font></td>
+                <td><font face="Courier New">Oper</font></td>
+                <td align="center">2</td>
+                <td align="center">2</td>
+            </tr>
+            <tr>
+                <td>Zero Page</td>
+                <td><font face="Courier New">ORA</font></td>
+                <td><font face="Courier New">Oper</font></td>
+                <td align="center">2</td>
+                <td align="center">3</td>
+            </tr>
+            <tr>
+                <td>Zero Page,X</td>
+                <td><font face="Courier New">ORA</font></td>
+                <td><font face="Courier New">Oper,X</font></td>
+                <td align="center">2</td>
+                <td align="center">4</td>
+            </tr>
+            <tr>
+                <td>Absolute</td>
+                <td><font face="Courier New">ORA</font></td>
+                <td><font face="Courier New">Oper</font></td>
+                <td align="center">3</td>
+                <td align="center">4</td>
+            </tr>
+            <tr>
+                <td>Absolute,X</td>
+                <td><font face="Courier New">ORA</font></td>
+                <td><font face="Courier New">Oper,X</font></td>
+                <td align="center">3</td>
+                <td align="center">4*</td>
+            </tr>
+            <tr>
+                <td>Absolute,Y</td>
+                <td><font face="Courier New">ORA</font></td>
+                <td><font face="Courier New">Oper,Y</font></td>
+                <td align="center">3</td>
+                <td align="center">4*</td>
+            </tr>
+            <tr>
+                <td>(Indirect,X)</td>
+                <td><font face="Courier New">ORA</font></td>
+                <td><font face="Courier New">(Oper,X)</font></td>
+                <td align="center">2</td>
+                <td align="center">6</td>
+            </tr>
+            <tr>
+                <td>(Indirect),Y</td>
+                <td><font face="Courier New">ORA</font></td>
+                <td><font face="Courier New">(Oper),Y</font></td>
+                <td align="center">2</td>
+                <td align="center">5*</td>
+            </tr>
+            <tr>
+                <td colspan="5">* Add 1 if page boundary crossed.
+                </td>
+            </tr>
+        </table>
+        </td>
+        <td align="right" width="20%">&nbsp;</td>
+    </tr>
+</table>
+
+<hr size="1">
+
+<table border="0" width="100%">
+    <tr>
+        <td valign="top" width="10%"><font color="#0000FF"><strong>PHA</strong></font></td>
+        <td valign="top" width="70%"><font color="#0000FF"><strong>Push
+        Accumulator to stack<br>
+        </strong></font>A !</td>
+        <td align="right" valign="top" width="20%"><font
+        color="#0000FF"><strong>PHA<br>
+        </strong></font><font face="Courier New">N Z C I D V<br>
+        ~ ~ ~ ~ ~ ~</font></td>
+    </tr>
+    <tr>
+        <td width="10%">&nbsp;</td>
+        <td width="70%"><table border="0" width="70%">
+            <tr>
+                <td><font color="#0000FF">Addressing:</font></td>
+                <td colspan="2"><font color="#0000FF">Assembler
+                format:</font></td>
+                <td align="center"><font color="#0000FF">Bytes:</font></td>
+                <td align="center"><font color="#0000FF">Cycles:</font></td>
+            </tr>
+            <tr>
+                <td>Implied</td>
+                <td><font face="Courier New">PHA</font></td>
+                <td>&nbsp;</td>
+                <td align="center">1</td>
+                <td align="center">3</td>
+            </tr>
+        </table>
+        </td>
+        <td align="right" width="20%">&nbsp;</td>
+    </tr>
+</table>
+
+<hr size="1">
+
+<table border="0" width="100%">
+    <tr>
+        <td valign="top" width="10%"><font color="#0000FF"><strong>PHP</strong></font></td>
+        <td valign="top" width="70%"><font color="#0000FF"><strong>Push
+        Processor statusto stack<br>
+        </strong></font>=</td>
+        <td align="right" valign="top" width="20%"><font
+        color="#0000FF"><strong>PHP<br>
+        </strong></font><font face="Courier New">N Z C I D V<br>
+        ~ ~ ~ ~ ~ ~</font></td>
+    </tr>
+    <tr>
+        <td width="10%">&nbsp;</td>
+        <td width="70%"><table border="0" width="70%">
+            <tr>
+                <td><font color="#0000FF">Addressing:</font></td>
+                <td colspan="2"><font color="#0000FF">Assembler
+                format:</font></td>
+                <td align="center"><font color="#0000FF">Bytes:</font></td>
+                <td align="center"><font color="#0000FF">Cycles:</font></td>
+            </tr>
+            <tr>
+                <td>Implied</td>
+                <td><font face="Courier New">PH</font></td>
+                <td>&nbsp;</td>
+                <td align="center">1</td>
+                <td align="center">3</td>
+            </tr>
+        </table>
+        </td>
+        <td align="right" width="20%">&nbsp;</td>
+    </tr>
+</table>
+
+<hr size="1">
+
+<table border="0" width="100%">
+    <tr>
+        <td valign="top" width="10%"><font color="#0000FF"><strong>PLA</strong></font></td>
+        <td valign="top" width="70%"><font color="#0000FF"><strong>Pull
+        Accumulator from stack<br>
+        </strong></font>A ^</td>
+        <td align="right" valign="top" width="20%"><font
+        color="#0000FF"><strong>PLA<br>
+        </strong></font><font face="Courier New">N Z C I D V<br>
+        % % ~ ~ ~ ~</font></td>
+    </tr>
+    <tr>
+        <td width="10%">&nbsp;</td>
+        <td width="70%"><table border="0" width="70%">
+            <tr>
+                <td><font color="#0000FF">Addressing:</font></td>
+                <td colspan="2"><font color="#0000FF">Assembler
+                format:</font></td>
+                <td align="center"><font color="#0000FF">Bytes:</font></td>
+                <td align="center"><font color="#0000FF">Cycles:</font></td>
+            </tr>
+            <tr>
+                <td>Implied</td>
+                <td><font face="Courier New">PH</font></td>
+                <td>&nbsp;</td>
+                <td align="center">1</td>
+                <td align="center">4</td>
+            </tr>
+        </table>
+        </td>
+        <td align="right" width="20%">&nbsp;</td>
+    </tr>
+</table>
+
+<hr size="1">
+
+<table border="0" width="100%">
+    <tr>
+        <td valign="top" width="10%"><font color="#0000FF"><strong>PLP</strong></font></td>
+        <td valign="top" width="70%"><font color="#0000FF"><strong>Pull
+        Processor status from stack<br>
+        </strong></font>P ^</td>
+        <td align="right" valign="top" width="20%"><font
+        color="#0000FF"><strong>PLP<br>
+        </strong></font><font face="Courier New">N Z C I D V<br>
+        from stack</font></td>
+    </tr>
+    <tr>
+        <td width="10%">&nbsp;</td>
+        <td width="70%"><table border="0" width="70%">
+            <tr>
+                <td><font color="#0000FF">Addressing:</font></td>
+                <td colspan="2"><font color="#0000FF">Assembler
+                format:</font></td>
+                <td align="center"><font color="#0000FF">Bytes:</font></td>
+                <td align="center"><font color="#0000FF">Cycles:</font></td>
+            </tr>
+            <tr>
+                <td>Implied</td>
+                <td><font face="Courier New">PH</font></td>
+                <td>&nbsp;</td>
+                <td align="center">1</td>
+                <td align="center">4</td>
+            </tr>
+        </table>
+        </td>
+        <td align="right" width="20%">&nbsp;</td>
+    </tr>
+</table>
+
+<hr size="1">
+
+<table border="0" width="100%">
+    <tr>
+        <td valign="top" width="10%"><font color="#0000FF"><strong>ROL</strong></font></td>
+        <td valign="top" width="70%"><font color="#0000FF"><strong>Rotate
+        Left one bit (memory or accumulator)</strong></font><table
+        border="0">
+            <tr>
+                <td>+</td>
+                <td>--</td>
+                <td bgcolor="#C0C0C0">7</td>
+                <td bgcolor="#C0C0C0">6</td>
+                <td bgcolor="#C0C0C0">5</td>
+                <td bgcolor="#C0C0C0">4</td>
+                <td bgcolor="#C0C0C0">3</td>
+                <td bgcolor="#C0C0C0">2</td>
+                <td bgcolor="#C0C0C0">1</td>
+                <td bgcolor="#C0C0C0">0</td>
+                <td>&lt;--</td>
+                <td>C</td>
+            </tr>
+            <tr>
+                <td>+</td>
+                <td>--</td>
+                <td>--</td>
+                <td>--</td>
+                <td>--</td>
+                <td>--</td>
+                <td>--</td>
+                <td>--</td>
+                <td>--</td>
+                <td>--</td>
+                <td>---</td>
+                <td>+</td>
+            </tr>
+        </table>
+        </td>
+        <td align="right" valign="top" width="20%"><font
+        color="#0000FF"><strong>ROL<br>
+        </strong></font><font face="Courier New">N Z C I D V<br>
+        % % % ~ ~ ~</font></td>
+    </tr>
+    <tr>
+        <td width="10%">&nbsp;</td>
+        <td width="70%"><table border="0" width="70%">
+            <tr>
+                <td><font color="#0000FF">Addressing:</font></td>
+                <td colspan="2"><font color="#0000FF">Assembler
+                format:</font></td>
+                <td align="center"><font color="#0000FF">Bytes:</font></td>
+                <td align="center"><font color="#0000FF">Cycles:</font></td>
+            </tr>
+            <tr>
+                <td>Accumulator</td>
+                <td><font face="Courier New">ROL</font></td>
+                <td><font face="Courier New">A</font></td>
+                <td align="center">1</td>
+                <td align="center">2</td>
+            </tr>
+            <tr>
+                <td>Zero Page</td>
+                <td><font face="Courier New">ROL</font></td>
+                <td><font face="Courier New">Oper</font></td>
+                <td align="center">2</td>
+                <td align="center">5</td>
+            </tr>
+            <tr>
+                <td>Zero Page,X</td>
+                <td><font face="Courier New">ROL</font></td>
+                <td><font face="Courier New">Oper,X</font></td>
+                <td align="center">2</td>
+                <td align="center">6</td>
+            </tr>
+            <tr>
+                <td>Absolute</td>
+                <td><font face="Courier New">ROL</font></td>
+                <td><font face="Courier New">Oper</font></td>
+                <td align="center">3</td>
+                <td align="center">6</td>
+            </tr>
+            <tr>
+                <td>Absolute,X</td>
+                <td><font face="Courier New">ROL</font></td>
+                <td><font face="Courier New">Oper,X</font></td>
+                <td align="center">3</td>
+                <td align="center">7</td>
+            </tr>
+        </table>
+        </td>
+        <td align="right" width="20%">&nbsp;</td>
+    </tr>
+</table>
+
+<hr size="1">
+
+<table border="0" width="100%">
+    <tr>
+        <td valign="top" width="10%"><font color="#0000FF"><strong>ROR</strong></font></td>
+        <td valign="top" width="70%"><font color="#0000FF"><strong>Rotate
+        right one bit (memory or accumulator)</strong></font><table
+        border="0">
+            <tr>
+                <td>C</td>
+                <td>--&gt;</td>
+                <td bgcolor="#C0C0C0">7</td>
+                <td bgcolor="#C0C0C0">6</td>
+                <td bgcolor="#C0C0C0">5</td>
+                <td bgcolor="#C0C0C0">4</td>
+                <td bgcolor="#C0C0C0">3</td>
+                <td bgcolor="#C0C0C0">2</td>
+                <td bgcolor="#C0C0C0">1</td>
+                <td bgcolor="#C0C0C0">0</td>
+                <td>--+</td>
+                <td>&nbsp;</td>
+            </tr>
+            <tr>
+                <td>+</td>
+                <td>---</td>
+                <td>--</td>
+                <td>--</td>
+                <td>--</td>
+                <td>--</td>
+                <td>--</td>
+                <td>--</td>
+                <td>--</td>
+                <td>--</td>
+                <td>--+</td>
+                <td>&nbsp;</td>
+            </tr>
+        </table>
+        </td>
+        <td align="right" valign="top" width="20%"><font
+        color="#0000FF"><strong>ROR<br>
+        </strong></font><font face="Courier New">N Z C I D V<br>
+        % % % ~ ~ ~</font></td>
+    </tr>
+    <tr>
+        <td width="10%">&nbsp;</td>
+        <td width="70%"><table border="0" width="70%">
+            <tr>
+                <td><font color="#0000FF">Addressing:</font></td>
+                <td colspan="2"><font color="#0000FF">Assembler
+                format:</font></td>
+                <td align="center"><font color="#0000FF">Bytes:</font></td>
+                <td align="center"><font color="#0000FF">Cycles:</font></td>
+            </tr>
+            <tr>
+                <td>Accumulator</td>
+                <td><font face="Courier New">ROR</font></td>
+                <td><font face="Courier New">A</font></td>
+                <td align="center">1</td>
+                <td align="center">2</td>
+            </tr>
+            <tr>
+                <td>Zero Page</td>
+                <td><font face="Courier New">ROR</font></td>
+                <td><font face="Courier New">Oper</font></td>
+                <td align="center">2</td>
+                <td align="center">5</td>
+            </tr>
+            <tr>
+                <td>Zero Page,X</td>
+                <td><font face="Courier New">ROR</font></td>
+                <td><font face="Courier New">Oper,X</font></td>
+                <td align="center">2</td>
+                <td align="center">6</td>
+            </tr>
+            <tr>
+                <td>Absolute</td>
+                <td><font face="Courier New">ROR</font></td>
+                <td><font face="Courier New">Oper</font></td>
+                <td align="center">3</td>
+                <td align="center">6</td>
+            </tr>
+            <tr>
+                <td>Absolute,X</td>
+                <td><font face="Courier New">ROR</font></td>
+                <td><font face="Courier New">Oper,X</font></td>
+                <td align="center">3</td>
+                <td align="center">7</td>
+            </tr>
+        </table>
+        </td>
+        <td align="right" width="20%">&nbsp;</td>
+    </tr>
+</table>
+
+<hr size="1">
+
+<table border="0" width="100%">
+    <tr>
+        <td valign="top" width="10%"><font color="#0000FF"><strong>RTI</strong></font></td>
+        <td valign="top" width="70%"><font color="#0000FF"><strong>Return
+        from Interrupt<br>
+        </strong></font>P^ PC^</td>
+        <td align="right" valign="top" width="20%"><font
+        color="#0000FF"><strong>RTI<br>
+        </strong></font><font face="Courier New">N Z C I D V<br>
+        From stack</font></td>
+    </tr>
+    <tr>
+        <td width="10%">&nbsp;</td>
+        <td width="70%"><table border="0" width="70%">
+            <tr>
+                <td><font color="#0000FF">Addressing:</font></td>
+                <td colspan="2"><font color="#0000FF">Assembler
+                format:</font></td>
+                <td align="center"><font color="#0000FF">Bytes:</font></td>
+                <td align="center"><font color="#0000FF">Cycles:</font></td>
+            </tr>
+            <tr>
+                <td>Implied</td>
+                <td><font face="Courier New">RTI</font></td>
+                <td>&nbsp;</td>
+                <td align="center">1</td>
+                <td align="center">6</td>
+            </tr>
+        </table>
+        </td>
+        <td align="right" width="20%">&nbsp;</td>
+    </tr>
+</table>
+
+<hr size="1">
+
+<table border="0" width="100%">
+    <tr>
+        <td valign="top" width="10%"><font color="#0000FF"><strong>RTS</strong></font></td>
+        <td valign="top" width="70%"><font color="#0000FF"><strong>Return
+        from Subroutine<br>
+        </strong></font>P^ PC^</td>
+        <td align="right" valign="top" width="20%"><font
+        color="#0000FF"><strong>RTS<br>
+        </strong></font><font face="Courier New">N Z C I D V<br>
+        ~ ~ ~ ~ ~ ~</font></td>
+    </tr>
+    <tr>
+        <td width="10%">&nbsp;</td>
+        <td width="70%"><table border="0" width="70%">
+            <tr>
+                <td><font color="#0000FF">Addressing:</font></td>
+                <td colspan="2"><font color="#0000FF">Assembler
+                format:</font></td>
+                <td align="center"><font color="#0000FF">Bytes:</font></td>
+                <td align="center"><font color="#0000FF">Cycles:</font></td>
+            </tr>
+            <tr>
+                <td>Implied</td>
+                <td><font face="Courier New">RTS</font></td>
+                <td>&nbsp;</td>
+                <td align="center">1</td>
+                <td align="center">6</td>
+            </tr>
+        </table>
+        </td>
+        <td align="right" width="20%">&nbsp;</td>
+    </tr>
+</table>
+
+<hr size="1">
+
+<table border="0" width="100%">
+    <tr>
+        <td valign="top" width="10%"><font color="#0000FF"><strong>SBC</strong></font></td>
+        <td valign="top" width="70%"><font color="#0000FF"><strong>Subtract
+        memory from accumulator with carry<br>
+        </strong></font>A,C=A-M-(C-1)</td>
+        <td align="right" valign="top" width="20%"><font
+        color="#0000FF"><strong>SBC<br>
+        </strong></font><font face="Courier New">N Z C I D V<br>
+        % % % ~ ~ %</font></td>
+    </tr>
+    <tr>
+        <td width="10%">&nbsp;</td>
+        <td width="70%"><table border="0" width="70%">
+            <tr>
+                <td><font color="#0000FF">Addressing:</font></td>
+                <td colspan="2"><font color="#0000FF">Assembler
+                format:</font></td>
+                <td align="center"><font color="#0000FF">Bytes:</font></td>
+                <td align="center"><font color="#0000FF">Cycles:</font></td>
+            </tr>
+            <tr>
+                <td>Immediate</td>
+                <td><font face="Courier New">SBC @</font></td>
+                <td><font face="Courier New">Oper</font></td>
+                <td align="center">2</td>
+                <td align="center">2</td>
+            </tr>
+            <tr>
+                <td>Zero Page</td>
+                <td><font face="Courier New">SBC</font></td>
+                <td><font face="Courier New">Oper</font></td>
+                <td align="center">2</td>
+                <td align="center">3</td>
+            </tr>
+            <tr>
+                <td>Zero Page,X</td>
+                <td><font face="Courier New">SBC</font></td>
+                <td><font face="Courier New">Oper,X</font></td>
+                <td align="center">2</td>
+                <td align="center">4</td>
+            </tr>
+            <tr>
+                <td>Absolute</td>
+                <td><font face="Courier New">SBC</font></td>
+                <td><font face="Courier New">Oper</font></td>
+                <td align="center">3</td>
+                <td align="center">4</td>
+            </tr>
+            <tr>
+                <td>Absolute,X</td>
+                <td><font face="Courier New">SBC</font></td>
+                <td><font face="Courier New">Oper,X</font></td>
+                <td align="center">3</td>
+                <td align="center">4*</td>
+            </tr>
+            <tr>
+                <td>Absolute,Y</td>
+                <td><font face="Courier New">SBC</font></td>
+                <td><font face="Courier New">Oper,Y</font></td>
+                <td align="center">3</td>
+                <td align="center">4*</td>
+            </tr>
+            <tr>
+                <td>(Indirect,X)</td>
+                <td><font face="Courier New">SBC</font></td>
+                <td><font face="Courier New">(Oper,X)</font></td>
+                <td align="center">2</td>
+                <td align="center">6</td>
+            </tr>
+            <tr>
+                <td>(Indirect),Y</td>
+                <td><font face="Courier New">SBC</font></td>
+                <td><font face="Courier New">(Oper),Y</font></td>
+                <td align="center">2</td>
+                <td align="center">5*</td>
+            </tr>
+            <tr>
+                <td colspan="5">* Add 1 if page boundary crossed.
+                </td>
+            </tr>
+        </table>
+        </td>
+        <td align="right" width="20%">&nbsp;</td>
+    </tr>
+</table>
+
+<hr size="1">
+
+<table border="0" width="100%">
+    <tr>
+        <td valign="top" width="10%"><font color="#0000FF"><strong>SEC</strong></font></td>
+        <td valign="top" width="70%"><font color="#0000FF"><strong>Set
+        Carry flag<br>
+        </strong></font>C=1</td>
+        <td align="right" valign="top" width="20%"><font
+        color="#0000FF"><strong>SEC<br>
+        </strong></font><font face="Courier New">N Z C I D V<br>
+        % % 1 ~ ~ ~</font></td>
+    </tr>
+    <tr>
+        <td width="10%">&nbsp;</td>
+        <td width="70%"><table border="0" width="70%">
+            <tr>
+                <td><font color="#0000FF">Addressing:</font></td>
+                <td colspan="2"><font color="#0000FF">Assembler
+                format:</font></td>
+                <td align="center"><font color="#0000FF">Bytes:</font></td>
+                <td align="center"><font color="#0000FF">Cycles:</font></td>
+            </tr>
+            <tr>
+                <td>Implied</td>
+                <td><font face="Courier New">CLC</font></td>
+                <td>&nbsp;</td>
+                <td align="center">1</td>
+                <td align="center">2</td>
+            </tr>
+        </table>
+        </td>
+        <td align="right" width="20%">&nbsp;</td>
+    </tr>
+</table>
+
+<hr size="1">
+
+<table border="0" width="100%">
+    <tr>
+        <td valign="top" width="10%"><font color="#0000FF"><strong>SED</strong></font></td>
+        <td valign="top" width="70%"><font color="#0000FF"><strong>Set
+        Decimal mode<br>
+        </strong></font>D=1</td>
+        <td align="right" valign="top" width="20%"><font
+        color="#0000FF"><strong>SED<br>
+        </strong></font><font face="Courier New">N Z C I D V<br>
+        % % ~ ~ 1 ~</font></td>
+    </tr>
+    <tr>
+        <td width="10%">&nbsp;</td>
+        <td width="70%"><table border="0" width="70%">
+            <tr>
+                <td><font color="#0000FF">Addressing:</font></td>
+                <td colspan="2"><font color="#0000FF">Assembler
+                format:</font></td>
+                <td align="center"><font color="#0000FF">Bytes:</font></td>
+                <td align="center"><font color="#0000FF">Cycles:</font></td>
+            </tr>
+            <tr>
+                <td>Implied</td>
+                <td><font face="Courier New">CLC</font></td>
+                <td>&nbsp;</td>
+                <td align="center">1</td>
+                <td align="center">2</td>
+            </tr>
+        </table>
+        </td>
+        <td align="right" width="20%">&nbsp;</td>
+    </tr>
+</table>
+
+<hr size="1">
+
+<table border="0" width="100%">
+    <tr>
+        <td valign="top" width="10%"><font color="#0000FF"><strong>SEI</strong></font></td>
+        <td valign="top" width="70%"><font color="#0000FF"><strong>Set
+        Interrupt disable bit<br>
+        </strong></font>I=1</td>
+        <td align="right" valign="top" width="20%"><font
+        color="#0000FF"><strong>SEI<br>
+        </strong></font><font face="Courier New">N Z C I D V<br>
+        % % ~ 1 ~ ~</font></td>
+    </tr>
+    <tr>
+        <td width="10%">&nbsp;</td>
+        <td width="70%"><table border="0" width="70%">
+            <tr>
+                <td><font color="#0000FF">Addressing:</font></td>
+                <td colspan="2"><font color="#0000FF">Assembler
+                format:</font></td>
+                <td align="center"><font color="#0000FF">Bytes:</font></td>
+                <td align="center"><font color="#0000FF">Cycles:</font></td>
+            </tr>
+            <tr>
+                <td>Implied</td>
+                <td><font face="Courier New">CLI</font></td>
+                <td>&nbsp;</td>
+                <td align="center">1</td>
+                <td align="center">2</td>
+            </tr>
+        </table>
+        </td>
+        <td align="right" width="20%">&nbsp;</td>
+    </tr>
+</table>
+
+<hr size="1">
+
+<table border="0" width="100%">
+    <tr>
+        <td valign="top" width="10%"><font color="#0000FF"><strong>STA</strong></font></td>
+        <td valign="top" width="70%"><font color="#0000FF"><strong>Store
+        accumulator in memory<br>
+        </strong></font>M=A</td>
+        <td align="right" valign="top" width="20%"><font
+        color="#0000FF"><strong>STA<br>
+        </strong></font><font face="Courier New">N Z C I D V<br>
+        ~ ~ ~ ~ ~ ~</font></td>
+    </tr>
+    <tr>
+        <td width="10%">&nbsp;</td>
+        <td width="70%"><table border="0" width="70%">
+            <tr>
+                <td><font color="#0000FF">Addressing:</font></td>
+                <td colspan="2"><font color="#0000FF">Assembler
+                format:</font></td>
+                <td align="center"><font color="#0000FF">Bytes:</font></td>
+                <td align="center"><font color="#0000FF">Cycles:</font></td>
+            </tr>
+            <tr>
+                <td>Zero Page</td>
+                <td><font face="Courier New">STA</font></td>
+                <td><font face="Courier New">Oper</font></td>
+                <td align="center">2</td>
+                <td align="center">3</td>
+            </tr>
+            <tr>
+                <td>Zero Page,X</td>
+                <td><font face="Courier New">STA</font></td>
+                <td><font face="Courier New">Oper,X</font></td>
+                <td align="center">2</td>
+                <td align="center">4</td>
+            </tr>
+            <tr>
+                <td>Absolute</td>
+                <td><font face="Courier New">STA</font></td>
+                <td><font face="Courier New">Oper</font></td>
+                <td align="center">3</td>
+                <td align="center">4</td>
+            </tr>
+            <tr>
+                <td>Absolute,X</td>
+                <td><font face="Courier New">STA</font></td>
+                <td><font face="Courier New">Oper,X</font></td>
+                <td align="center">3</td>
+                <td align="center">5</td>
+            </tr>
+            <tr>
+                <td>Absolute,Y</td>
+                <td><font face="Courier New">STA</font></td>
+                <td><font face="Courier New">Oper,Y</font></td>
+                <td align="center">3</td>
+                <td align="center">5</td>
+            </tr>
+            <tr>
+                <td>(Indirect,X)</td>
+                <td><font face="Courier New">STA</font></td>
+                <td><font face="Courier New">(Oper,X)</font></td>
+                <td align="center">2</td>
+                <td align="center">6</td>
+            </tr>
+            <tr>
+                <td>(Indirect),Y</td>
+                <td><font face="Courier New">STA</font></td>
+                <td><font face="Courier New">(Oper),Y</font></td>
+                <td align="center">2</td>
+                <td align="center">6</td>
+            </tr>
+            <tr>
+                <td colspan="5">* Add 1 if page boundary crossed.
+                </td>
+            </tr>
+        </table>
+        </td>
+        <td align="right" width="20%">&nbsp;</td>
+    </tr>
+</table>
+
+<hr size="1">
+
+<table border="0" width="100%">
+    <tr>
+        <td valign="top" width="10%"><font color="#0000FF"><strong>STX</strong></font></td>
+        <td valign="top" width="70%"><font color="#0000FF"><strong>Store
+        index register X in memory<br>
+        </strong></font>M=X</td>
+        <td align="right" valign="top" width="20%"><font
+        color="#0000FF"><strong>STX<br>
+        </strong></font><font face="Courier New">N Z C I D V<br>
+        ~ ~ ~ ~ ~ ~</font></td>
+    </tr>
+    <tr>
+        <td width="10%">&nbsp;</td>
+        <td width="70%"><table border="0" width="70%">
+            <tr>
+                <td><font color="#0000FF">Addressing:</font></td>
+                <td colspan="2"><font color="#0000FF">Assembler
+                format:</font></td>
+                <td align="center"><font color="#0000FF">Bytes:</font></td>
+                <td align="center"><font color="#0000FF">Cycles:</font></td>
+            </tr>
+            <tr>
+                <td>Zero Page</td>
+                <td><font face="Courier New">STX</font></td>
+                <td><font face="Courier New">Oper</font></td>
+                <td align="center">2</td>
+                <td align="center">3</td>
+            </tr>
+            <tr>
+                <td>Zero Page,Y</td>
+                <td><font face="Courier New">STX</font></td>
+                <td><font face="Courier New">Oper,Y</font></td>
+                <td align="center">2</td>
+                <td align="center">4</td>
+            </tr>
+            <tr>
+                <td>Absolute</td>
+                <td><font face="Courier New">STX</font></td>
+                <td><font face="Courier New">Oper</font></td>
+                <td align="center">3</td>
+                <td align="center">4</td>
+            </tr>
+        </table>
+        </td>
+        <td align="right" width="20%">&nbsp;</td>
+    </tr>
+</table>
+
+<hr size="1">
+
+<table border="0" width="100%">
+    <tr>
+        <td valign="top" width="10%"><font color="#0000FF"><strong>STY</strong></font></td>
+        <td valign="top" width="70%"><font color="#0000FF"><strong>Store
+        index register Y in memory<br>
+        </strong></font>M=Y</td>
+        <td align="right" valign="top" width="20%"><font
+        color="#0000FF"><strong>STY<br>
+        </strong></font><font face="Courier New">N Z C I D V<br>
+        ~ ~ ~ ~ ~ ~</font></td>
+    </tr>
+    <tr>
+        <td width="10%">&nbsp;</td>
+        <td width="70%"><table border="0" width="70%">
+            <tr>
+                <td><font color="#0000FF">Addressing:</font></td>
+                <td colspan="2"><font color="#0000FF">Assembler
+                format:</font></td>
+                <td align="center"><font color="#0000FF">Bytes:</font></td>
+                <td align="center"><font color="#0000FF">Cycles:</font></td>
+            </tr>
+            <tr>
+                <td>Zero Page</td>
+                <td><font face="Courier New">STY</font></td>
+                <td><font face="Courier New">Oper</font></td>
+                <td align="center">2</td>
+                <td align="center">3</td>
+            </tr>
+            <tr>
+                <td>Zero Page,X</td>
+                <td><font face="Courier New">STY</font></td>
+                <td><font face="Courier New">Oper,X</font></td>
+                <td align="center">2</td>
+                <td align="center">4</td>
+            </tr>
+            <tr>
+                <td>Absolute</td>
+                <td><font face="Courier New">STY</font></td>
+                <td><font face="Courier New">Oper</font></td>
+                <td align="center">3</td>
+                <td align="center">4</td>
+            </tr>
+        </table>
+        </td>
+        <td align="right" width="20%">&nbsp;</td>
+    </tr>
+</table>
+
+<hr size="1">
+
+<table border="0" width="100%">
+    <tr>
+        <td valign="top" width="10%"><font color="#0000FF"><strong>TAX</strong></font></td>
+        <td valign="top" width="70%"><font color="#0000FF"><strong>Transfer
+        Accumulator to index register X<br>
+        </strong></font>Y=A</td>
+        <td align="right" valign="top" width="20%"><font
+        color="#0000FF"><strong>TAX<br>
+        </strong></font><font face="Courier New">N Z C I D V<br>
+        % % ~ ~ ~ ~</font></td>
+    </tr>
+    <tr>
+        <td width="10%">&nbsp;</td>
+        <td width="70%"><table border="0" width="70%">
+            <tr>
+                <td><font color="#0000FF">Addressing:</font></td>
+                <td colspan="2"><font color="#0000FF">Assembler
+                format:</font></td>
+                <td align="center"><font color="#0000FF">Bytes:</font></td>
+                <td align="center"><font color="#0000FF">Cycles:</font></td>
+            </tr>
+            <tr>
+                <td>Implied</td>
+                <td><font face="Courier New">TAX</font></td>
+                <td>&nbsp;</td>
+                <td align="center">1</td>
+                <td align="center">2</td>
+            </tr>
+        </table>
+        </td>
+        <td align="right" width="20%">&nbsp;</td>
+    </tr>
+</table>
+
+<hr size="1">
+
+<table border="0" width="100%">
+    <tr>
+        <td valign="top" width="10%"><font color="#0000FF"><strong>TAY</strong></font></td>
+        <td valign="top" width="70%"><font color="#0000FF"><strong>Transfer
+        Accumulator to index register Y<br>
+        </strong></font>Y=A</td>
+        <td align="right" valign="top" width="20%"><font
+        color="#0000FF"><strong>TAY<br>
+        </strong></font><font face="Courier New">N Z C I D V<br>
+        % % ~ ~ ~ ~</font></td>
+    </tr>
+    <tr>
+        <td width="10%">&nbsp;</td>
+        <td width="70%"><table border="0" width="70%">
+            <tr>
+                <td><font color="#0000FF">Addressing:</font></td>
+                <td colspan="2"><font color="#0000FF">Assembler
+                format:</font></td>
+                <td align="center"><font color="#0000FF">Bytes:</font></td>
+                <td align="center"><font color="#0000FF">Cycles:</font></td>
+            </tr>
+            <tr>
+                <td>Implied</td>
+                <td><font face="Courier New">TAY</font></td>
+                <td>&nbsp;</td>
+                <td align="center">1</td>
+                <td align="center">2</td>
+            </tr>
+        </table>
+        </td>
+        <td align="right" width="20%">&nbsp;</td>
+    </tr>
+</table>
+
+<hr size="1">
+
+<table border="0" width="100%">
+    <tr>
+        <td valign="top" width="10%"><font color="#0000FF"><strong>TSX</strong></font></td>
+        <td valign="top" width="70%"><font color="#0000FF"><strong>Transfer
+        Stack pointer to index register X<br>
+        </strong></font>X=S</td>
+        <td align="right" valign="top" width="20%"><font
+        color="#0000FF"><strong>TSX<br>
+        </strong></font><font face="Courier New">N Z C I D V<br>
+        % % ~ ~ ~ ~</font></td>
+    </tr>
+    <tr>
+        <td width="10%">&nbsp;</td>
+        <td width="70%"><table border="0" width="70%">
+            <tr>
+                <td><font color="#0000FF">Addressing:</font></td>
+                <td colspan="2"><font color="#0000FF">Assembler
+                format:</font></td>
+                <td align="center"><font color="#0000FF">Bytes:</font></td>
+                <td align="center"><font color="#0000FF">Cycles:</font></td>
+            </tr>
+            <tr>
+                <td>Implied</td>
+                <td><font face="Courier New">TSX</font></td>
+                <td>&nbsp;</td>
+                <td align="center">1</td>
+                <td align="center">2</td>
+            </tr>
+        </table>
+        </td>
+        <td align="right" width="20%">&nbsp;</td>
+    </tr>
+</table>
+
+<hr size="1">
+
+<table border="0" width="100%">
+    <tr>
+        <td valign="top" width="10%"><font color="#0000FF"><strong>TXA</strong></font></td>
+        <td valign="top" width="70%"><font color="#0000FF"><strong>Transfer
+        index register X to Accumulator<br>
+        </strong></font>X=A</td>
+        <td align="right" valign="top" width="20%"><font
+        color="#0000FF"><strong>TXA<br>
+        </strong></font><font face="Courier New">N Z C I D V<br>
+        % % ~ ~ ~ ~</font></td>
+    </tr>
+    <tr>
+        <td width="10%">&nbsp;</td>
+        <td width="70%"><table border="0" width="70%">
+            <tr>
+                <td><font color="#0000FF">Addressing:</font></td>
+                <td colspan="2"><font color="#0000FF">Assembler
+                format:</font></td>
+                <td align="center"><font color="#0000FF">Bytes:</font></td>
+                <td align="center"><font color="#0000FF">Cycles:</font></td>
+            </tr>
+            <tr>
+                <td>Implied</td>
+                <td><font face="Courier New">TXA</font></td>
+                <td>&nbsp;</td>
+                <td align="center">1</td>
+                <td align="center">2</td>
+            </tr>
+        </table>
+        </td>
+        <td align="right" width="20%">&nbsp;</td>
+    </tr>
+</table>
+
+<hr size="1">
+
+<table border="0" width="100%">
+    <tr>
+        <td valign="top" width="10%"><font color="#0000FF"><strong>TXS</strong></font></td>
+        <td valign="top" width="70%"><font color="#0000FF"><strong>Transfer
+        index register X to stack pointer<br>
+        </strong></font>S=X</td>
+        <td align="right" valign="top" width="20%"><font
+        color="#0000FF"><strong>TXS<br>
+        </strong></font><font face="Courier New">N Z C I D V<br>
+        % % ~ ~ ~ ~</font></td>
+    </tr>
+    <tr>
+        <td width="10%">&nbsp;</td>
+        <td width="70%"><table border="0" width="70%">
+            <tr>
+                <td><font color="#0000FF">Addressing:</font></td>
+                <td colspan="2"><font color="#0000FF">Assembler
+                format:</font></td>
+                <td align="center"><font color="#0000FF">Bytes:</font></td>
+                <td align="center"><font color="#0000FF">Cycles:</font></td>
+            </tr>
+            <tr>
+                <td>Implied</td>
+                <td><font face="Courier New">TXS</font></td>
+                <td>&nbsp;</td>
+                <td align="center">1</td>
+                <td align="center">2</td>
+            </tr>
+        </table>
+        </td>
+        <td align="right" width="20%">&nbsp;</td>
+    </tr>
+</table>
+
+<hr size="1">
+
+<table border="0" width="100%">
+    <tr>
+        <td valign="top" width="10%"><font color="#0000FF"><strong>TYA</strong></font></td>
+        <td valign="top" width="70%"><font color="#0000FF"><strong>Transfer
+        index register Y to Accumulator<br>
+        </strong></font>A=Y</td>
+        <td align="right" valign="top" width="20%"><font
+        color="#0000FF"><strong>TYA<br>
+        </strong></font><font face="Courier New">N Z C I D V<br>
+        % % ~ ~ ~ ~</font></td>
+    </tr>
+    <tr>
+        <td width="10%">&nbsp;</td>
+        <td width="70%"><table border="0" width="70%">
+            <tr>
+                <td><font color="#0000FF">Addressing:</font></td>
+                <td colspan="2"><font color="#0000FF">Assembler
+                format:</font></td>
+                <td align="center"><font color="#0000FF">Bytes:</font></td>
+                <td align="center"><font color="#0000FF">Cycles:</font></td>
+            </tr>
+            <tr>
+                <td>Implied</td>
+                <td><font face="Courier New">TYA</font></td>
+                <td>&nbsp;</td>
+                <td align="center">1</td>
+                <td align="center">2</td>
+            </tr>
+        </table>
+        </td>
+        <td align="right" width="20%">&nbsp;</td>
+    </tr>
+</table>
+
+<hr size="1">
+
+<p align="right"><a href="atap_25.htm">Next chapter</a></p>
+</body>
+</html>

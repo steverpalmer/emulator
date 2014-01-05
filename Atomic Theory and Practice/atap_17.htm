@@ -1,0 +1,484 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Type"
+content="text/html; charset=iso-8859-1">
+<meta name="Template"
+content="C:\PROGRAM FILES\MICROSOFT OFFICE\OFFICE\html.dot">
+<meta name="GENERATOR" content="Microsoft FrontPage Express 2.0">
+<title>17 Machine-Code in BASIC</title>
+</head>
+
+<body bgcolor="#FFFFFF" link="#0000FF" vlink="#800080">
+
+<h1><font color="#0000FF">17 Machine-Code in BASIC</font></h1>
+
+<p>Machine-code subroutines written using the mnemonic assembler
+can be incorporated into BASIC programs, and several examples are
+given in the following sections.</p>
+
+<h2><font color="#0000FF">17.1 Replace Subroutine</font></h2>
+
+<p>The following machine-code routine, 'Replace&#146;, can be
+used to perform a character-by-character substitution on a
+string. It assumes the existence of three strings called R, S,
+and T. The routine looks up each character of R to see if it
+occurs in string S and, if so, it is replaced with the character
+in the corresponding position in string T,</p>
+
+<p>For example, if:</p>
+
+<blockquote>
+    <pre>$S=&quot;TMP&quot;; $T=&quot;SNF&quot;</pre>
+</blockquote>
+
+<p>then the sequence:</p>
+
+<blockquote>
+    <pre>$R=&quot;COMPUTER&quot; LINK RR0</pre>
+</blockquote>
+
+<p>will change $R to &quot;CONFUSER&quot;.</p>
+
+<blockquote>
+    <pre>10 REM Replace
+20 DIM LL(4),R(20),S(20),T(20)
+40 FOR N=l TO 2; DIM P(-1)
+50[
+60:LL0 LDX @0
+70:LL1 LDY @0; LDA R,X
+80 CMP @#D; BNE LL3; RTS finished
+90:LL2 INY
+100:LL3 LDA S,Y
+110 CMP @#D; BEQ LL4
+120 CMP R,X; BNE LL2
+130 LDA T,Y; STA R,X replace char
+140:LL4 INX; JMP LL1 next char
+150]
+160 NEXT N
+200 END</pre>
+</blockquote>
+
+<p>The routine has many uses, including code-conversion,
+encryption and decryption, and character rearrangement.</p>
+
+<h3><font color="#0000FF">17.1.1 Converting Arabic to Roman
+Numerals</font></h3>
+
+<p>To illustrate one application of the Replace routine, the
+following program converts any number from Arabic to Roman
+numerals:</p>
+
+<blockquote>
+    <pre>10 REM Roman Numerals
+20 DIM LL(4),Q(50)
+30 DIM R(20),S(20),T(20)
+40 FOR N=l TO 2; DIM P(-1)
+50[
+60:LL0 LDX @0
+70:LL1 LDY @0; LDA R,X
+80 CMP @#D; BNE LL3; RTS finished
+90:LL2 INY
+100:LL3 LDA S,Y
+110 CMP @#D; BEQ LL4
+120 CMP R,X; BNE LL2
+130 LDA T,Y; STA R,X replace char
+140:LL4 INX; JMP LL1 next char
+150]
+160 NEXT N
+200 $S=&quot;IVXLCDM&quot;; $T=&quot;XLCDM??&quot;
+210 $Q=&quot;&quot;; $Q+5=&quot;I&quot;; $Q+10=&quot;ii&quot;
+220 $Q+15=&quot;iii&quot;; $Q+20=&quot;iv&quot;; $9+25=&quot;V&quot; 
+230 $Q+30=&quot;vi&quot;; $Q+35=&quot;vii&quot;
+240 Sq+40=&quot;viii&quot;; $Q+45=&quot;ix&quot;
+250 DO $R=&quot;&quot;;D=10000
+255 INPUT A
+260 DO LINK LL0
+270 $R+LEN(R)=$(Q+A/D*5)
+280 A=A%D; D=D/10; UNTIL D=O
+290 PRINT $R; UNTIL 0
+Description of Program:
+Allocate labels and strings 
+40-160 Assemble Replace routine.
+200	Set up strings of Roman digits
+210-240 Set up strings of numerals for 0 to 9.
+255	Input number for conversion
+260	Multiply the Roman string R by ten by performing a character substitution.
+270	Append string for Roman representation for A/D to end of R.
+280	Look at next digit of Arabic number.
+290	Print Roman string, and carry on.
+Variables:
+A &#150; Number for conversion
+D &#150; Divisor for powers of ten.
+LL(0..4) &#150; Labels for assembler routine.
+LL0 &#150; Entry point for Replace routine.
+N &#150; Counter for two-pass assembly.
+P &#150; Location counter.
+Q &#150; $(Q+5*x) is string for Roman numeral X.
+$R &#150; String containing Roman representation of A.
+$S &#150; Source string for replacement.
+$T &#150; Target string for replacement.
+Program size: 579 bytes.</pre>
+</blockquote>
+
+<h2><font color="#0000FF">17.2 Harpsichord</font></h2>
+
+<p>The following program simulates a harpsichord; it uses the
+central section of the ATOM's keyboard as a harpsichord keyboard,
+with the keys assigned as follows:</p>
+
+<blockquote>
+    <table border="1">
+        <tr>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td>E</td>
+            <td>R</td>
+            <td>&nbsp;</td>
+            <td>Y</td>
+            <td>U</td>
+            <td>I</td>
+            <td>&nbsp;</td>
+            <td>P</td>
+            <td>@</td>
+            <td>&nbsp;</td>
+        </tr>
+        <tr>
+            <td>A</td>
+            <td>S</td>
+            <td>D</td>
+            <td>F</td>
+            <td>G</td>
+            <td>H</td>
+            <td>J</td>
+            <td>K</td>
+            <td>L</td>
+            <td>;</td>
+            <td>[</td>
+            <td>]</td>
+        </tr>
+    </table>
+    <p>E R Y U I P @<br>
+    A S D F G H J K L ; [ ]</p>
+</blockquote>
+
+<p>where the S key corresponds to middle C. The space bar gives a
+'rest', and no other key on the keyboard has any effect.</p>
+
+<p>The tune is displayed on a musical stave as it is played, with
+the black notes designated as sharps. Pressing RETURN will then
+play the music back, again displaying it as it is played.</p>
+
+<p>The program uses the Index routine, described in Section 16.3,
+to look up the key pressed, and a version of the Bleep routine in
+Section 15.4.1.</p>
+
+<blockquote>
+    <pre>1 REM Harpsichord
+10 DIM S(23),T(26),F(0)
+15 DIM WW(2),RR(2),Z(128)
+20 DIM P(-1)
+30 PRINT $21
+100[\generate NOTE
+110:WW0 STA F; LDA @0
+120:WW2 LDX F
+130:WW1 DEX; NOP; NOP; BNE WW1
+140 EOR @4; STA #B002
+150 DEY; BNE WW2; RTS
+160\READ KEY &amp; LOOK UP IN T
+165:RR1 STX F; RTS
+170:RR0 JSR #FFE3
+180 LDX @25
+190:RR2 CMP T,X; BEQ RR1
+210 DEX; BPL RR2; BMI RR0
+220]
+230 PRINT $6
+380 X=#8000
+390 D=256*#22
+393 S!20=#01016572
+395 S!16=#018898AB
+400 S!12=#01CBE401
+410 S!8=#5A606B79
+420 S!4=#8090A1B5
+430 S!0=#C0D7F2FF
+450 $T=&quot;ASDFGHJKL;[]?ER?YUI?P@? ?&quot;
+460 T?24=#1B; REM ESCAPE
+470 CLEAR 0
+480 DO K=32
+500 FOR M=0 TO 127; LINK RR0
+505 IF ?F&lt;&gt;25 GOTO 520
+508 IF M&lt;&gt;0 Q=m
+510 <font color="#FF0000">K</font>=128; GOTO 540
+520 Z?M=?F
+530 GOSUB d
+540 NEXT M
+780 K=32
+800 FOR M=0 TO Q-1; WAIT; WAIT
+810 ?F=Z?M; GOSUB d
+820 NEXT M
+825 UNTIL 0
+830dREM DRAW TUNE
+840 IF K&lt;31 GOTO e
+850 CLEAR 0
+860 FOR N=34 TO 10 STEP -6
+870 MOVE 0,N; DRAW 63,N
+880 NEXT N
+890 K=0
+900eIF ?F=23 GOTO s
+910 IF ?F&gt;11 K?(X+32*(27-?F))=35; K=K+1
+920 K?(X+32*(15-?F%12))=15
+930 K=K+1
+960 A=S?(?F); Y=D/A
+970 LINK WWO
+980 RETURN
+990sFOR N=0 TO 500;NEXT N
+995 K=K+1; RETURN
+Description of Program:
+100-150 Assemble bleep routine
+160-210 Assemble index routine
+393-430 Set up note values
+450-460 Set up keyboard table
+480-825 Main program loop
+500-540 Play up to 128 notes, storing and displaying them.
+800-820 Play back tune
+830	d: Draw note on staves and play note
+840-880 If first note of screen, draw staves
+900-920 Plot note on screen
+960-970 Play note
+990-995 Wait for a rest
+Variables:
+A &#150; Note frequency
+D &#150; Duration count
+?F &#150; Key Index
+K &#150; Column count on screen
+M &#150; Counter
+N &#150; Counter
+P &#150; Location counter
+Q &#150; Number of notes entered
+RR(0..2) &#150; Labels in index routine
+RR0 &#150; Entry point to read routine
+S?0..S?23 &#150; Vector of note periods
+T?0..T?26 &#150; Vector of keys corresponding to vector S
+WW(0..2) &#150; Labels in note routine
+WW0 &#150; Entry point to note routine
+X &#150; Screen address
+Y &#150; Number of cycles of note to be generated
+Z(0..128) &#150; Array to store tune.
+Program size: 1049 bytes Extra storage: 205 bytes Machine code: 41 bytes
+Total size: 1295 bytes</pre>
+</blockquote>
+
+<h2><font color="#0000FF">17.3 Bulls and Cows or Mastermind</font></h2>
+
+<p>Bulls and Cows is a game of logical deduction which has become
+very popular in the plastic peg version marketed as 'Mastermind'.
+In this version of the game the human player and the computer
+each think of a 'code', consisting of a string of four digits,
+and they then take turns in trying to guess the other player's
+code. A player is given the following information about his
+guess:</p>
+
+<p>The number of Bulls &#150; i.e. digits correct and in the
+right position. The number of Cows &#150; i.e. digits correct but
+in the wrong position.</p>
+
+<p>Note that each digit can only contribute to one Bull or one
+Cow. The human player specifies the computer's score as two
+digits, Bulls followed by Cows. For example, if the code string
+were '1234' the score for guesses of '0004&#146;, '4000', and
+'4231' would be '10&#146;, '01', and '22' respectively.<br>
+The following program plays Bulls and Cows, and it uses a
+combination of BASIC statements to perform the main input and
+output operations, and assembler routines to speed up sections of
+the program that are executed very frequently; without them the
+program would take several minutes to make each guess.</p>
+
+<blockquote>
+    <pre>10 REM Bulls &amp; Cows
+20 DIM M(3),N(3),C(0),B(0),L(9)
+23 DIM GG(10),RR(10)
+25 DIM LL(10)
+50 GOSUB z; REM Assemble code
+60 GOSUB z; REM Pass Two
+10OO REM MASTERMIND *****
+1005 Y=1; Z=1
+1007 @=2
+1010 GOSUB c
+1015 G=!M ;REM MY NUMBER
+1020 GOSUB c; Q=!m
+1030 I=0
+1040 DO I=I+1
+1050 PRINT &quot;(&quot; I &quot;)&quot; '
+1100 IF Y GOSUB a
+1150 IF Z GOSUB b
+1350 UNTIL Y=0 AND Z=0
+1400 PRINT &quot;END&quot;; END
+1999***********************************
+2000 REM Find Possible Guess
+2010fGOSUB c; F=!M
+2160wLINK LL7
+2165 IF !M=F PRINT &quot;YOU CHEATED&quot;; END
+2170 X=1
+2180v!N=GG(X)
+2190 LINK LL2
+2200 IF !C&amp;#FFF&lt;&gt;RR(X) THEN GOTO w
+2210 IF X&lt;I THEN X=X+1; GOTO v
+2220 Q=!m; RETURN
+3999***********************************
+4000 REM Choose Random Number
+4005cJ=ABSRND
+4007 REM Unpack Number
+4010uFOR K=0 TO 3
+4020 M?K=J%10
+4030 J=J/10
+4040 NEXT
+4050 RETURN
+4999***********************************
+5000 REM Print Guess
+5010gFOR K=0 TO 3
+5020 P. $(H&amp;15+#30)
+5030 H=H/256; NEXT
+5040 RETURN
+5999********%**************************
+6000 REM Your Turn
+6040aPRINT &quot;YOUR GUESS&quot;
+6045 INPUT J
+6050 GOSUB u
+6060 !N=G
+6065 LINK LL2
+6070 P.?B&quot; BULLS, &quot;?C&quot; COWS&quot;'
+6075 IF!C&lt;&gt;#400 RETURN
+6080 IF Z PRINT&quot;...AND YOU WIN&quot;'
+6083 IF Z:1 PRINT&quot; ABOUT TIME T00!&quot;'
+6085 Y=0
+6090 RETURN
+6999***********************************</pre>
+</blockquote>
+
+<blockquote>
+    <pre>7000 REM My Turn
+7090bPRINT &quot;MY GUESS:
+7100 H=Q; GOSUB g
+7110 PRINT &#146;
+7120 INPUT &quot;REPLY&quot; V
+7140 RR(I)=(V/10)*256+V%10
+7150 GG(I)=Q
+7225 IF V&lt;&gt;40 GOSUB f; RETURN
+7230 IF Y PRINT&quot;...SO I WIN!&quot;'
+7235 Z=0
+7240 RETURN
+7999***********************************</pre>
+</blockquote>
+
+<blockquote>
+    <pre>9000zREM Find Bulls/Cows
+9035 PRINT $#15 ;REM Turn off screen
+9045 DIM P(-1)
+9050[
+9055\ find bulls 6 cows for m:n
+9060:LL2 LDA @0; LDX #13 ZERO L,B,C
+9065:LL3 STA C,X; DEX; BPL LL3
+9100 LDY @3
+9105:LL0
+9120 LDA M,Y
+9130 CMP N,Y is bull?
+9140 BNE LL4 no bull
+9150 INC B count bull
+9160 BPL LL1 no cows	i
+9165:LL4
+9170 TAX not a bull
+9180 INC L,X
+9190 BEQ LL6
+9200 BPL LL5 not a cow
+9210:LL6 INC C
+9220:LL5 LDX N,Y; DEC L,X
+9225 BMI LL1; INC C
+9260:LL1 DEY; BPL LLO again
+9350 RTS
+9360\ increment M
+9370:LL7 SED; SEC; LDY @3
+9380:LL9 LDA M,Y; ADC @#90
+9390 BCS LL8; AND @#0F
+9400:LL8 STA M,Y; DEY
+9410 BPL LL9; RTS
+9500]
+9900 PRINT $#6 ;REM Turn Screen on
+9910 RETURN</pre>
+</blockquote>
+
+<blockquote>
+    <pre>Description of Program:</pre>
+</blockquote>
+
+<blockquote>
+    <pre>20-25 Declare arrays and vectors
+50-60 Assemble machine code
+1010 Computer chooses code
+1020 Choose number for first guess
+1040-1350 Main program loop
+1050	Print turn number
+110G	If you have not finished &#150; have a turn
+1150	If I have not finished &#150; my turn
+1350	Carry on until we have both finished
+1999	Lines to make listing more readable.
+2000-3999 f: Find a guess which is compatible with all your replies to my previous guesses.
+4000-4999 c: Choose a random number
+4007-4050 u: Unpack J into byte vector M, one digit per byte.
+5000-5040 g: Print guess in K as four digits.
+6000-6090 a: Human's guess at machine's number; print score.
+7000-7240 b: Machine's guess at human's code.
+9000-991O z: Subroutine to assemble machine-code routines
+9055-9350 Find score between numbers in byte vectors M and N; return in ?B and ?C.
+9360-9500 Increment number in vector M, in decimal, one digit per byte.</pre>
+    <pre>Variables:</pre>
+    <pre>?B &#150; Number of Bulls between vectors M and N
+?C &#150; Number of Cows between vectors M and N
+GG(1..10) &#150; List of human's guesses
+H &#150; Computer's number
+I &#150; Turn number
+J &#150; Human's guess as 4-digit decimal number
+K &#150; Counter
+L &#150; Vector to count occurrences of digits in numbers
+LL(0..10) &#150; Labels in assembler routines
+LL2 &#150; Entry point to routine to find score between 2 codes
+LL7 &#150; Entry point to routine to increment M
+!M, !N &#150; Code numbers to be compared
+P &#150; Location counter
+Q &#150; Computer's guess, compatible with human's previous replies.
+RR(1..10) &#150; List of human's replies to guesses GG(1..10)
+Y &#150; Zero if human has finished
+Z &#150; Zero if computer has finished.
+Program size: 1982 bytes
+Additional storage: 152 bytes
+Machine-code: 223 bytes
+Total storage: 2357 bytes</pre>
+    <pre>Sample run:</pre>
+    <pre>&gt;RUN
+( 1)
+YOUR GUESS?1122
+0 BULLS, 0 COWS
+MY GUESS: 6338
+REPLY?10
+( 2)
+YOUR GUESS?3344
+0 BULLS, 0 COWS
+MY GUESS: 6400
+REPLY?20
+( 3)
+YOUR GUESS?5566
+0 BULLS, 0 COWS
+MY GUESS: 6411
+REPLY?10
+( 4)
+YOUR GUESS?7788
+1 BULLS, 1 COWS
+MY GUESS: 6502
+REPLY?40
+...SO I WIN!
+( 5)
+YOUR GUESS?</pre>
+</blockquote>
+
+<p align="right"><a href="atap_18.htm">Next chapter</a></p>
+</body>
+</html>

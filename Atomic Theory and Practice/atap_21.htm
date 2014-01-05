@@ -1,0 +1,637 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Type"
+content="text/html; charset=iso-8859-1">
+<meta name="GENERATOR" content="Microsoft FrontPage Express 2.0">
+<title>21 BASIC Characters and Operators</title>
+</head>
+
+<body bgcolor="#FFFFFF">
+
+<h1><font color="#0000FF">21 BASIC Characters and Operators</font></h1>
+
+<p>This section lists all the ATOM BASIC special characters and
+operators. They are followed by a description of the character or
+operator, and its name enclosed in {} brackets. Lower case
+characters in &lt;&gt; brackets refer to the syntax definition in
+Chapter 26.</p>
+
+<h2><font color="#0000FF">21.1 Special Character</font></h2>
+
+<table border="0" width="100%">
+    <tr>
+        <td width="10%"><font color="#0000FF"><strong></strong></font>&nbsp;</td>
+        <td width="50%"><font color="#0000FF"><strong>Line
+        terminator</strong></font></td>
+        <td align="right" width="40%"><font color="#0000FF"><strong>{RETURN}</strong></font></td>
+    </tr>
+</table>
+
+<p>This character is used to terminate a statement or command, or
+a line input to the INPUT statement, and as the terminator for
+strings.</p>
+
+<table border="0" width="100%">
+    <tr>
+        <td width="10%"><font color="#0000FF"><strong></strong></font>&nbsp;</td>
+        <td width="50%"><font color="#0000FF"><strong>Cancel
+        input </strong></font></td>
+        <td align="right" width="40%"><font color="#0000FF"><strong>{CAN
+        (CTRL-X)}</strong></font></td>
+    </tr>
+</table>
+
+<p>This character will, when typed from the keyboard, delete the
+current input buffer and give a new line.</p>
+
+<table border="0" width="100%">
+    <tr>
+        <td width="10%"><font color="#0000FF"><strong></strong></font>&nbsp;</td>
+        <td width="50%"><font color="#0000FF"><strong>Escape</strong></font></td>
+        <td align="right" width="40%"><font color="#0000FF"><strong>{Esc}</strong></font></td>
+    </tr>
+</table>
+
+<p>This character, typed on the keyboard, will stop any BASIC
+program and return to direct mode. BASIC checks for escape at
+every statement terminator. Typing escape when in direct mode
+resets the screen to character mode.</p>
+
+<p>The ESC key can be disabled from a program by executing:</p>
+
+<pre>        #B000=10</pre>
+
+<table border="0" width="100%">
+    <tr>
+        <td width="10%"><font color="#0000FF"><strong></strong></font>&nbsp;</td>
+        <td width="50%"><font color="#0000FF"><strong>Separator</strong></font></td>
+        <td align="right" width="40%"><font color="#0000FF"><strong>{space}</strong></font></td>
+    </tr>
+</table>
+
+<p>This character is stored intact to allow formatting of
+programs. Space may be used anywhere except:<br>
+1. In control words.<br>
+2. After the # {hash} symbol.<br>
+3. Between line number and label.</p>
+
+<p>It may be necessary to insert spaces to avoid ambiguity as,
+for example, in:</p>
+
+<pre>        FORZ=V TOW STEPX</pre>
+
+<p>Here a separator character is needed between V and T, and
+similarly between W and S, to eliminate the possibility of a
+function called VTOWSTEP.</p>
+
+<table border="0" width="100%">
+    <tr>
+        <td width="10%"><font color="#0000FF"><strong>&quot;</strong></font></td>
+        <td width="50%"><font color="#0000FF"><strong>String
+        delimiter</strong></font></td>
+        <td align="right" width="40%"><font color="#0000FF"><strong>{double
+        quote}</strong></font></td>
+    </tr>
+</table>
+
+<p>This character is used as the delimiting character whenever a
+string is to be part of a BASIC statement (i.e. everywhere except
+when inputting strings with an INPUT statement). If you wish to
+include in a string it should be written &quot;&quot;. The simple
+rule for valid strings is that they have an even number of
+&quot;characters in them.</p>
+
+<table border="0" width="100%">
+    <tr>
+        <td width="10%"><font color="#0000FF"><strong>'</strong></font></td>
+        <td width="50%"><font color="#0000FF"><strong>New line</strong></font></td>
+        <td align="right" width="40%"><font color="#0000FF"><strong>{single
+        quote}</strong></font></td>
+    </tr>
+</table>
+
+<p>This character may be used in PRINT and INPUT statements to
+generate a new line by generating both CR and LF codes. The value
+of COUNT will be set to zero.</p>
+
+<table border="0" width="100%">
+    <tr>
+        <td width="10%"><font color="#0000FF"><strong>()</strong></font></td>
+        <td width="50%"><font color="#0000FF"><strong></strong></font>&nbsp;</td>
+        <td align="right" width="40%"><font color="#0000FF"><strong>{round
+        brackets}</strong></font></td>
+    </tr>
+</table>
+
+<p>These characters provide a means of overriding the normal
+arithmetic priority of the operators in an &lt;EXPRESSION&gt;.
+The contents of brackets are worked out first, starting with the
+innermost brackets.</p>
+
+<table border="0" width="100%">
+    <tr>
+        <td width="10%"><font color="#0000FF"><strong>.</strong></font></td>
+        <td width="50%"><font color="#0000FF"><strong>Separator</strong></font></td>
+        <td align="right" width="40%"><font color="#0000FF"><strong>{comma}</strong></font></td>
+    </tr>
+</table>
+
+<p>This character is used to separate items in PRINT and INPUT
+statements.</p>
+
+<table border="0" width="100%">
+    <tr>
+        <td width="10%"><font color="#0000FF"><strong>.</strong></font></td>
+        <td width="50%"><font color="#0000FF"><strong></strong></font>&nbsp;</td>
+        <td align="right" width="40%"><font color="#0000FF"><strong>{stop}</strong></font></td>
+    </tr>
+</table>
+
+<p>This character is used to allow a shorter representation for
+some of the key-words, thus using less memory space to store the
+program.</p>
+
+<table border="0" width="100%">
+    <tr>
+        <td width="10%"><font color="#0000FF"><strong>;</strong></font></td>
+        <td width="50%"><font color="#0000FF"><strong>Statement
+        terminator </strong></font></td>
+        <td align="right" width="40%"><font color="#0000FF"><strong>{semi
+        -colon}</strong></font></td>
+    </tr>
+</table>
+
+<p>This character is the statement terminator used in
+multi-statement lines.</p>
+
+<table border="0" width="100%">
+    <tr>
+        <td width="10%"><font color="#0000FF"><strong>@</strong></font></td>
+        <td width="50%"><font color="#0000FF"><strong>Numeric
+        field width</strong></font></td>
+        <td align="right" width="40%"><font color="#0000FF"><strong>{at}</strong></font></td>
+    </tr>
+</table>
+
+<p>This character is a variable which controls the PRINT
+statement. It specifies the number of spaces in which a number
+will be printed, right justified. If the field size is too small
+to print the number, the number is printed in full without any
+extra spaces; thus field sizes of 0 and 1 give the same result of
+minimum-width printing. The - siqn is printed in front of a
+negative number and counts towards the number of characters in
+the number. On initial entry into BASIC, any error, or following
+use of the LIST statement or assembler, @ is set to 8. Example:</p>
+
+<pre>         @=5;PRINT1,12,123,1234,12345,123456'
+      1   12  123 123412345123456</pre>
+
+<table border="0" width="100%">
+    <tr>
+        <td width="10%"><font color="#0000FF"><strong>a -- z</strong></font></td>
+        <td width="50%"><font color="#0000FF"><strong>Labels</strong></font></td>
+        <td width="40%"><font color="#0000FF"><strong></strong></font>&nbsp;</td>
+    </tr>
+</table>
+
+<p>These characters provide a very fast means of transferring
+control with the GOTO and GOSUB statements. A line may be
+labelled by putting one of a-z immediately after the line number
+(no blanks are allowed before the label). Transfer to a labelled
+line is achieved by a GOTO or GOSUB statement followed by the
+required label. Example:</p>
+
+<pre>      10a PRINT&quot;looping&quot;'
+      20 GOTO a
+ )RUN
+ looping
+ looping
+ looping</pre>
+
+<h2><font color="#0000FF">21.2 Operators</font></h2>
+
+<table border="0" width="100%">
+    <tr>
+        <td width="10%"><font color="#0000FF"><strong>!</strong></font></td>
+        <td width="50%"><font color="#0000FF"><strong>Word
+        indirection </strong></font></td>
+        <td align="right" width="40%"><font color="#0000FF"><strong>{pling}</strong></font></td>
+    </tr>
+</table>
+
+<p>This character provides word indirection. It can be both a
+binary and a unary operator and appear on the left-hand side of
+an equal siqn as well as in &lt;EXPRESSION&gt;s.</p>
+
+<p>As a unary operator on the LEFT of an equals sign it takes a
+&lt;FACTOR&gt; as an argument and will treat this as an address.
+The &lt;EXPRESSION&gt; on the right of the equals sign is
+evaluated and then stored, startinq with the least siqnificant
+byte, in the four locations starting at this address. Example:</p>
+
+<pre>       !A=#12345678</pre>
+
+<p>will store values in memory as follows:</p>
+
+<blockquote>
+    <table border="0">
+        <tr>
+            <td align="center" bgcolor="#C0C0C0">78</td>
+            <td align="center" bgcolor="#C0C0C0">56</td>
+            <td align="center" bgcolor="#C0C0C0">34</td>
+            <td align="center" bgcolor="#C0C0C0">12</td>
+        </tr>
+        <tr>
+            <td align="center">A</td>
+            <td align="center">A+1</td>
+            <td align="center">A+2</td>
+            <td align="center">A+3</td>
+        </tr>
+    </table>
+</blockquote>
+
+<p>As a binary operator on the LEFT of an equals sign it takes
+two arguments; a &lt;VARIABLE&gt; on the left and a
+&lt;FACTOR&gt; on the right. These two values are added together
+to create the address, and the value is stored at this address as
+above. Example:</p>
+
+<pre>       A!B=#12345678</pre>
+
+<p>As a unary operator in an &lt;EXPRESSION&gt; it takes a
+&lt;FACTOR&gt; as an argument and will treat this as an address.
+The value is that contained in the four bytes at this address.
+For example, if the contents of memory are as follows:</p>
+
+<blockquote>
+    <table border="0">
+        <tr>
+            <td align="center" bgcolor="#C0C0C0">18</td>
+            <td align="center" bgcolor="#C0C0C0">00</td>
+            <td align="center" bgcolor="#C0C0C0">00</td>
+            <td align="center" bgcolor="#C0C0C0">00</td>
+        </tr>
+        <tr>
+            <td align="center">A</td>
+            <td align="center">A+1</td>
+            <td align="center">A+2</td>
+            <td align="center">A+3</td>
+        </tr>
+    </table>
+</blockquote>
+
+<p>Then the value printed by</p>
+
+<pre>       PRINT !A</pre>
+
+<p>will be 24 (decimal).</p>
+
+<p>As a binary operator in an &lt;EXPRESSION&gt; it takes two
+arguments, a &lt;FACTOR&gt; on either side. The sum of these two
+values is used as the address, as above. Example:</p>
+
+<pre>       PRINT A!B</pre>
+
+<table border="0" width="100%">
+    <tr>
+        <td width="10%"><font color="#0000FF"><strong>#</strong></font></td>
+        <td width="50%"><font color="#0000FF"><strong>Hexadecimal
+        constant</strong></font></td>
+        <td align="right" width="40%"><font color="#0000FF"><strong>{hash
+        or pound}</strong></font></td>
+    </tr>
+</table>
+
+<p>This character denotes the start of a hexadecimal value in
+&lt;FACTOR&gt;. It cannot be followed by a space and there is no
+check made for overflow of the value. The valid hexadecimal
+characters are 0 to 9 and A to F.</p>
+
+<table border="0" width="100%">
+    <tr>
+        <td width="10%"><font color="#0000FF"><strong>$</strong></font></td>
+        <td width="50%"><font color="#0000FF"><strong>String
+        pointer </strong></font></td>
+        <td align="right" width="40%"><font color="#0000FF"><strong>{dollar}</strong></font></td>
+    </tr>
+</table>
+
+<p>This character introduces a pointer to a string; whenever it
+appears it can be followed by an &lt;EXPRESSION&gt;. In a PRINT
+statement, if the pointer is less than 256, the ASCII character
+corresponding to the value of the pointer will be printed. Dollar
+can be used on the left of an equals sign as well as anywhere a
+string can be used. If the only choice allowed is either a dollar
+or a string in double quotes, then it is possible to omit the
+dollar. Strings may contain up to 255 characters. Examples:</p>
+
+<pre>       IF$A=$B........    string equality test
+       IF$A=&quot;FRED&quot;....    string equality test
+       $A=&quot;JIM&quot;.......    move string JIM to where A is pointing
+       $A=$B..........    copy B's string to where A points
+       PRINT$A........    print the string A is pointinq at
+       PRINT$A+1......    print the string (A+1) is pointing at
+       PRINT$64.......    print ASCII character 64 i.e. @</pre>
+
+<table border="0" width="100%">
+    <tr>
+        <td width="10%"><font color="#0000FF"><strong>%</strong></font></td>
+        <td width="50%"><font color="#0000FF"><strong>Remainder</strong></font></td>
+        <td align="right" width="40%"><font color="#0000FF"><strong>{percent}</strong></font></td>
+    </tr>
+</table>
+
+<p>This character is the operation of signed remainder between
+two values. Its form is &lt;FACTOR a&gt;%&lt;FACTOR b&gt;. The
+sign of the result is the same as the sign of the first operand.</p>
+
+<table border="0" width="100%">
+    <tr>
+        <td width="10%"><font color="#0000FF"><strong>&amp;</strong></font></td>
+        <td width="50%"><font color="#0000FF"><strong>Hexadecimal/AND
+        </strong></font></td>
+        <td align="right" width="40%"><font color="#0000FF"><strong>{ampersand}</strong></font></td>
+    </tr>
+</table>
+
+<p>This character has two distinct uses:</p>
+
+<p>1. To print hexadecimal values in the PRINT statement. Its
+form here is as a prefix in front of the particular print item
+which is to be printed in hexadecimal.</p>
+
+<p>2. As the operation of bitwise logical AND between two values.
+Its form here is &lt;FACTOR a&gt; &amp; &lt;FACTOR b&gt; and the
+result is a 32 bit word, each bit of which is a logical AND
+between corresponding bits of the operands.</p>
+
+<table border="0" width="100%">
+    <tr>
+        <td width="10%"><font color="#0000FF"><strong>*</strong></font></td>
+        <td width="50%"><font color="#0000FF"><strong>Multiply</strong></font></td>
+        <td align="right" width="40%"><font color="#0000FF"><strong>{star}</strong></font></td>
+    </tr>
+</table>
+
+<p>This character is the operation of signed multiplication
+between two 32 bit values. Its form is &lt;FACTOR a&gt; *
+&lt;FACTOR b&gt;.</p>
+
+<table border="0" width="100%">
+    <tr>
+        <td width="10%"><font color="#0000FF"><strong>+</strong></font></td>
+        <td width="50%"><font color="#0000FF"><strong>Add</strong></font></td>
+        <td align="right" width="40%"><font color="#0000FF"><strong>{plus}</strong></font></td>
+    </tr>
+</table>
+
+<p>This character has two similar uses:</p>
+
+<p>1. As the unary operation &quot;do not change sign&quot;. Its
+form here is +&lt;FACTOR&gt;.</p>
+
+<p>2. As the operation of addition between two 32 bit values. Its
+form here is &lt;TERM a&gt; + &lt;TERM b&gt;.</p>
+
+<table border="0" width="100%">
+    <tr>
+        <td width="10%"><font color="#0000FF"><strong>-</strong></font></td>
+        <td width="50%"><font color="#0000FF"><strong>Subtract</strong></font></td>
+        <td align="right" width="40%"><font color="#0000FF"><strong>(minus}</strong></font></td>
+    </tr>
+</table>
+
+<p>This character has two similar uses:</p>
+
+<p>1. As the unary operation of negate. Its form here is
+-&lt;FACTOR&gt;, and the result is 0 - &lt;FACTOR&gt;.</p>
+
+<p>2. As the operation of subtraction between two 32 bit values.
+Its form here is &lt;TERM a&gt; -&lt;TERM b&gt; and the result is
+found by subtracting &lt;TERM b&gt; from &lt;TERM a&gt;.</p>
+
+<table border="0" width="100%">
+    <tr>
+        <td width="10%"><font color="#0000FF"><strong>/</strong></font></td>
+        <td width="50%"><font color="#0000FF"><strong>Divide</strong></font></td>
+        <td align="right" width="40%"><font color="#0000FF"><strong>{slash}</strong></font></td>
+    </tr>
+</table>
+
+<p>This character is the operation of signed division between two
+32 bit values. Its form is &lt;FACTOR a&gt;/&lt;FACTOR b&gt; and
+the result is found by dividing &lt;FACTOR a&gt; by &lt;FACTOR
+b&gt;.</p>
+
+<table border="0" width="100%">
+    <tr>
+        <td width="10%"><font color="#0000FF"><strong>:</strong></font></td>
+        <td width="50%"><font color="#0000FF"><strong>Exclusive
+        OR</strong></font></td>
+        <td align="right" width="40%"><font color="#0000FF"><strong>{colon}</strong></font></td>
+    </tr>
+</table>
+
+<p>This character is the operation of bitwise logical
+exclusive-OR between two 32 bit &lt;TERM&gt;s. Its form is
+&lt;TERM a&gt;:&lt;TERM b&gt; and the result is a 32 bit word
+each bit of which is the exclusive-OR of corresponding bits in
+&lt;TERM a&gt; and &lt;TERM b&gt;.</p>
+
+<table border="0" width="100%">
+    <tr>
+        <td width="10%"><font color="#0000FF"><strong>&lt;</strong></font></td>
+        <td width="50%"><font color="#0000FF"><strong>Less-than</strong></font></td>
+        <td align="right" width="40%"><font color="#0000FF"><strong>{left
+        trianqular bracket}</strong></font></td>
+    </tr>
+</table>
+
+<p>This character is the relational operator &quot;less
+than&quot; betveen two &lt;EXPRESSION&gt;s. Its form is
+&lt;EXPRESSION a&gt; &lt; &lt;EXPRESSION b&gt; and it returns a
+truth value, of 'true' if &lt;EXPRESSION a&gt; is less than
+&lt;EXPRESSION b&gt; and 'false' otherwise, which can be tested
+by IF and UNTIL statements.</p>
+
+<table border="0" width="100%">
+    <tr>
+        <td width="10%"><font color="#0000FF"><strong>=</strong></font></td>
+        <td width="50%"><font color="#0000FF"><strong>Equals</strong></font></td>
+        <td align="right" width="40%"><font color="#0000FF"><strong>{equal}</strong></font></td>
+    </tr>
+</table>
+
+<p>This character has two uses:</p>
+
+<p>l. As the relational operator &quot;equal to&quot; between two
+&lt;EXPRESSION&gt;s. Its form is &lt;EXPRESSION a&gt; =
+&lt;EXPRESSION b&gt; and it returns a truth value, of 'true' if
+&lt;EXPRESSION a&gt; is equal to &lt;EXPRESSION b&gt; and 'false'
+otherwise, which can be tested by IF and UNTIL statements.</p>
+
+<p>2. As the assignment operation &quot;becomes&quot;. The object
+on the left hand side is assigned the value of the right hand
+side. There are three similar uses of this:</p>
+
+<pre>1. Arithmetic                                Example:
+       &lt;VARIABLE&gt;=&lt;EXPRESSION&gt;                 A=2
+       &lt;VARIABLE&gt;!&lt;FACTOR&gt;=&lt;EXPRESSION&gt;        A!J=3
+       &lt;VARIABLE&gt;?&lt;FACTOR&gt;=&lt;EXPRESSION&gt;        A?J=4
+       !&lt;FACTOR&gt;=&lt;EXPRESSION&gt;                  !J=5
+       ?&lt;FACTOR&gt;=&lt;EXPRESSION&gt;                  ?J=6
+       &lt;ARRAY element&gt;=&lt;EXPRESSION&gt;            W(1)=7</pre>
+
+<pre>2. String movement
+       $&lt;EXPRESSION&gt;=&lt;STRING right&gt;        $A=&quot;FRED&quot;</pre>
+
+<pre>3. FOR statement
+       FOR&lt;VARIABLE&gt;=&lt;EXPRESSION&gt;....         FOR A=O TO..</pre>
+
+<table border="0" width="100%">
+    <tr>
+        <td width="10%"><font color="#0000FF"><strong>&gt;</strong></font></td>
+        <td width="50%"><font color="#0000FF"><strong>Greater-than</strong></font></td>
+        <td align="right" width="40%"><font color="#0000FF"><strong>{right
+        triangular bracket}</strong></font></td>
+    </tr>
+</table>
+
+<p>This character is the relational operator &quot;greater
+than&quot; between two &lt;EXPRESSION&gt;s. Its form is
+&lt;EXPRESSION a&gt; &gt; &lt;EXPRESSION b&gt; and it returns a
+logical value, of 'true' if &lt;EXPRESSION a&gt; is greater than
+&lt;EXPRESSION b&gt; and 'false' otherwise, which can be tested
+by IF and UNTIL statements.</p>
+
+<table border="0" width="100%">
+    <tr>
+        <td width="10%"><font color="#0000FF"><strong>?</strong></font></td>
+        <td width="50%"><font color="#0000FF"><strong>Byte
+        indirection</strong></font></td>
+        <td align="right" width="40%"><font color="#0000FF"><strong>{query}</strong></font></td>
+    </tr>
+</table>
+
+<p>This character provides byte indirection. It can be either a
+binary or a unary operator and appear on the left-hand of an
+equals sign as well as in &lt;EXPRESSION&gt;s.</p>
+
+<p>As a unary operator on the LEFT of an equals sign it takes a
+&lt;FACTOR&gt; as an argument and will treat this as an address;
+the &lt;EXPRESSION&gt; on the right of the equals sign is
+evaluated and its least significant byte is stored at that
+address. Example:</p>
+
+<pre>      ?A=#12345678</pre>
+
+<p>will store into memory as follows:</p>
+
+<blockquote>
+    <table border="0">
+        <tr>
+            <td bgcolor="#C0C0C0"><font face="Courier New">78</font></td>
+        </tr>
+        <tr>
+            <td align="center"><font face="Courier New">A</font></td>
+        </tr>
+    </table>
+</blockquote>
+
+<p>As a binary operator on the LEFT of an equals sign it takes
+two arguments, a &lt;VARIABLE&gt; on the left and a
+&lt;FACTOR&gt; on the right. These two values are added together
+to create the address where the value will be stored as above.
+Example:</p>
+
+<pre>      A?B=#12345678</pre>
+
+<p>As a unary operator in an &lt;EXPRESSION&gt; it takes a
+&lt;FACTOR&gt; as an argument and will treat this as an address;
+the value is a word whose most significant three bytes are zero
+and whose least significant byte is the contents of that address.
+Example:</p>
+
+<pre>        PRINT ?A</pre>
+
+<p>As a binary operator in an &lt;EXPRESSION&gt;. a &lt;factor
+arguments, two takes it&gt; on either side. The sum of these two
+values is the address used as above. Example :</p>
+
+<pre>        PRINT A?B</pre>
+
+<table border="0" width="100%">
+    <tr>
+        <td width="10%"><table border="0">
+            <tr>
+                <td align="center" bgcolor="#C0C0C0"><font
+                color="#0000FF"><strong>\</strong></font></td>
+            </tr>
+        </table>
+        </td>
+        <td width="50%"><font color="#0000FF"><strong>OR</strong></font></td>
+        <td align="right" width="40%"><font color="#0000FF"><strong>{inverted
+        backslash}</strong></font></td>
+    </tr>
+</table>
+
+<p>This character is the binary operation of bitwise logical OR
+between two 32 bit &lt;TERM&gt;s. Its form is &lt;TERM
+a&gt;g&lt;TERM b&gt; and the result is a 32 bit word each bit of
+which is an or operation between corresponding bits of &lt;TERM
+a&gt; and &lt;TERM b&gt;.</p>
+
+<table border="0" width="100%">
+    <tr>
+        <td width="10%"><font color="#0000FF"><strong>&lt;&gt;</strong></font></td>
+        <td width="50%"><font color="#0000FF"><strong>Not equal</strong></font></td>
+        <td align="right" width="40%"><font color="#0000FF"><strong>{left
+        and right triangular brackets}</strong></font></td>
+    </tr>
+</table>
+
+<p>This symbol is the relational operator &quot;not equal
+to&quot; between two &lt;EXPRESSION&gt;s. Its form is
+&lt;EXPRESSION a&gt; &lt;&gt; &lt;EXPRESSION b&gt; and it returns
+a truth value, of 'true' if &lt;EXPRESSION a&gt; is not equal to
+&lt;EXPRESSION b&gt; and 'false' otherwise, which can be tested
+by IF and UNTIL statements.</p>
+
+<table border="0" width="100%">
+    <tr>
+        <td width="10%"><font color="#0000FF"><strong>&lt;=</strong></font></td>
+        <td width="50%"><font color="#0000FF"><strong>Less or
+        equal</strong></font></td>
+        <td align="right" width="40%"><font color="#0000FF"><strong>(left
+        triangular bracket, equal}</strong></font></td>
+    </tr>
+</table>
+
+<p>This symbol is the relational operator &quot;less than or
+equal&quot; between two &lt;EXPRESSION&gt;s. Its form is
+&lt;EXPRESSION a&gt; &lt;= &lt;EXPRESSION b&gt; and it returns a
+truth value, of 'true' if &lt;EXPRESSION a&gt; is less than or
+equal to &lt;EXPRESSION b&gt; and 'false' otherwise, which can be
+tested by IF and UNTIL statements.</p>
+
+<table border="0" width="100%">
+    <tr>
+        <td width="10%"><font color="#0000FF"><strong>&gt;=</strong></font></td>
+        <td width="50%"><font color="#0000FF"><strong>Greater or
+        equal</strong></font></td>
+        <td align="right" width="40%"><font color="#0000FF"><strong>{right
+        triangular bracket, equal}</strong></font></td>
+    </tr>
+</table>
+
+<p>This symbol is the relational operation &quot;greater than or
+equal to&quot; between two &lt;EXPRESSION&gt;s. Its form is
+&lt;EXPRESSION a&gt; &gt;= &lt;EXPRESSION b&gt; and it returns a
+truth value, of 'true' if &lt;EXPRESSION a&gt; is greater than or
+equa1 to &lt;EXPRESSION b&gt; and false otherwise, which can be
+tested by IF and UNTIL statements.</p>
+
+<p align="right"><a href="atap_22.htm">Next chapter</a></p>
+</body>
+</html>

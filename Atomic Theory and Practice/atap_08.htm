@@ -1,0 +1,849 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Type"
+content="text/html; charset=iso-8859-1">
+<meta name="GENERATOR" content="Microsoft FrontPage Express 2.0">
+<title>8 Strings</title>
+</head>
+
+<body bgcolor="#FFFFFF">
+
+<h1><font color="#0000FF">8 Strings</font> </h1>
+
+<p>A 'string' is a sequence of characters; the characters can be
+anything letters, digits, or punctuation marks. They can even be
+control characters.</p>
+
+<h2><font color="#0000FF">8.1 Quoted Strings</font></h2>
+
+<p>Strings are represented in a program by enclosinq the
+characters between quotation marks; quoted strings have already
+been introduced in the context of the PRINT and INPUT statements.
+For example: </p>
+
+<blockquote>
+    <pre>&quot;THIS IS A STRING&quot;</pre>
+</blockquote>
+
+<p>To represent a quotation mark in a quoted string the quotation
+mark is typed twice. Valid strings always contain an even number
+of quotation marks. For example:</p>
+
+<blockquote>
+    <pre>PRINT&quot;HE SAID: &quot;&quot;THIS IS A VALID STRING&quot;&quot;&quot;</pre>
+</blockquote>
+
+<p>will print:</p>
+
+<blockquote>
+    <pre>HE SAID: &quot;THIS IS A VALID STRING&quot;</pre>
+</blockquote>
+
+<h2><font color="#0000FF">8.2 String Variables</font></h2>
+
+<p>The variables A to Z have already been met, where they are
+used to represent numbers. These variables can also be used to
+represent strings, and strings can be manipulated, input with the
+INPUT statement, printed with the PRINT statement, and there are
+several functions for manipulating strings.</p>
+
+<h3><font color="#0000FF">8.2.1 Allocating Space for Strings</font></h3>
+
+<p>BASIC allows strings of any size up to 255 characters. To use
+string variables space for the strings should first be allocated
+by means of a DIM (dimension) statement. For example, for a
+string of up to 10 characters using the variable A the statement
+would be:</p>
+
+<blockquote>
+    <pre>DIM A(10)</pre>
+</blockquote>
+
+<p>Any number of strings can be dimensioned in one DIM statement.</p>
+
+<p><font color="#0000FF"><b>8.2.2 String Operator '$'</b></font></p>
+
+<p>Having allocated space for the string it can then be assigned
+a value. <br>
+For example:</p>
+
+<blockquote>
+    <pre>$A=&quot;A STRING&quot;</pre>
+</blockquote>
+
+<p>The '$' is the string-address operator. It specifies that the
+value following it is the address of the first character of a
+string.</p>
+
+<p>The effect of the statement DIM A(10) is to reserve 11 memory
+locations in the area of free memory above the text of the BASIC
+program, and to put the address of the first of those locations
+into A. In other words, A is a pointer to that area of memory.
+After the above assignment the contents of those locations are as
+follows:</p>
+
+<blockquote>
+    <table border="0">
+        <tr>
+            <td><font face="Courier New">A:</font></td>
+            <td><table border="0">
+                <tr>
+                    <td align="center" bgcolor="#C0C0C0"><font
+                    face="Courier New">A</font></td>
+                    <td align="center" bgcolor="#C0C0C0">&nbsp;</td>
+                    <td align="center" bgcolor="#C0C0C0"><font
+                    face="Courier New">S</font></td>
+                    <td align="center" bgcolor="#C0C0C0"><font
+                    face="Courier New">T</font></td>
+                    <td align="center" bgcolor="#C0C0C0"><font
+                    face="Courier New">R</font></td>
+                    <td align="center" bgcolor="#C0C0C0"><font
+                    face="Courier New">I</font></td>
+                    <td align="center" bgcolor="#C0C0C0"><font
+                    face="Courier New">N</font></td>
+                    <td align="center" bgcolor="#C0C0C0"><font
+                    face="Courier New">G</font></td>
+                    <td align="center" bgcolor="#C0C0C0"><font
+                    face="Courier New">~</font></td>
+                    <td align="center" bgcolor="#C0C0C0"><font
+                    face="Courier New">?</font></td>
+                    <td align="center" bgcolor="#C0C0C0"><font
+                    face="Courier New">?</font></td>
+                </tr>
+            </table>
+            </td>
+        </tr>
+    </table>
+</blockquote>
+
+<p>The question-marks indicate that the last two locations could
+contain anything. The character '~' represents 'return' which is
+automatically stored in memory to indicate the end of the string.
+The DIM statement allocates one extra location to hold this
+terminator character, although you will not normally be aware of
+its presence.</p>
+
+<p>Note that it would be dangerous to allocate a string of more
+than 10 characters to A since it would exceed the space allocated
+to A.</p>
+
+<h3><font color="#0000FF">8.2.3 Printing strings</font></h3>
+
+<p>A string variable can be printed by writing:</p>
+
+<blockquote>
+    <pre>PRINT $A</pre>
+</blockquote>
+
+<p>This would print:</p>
+
+<blockquote>
+    <pre>A STRING&gt;</pre>
+</blockquote>
+
+<p>and no extra spaces are inserted before or after the string.</p>
+
+<h3><font color="#0000FF">8.2.4 String Assignment</font></h3>
+
+<p>Suppose that a second string is dimensioned as follows:</p>
+
+<blockquote>
+    <pre>DIM B(8)</pre>
+</blockquote>
+
+<p>The string $A can be assigned to $B by the statement:</p>
+
+<blockquote>
+    <pre>$B=SA</pre>
+</blockquote>
+
+<p>which should be read as 'string B becomes string A'. The
+result of this assignment in memory is as follows:</p>
+
+<blockquote>
+    <table border="0">
+        <tr>
+            <td valign="top"><font face="Courier New">A:</font></td>
+            <td><table border="0">
+                <tr>
+                    <td align="center" bgcolor="#C0C0C0"><font
+                    face="Courier New">A</font></td>
+                    <td align="center" bgcolor="#C0C0C0">&nbsp;</td>
+                    <td align="center" bgcolor="#C0C0C0"><font
+                    face="Courier New">S</font></td>
+                    <td align="center" bgcolor="#C0C0C0"><font
+                    face="Courier New">T</font></td>
+                    <td align="center" bgcolor="#C0C0C0"><font
+                    face="Courier New">R</font></td>
+                    <td align="center" bgcolor="#C0C0C0"><font
+                    face="Courier New">I</font></td>
+                    <td align="center" bgcolor="#C0C0C0"><font
+                    face="Courier New">N</font></td>
+                    <td align="center" bgcolor="#C0C0C0"><font
+                    face="Courier New">G</font></td>
+                    <td align="center" bgcolor="#C0C0C0"><font
+                    face="Courier New">~</font></td>
+                    <td align="center" bgcolor="#C0C0C0"><font
+                    face="Courier New">?</font></td>
+                    <td align="center" bgcolor="#C0C0C0"><font
+                    face="Courier New">?</font></td>
+                    <td align="center" bgcolor="#C0C0C0"><font
+                    face="Courier New">A</font></td>
+                    <td align="center" bgcolor="#C0C0C0">&nbsp;</td>
+                    <td align="center" bgcolor="#C0C0C0"><font
+                    face="Courier New">S</font></td>
+                    <td align="center" bgcolor="#C0C0C0"><font
+                    face="Courier New">T</font></td>
+                    <td align="center" bgcolor="#C0C0C0"><font
+                    face="Courier New">R</font></td>
+                    <td align="center" bgcolor="#C0C0C0"><font
+                    face="Courier New">I</font></td>
+                    <td align="center" bgcolor="#C0C0C0"><font
+                    face="Courier New">N</font></td>
+                    <td align="center" bgcolor="#C0C0C0"><font
+                    face="Courier New">G</font></td>
+                    <td align="center" bgcolor="#C0C0C0"><font
+                    face="Courier New">~</font></td>
+                </tr>
+                <tr>
+                    <td><font face="Courier New">^<br>
+                    A</font></td>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                    <td><font face="Courier New">^<br>
+                    B</font></td>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                </tr>
+            </table>
+            </td>
+        </tr>
+    </table>
+</blockquote>
+
+<h3><font color="#0000FF">8.2.5 String Equality</font></h3>
+
+<p>It is possible to test whether two strings are equal with the
+IF statement. For example:</p>
+
+<blockquote>
+    <pre>$A=&quot;CAT&quot;; $B=&quot;CAT&quot;
+IF $A=$B PRINT &quot;SAME&quot; </pre>
+</blockquote>
+
+<p>would print SAME.</p>
+
+<h3><font color="#0000FF">8.2.6 String Input</font></h3>
+
+<p>The INPUT statement may specify a string variable, in which
+case the string typed after the '?' prompt, and up to the
+'return', will be assigned to the string variable. The maximum
+length of line that can be typed in to an INPUT statement is 64
+characters so, for safety, the string variable in the INPUT
+statement should be dimensioned with a length of 64.</p>
+
+<h2><font color="#0000FF"><b>8.3 String Functions</b></font></h2>
+
+<p>Several functions are provided to help with the manipulation
+of strings.</p>
+
+<h3><font color="#0000FF"><b>8.3.1 Length of a String - LEN</b></font></h3>
+
+<p>The LEN function will return the number of characters in the
+string specified in its argument. For example:</p>
+
+<blockquote>
+    <pre>$A=&quot;A STRING&quot; 
+PRINT LEN(A)</pre>
+</blockquote>
+
+<p>will print the value 8. Note that:</p>
+
+<blockquote>
+    <pre>$B=&quot;&quot;&quot;&quot;
+PRINT LEN(B)</pre>
+</blockquote>
+
+<p>will print 1 since the string B contains only a single quote
+character.</p>
+
+<h3><font color="#0000FF">8.3.2 CH</font></h3>
+
+<p>The CH function will return the ASCII value of the first
+character in the string specified by its argument. Thus:</p>
+
+<blockquote>
+    <pre>CH&quot;A&quot;</pre>
+</blockquote>
+
+<p>will be equal to 65, the ASCII code for A. The string
+terminating character 'return' has a value of 13, so:</p>
+
+<blockquote>
+    <pre>CH&quot;&quot;</pre>
+</blockquote>
+
+<p>will be equal to 13.</p>
+
+<h2><font color="#0000FF"><b>8.4 String Manipulations</b></font></h2>
+
+<p>The following sections show how the characters within strings
+can be manipulated, and how strings can be concatenated into
+longer strings or broken down into substrings.</p>
+
+<h2><font color="#0000FF">8.4.1 Character Extraction - '?'</font></h2>
+
+<p>Individual characters in a string can be accessed with the
+question-mark '?' operator. Consider again the representation of
+the string A. Number the characters, starting with zero:</p>
+
+<blockquote>
+    <table border="0">
+        <tr>
+            <td valign="top">&nbsp;</td>
+            <td><table border="0">
+                <tr>
+                    <td align="center" valign="top"
+                    bgcolor="#C0C0C0"><font face="Courier New">A</font></td>
+                    <td align="center" valign="top"
+                    bgcolor="#C0C0C0">&nbsp;</td>
+                    <td align="center" valign="top"
+                    bgcolor="#C0C0C0"><font face="Courier New">S</font></td>
+                    <td align="center" valign="top"
+                    bgcolor="#C0C0C0"><font face="Courier New">T</font></td>
+                    <td align="center" valign="top"
+                    bgcolor="#C0C0C0"><font face="Courier New">R</font></td>
+                    <td align="center" valign="top"
+                    bgcolor="#C0C0C0"><font face="Courier New">I</font></td>
+                    <td align="center" valign="top"
+                    bgcolor="#C0C0C0"><font face="Courier New">N</font></td>
+                    <td align="center" valign="top"
+                    bgcolor="#C0C0C0"><font face="Courier New">G</font></td>
+                    <td align="center" valign="top"
+                    bgcolor="#C0C0C0"><font face="Courier New">~</font></td>
+                    <td align="center" valign="top"
+                    bgcolor="#C0C0C0"><font face="Courier New">?</font></td>
+                    <td align="center" valign="top"
+                    bgcolor="#C0C0C0"><font face="Courier New">?</font></td>
+                </tr>
+                <tr>
+                    <td align="center" valign="top"><font
+                    face="Courier New">0<br>
+                    ^<br>
+                    A</font></td>
+                    <td align="center" valign="top"><font
+                    face="Courier New">1</font></td>
+                    <td align="center" valign="top"><font
+                    face="Courier New">2</font></td>
+                    <td align="center" valign="top"><font
+                    face="Courier New">3</font></td>
+                    <td align="center" valign="top"><font
+                    face="Courier New">4</font></td>
+                    <td align="center" valign="top"><font
+                    face="Courier New">5</font></td>
+                    <td align="center" valign="top"><font
+                    face="Courier New">6</font></td>
+                    <td align="center" valign="top"><font
+                    face="Courier New">7</font></td>
+                    <td align="center" valign="top"><font
+                    face="Courier New">8</font></td>
+                    <td align="center" valign="top"><font
+                    face="Courier New">9</font></td>
+                    <td align="center" valign="top"><font
+                    face="Courier New">10</font></td>
+                </tr>
+            </table>
+            </td>
+        </tr>
+    </table>
+</blockquote>
+
+<p>The value of the Nth. character in the string is then simply
+A?N. For example, A?7 is &quot;G&quot;, etc. In general A?B is
+the value of the character stored in the location whose address
+is A+B; therefore A?B is identical to B?A. In other words, a
+string is being thought of as a byte vector whose elements
+contain characters; see section 7.2.</p>
+
+<p>The following program illustrates the use of the '?' operator
+to invert all the characters in a string which is typed in:</p>
+
+<pre>    1 REM Invert String
+    5 DIM Q(64)
+   10 INPUT $Q
+   20 FOR N=0 TO LEN(Q)-1
+   30 Q?N=Q?N \ #20
+   40 NEXT N
+   50 PRINT $Q
+   60 RUN</pre>
+
+<h3><font color="#0000FF"><b>8.4.2 Encoding/Decoding Program</b></font></h3>
+
+<p>As a slightly more advanced example of string operations using
+the '?' operator, the following program will produce a very
+secure encoding of a message. The program is given a number,
+which is used to 'seed' BASIC's random number generator. To
+decode the text the negative of the same seed must be entered.</p>
+
+<pre>    1 REM Encoder/Decoder
+   10 S=TOP; ?12=0
+   20 INPUT'&quot;CODE NUMBER&quot;T
+   30 !8=ABS(T)
+   40 INPUT'$S
+   50 FOR P=S TO S+LEN(S)
+   60 IF ?P&lt;#41 GOTO 100
+   70 R=ABS(RND)%26
+   80 IF T&lt;0 THEN R=26-R
+   90 ?P=(?P-#41+R)%26+#41
+  100 NEXT P
+  110 PRINT $S
+  120 GOTO 40</pre>
+
+<pre>Description of Program:
+20        Input code number
+30        Use code number to seed random number generator
+40        Read in line of text
+50-100    For each character, if it is a letter add the next random 
+          number to it, modulo 26.
+110       Print out encoded string.</pre>
+
+<pre>Variables:
+P - Address of character in string
+R - Next random number
+S - Address of string; set to TOP.
+T - Code number</pre>
+
+<pre>Program size:
+String storage: up to 64 bytes</pre>
+
+<pre>Sample run:</pre>
+
+<pre>&gt;RUN</pre>
+
+<pre>CODE NUMBER?123</pre>
+
+<pre>?MEETING IN LONDON ON THURSDAY
+BGYKPYI CM NHSHVO VU RGFGDHJI</pre>
+
+<pre>&gt;RUN</pre>
+
+<pre>CODE NUMBER?-123</pre>
+
+<pre>?BGYKPYI CM NHSHVO VU RGFGDHJI 
+MEETING IN LONDON ON THURSDAY 
+? &gt;</pre>
+
+<p>To illustrate how secure this encoding algorithm is you may
+like to attempt to find the correct decoding of the following
+quotation:</p>
+
+<pre>YUVHW ZY WKQN IAVUAG QM SHXTSDK
+GSY IEJB RZTNOL UFQ FTONB JB BY
+CXRK QCJF UN TJRB.
+SWB FJA IYT WCC LQFWHA YHW OHRMNI OUJ
+HTJ I TYCU GQYFT FT SGGHH HJ FRP ELPHQMD,
+RW LN QOHD OQXSER CUAB. 
+DKLCLDBCV.</pre>
+
+<h3><font color="#0000FF">8.4.3 Concatenation</font></h3>
+
+<p>Concatenation is the operation of joining two strings together
+to make one string. To concatenate string B to the end of string
+A execute:</p>
+
+<pre>      $A+LEN(A)=$B</pre>
+
+<p>For example:</p>
+
+<pre>   10 DIM A(10),B(5)
+   20 $A=&quot;ATOM&quot;
+   30 $B=&quot;BASIC&quot;
+   40 $A+LEN(A)=$B
+   50 PRINT $A
+   60 END</pre>
+
+<p>will print: </p>
+
+<blockquote>
+    <pre>ATOMBASIC&gt;</pre>
+</blockquote>
+
+<h3><font color="#0000FF">8.4.4 Right-String Extraction</font></h3>
+
+<p>The right-hand part of a string A, starting at character N, is
+simply:</p>
+
+<blockquote>
+    <pre>$A+N</pre>
+</blockquote>
+
+<p>For example, executing:</p>
+
+<pre>   10 DIM A(10),B(5)
+   20 $A=&quot;ATOMBASIC&quot;
+   30 $B=$A+4
+   40 END</pre>
+
+<p>will give string B the value &quot;BASIC&quot;.</p>
+
+<p><font color="#0000FF"><b>8.4.5 Left-String Extraction</b></font></p>
+
+<p>A string A can be shortened to the first N characters by
+executing:</p>
+
+<blockquote>
+    <pre>$A+N=&quot;&quot;</pre>
+</blockquote>
+
+<p>Since the 'return' character has the value 13, this is
+equivalent to:</p>
+
+<blockquote>
+    <pre>A?N=13</pre>
+</blockquote>
+
+<h3><font color="#0000FF">8.4.6 Mid-String Extraction</font></h3>
+
+<p>The middle section of a string can be extracted by combining
+the techniques of the previous two sections. For example, the
+string consisting of characters M to N of string A is obtained
+by:</p>
+
+<blockquote>
+    <pre>$A+N=&quot;&quot;; $A=$A+M</pre>
+</blockquote>
+
+<p>For example:, if the following is executed:</p>
+
+<pre>   10 DIM A(10)
+   20 $A=&quot;ATOMBASIC&quot; 
+   30 $A+5=&quot;&quot;; $A=SA+1 
+   40 END</pre>
+
+<h2><font color="#0000FF">8.5 Arrays of Fixed-Length Strings</font></h2>
+
+<p>The arrays AA to ZZ may be used as string variables, thus
+providing the ability to have arrays of strings. To allocate
+space for an array of strings the DIM statement can be
+incorporated into a FOR...NEXT loop. For example, the followinq
+program allocates space for 21 strings, AA(0) to AA(20), each
+capable of holding 10 characters:</p>
+
+<pre>   25 DIM AA(20)
+   35 FOR N=0 TO 20
+   40   DIM J(10)
+   50   AA(N)=J
+   60 NEXT N</pre>
+
+<p>Note the use of a dummy variable J to allocate the space for
+each string. Individual elements of the string array can then be
+assigned to as follows:</p>
+
+<pre>      $AA(0)=&quot;ZERO&quot; 
+      $AA(10)=&quot;TEN&quot;</pre>
+
+<p>and so on.</p>
+
+<h3><font color="#0000FF">8.5.1 Day of Week</font></h3>
+
+<p>The following program calculates the day of the week for any
+date in the 20th. century. It stores the names of the days of the
+week in a string array.</p>
+
+<pre>    1 REM Day of Week
+   10 DIM AA(6)
+   20 FOR N=0 TO 6; DIM B(10); AA(N)=B; NEXT N
+   30 $AA(0)=&quot;SUNDAY&quot;; $AA(1)=&quot;MONDAY&quot;
+   40 $AA(2)=&quot;TUESDAY&quot;;$AA(3)=&quot;WEDNESDAY&quot;
+   50 $AA(4)=&quot;THURSDAY&quot;;$AA(5)=&quot;FRIDAY&quot;
+   60 $AA(6)=&quot;SATURDAY&quot;
+   70 INPUT&quot;DAY OF WEEK&quot;''&quot;YEAR &quot;Y,&quot;MONTH &quot;M,&quot;DATE IN MONTH &quot;D
+   80 Y=Y-1900
+   90 IF Y&lt;0 OR Y&gt;99 PRINT&quot;ONLY 20TH CENTURY I&quot;';GOTO 70
+  100 IF M&gt;2 THEN M=M-2; GOTO 120
+  110 Y=Y-1; M=M+10
+  120 E=(26*M-2)/10+D+Y+Y/4+19/4-2*19
+  130 PRINT&quot;IT IS &quot;$AA(ABS(E%7))
+  140 END</pre>
+
+<pre>Description of Program:
+10-20     Allocate space for string array
+30-60     Set array elements
+70        Input date
+80-120    Calculate day
+130       Print day of week.</pre>
+
+<pre>Variables:
+$AA(0...6) - String array to hold names of days
+B - Temporary variable to hold base address of each string
+D - Date in month
+E - Expression which, modulo 7, gives day of week.
+M - Month
+N - Counter
+Y - Year in 20th. century.</pre>
+
+<pre>Program size: 458 bytes.
+Array storage: 105 bytes.
+Total memory: 563 bytes.</pre>
+
+<h2><font color="#0000FF"><b>8.6 Arrays of Variable-Length
+Strings</b></font></h2>
+
+<p>The most economical way to use the memory available is to
+allocate only as much space as is needed for each string. For
+example the following program reads in 10 strings and saves them
+in strings called VV(1) to VV(10):</p>
+
+<pre>   10 DIM VV(10),T(-1)
+   20 FOR N=1 TO 10
+   30 INPUT $T
+   40 VV(N)=T
+   50 T=T+LEN(T)+1
+   60 NEXT N
+   70 INPUT &quot;STRING NUMBER&quot;,N
+   80 PRINT $VV(N),'
+   90 GOTO 70</pre>
+
+<p>The statement DIM T(-1) sets T to the address of the first
+free memory location. T is then incremented past each string to
+the next free memory location as each string is read in. Finally,
+when 10 strings have been read in the program prompts for a
+string number and types out the string of that number.</p>
+
+<p>For example, if the first three strings entered were:
+&quot;ONE&quot;, &quot;TWO&quot;, and &quot;THREE&quot;, the
+contents of memory would be:</p>
+
+<blockquote>
+    <table border="0">
+        <tr>
+            <td valign="top">&nbsp;</td>
+            <td><table border="0">
+                <tr>
+                    <td align="center" valign="top"
+                    bgcolor="#C0C0C0"><font face="Courier New">O</font></td>
+                    <td align="center" valign="top"
+                    bgcolor="#C0C0C0"><font face="Courier New">N</font></td>
+                    <td align="center" valign="top"
+                    bgcolor="#C0C0C0"><font face="Courier New">E</font></td>
+                    <td align="center" valign="top"
+                    bgcolor="#C0C0C0"><font face="Courier New">~</font></td>
+                    <td align="center" valign="top"
+                    bgcolor="#C0C0C0"><font face="Courier New">T</font></td>
+                    <td align="center" valign="top"
+                    bgcolor="#C0C0C0"><font face="Courier New">W</font></td>
+                    <td align="center" valign="top"
+                    bgcolor="#C0C0C0"><font face="Courier New">O</font></td>
+                    <td align="center" valign="top"
+                    bgcolor="#C0C0C0"><font face="Courier New">~</font></td>
+                    <td align="center" valign="top"
+                    bgcolor="#C0C0C0"><font face="Courier New">T</font></td>
+                    <td align="center" valign="top"
+                    bgcolor="#C0C0C0"><font face="Courier New">H</font></td>
+                    <td align="center" valign="top"
+                    bgcolor="#C0C0C0"><font face="Courier New">R</font></td>
+                    <td bgcolor="#C0C0C0"><font
+                    face="Courier New">E</font></td>
+                    <td bgcolor="#C0C0C0"><font
+                    face="Courier New">E</font></td>
+                    <td bgcolor="#C0C0C0"><font
+                    face="Courier New">~</font></td>
+                    <td bgcolor="#C0C0C0"><font
+                    face="Courier New">?</font></td>
+                    <td bgcolor="#C0C0C0"><font
+                    face="Courier New">?</font></td>
+                    <td bgcolor="#C0C0C0"><font
+                    face="Courier New">?</font></td>
+                </tr>
+                <tr>
+                    <td valign="top" colspan="4"><font
+                    face="Courier New">^<br>
+                    VV(1)</font></td>
+                    <td valign="top" colspan="4"><font
+                    face="Courier New">^<br>
+                    VV(2)</font></td>
+                    <td valign="top" colspan="6"><font
+                    face="Courier New">^<br>
+                    VV3</font></td>
+                    <td valign="top" colspan="3">^<br>
+                    T</td>
+                </tr>
+            </table>
+            </td>
+        </tr>
+    </table>
+</blockquote>
+
+<h2><font color="#0000FF">8.7 Reading Text</font></h2>
+
+<p>Some BASICs have statements READ and DATA whereby strings
+listed in the DATA statements can be read into a string variable
+using the READ statement.</p>
+
+<p>Although ATOM BASIC does not provide these actual statements,
+reading strings specified as text is a fairly simple matter. The
+following program reads the strings &quot;ONE&quot;,
+&quot;TWO&quot; ... etc. into a string variable, $A, and prints
+them out. The strings for the numbers are specified as text after
+the program. They are identified by a label 't', and a call to
+subroutine 'f' sets Q to the address of the first string.
+Subroutine 'r' will then read the next string from the list:</p>
+
+<pre>   10 REM Read Text
+   20 DIM A(40); L=CH&quot;t&quot;
+   25 GOSUB f
+   30 FOR J=l TO 20; GOSUB r
+   40 PRINT $A '
+   50 NEXT J
+   60 END
+  500fREM point Q to text
+  510 Q=?18*256
+  520 DO Q=Q+1
+  530 UNTIL ?Q=#D AND Q?3=L
+  540 Q=Q+4; RETURN
+  550*
+  600rREM read next entry into A
+  605 REM changes: A,Q,R
+  610 R=-1
+  620 DO R=R+1; A?R=Q?R
+  630 UNTIL A?R=CH&quot;,&quot; OR A?R=#D
+  640 IF A?R=#D Q=Q+3
+  650 Q=Q+R+1; A?R=#D; RETURN 
+  660* 
+  800tONE,TWO,THREE,FOUR,FIVE 
+  810 SIX,SEVEN,EIGHT,NINE,TEN 
+  820 ELEVEN,TWELVE,THIRTEEN
+  830 FOURTEEN,FIFTEEN,SIXTEEN 
+  840 SEVENTEEN,EIGHTEEN,NINETEEN 
+  850 TWENTY</pre>
+
+<pre>Description of Program:
+25        Find the text
+30        Read in the next string
+40        Print it out
+500-550   f: Search for label t and point Q to first string 
+600-660   r: Read up to comma or return and put string into $A 
+800-850   t: List of 20 strings</pre>
+
+<pre>Variables:
+$A - String
+J - Counter
+L - Label for text
+Q - Pointer to strings
+R - Temporary pointer</pre>
+
+<pre>Program size: 511 bytes
+String storage: 41 bytes
+Total memory: 552 bytes.</pre>
+
+<p>The program can be modified to read from several different
+blocks of text with different labels by changing the value of L.
+Also note that the character delimiting the strings may be any
+character, specified in the CH function in line 630.</p>
+
+<h3><font color="#0000FF"><b>8.7.1 Reading Numeric Data</b></font></h3>
+
+<p>Numeric data can be specified as strings of characters as in
+in the Read Text program of the previous section, and converted
+to numbers using the VAL command in the extension ROM. For
+example, modify the Read Text program by changing line 40 to:</p>
+
+<pre>   40 FPRINT VAL A</pre>
+
+<p>and provide numeric data at the label 't', for example as
+follows:</p>
+
+<pre>  800t1,2,3,4,1E30,27,66 
+  810 91,1.2,1.3,1.4,1.5 
+  820 13,14,15,16,17
+  830 18,19,20</pre>
+
+<h2><font color="#0000FF">8.8 Printing Single Characters - '$'</font></h2>
+
+<p>A special use of the '$' operator in the PRINT statement is to
+print characters that can not conveniently be specified as a
+string in the program, such as control characters and graphics
+symbols. Normally '$' is followed by a variable used as the base
+address of the string. If, however, the value following the
+dollar is less than 255, the character corresponding to that code
+will be printed instead.</p>
+
+<p>The following table gives the control codes, characters, and
+graphics symbols corresponding to the different codes:</p>
+
+<blockquote>
+    <pre>   Hex:      Decimal:     Character Printed:
+#00 - #1F    0 - 31       Control codes
+#20 - #5F    32 - 95      ASCII cHaracters
+#60 - #9F    96 - 159     Inverted ASCII characters 
+#A0 - #DF    160 - 223    Grey graphics symbols 
+#EO - #FF    224 - 255    White graphics symbols</pre>
+</blockquote>
+
+<p>Note that only half of the 64 possible white graphics symbols
+can be obtained in this way.</p>
+
+<p>The most useful control codes are specified in the following
+sections; for a full list of control codes see section 18.1.3.</p>
+
+<h3><font color="#0000FF">8.8.1 Cursor Movement</font></h3>
+
+<p>The cursor can be moved in any of the four directions on the
+screen using the following codes:</p>
+
+<blockquote>
+    <pre>Hex:      Decimal:     Cursor Movement:
+#08          8             Left
+#09          9             Right
+#0A         10             Down
+#0D         11             Up</pre>
+</blockquote>
+
+<p>The screen is scrolled when the cursor is moved off the bottom
+line of the screen; the cursor cannot be moved off the top of the
+screen. Note that the entire screen memory is modified by
+scrolling; every line is shifted up one line, and the bottom line
+is filled with spaces.</p>
+
+<h3><font color="#0000FF"><b>8.8.2 Screen Control</b></font></h3>
+
+<p>The following control codes are useful for controlling the VDU
+screen:</p>
+
+<blockquote>
+    <pre>Hex:      Decimal:     Control Character:
+#0C         12         Clear screen and home cursor
+#1E         30         Home cursor to top left of screen</pre>
+</blockquote>
+
+<h3><font color="#0000FF">8.8.3 Random Walk</font></h3>
+
+<p>The following program prints characters on the screen
+following a random walk. One of the cursor control codes, chosen
+at random, is printed to move the cursor; a white graphics
+character, chosen at random, is then printed followed by a
+backspace to move the cursor back to the character position.</p>
+
+<pre>    1 REM Random Walk
+   10 DO
+   20 PRINT $ABS(RND)%4+8, $(#A0+ABS(RND)1#40), $8
+   30 UNTIL 0</pre>
+
+<p align="right"><a href="atap_09.htm">Next chapter</a></p>
+</body>
+</html>

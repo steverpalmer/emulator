@@ -1,0 +1,639 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Type"
+content="text/html; charset=iso-8859-1">
+<meta name="GENERATOR" content="Microsoft FrontPage Express 2.0">
+<title>15 Logical Operations, Shifts, and Rotates</title>
+</head>
+
+<body bgcolor="#FFFFFF">
+
+<h1><font color="#0000FF">15 Logical Operations, Shifts, and
+Rotates</font></h1>
+
+<p>So far we have considered each memory location, or memory
+byte, as being capable of holding one of 256 different numbers (0
+to 255), or one of 256 different characters. In this section we
+examine an alternative representation, which is closer to the way
+a byte of information is actually stored in the computer's
+memory.</p>
+
+<h2><font color="#0000FF">15.1 Binary Notation</font></h2>
+
+<p>The computer memory consists of electronic circuits that can
+be put into one of two different states. Such circuits are called
+bistables because they have two stable states, or flip/flops, for
+similar reasons. The two states are normally represented as 0 and
+1, but they are often referred to by different terms as listed
+below:</p>
+
+<blockquote>
+    <table border="0">
+        <tr>
+            <td align="center" colspan="2">State:</td>
+        </tr>
+        <tr>
+            <td align="center">0</td>
+            <td align="center">1</td>
+        </tr>
+        <tr>
+            <td align="center">zero</td>
+            <td align="center">one</td>
+        </tr>
+        <tr>
+            <td align="center">low</td>
+            <td align="center">high</td>
+        </tr>
+        <tr>
+            <td align="center">clear</td>
+            <td align="center">set</td>
+        </tr>
+        <tr>
+            <td align="center">off</td>
+            <td align="center">on</td>
+        </tr>
+    </table>
+</blockquote>
+
+<p>When the digits 0 and 1 are used to refer to the states of a
+bistable they are referred to as 'binary digits', or 'bits' for
+brevity.</p>
+
+<p>With two bits you can represent four different states which
+can be listed as follows, if the bits are called A and B:</p>
+
+<blockquote>
+    <table border="0" cellspacing="1">
+        <tr>
+            <td><strong>A:</strong></td>
+            <td><strong>B:</strong></td>
+        </tr>
+        <tr>
+            <td>0</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>0</td>
+            <td>1</td>
+        </tr>
+        <tr>
+            <td>1</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>1</td>
+            <td>1</td>
+        </tr>
+    </table>
+</blockquote>
+
+<p>With four bits you can represent one of 16 different values,
+since 2x2x2x2=16, and so each hexadecimal digit can be
+represented by a four-bit binary number. The hexadecimal digits,
+and their binary equivalents, are shown in the following table:</p>
+
+<blockquote>
+    <table border="0">
+        <tr>
+            <td><font color="#0000FF"><strong>Decimal:</strong></font></td>
+            <td><font color="#0000FF"><strong>Hexadecimal:</strong></font></td>
+            <td><font color="#0000FF"><strong>Binary:</strong></font></td>
+        </tr>
+        <tr>
+            <td>0</td>
+            <td>0</td>
+            <td>0 0 0 0</td>
+        </tr>
+        <tr>
+            <td>1</td>
+            <td>1</td>
+            <td>0 0 0 1</td>
+        </tr>
+        <tr>
+            <td>2</td>
+            <td>2</td>
+            <td>0 0 1 0</td>
+        </tr>
+        <tr>
+            <td>3</td>
+            <td>3</td>
+            <td>0 0 1 1</td>
+        </tr>
+        <tr>
+            <td>4</td>
+            <td>4</td>
+            <td>0 1 0 0</td>
+        </tr>
+        <tr>
+            <td>5</td>
+            <td>5</td>
+            <td>0 1 0 1</td>
+        </tr>
+        <tr>
+            <td>6</td>
+            <td>6</td>
+            <td>0 1 1 0</td>
+        </tr>
+        <tr>
+            <td>7</td>
+            <td>7</td>
+            <td>0 1 1 1</td>
+        </tr>
+        <tr>
+            <td>8</td>
+            <td>8</td>
+            <td>1 0 0 0</td>
+        </tr>
+        <tr>
+            <td>9</td>
+            <td>9</td>
+            <td>1 0 0 1</td>
+        </tr>
+        <tr>
+            <td>10</td>
+            <td>A</td>
+            <td>1 0 1 0</td>
+        </tr>
+        <tr>
+            <td>11</td>
+            <td>B</td>
+            <td>1 0 1 1</td>
+        </tr>
+        <tr>
+            <td>12</td>
+            <td>C</td>
+            <td>1 1 0 0</td>
+        </tr>
+        <tr>
+            <td>13</td>
+            <td>D</td>
+            <td>1 1 0 1</td>
+        </tr>
+        <tr>
+            <td>14</td>
+            <td>E</td>
+            <td>1 1 1 0</td>
+        </tr>
+        <tr>
+            <td>15</td>
+            <td>F</td>
+            <td>1 1 1 1</td>
+        </tr>
+    </table>
+</blockquote>
+
+<p>Any decimal number can be converted into its binary
+representation by the simple procedure of converting each
+hexadecimal digit into the corresponding four bits. For example:</p>
+
+<blockquote>
+    <pre>Decimal:     25
+Hexadecimal: 19
+Binary:      0001 1001</pre>
+</blockquote>
+
+<p>Thus the binary equivalent of #19 is 00011001 (or, leaving out
+the leading zeros, 11001).</p>
+
+<p>Verify the following facts about binary numbers:</p>
+
+<blockquote>
+    <p>1. Shifting a binary number left, and inserting a zero
+    after it, <br>
+    is the same as multiplying its value by 2.<br>
+    e.g. 7 is 111 and 14 is 1110.<br>
+    2. Shifting a binary number right, removing the last digit, <br>
+    is the same as dividing it by 2 and ignoring the remainder.</p>
+</blockquote>
+
+<h2><font color="#0000FF">15.2 Bytes</font></h2>
+
+<p>We have already seen that we need exactly two hexadecimal
+digits to represent all the different possible values in a byte
+of information. It should now be clear that a byte corresponds to
+eight bits of information, since each hex digit requires four
+bits to specify it. The bits in a byte are usually numbered, for
+convenience, as follows:</p>
+
+<blockquote>
+    <pre>7 6 5 4 3 2 1 0 
+0 0 0 1 1 0 0 1</pre>
+</blockquote>
+
+<p>Bit 0 is often referred to as the 'low-order bit&#146; or
+'least-significant bit', and bit 7 as the 'high-order bit' or
+'most-significant bit'. Note that bit 0 corresponds to the units
+column, and moving a bit one place to the left in a number
+multiplies its value by 2.</p>
+
+<h2><font color="#0000FF">15.3 Logical Operations</font></h2>
+
+<p>Many operations in the computer's instruction set are easiest
+to think of as operations between two bytes represented as two
+8-bit numbers. This section examines three operations called
+'logical' operations which are performed between the individual
+bits of the two operands. One of the operands is always the
+accumulator, and the other is a memory location.</p>
+
+<p><font color="#0000FF"><strong>AND AND accumulator with memory
+A=A&amp;M</strong></font></p>
+
+<p>The AND operation sets the bit of the result to a 1 only if
+the bit of one operand is a 1 AND the corresponding bit of the
+other operand is a 1. Otherwise the bit in the result is a zero.
+For example:</p>
+
+<blockquote>
+    <pre>Hexadecimal:	Binary:
+A9		1 0 1 0 1 0 0 1
+E5		1 1 1 0 0 1 0 1
+--		---------------
+Al		1 0 1 0 0 0 0 1</pre>
+</blockquote>
+
+<p>One way of thinking of the AND operation is that one operand
+acts as a 'mask', and only where there are ones in the mask do
+the corresponding bits in the other operand 'show through';
+otherwise, the bits are zero.</p>
+
+<p><font color="#0000FF"><strong>ORA OR accumulator with memory
+A=A\M</strong></font></p>
+
+<p>The OR operation sets the bit of the result to a 1 if the
+corresponding bit of one operand is a 1 OR the corresponding bit
+of the other operand is a 1, or indeed, if they are both ones;
+otherwise the bit in the result is zero. For example:</p>
+
+<blockquote>
+    <pre>Hexadecimal:	Binary:
+A9		1 0 1 0 1 0 0 1
+E5		1 1 1 0 0 1 0 1
+--		---------------
+ED		1 1 1 0 1 1 0 1</pre>
+</blockquote>
+
+<p><font color="#0000FF"><strong>EOR Exclusive-OR accumulator
+with memory A=A:M</strong></font></p>
+
+<p>The exclusive-OR operation is like the OR operation, except
+that the corresponding bit in the result is 1 only if the
+corresponding bit of one operand is a 1, or if the corresponding
+bit of the other operand is a 1, but not if they are both ones.
+For example:</p>
+
+<blockquote>
+    <pre>Hexadecimal:	Binary:
+A9		1 0 1 0 1 0 0 1
+E5		1 1 1 0 0 1 0 1
+--		---------------
+4C		0 1 0 0 1 1 0 0</pre>
+</blockquote>
+
+<p>Another way of thinking of the exclusive-OR operation is that
+the bits of one operand are inverted where the other operand has
+ones.</p>
+
+<h2><font color="#0000FF">15.4 Music</font></h2>
+
+<p>Music is composed of vibrations of different frequencies that
+stimulate our ears to give the sensations of tones and noise. A
+single tone is a signal with a constant rate of vibration, and
+the 'pitch' of the tone depends on the frequency of the
+vibration: the faster the vibration, or the higher the frequency
+of vibration, the higher is the perceived pitch of the tone. The
+human ear is sensitive to frequencies from about 10 Hz (10
+vibrations per second) up to about 16 kHz (16,000 vibrations a
+second). Since the ATOM can execute up to 500000 instructions per
+second in machine code, it is possible to generate tones covering
+the whole audible range.</p>
+
+<p>The ATOM contains a loudspeaker which is controlled by an
+output line. The loudspeaker is connected to bit 2 of the output
+port whose address is #B002:</p>
+
+<blockquote>
+    <table border="0">
+        <tr>
+            <td bgcolor="#C0C0C0">7</td>
+            <td bgcolor="#C0C0C0">6</td>
+            <td bgcolor="#C0C0C0">5</td>
+            <td bgcolor="#C0C0C0">4</td>
+            <td bgcolor="#C0C0C0">3</td>
+            <td bgcolor="#C0C0C0">2</td>
+            <td bgcolor="#C0C0C0">1</td>
+            <td bgcolor="#C0C0C0">0</td>
+            <td>&nbsp;</td>
+        </tr>
+        <tr>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td>V</td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+        </tr>
+        <tr>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td>+</td>
+            <td>--</td>
+            <td>--</td>
+            <td>-&gt; Speaker</td>
+        </tr>
+        <tr>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+        </tr>
+        <tr>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+        </tr>
+    </table>
+</blockquote>
+
+<p>To make the loudspeaker vibrate we can exclusive-OR the
+location corresponding to the output port with the binary number
+00000100 so that bit 2 is changed each time. To make the ATOM
+generate a tone of a particular frequency we need to make the
+output driving the loudspeaker vibrate with the required
+frequency. Try the following program:</p>
+
+<blockquote>
+    <pre>10 DIM VV(4),P(-1)
+20 L=#B002
+30[
+40:VV0 LDA L
+50:VV1 LDX #80
+60:VV2 DEX
+70 BNE VV2
+80 EOR @4
+90 STA L
+100 JMP VV1
+ll0]
+120 END</pre>
+</blockquote>
+
+<p>The immediate operand 4 in line 80 corresponds to the binary
+number 00000100. The program generates a continuous tone, and can
+only be stopped by pressing BREAK. (To get the program back after
+pressing BREAK, type OLD.) The inner loop, lines 60 and 70, gives
+a delay depending on the contents of #80; the greater the
+contents of #80, the longer the delay, and the lower the pitch of
+the tone in the loudspeaker.</p>
+
+<h3><font color="#0000FF">15.4.1 Bleeps</font></h3>
+
+<p>To make the program generate a tone pulse, or a bleep, of a
+fixed length, we need another counter to count the number of
+iterations around the loop, and to stop the program when a
+certain number of iterations have been performed. The following
+program is based on the previous example, but contains an extra
+loop to count the number of cycles. The only lines you need to
+enter are 45, 95, 100, and 105:</p>
+
+<blockquote>
+    <pre>5 REM Bleep
+10 DIM VV(4); P(-l)
+20 L=#B002
+30[
+40:VV0 LDA L
+45 LDY #81
+50:VV1 LDX #80
+60:VV2 DEX
+70 BNE VV2
+80 EOR @4
+90 STA L
+95 DEY
+100 BNE VV1 105 RTS
+110]
+120 END</pre>
+</blockquote>
+
+<p>Now the program generates a tone pulse whose frequency is
+determined by the contents of #80, and whose length is determined
+by #81.</p>
+
+<p>To illustrate the operation of this program, the following
+BASIC program calls it, running through tones of every frequency
+it can generate:</p>
+
+<blockquote>
+    <pre>200 ?#81=255
+210 FOR N=1 TO 256
+220 ?#80=N
+230 LINK VV0
+240 NEXT N
+250 END</pre>
+</blockquote>
+
+<p>This program should be entered into memory with the previous
+example, and the END statement at line 120 should be deleted so
+that the BASIC program will execute the assembled Bleep program.</p>
+
+<p>Try changing the statement on line 220 to:</p>
+
+<blockquote>
+    <pre>220 ?#80=RND</pre>
+</blockquote>
+
+<p>to give something reminiscent of certain modern music!</p>
+
+<p>One disadvantage of this program, which you may have noticed,
+is that the length of the bleep gets progressively shorter as the
+frequency of the note gets higher; this is because the program
+generates a fixed number of cycles of the tone, so the higher the
+frequency, the less time these cycles will take. To give bleeps
+of the same duration it is necessary to make the contents of #81
+the inverse of #80. For an illustration of how to achieve this,
+see the Harpsichord program of section 17.2.</p>
+
+<h2><font color="#0000FF">15.5 Rotates and Shifts</font></h2>
+
+<p>The rotate and shift operations move the bits in a byte either
+left or right. The ASL instruction moves all the bits one place
+to the left; what was the high-order bit is put into the carry
+flag, and a zero bit is put into the low-order bit of the byte.
+The ROL instruction is identical except that the previous value
+of the carry flag, rather than zero, is put into the low-order
+bit.</p>
+
+<p>The right shift and rotate right instructions are identical,
+except that the bits are shifted to the, right:</p>
+
+<p><font color="#0000FF"><strong>ASL Arithmetic shift left one
+bit (memory or accumulator)</strong></font></p>
+
+<blockquote>
+    <table border="0">
+        <tr>
+            <td>C</td>
+            <td>&lt;--</td>
+            <td bgcolor="#C0C0C0">7</td>
+            <td bgcolor="#C0C0C0">6</td>
+            <td bgcolor="#C0C0C0">5</td>
+            <td bgcolor="#C0C0C0">4</td>
+            <td bgcolor="#C0C0C0">3</td>
+            <td bgcolor="#C0C0C0">2</td>
+            <td bgcolor="#C0C0C0">1</td>
+            <td bgcolor="#C0C0C0">0</td>
+            <td>&lt;--</td>
+            <td>0</td>
+        </tr>
+    </table>
+</blockquote>
+
+<p><font color="#0000FF"><strong>LSR Logical shift right one bit
+(memory or accumulator)</strong></font></p>
+
+<blockquote>
+    <table border="0">
+        <tr>
+            <td>0</td>
+            <td>--&gt;</td>
+            <td bgcolor="#C0C0C0">7</td>
+            <td bgcolor="#C0C0C0">6</td>
+            <td bgcolor="#C0C0C0">5</td>
+            <td bgcolor="#C0C0C0">4</td>
+            <td bgcolor="#C0C0C0">3</td>
+            <td bgcolor="#C0C0C0">2</td>
+            <td bgcolor="#C0C0C0">1</td>
+            <td bgcolor="#C0C0C0">0</td>
+            <td>--&gt;</td>
+            <td>C</td>
+        </tr>
+    </table>
+</blockquote>
+
+<p><font color="#0000FF"><strong>ROL Rotate left one bit (memory
+or accumulator)</strong></font></p>
+
+<blockquote>
+    <table border="0">
+        <tr>
+            <td>+</td>
+            <td>--</td>
+            <td bgcolor="#C0C0C0">7</td>
+            <td bgcolor="#C0C0C0">6</td>
+            <td bgcolor="#C0C0C0">5</td>
+            <td bgcolor="#C0C0C0">4</td>
+            <td bgcolor="#C0C0C0">3</td>
+            <td bgcolor="#C0C0C0">2</td>
+            <td bgcolor="#C0C0C0">1</td>
+            <td bgcolor="#C0C0C0">0</td>
+            <td>&lt;--</td>
+            <td>C</td>
+        </tr>
+        <tr>
+            <td>+</td>
+            <td>--</td>
+            <td>--</td>
+            <td>--</td>
+            <td>--</td>
+            <td>--</td>
+            <td>--</td>
+            <td>--</td>
+            <td>--</td>
+            <td>--</td>
+            <td>---</td>
+            <td>+</td>
+        </tr>
+    </table>
+</blockquote>
+
+<p><font color="#0000FF"><strong>ROR Rotate right one bit (memory
+or accumulator)</strong></font></p>
+
+<blockquote>
+    <table border="0">
+        <tr>
+            <td>C</td>
+            <td>--&gt;</td>
+            <td bgcolor="#C0C0C0">7</td>
+            <td bgcolor="#C0C0C0">6</td>
+            <td bgcolor="#C0C0C0">5</td>
+            <td bgcolor="#C0C0C0">4</td>
+            <td bgcolor="#C0C0C0">3</td>
+            <td bgcolor="#C0C0C0">2</td>
+            <td bgcolor="#C0C0C0">1</td>
+            <td bgcolor="#C0C0C0">0</td>
+            <td>--+</td>
+            <td>&nbsp;</td>
+        </tr>
+        <tr>
+            <td>+</td>
+            <td>---</td>
+            <td>--</td>
+            <td>--</td>
+            <td>--</td>
+            <td>--</td>
+            <td>--</td>
+            <td>--</td>
+            <td>--</td>
+            <td>--</td>
+            <td>--+</td>
+            <td>&nbsp;</td>
+        </tr>
+    </table>
+</blockquote>
+
+<h2><font color="#0000FF">15.6 Noise</font></h2>
+
+<p>It may seem surprising.that a computer, which follows an
+absolutely determined sequence of operations, can generate noise
+which sounds completely random. The following program does just
+that; it generates a pseudo-random sequence of pulses that does
+not repeat until 8388607 have been generated. As it stands the
+noise it generates contains components up to 27kHz, well beyond
+the range of hearing, and it takes over 5 minutes before the
+sequence repeats.</p>
+
+<p>The following noise program simulates, by means of the shift
+and rotate instructions, a 23-bit shift register whose
+lowest-order input is the exclusive-OR of bits 23 and 18:</p>
+
+<blockquote>
+    <pre>10 REM Random Noise
+20 DIM L(2),NN(1),P(-1)
+30 C=#B002
+40[
+50:NN0 LDA L; STA C
+60 AND @#48; ADC @#38
+70 ASL A; ASL A
+80 ROL L+2; ROL L+1; ROL L
+90 JMP NN0
+100]
+110 LINK NN0</pre>
+</blockquote>
+
+<p>Incidentally, the noise generated by this program is an
+excellent signal for testing high-fidelity audio equipment. The
+noise should be reproduced through the system and listened to at
+the output. The noise should sound evenly distributed over all
+frequencies, with no particular peak at any frequency revealing a
+peak in the spectrum, or any holes in the noise revealing the
+presence of dips in the spectrum.</p>
+
+<p align="right"><a href="atap_16.htm">Next chapter</a></p>
+</body>
+</html>

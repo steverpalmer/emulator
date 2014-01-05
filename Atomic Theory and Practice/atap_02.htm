@@ -1,0 +1,499 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Type"
+content="text/html; charset=iso-8859-1">
+<meta name="GENERATOR" content="Microsoft FrontPage Express 2.0">
+<title>Calculating in BASIC</title>
+</head>
+
+<body bgcolor="#FFFFFF">
+
+<h2><font color="#0000FF">2 Calculating in BASIC</font></h2>
+
+<p>The ATOM computer understands a language called BASIC which,
+because of the ease of writing programs in it, has become the
+most popular language for use on small computer systems. BASIC
+was invented in 1964 at Dartmouth College, New Hampshire, and it
+stands for Beginner's All-purpose Symbolic Instruction Code. This
+chapter introduces some of the facilities available in the BASIC
+language.</p>
+
+<p>The BASIC language consists of 'statements', 'operators', and
+'functions'. The 'statements' are words like PRINT and INPUT
+which tell the computer what you want to do; they are followed by
+the things you want the computer to operate on. </p>
+
+<p>The 'operators&#146; are special symbols such as the
+mathematical signs '+&#146; and '-' meaning 'add' and
+&#146;subtract'.</p>
+
+<p>The 'functions' are words like the statements, but they have a
+numerical value; for example, RND is a function which has a
+random value. </p>
+
+<h2><font color="#0000FF">2.1 PRINT</font></h2>
+
+<p>This is by far the most useful BASIC statement; it enables
+programs to print out the results of their calculations.</p>
+
+<p>Try typing:</p>
+
+<blockquote>
+    <pre>PRINT 7+3</pre>
+</blockquote>
+
+<p>The ATOM will print:</p>
+
+<blockquote>
+    <pre>10&gt;</pre>
+</blockquote>
+
+<p>The '&gt;' prompt reappears immediately after the answer, 10,
+is printed out. This is the best way to use BASIC as a simple
+calculator; type PRINT followed by the expression you want to
+evaluate.</p>
+
+<p>Try the effect of the following:</p>
+
+<blockquote>
+    <pre>PRINT 7-3 
+PRINT 7*3 
+PRINT 7/3</pre>
+</blockquote>
+
+<p>You will discover that '*&#146; means multiply; it is the
+standard multiply symbol on all computers. Also '/&#146; means
+divide, but you may be surprised that the answer to 7/3 is given
+as 2, not 2 and 1/2. ATOM BASIC only deals in whole numbers, or
+integers, so the remainder after the division is lost. The
+remainder can be obtained by typing:</p>
+
+<blockquote>
+    <pre>PRINT 7%3</pre>
+</blockquote>
+
+<p>The '%' operator means &#146;give remainder of division'.</p>
+
+<p>More complex expressions are evaluated according to the
+standard rules of mathematics, so the expression:</p>
+
+<blockquote>
+    <pre>PRINT 2+3*4-5</pre>
+</blockquote>
+
+<p>has the result 9. Multiplications and divisions are performed
+first, followed by additions and subtractions. Round brackets can
+be used to I make sure that operations are performed in the
+correct order; anything enclosed in brackets is evaluated first.
+Thus the above expression could also be written:</p>
+
+<blockquote>
+    <pre>PRINT (2+(3*4))-5</pre>
+</blockquote>
+
+<p>There is no limit to the complexity of expressions that ATOM
+BASIC can evaluate, provided they will fit on two lines of the
+VDU. You will notice that ATOM BASIC calculates extremely
+rapidly. Try typing:</p>
+
+<blockquote>
+    <pre>PRINT 9*9*9*9*9*9*9*9*9</pre>
+</blockquote>
+
+<p>ATOM BASIC can calculate with numbers between about 2000
+million and -2000 million, which gives an accuracy of between
+nine and ten digits. Furthermore, because whole numbers are used,
+all calculations in this range are exact.</p>
+
+<h3><font color="#0000FF"><b>2.1.1 Printing Several Things</b></font></h3>
+
+<p>You can print the results of several calculations in one PRINT
+<br>
+statement by separating them with commas:</p>
+
+<blockquote>
+    <pre>PRINT 7, 7*7, 7*7*7, 7*7*7*7 </pre>
+</blockquote>
+
+<p>which will print out:</p>
+
+<blockquote>
+    <pre>7 49 343 2401</pre>
+</blockquote>
+
+<p>Note that each number is printed out on the right-hand side of
+a column eight characters wide. This ensures that when large
+numbers of results are printed out they will be in neat columns
+on the screen.</p>
+
+<h3><font color="#0000FF">2.1.2 Printing Strings</font></h3>
+
+<p>PRINT can also be used to print out words, or indeed, any
+required group of characters. Arbitrary groups of characters are
+referred to simply as 'strings', and to identify the characters
+as a string they are enclosed in double quotes. For example:</p>
+
+<blockquote>
+    <pre>PRINT &quot;THE RESULT&quot;</pre>
+</blockquote>
+
+<p>will cause: </p>
+
+<blockquote>
+    <pre>THE RESULT&gt;</pre>
+</blockquote>
+
+<p>to be printed out. The characters in quotes are copied
+faithfully, exactly as they appear in the PRINT statement. Thus
+you could type:</p>
+
+<blockquote>
+    <pre>PRINT &quot;55*66=&quot;, 55*66</pre>
+</blockquote>
+
+<p>where the expression inside quotes is a string just like any
+other. This would print out:</p>
+
+<blockquote>
+    <pre>55*66= 3630&gt;</pre>
+</blockquote>
+
+<h2><font color="#0000FF">2.2 Variables - A to Z</font></h2>
+
+<p>You will probably be familiar with the use of letters, such as
+X and N, to denote unknown quantities. E.g.: &quot;the nth.
+degree&quot;, &quot;X marks the spot&quot;, etc. In ATOM BASIC
+any letter of the alphabet, A to Z, may be used to denote an
+unknown quantity, and these are called 'variables'. The equals
+sign '=' is used to assign a particular value to a variable. For
+example, typing:</p>
+
+<blockquote>
+    <pre>X=6</pre>
+</blockquote>
+
+<p>will assign the value 6 to X. Now try:</p>
+
+<blockquote>
+    <pre>PRINT X</pre>
+</blockquote>
+
+<p>and, as expected, the value of X will be printed out. Note the
+difference between this and:</p>
+
+<blockquote>
+    <pre>PRINT &quot;X&quot;</pre>
+</blockquote>
+
+<p>The assignment statement 'X=6' should be read as 'X becomes 6'
+because it denotes an operation which changes the value of X,
+rather than a statement of fact about X. The following statement:</p>
+
+<blockquote>
+    <pre>X=X+1</pre>
+</blockquote>
+
+<p>is perfectly reasonable, and adds 1 to the previous value of
+X. In words, the new value of X is to become the old value of X
+plus one. Now that we can use variables to stand for numbers,
+they can also be used in expressions. For example, to print the
+first four powers of 12 we can type:</p>
+
+<blockquote>
+    <pre>T=12
+PRINT T, T*T, T*T*T, T*T*T*T</pre>
+</blockquote>
+
+<h2><font color="#0000FF"><b>2.3 Getting the Right Answer</b></font></h2>
+
+<p>Suppose you wanted to calculate half of 777. You might type:</p>
+
+<blockquote>
+    <pre>PRINT 777/2</pre>
+</blockquote>
+
+<p>and you would get the answer 388. Then, to get the remainder,
+you would type:</p>
+
+<blockquote>
+    <pre>PRINT 777%2</pre>
+</blockquote>
+
+<p>and the answer will be l. So the exact answer is 388 and one
+half.<br>
+Suppose, however, you decided to try:</p>
+
+<blockquote>
+    <pre>PRINT 1/2*777</pre>
+</blockquote>
+
+<p>thinking it would give 'a half times 777', you would be
+surprised to get the answer 0. The reason lies in the fact that
+the calculation is worked out from left to right in several
+stages, and at every stage only the whole-number part of the
+result is kept. First 1/2 is calculated, and the result is 0
+because the remainder is not saved. Then this is multiplied by
+777 to give 0!</p>
+
+<p>Fortunately there is a simple rule to avoid problems like
+this:</p>
+
+<p><u>Do Divisions Last!</u></p>
+
+<p>The division operation is the only one that can cause a loss
+of accuracy; all the other operations are exact. By doing
+divisions last the loss of accuracy is minimised.</p>
+
+<p>Applying this rule to the previous example, the division by
+two should be done last:</p>
+
+<blockquote>
+    <pre>PRINT (1*777)/2</pre>
+</blockquote>
+
+<p>which is obviously the same as what was written earlier.</p>
+
+<h3><font color="#0000FF"><b>2.3.1 Fixed-Point Calculations</b></font></h3>
+
+<p>An alternative way to find half of 777 is to imagine the
+decimal point moved one place to the right, and write:</p>
+
+<blockquote>
+    <pre>PRINT 7770/2</pre>
+</blockquote>
+
+<p>The result will then be 3885, or, with the decimal point moved
+back to the correct place, 388.5. For example, in an accounting
+program you would use numbers to represent pence, rather than
+pounds. You could then work with sums of up to 20 million pounds.
+Results could be printed out as follows:</p>
+
+<blockquote>
+    <pre>PRINT R/100, &quot;POUNDS&quot;, R%100, &quot;PENCE&quot;</pre>
+</blockquote>
+
+<h2><font color="#0000FF"><b>2.4 Print Field Size - '@'</b></font></h2>
+
+<p>Numbers are normally printed out right-justified in a field of
+8 character spaces. If the number needs more than 8 spaces the
+field size will be exceeded, and the number will be printed in
+full without any extra spaces. Note that the minus sign is
+included in the field size for negative numbers.</p>
+
+<p>It is sometimes convenient to alter the size of the print
+field. The variable '@' determines this size, and can be altered
+for other field widths. For example:</p>
+
+<blockquote>
+    <pre>@=32</pre>
+</blockquote>
+
+<p>will print one number per line, because there are 32 character
+positions on each line.</p>
+
+<p>The value of '0&#146; can be zero, in which case no extra
+spaces will be inserted before the numbers.</p>
+
+<h2><font color="#0000FF"><b>2.5 Printing a New Line</b></font></h2>
+
+<p>A single quote in a PRINT statement will cause a return to the
+start of the next line. Thus:</p>
+
+<blockquote>
+    <pre>PRINT &quot;A&quot; ' &quot;T&quot; ' &quot;0&quot; ' &quot;M&quot; </pre>
+</blockquote>
+
+<p>will print out:</p>
+
+<blockquote>
+    <pre>A
+T
+0
+M
+&gt;</pre>
+</blockquote>
+
+<p>This is an improvement over most other versions of BASIC,
+which would require four separate PRINT statements for this
+example.</p>
+
+<h2><font color="#0000FF">2.6 Multiple-Statement Lines - ';'</font></h2>
+
+<p>ATOM BASIC allows any number of statemerits to be strung
+together on each line provided they are separated by semicolons.
+For example the following line:</p>
+
+<blockquote>
+    <pre>A=1;B=2;C=3;PRINT A,B,C' </pre>
+</blockquote>
+
+<p>will print:</p>
+
+<blockquote>
+    <pre>1 2 3</pre>
+</blockquote>
+
+<h2><font color="#0000FF">2.7 Hexadecimal Numbers</font></h2>
+
+<p>Numbers can also be represented in a notation called
+'hexadecimal' which is especially useful for representing
+addresses in the computer. Hexadecimal notation is explained in
+section 13.1.1; all that needs to be mentioned here is that
+hexadecimal notation is just an alternative way of writing
+numbers which makes use of the digits 0 to 9 and the letters A to
+F. The '<font face="Courier New">#</font>' symbol, called 'hash',
+is used to introduce a hexadecimal number. Thus <font
+face="Courier New">#E9</font> is a perfectly good hexadecimal
+number (nothing to do with the variable E).</p>
+
+<blockquote>
+    <pre>PRINT #8000</pre>
+</blockquote>
+
+<p>will print:</p>
+
+<blockquote>
+    <pre>32768&gt;</pre>
+</blockquote>
+
+<p>The PRINT statement prints the number out in decimal. #8000 is
+the address of the display area, and is a more convenient way of
+specifying this address than its decimal equivalent. A number can
+be printed in hexadecimal by prefixing it with an &#146;&amp;'
+ampersand in the <font face="Courier New">PRINT</font> statement.
+Thus:</p>
+
+<blockquote>
+    <pre>PRINT &amp;32768</pre>
+</blockquote>
+
+<p>will print:</p>
+
+<blockquote>
+    <pre>8000&gt;</pre>
+</blockquote>
+
+<h2><font color="#0000FF">2.8 Logical Operations</font></h2>
+
+<p>In addition to the arithmetic operations already described,
+ATOM BASIC provides three operations called 'logical operations':
+'&amp;' (AND), '\' (OR), and ':' (Exclusive-OR). These are all
+operations between two numbers, so there is no danger of
+confusing this use of '&amp;' with its use to specify printing in
+hex as covered in the previous section. These are especially
+useful when controlling external devices from a BASIC program.
+Note that the '\' symbol is obtained on the keyboard by typing
+&#146;shift \', and it will appear on the display as an inverted
+'\' · </p>
+
+<p>The following table gives the results of these three
+operations for the numbers 0 and 1:</p>
+
+<blockquote>
+    <table border="1" cellspacing="0">
+        <tr>
+            <td align="center">Operands<br>
+            A B</td>
+            <td align="center">A &amp; B</td>
+            <td align="center">A \ B</td>
+            <td align="center">A:B</td>
+        </tr>
+        <tr>
+            <td align="center">0 0</td>
+            <td align="center">0</td>
+            <td align="center">0</td>
+            <td align="center">0</td>
+        </tr>
+        <tr>
+            <td align="center">0 1</td>
+            <td align="center">0</td>
+            <td align="center">1</td>
+            <td align="center">1</td>
+        </tr>
+        <tr>
+            <td align="center">1 0</td>
+            <td align="center">0</td>
+            <td align="center">1</td>
+            <td align="center">1</td>
+        </tr>
+        <tr>
+            <td align="center">1 1</td>
+            <td align="center">1</td>
+            <td align="center">1</td>
+            <td align="center">0</td>
+        </tr>
+    </table>
+</blockquote>
+
+<p>Try typing the following:</p>
+
+<blockquote>
+    <pre>PRINT 0 &amp; 1 
+PRINT 1 \ 1 
+PRINT 1 : 1</pre>
+</blockquote>
+
+<p>and verify that the results agree with the table.</p>
+
+<h2><font color="#0000FF">2.9 Peeking and Poking</font></h2>
+
+<p>Many BASICs have PEEK and POKE functions which do the
+following: </p>
+
+<p>PEEK looks at the contents of a place in memory, or memory
+location </p>
+
+<p>POKE changes the contents of a memory location.</p>
+
+<p>The '?' operator, called 'query', is used for poking and
+peeking in ATOM BASIC and it provides a more elegant mechanism
+than the two functions provided in other BASICs.</p>
+
+<p>The contents of some memory location whose address is A is
+given by typing:</p>
+
+<blockquote>
+    <pre>PRINT ?A</pre>
+</blockquote>
+
+<p>For example, to look at the contents of location OC000 type:</p>
+
+<blockquote>
+    <pre>PRINT ?#C000</pre>
+</blockquote>
+
+<p>and the result will be 60 (this is the first location in the
+ATOM ROM). To change the contents of a location whose address is
+A to 13 just type:</p>
+
+<blockquote>
+    <pre>?A=13</pre>
+</blockquote>
+
+<p>For example, to change the contents of the memory location
+corresponding to the top left-hand corner of the screen type:</p>
+
+<blockquote>
+    <pre>?#8000=127</pre>
+</blockquote>
+
+<p>and a white block will appear in the top left of the screen
+(see section 18.5 for an explanation).</p>
+
+<p>As another useful example try:</p>
+
+<blockquote>
+    <pre>?#E1=0</pre>
+</blockquote>
+
+<p>which will turn the cursor off. To turn the cursor back on
+again type:</p>
+
+<blockquote>
+    <pre>?#E1=#80</pre>
+</blockquote>
+
+<p align="right"><a href="atap_03.htm">Next chapter</a></p>
+</body>
+</html>

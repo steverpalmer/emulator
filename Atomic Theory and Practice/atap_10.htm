@@ -1,0 +1,299 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Type"
+content="text/html; charset=iso-8859-1">
+<meta name="GENERATOR" content="Microsoft FrontPage Express 2.0">
+<title>10 More Space and More Speed</title>
+</head>
+
+<body bgcolor="#FFFFFF">
+
+<h1><font color="#0000FF">10 More Space and More Speed</font></h1>
+
+<p>This chapter shows how to abbreviate programs so that they
+will fit into a smaller amount of memory, and how to write
+programs so that they will run as fast as possible.</p>
+
+<h2><font color="#0000FF"><b>10.1 Abbreviating BASIC Programs</b></font></h2>
+
+<p>Most versions of BASIC demand a large amount of redundancy.
+For example, the command PRINT must usually be specified in full,
+even though there are no other statements beginning with PR. In
+ATOM BASIC it is possible to shorten many of the statement and
+function names, and omit many unnecessary parts of the syntax, in
+order to save memory and increase execution speed. The examples
+in this manual have avoided such abbreviations because they make
+the resulting program harder to read and understand, but a saving
+of up to 30% in memory space can be obtained by abbreviating
+programs as described in the following sections.</p>
+
+<h3><font color="#0000FF"><b>10.1.1 Statements and Functions</b></font></h3>
+
+<p>All statement and function names can be abbreviated to the
+shortest sequence of characters needed to distinguish the name,
+followed by a full stop. The following abbreviations are
+possible:</p>
+
+<pre>      Name:    Abbreviation:
+      ABS          A.
+      AND          A.
+      BGET         B.
+      BPUT         B.
+      CH
+      CLEAR
+      COUNT        C.
+      DIM 
+      DO 
+      DRAW
+      END          E.
+      EXT          E.
+      FIN          F.
+      FOR          F.
+      FOUT        FO.
+      GET          G.
+      GOSUB      GOS.
+      GOTO         G.
+      IF
+      INPUT       IN.
+      LEN          L.
+      LET          L.
+      LINK        LI.
+      LIST         L.
+      LOAD        LO.
+      MOVE
+      NEW          N.
+      NEXT         N.
+      OLD
+      OR
+      PLOT
+      PRINT        P.
+      PTR
+      PUT
+      REM
+      RETURN       R.
+      RND          R.
+      RUN
+      SAVE        SA.
+      SGET         S.
+      SHUT        SH.
+      SPUT        SP.
+      STEP         S.
+      THEN         T.
+      TO
+      TOP          T.
+      UNTIL        U.
+      WAIT</pre>
+
+<h3><font color="#0000FF"><b>10.1.2 Spaces</b></font></h3>
+
+<p>Spaces are largely irrelevant to the operation of the BASIC
+interpreter, and they are ignored when encountered in a program.
+Their only effect is to cause a 13 microsecond delay in
+execution. There is one place where a space is necessary to avoid
+an ambiguity as in the following example:</p>
+
+<pre>      FOR A=B TO C</pre>
+
+<p>where the space after B is compulsory to make it clear that B
+is not the first letter of a function name.</p>
+
+<h3><font color="#0000FF"><b>10.1.3 LET</b></font></h3>
+
+<p>Some BASICs demand that every assignment statement begin with
+the word LET; e.g.:</p>
+
+<pre>      LET A=B</pre>
+
+<p>In ATOM BASIC the LET statement may be omitted, with a
+decrease in execution time.</p>
+
+<h3><font color="#0000FF"><b>10.1.4 THEN</b></font></h3>
+
+<p>The word THEN in the second part of an IF statement may be
+omitted. <br>
+For example:</p>
+
+<pre>      IF A=B C=D</pre>
+
+<p>is perfectly legal. However, note that if the second statement
+begins with a T, or a '?' or '!' unary operator, some delimiter
+is necessary:</p>
+
+<pre>      IF A=B THEN T=Q</pre>
+
+<p>Alternatively a statement delimiter ';' can be used as the
+delimiter:</p>
+
+<pre>      IF A=B; T=Q</pre>
+
+<h3><font color="#0000FF"><b>10.1.5 Brackets</b></font></h3>
+
+<p>Brackets enclosing a function argument, or an array
+identifier, are unnecessary and may be omitted when the argument,
+or array subscript, is a single variable or constant.</p>
+
+<p>For example, AA(3) may be written AA3, ABS(RND) may be written
+ABSRND, but AA(B+2) cannot be abbreviated.</p>
+
+<h3><font color="#0000FF"><b>10.1.6 Commas</b></font></h3>
+
+<p>The commas separating elements in a PRINT statement can be
+omitted when there is no ambiguity.</p>
+
+<p>For example:</p>
+
+<pre>      PRINT A,B,C,&quot;RESULT&quot;,J</pre>
+
+<p>may be shortened to:</p>
+
+<pre>      PRINTA B C&quot;RESULT&quot;J </pre>
+
+<p>Note that the comma in:</p>
+
+<pre>      PRINT &amp;A,&amp;B</pre>
+
+<p>is, however, necessary to distinguish the numbers from the
+single number (A&amp;B) printed in hex.</p>
+
+<h3><font color="#0000FF"><b>10.1.7 Multi-Statement Lines</b></font></h3>
+
+<p>Each text line uses one byte per character on the line, plus
+two bytes for the line number and a one-byte terminator
+character; thus writing several statements on one line saves two
+bytes per statement. Note that there are two occasions where this
+cannot be done:</p>
+
+<p>1. After an IF statement, because the statements on the line
+following the IF statement would be skipped if the condition
+turned out false.</p>
+
+<p>2. Where the line number is referred to in a GOTO or GOSUB
+statement. </p>
+
+<h3><font color="#0000FF"><b>10.1.8 Control Variable in NEXT</b></font></h3>
+
+<p>The FOR...NEXT control variable may be omitted from the NEXT
+statement; the control variable will be assumed to be the one
+specified in the most recently activated FOR statement.</p>
+
+<h2><font color="#0000FF"><b>10.2 Maximising Execution Speed</b></font></h2>
+
+<p>ATOM BASIC is one of the fastest BASIC interpreters available,
+and all of its facilities have been carefully optimised for speed
+so that calculations will be performed as quickly as possible,
+and so that real-time graphics programs are feasible.</p>
+
+<p>To obtain the best possible speed from a program the following
+hints should be borne in mind; but note that many of these
+suqgestions reduce the legibility of the program, and so should
+only be used where speed is critical.</p>
+
+<p>1. Use the FOR...NEXT loop in preference to an IF statement
+and a GOTO.</p>
+
+<p>2. Use labels, rather than line numbers, in GOTO and GOSUB
+statements.</p>
+
+<p>3. Avoid the use of constants specified in the body of
+programs; instead use variables which have been set to the
+correct value at the start of the program. For example, replace:</p>
+
+<pre>      A=A*1000</pre>
+
+<p>by:</p>
+
+<pre>      T=1000
+      .
+      .
+      A=A*T</pre>
+
+<p>4. Write statements in-line, rather than in subroutines, when
+the subroutines are only called once, or when the subroutine is
+shorter than two or three lines.</p>
+
+<p>5. If a calculation is performed every time around a loop,
+make sure that the constant part of the calculation is performed
+only once outside the loop. For example:</p>
+
+<pre>      FOR J=1 TO 10 
+      FOR K=1 TO 10 
+      VV(K)=VV(J)*2+K 
+      NEXT K
+      NEXT J</pre>
+
+<p>could be written as:</p>
+
+<pre>      FOR J=1 TO 10 
+      Q=VV(J)*2 
+      FOR K=1 TO 10 
+      VV(K)=Q+K 
+      NEXT K
+      NEXT J</pre>
+
+<p>6. Where several nested FOR...NEXT loops are being executed,
+and the order in which they are performed is not important,
+arrange them so that the one executed the greatest number of
+times is at the centre. <br>
+For example:</p>
+
+<pre>      FOR J=1 TO 2
+      FOR K=1 TO 1000
+      .
+      .
+      NEXT K 
+      NEXT J</pre>
+
+<p>is faster than:</p>
+
+<pre>      FOR K=1 TO 1000 
+      FOR J=1 TO 2
+      .
+      .
+      NEXT J 
+      NEXT K</pre>
+
+<p>because in the second case the overhead for setting up the
+inner loop is performed 1000 times, whereas in the first example
+it is only performed twice.</p>
+
+<p>7. Choose the FOR...NEXT loop parameters so as to minimise
+calculations inside the loop. For example:</p>
+
+<pre>      FOR N=0 TO 9
+      DRAW AA(2*N), AA(2*N+1) 
+      NEXT N</pre>
+
+<p>could be rewritten as the faster:</p>
+
+<pre>      FOR N=0 TO 18 STEP 2 
+      DRAW AA(N),AA(N+1) 
+      NEXT N</pre>
+
+<p>8. Use word operations rather than byte operations where
+possible. For example, to clear the graphics screen to white it
+is faster to execute:</p>
+
+<pre>FOR N=#8000 TO #9800 STEP 4; !N=-1; NEXT N </pre>
+
+<p>than the following:</p>
+
+<pre>      FOR N=#8000 TO #9800; ?N=-1; NEXT N</pre>
+
+<p>9. The IF statement containing several conditions linked by
+the AND connective, as, for example:</p>
+
+<pre>      IF A=2 AND B=2 AND C=2 THEN .....</pre>
+
+<p>will evaluate all the conditions even when the earlier ones
+are false. <br>
+Rewriting the statement as:</p>
+
+<pre>      IF A=2 IF B=2 IF C=2 THEN .....</pre>
+
+<p>avoids this, and so gives faster execution.</p>
+
+<p align="right"><a href="atap_11.htm">Next chapter</a></p>
+
+</body>
+</html>

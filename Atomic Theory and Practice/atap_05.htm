@@ -1,0 +1,367 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Type"
+content="text/html; charset=iso-8859-1">
+<meta name="GENERATOR" content="Microsoft FrontPage Express 2.0">
+<title>Loops</title>
+<HEADER>
+</HEADER>
+</head>
+
+<body bgcolor="#FFFFFF">
+
+<h1><font color="#0000FF">5 Loops</font></h1>
+
+<p>The previous section showed how the IF statement could be used
+to cause the same statements to be executed several times. Recall
+the program:</p>
+
+<pre>   10 I=0
+   20 PRINT&quot;!&quot;; I=I+1 
+   30 IF I&lt;256 GOTO 20
+   40 END</pre>
+
+<p>which prints out 256 exclamation marks (half a screen full).
+This iterative loop is such a frequently-used operation in BASIC
+that all BASICs provide a special pair of statements for this
+purpose, and ATOM BASIC provides a second type of loop for
+greater flexibility.</p>
+
+<h2><font color="#0000FF">5.1 FOR...NEXT Loops</font></h2>
+
+<p>The FOR statement, together with the NEXT statement, causes a
+set of statements to be executed for a range of values of a
+specified variable. To illustrate, the above example can be
+rewritten using a FOR...NEXT loop as follows:</p>
+
+<pre>   10 FOR I=1 TO 256 
+   20   PRINT &quot;!&quot; 
+   30 NEXT I
+   40 END</pre>
+
+<p>The FOR statement specifies that the statements up to the
+matching NEXT statement should be executed for each value of I
+from 1 to 256 (inclusive). In this example there is one statement
+between the FOR and NEXT statements, namely:</p>
+
+<pre>   PRINT &quot;!&quot;</pre>
+
+<p>This statement has been indented in the program to make the
+loop structure clearer; in fact the spaces are ignored by BASIC.</p>
+
+<p>The NEXT statement specifies the variable that was specified
+in the corresponding FOR statement. This variable, I in the above
+example, is called the 'control variable' of the loop; it can be
+any of the variables A to Z.</p>
+
+<p>The value of the control variable can be used inside the loop,
+if required. To illustrate, the following program prints out all
+multiples of 12 up to 12*12:</p>
+
+<pre>   10 FOR M=1 TO 12
+   20   PRINT M*12 
+   30 NEXT M
+   40 END</pre>
+
+<p>The range of values specified in the FOR statement can be
+anything you wish, even arbitrary expressions. Remember, though,
+that the loop is always executed at least once, so the program:</p>
+
+<pre>   10 FOR N=1 TO 0
+   20   PRINT N 
+   30 NEXT N
+   40 END</pre>
+
+<p>will print '1' before stopping.</p>
+
+<h3><font color="#0000FF"><b>5.1.1 STEP Size</b></font></h3>
+
+<p>It is also possible to specify a STEP size in the FOR
+statement; the STEP size will be added to the control variable
+each time round the loop, until the control variable exceeds the
+value specified after TO. If the STEP size is omitted it is
+assumed to be 1. This provides us with an alternative way of
+printing the multiples of 12:</p>
+
+<pre>   10 FOR M=12 TO 12*12 STEP 12
+   20   PRINT M
+   30 NEXT M
+   40 END</pre>
+
+<h3><font color="#0000FF"><b>5.1.2 Graph Plotting Using
+FOR...NEXT</b></font></h3>
+
+<p>The FOR...NEXT loop is extremely useful when plotting graphs
+using the ATOM's graphics facilities. Try rewriting the Cubic
+Curve program of Section 4.10.1 using a FOR...NEXT loop.</p>
+
+<p>The following curve-stitching program is quite fun, especially
+in the higher graphics modes. It simulates the curves produced by
+stitching with threads stretched between two lines of holes in a
+square of cardboard. The curve produced as the envelope of all
+the threads is a parabola:</p>
+
+<pre>    1 REM Curve Stitching in a Square
+   10 V=46
+   20 INPUT Q
+   30 CLEAR O
+   40 FOR Z=O TO V STEP Q; Y=V-Z
+   50   MOVE O,Z; DRAW Y,O
+   60   MOVE Y,V; DRAW V,Z
+   70 NEXT Z
+   80 END</pre>
+
+<p>The value of Q typed in should be between 2 and 9 for best
+results; V determines the size of the square that is drawn. The
+program works best when V is a multiple of Q.</p>
+
+<h2><font color="#0000FF"><b>5.2 DO...UNTIL Loops</b></font></h2>
+
+<p>ATOM BASIC provides an alternative pair of loop-control
+statements: DO and UNTIL. The UNTIL statement is followed by a
+condition, and everything between the DO statement and the UNTIL
+statement is repeatedly executed until the condition becomes
+true. So, to print 256 exclamation marks in yet another way
+write:</p>
+
+<pre>   10 I=0
+   20 DO
+   30   I=I+1
+   40   PRINT &quot;!&quot;
+   50 UNTIL I=256
+   50 END</pre>
+
+<p>Again, the statements inside the DO...UNTIL loop may be
+indented to make the structure clearer.</p>
+
+<p>The DO...UNTIL loop is most useful in cases where a program is
+to carry on until certain conditions are satisfied before it will
+stop. To illustrate, the following program prompts for a series
+of numbers, and adds them together. When a zero is entered the
+program terminates and prints out the sum:</p>
+
+<pre>   10 S=0
+   20 DO INPUT J
+   30    S=S+J
+   40 UNTIL J=0
+   50 PRINT &quot;SUM =&quot;, S
+   60 END</pre>
+
+<p>Note that a statement may follow the DO statement, as in this
+example.</p>
+
+<h3><font color="#0000FF"><b>5.2.1 Greatest Common Divisor</b></font></h3>
+
+<p>The following simple program uses a DO...UNTIL loop in the
+calculation of the greatest common divisor (GCD) of two numbers;
+i.e. the largest number that will divide exactly into both of
+them. For example, the GCD of 26 and 65 is 13. If the numbers are
+coprime the GCD will be l.</p>
+
+<pre>     1 REM Greatest Common Divisor
+    80 INPUT A,B
+    90 DO A=A%B
+   100 IF ABS(B)&gt;ABS(A) THEN T=B; B=A; A=T
+   120 UNTIL B=0
+   130 PRINT &quot;GCD =&quot; A'
+   140 END
+
+Description of Program:
+80        Input two numbers
+90        Set A to remainder when it is divided by B
+100       Make A the larger of the two numbers
+120       Stop when B is zero
+130       A is the greatest common divisor.
+
+Variables:
+A,B - Numbers
+T - Temporary variable
+
+Program size: 137 bytes</pre>
+
+<p>The method is known as Euclid's algorithm, and to see it
+working insert a line:</p>
+
+<pre>   95 PRINT A,B'</pre>
+
+<p>The ABS functions ensure that the program will work for
+negative, as well as positive, numbers.</p>
+
+<h3><font color="#0000FF"><b>5.2.2 Successive Approximation</b></font></h3>
+
+<p>The DO...UNTIL loop construction is especially useful for
+problems involving successive approximation, where the value of a
+function is calculated by obtaining better and better
+approximations until some criterion of accuracy is met.</p>
+
+<p>The following iterative program calculates the square root of
+any number up to about 2,000,000,000. Also shown is the output
+obtained when calculating the square root of 200,000,000:</p>
+
+<pre>   10 REM Square Root 
+   20 INPUT S
+  100 Q=S/2
+  110 DO Q=(Q+S/Q)/2
+  120 UNTIL (Q-1)*(Q-1)&lt;S AND (Q+1)*(Q+1)&gt;S
+  130 PRINT Q
+  140 END</pre>
+
+<pre>Description of Program:
+20	Input number
+100	Choose starting value
+110	Calculate next approximation
+120	Carry on until the square lies between the squares of the
+        numbers either side of the root.
+130	Print square root.
+
+Variables:
+Q - Square root
+S - Number
+Program size: 118 bytes Sample run:
+
+&gt;RUN
+?200000000
+   14142&gt;</pre>
+
+<h2><font color="#0000FF"><b>5.3 Nested Loops</b></font></h2>
+
+<p>FOR...NEXT and DO...UNTIL loops may be nested; the following
+example will print the squares, cubes, and fourth powers of the
+numbers 1 to 15 in a neat table:</p>
+
+<pre>    1 REM Powers of Numbers
+    5 PRINT&quot;        X     X^2&quot;
+    8 PRINT&quot;      X^3     X^4&quot;
+   10 FOR N=1 TO 15
+   20   J=N
+   30   FOR M=1 TO 4
+   40     PRINT J; J=J*N
+   50   NEXT M
+   60 NEXT N
+   70 END</pre>
+
+<p>The statements numbered 20 to 50 are executed 15 times, for
+every value of N from 1 to 15. For each value of N the statements
+on line 40 are executed four times, for values of M from 1 to 4.
+Thus 15*4 or 60 numbers are printed out.</p>
+
+<h3><font color="#0000FF"><b>5.3.1 Mis-Nested Loops</b></font></h3>
+
+<p>Note that loops must be nested correctly. The following
+attempt at printing out 100 pairs of numbers will not work:</p>
+
+<pre>   10 FOR A=1 TO 10
+   20 FOR B=1 TO 10
+   30 PRINT A,B
+   40 NEXT A
+   50 NEXT B</pre>
+
+<p>The program will, if RUN, give an error (ERROR 230). The
+reason for the error will become clear if you try to indent the
+statements within each loop, as in the previous example.</p>
+
+<h2><font color="#0000FF"><b>5.4 WAIT Statement</b></font></h2>
+
+<p>ATOM BASIC includes an accurate timing facility, derived from
+the main CPU clock. To understand the operation of the WAIT
+statement, imagine that the ATOM contains a clock which 'ticks'
+sixty times a second. The WAIT statement causes execution to stop
+until the next clock tick. Thus it automatically synchronises the
+program to an accurate time.</p>
+
+<p>The WAIT statement makes it a simple matter to write programs
+to give any required delay. For example, the following program
+gives a delay of 10 seconds:</p>
+
+<pre>      FOR N=1 TO 10*60; WAIT; NEXT N</pre>
+
+<p>You are perhaps wondering why WAIT does not just give a delay
+of 1/60 second, rather than waiting for the next clock tick. The
+reason is that if only a delay function were provided, you would
+have to know exactly how long the other statements in the loop
+took to execute if you wanted accurate timinq. In fact, with the
+WAIT function, all you need to do is to ensure that the
+statements in the loop take less than 1/60th. of a second, so as
+not to miss the next tick.</p>
+
+<h3><font color="#0000FF"><b>5.4.1 Digital Clock</b></font></h3>
+
+<p>The following digital clock displays the time as six digits in
+the top left-hand corner of the screen.</p>
+
+<pre>   10 REM Digital Clock
+   20 INPUT &quot;TIME&quot; H,M,S
+   30 PRINT $12; ?#El=0
+   40 T=((H*100)+M)*100+S
+   50 DO FOR S=l TO 55; WAIT; NEXT S
+   60 PRINT $30,T; T=T+1
+   70 IF T%100=60 THEN T=T+40
+   80 IF T%10000=6000 THEN T=T+4000
+   90 UNTIL 0
+
+Description of Program:
+20	Input the starting time
+30	Clear screen; turn off cursor
+40	Set up time as 6-digit number
+50	Use up rest of a second
+60	Print T in top left-hand corner of screen
+70-80     Update minutes and hours
+
+Variables:
+H - Hours
+M - Minutes
+S - Seconds
+T - Six-digit number representing time
+
+Program size: 216 bytes</pre>
+
+<p>To turn the cursor back on after running this program type a
+form-feed; i.e. CTRL-L.</p>
+
+<h3><font color="#0000FF"><b>5.4.2 Reaction Timer</b></font></h3>
+
+<p>The following reaction-timer program uses WAIT to calculate
+your reaction time, and prints out the time in centiseconds (i.e.
+hundredths of a second) to the nearest 2 centiseconds. It blanks
+the screen, and then, after a random delay, displays a dot at a
+random place on the screen. When you see the dot you should press
+the SHIFT key as quickly as possible; the program will then
+display your reaction time.</p>
+
+<pre>    1 REM Reaction Timer
+   10 CLEAR 0
+   20 X=ABS(RND)%64; Y=ABS(RND)%48
+   30 FOR N=l TO ABS(RND)%600+300
+   40 WAIT; NEXT N
+   50 MOVE X,Y; DRAW X,Y
+   60 T=0
+   70 DO T=T+1; WAIT
+   80 UNTIL ?#B001&lt;&gt;#FF
+   90 PRINT &quot;REACTION TIME =&quot;
+   100 PRINT T*10/6, &quot; CSEC.&quot; '
+   110 IF T&gt;18 PRINT &quot;WAKE UP!&quot; '  
+   120 END
+
+Description of Program:
+20        Choose random X,Y coordinates for point on screen.
+30-40     Wait for random time between 6 and 9 seconds.
+50        Plot point at X,Y
+60-70     Count sixtieths of a second
+80        #B001 is the address of the input port to which the SHIFT key
+          is connected; the contents of this location are #FF until 
+          the SHIFT key is pressed.
+90-100    Print reaction time converted to centiseconds.
+110       If appalling reactions, print message.
+
+Variables:
+N - Counter for random delay
+T - counter in sixtieths of a second for reaction time
+X,Y - random coordinates for point on screen.
+
+Program size: 273 bytes</pre>
+
+<p align="right"><a href="atap_06.htm">Next chapter</a></p>
+
+</body>
+</html>

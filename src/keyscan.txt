@@ -1,0 +1,263 @@
+KEYBOARD MATRIX
+
+Row	Column		Shift
+
+0	0
+0	1	3	#
+0	2	-	=
+0	3	G	g
+0	4	Q	q
+0	5	<esc>	<esc>
+
+1	0	<copy>	<copy>
+1	1	2	"
+1	2	,	<
+1	3	F	f
+1	4	P	p
+1	5	Z	z
+
+2	0	<up>	<down>
+2	1	1	!
+2	2	;	+
+2	3	E	e
+2	4	O	o
+2	5	Y	y
+
+3	0	<right>	<left>
+3	1	0	0
+3	2	:	*
+3	3	D	d
+3	4	N	n
+3	5	X	x
+
+4	0	<lock>	<lock>
+4	1	<del>	<del>
+4	2	9	)
+4	3	C	c
+4	4	M	m
+4	5	W	w
+
+5	0	^	~
+5	1
+5	2	8	(
+5	3	B	b
+5	4	L	l
+5	5	V	v
+
+6	0	]	}
+6	1	<rtn>	<rtn>
+6	2	7	'
+6	3	A	a
+6	4	K	k
+6	5	U	u
+
+7	0	\	|
+7	1
+7	2	6	&
+7	3	@	`
+7	4	J	j
+7	5	T	t
+
+8	0	[	{
+8	1
+8	2	5	%
+8	3	/	?
+8	4	I	i
+8	5	S	s
+
+9	0	<space>	<space>
+9	1
+9	2	4	$
+9	3	.	>
+9	4	H	h
+9	5	R	r
+
+
+
+Column	0	1	2	3	4	5
+Row
+0		3	-	G	Q	<esc>
+1		2	,	F	P	Z
+2	<up>	1	;	E	O	Y
+3	<right>	0	:	D	N	X
+4	<lock>	<del>	9	C	M	W
+5	^	<copy>	8	B	L	V
+6	]	<rtn>	7	A	K	U
+7	\		6	@	J	T
+8	[		5	/	I	S
+9	<space>		4	.	H	R
+
+
+
+GLYPH MAPPING
+
+In Glyph mapping mode, the state of the shift
+and control keys is determined by the character
+that is being pressed.  This means pressing '@'
+on the PC keyboard will put an '@' into the Atom.
+In this mode, multiple keypresses are hidden.
+The Repeat key is taken from the <alt> key.
+
+Char	Row	Column	Shift	Ctrl
+C-@	7	3	N	Y
+C-A	6	3	N	Y
+C-B	5	3	N	Y
+C-C	4	3	N	Y
+C-D	3	3	N	Y
+C-E	2	3	N	Y
+C-F	1	3	N	Y
+C-G	0	3	N	Y
+C-H	9	4	N	Y
+C-I	8	4	N	Y
+C-J	7	4	N	Y
+C-K	6	4	N	Y
+C-L	5	4	N	Y
+C-M	4	4	N	Y
+C-N	3	4	N	Y
+C-O	2	4	N	Y
+C-P	1	4	N	Y
+C-Q	0	4	N	Y
+C-R	9	5	N	Y
+C-S	8	5	N	Y
+C-T	7	5	N	Y
+C-U	6	5	N	Y
+C-V	5	5	N	Y
+C-W	4	5	N	Y
+C-X	3	5	N	Y
+C-Y	2	5	N	Y
+C-Z	1	5	N	Y
+C-[	8	0	N	Y
+C-\	7	0	N	Y
+C-]	6	0	N	Y
+C-^	5	0	N	Y
+C-_
+<space>	9	0	~	~
+!	2	1	Y	N
+"	1	1	Y	N
+#	0	1	Y	N
+$	9	2	Y	N
+%	8	2	Y	N
+&	7	2	Y	N
+'	6	2	Y	N
+(	5	2	Y	N
+)	4	2	Y	N
+*	3	2	Y	N
++	2	2	Y	N
+,	1	2	N	N
+-	0	2	N	N
+.	9	3	N	N
+/	8	3	N	N
+0	3	1	N	N
+1	2	1	N	N
+2	1	1	N	N
+3	0	1	N	N
+4	9	2	N	N
+5	8	2	N	N
+6	7	2	N	N
+7	6	2	N	N
+8	5	2	N	N
+9	4	2	N	N
+:	3	2	N	N
+;	2	2	N	N
+<	1	2	Y	N
+=	0	2	Y	N
+>	9	3	Y	N
+?	8	3	Y	N
+@	7	3	N	N
+A	6	3	N	N
+B	5	3	N	N
+C	4	3	N	N
+D	3	3	N	N
+E	2	3	N	N
+F	1	3	N	N
+G	0	3	N	N
+H	9	4	N	N
+I	8	4	N	N
+J	7	4	N	N
+K	6	4	N	N
+L	5	4	N	N
+M	4	4	N	N
+N	3	4	N	N
+O	2	4	N	N
+P	1	4	N	N
+Q	0	4	N	N
+R	9	5	N	N
+S	8	5	N	N
+T	7	5	N	N
+U	6	5	N	N
+V	5	5	N	N
+W	4	5	N	N
+X	3	5	N	N
+Y	2	5	N	N
+Z	1	5	N	N
+[	8	0	N	N
+\	7	0	N	N
+]	6	0	N	N
+^	5	0	N	N
+_
+`	7	3	Y	N
+a	6	3	Y	N
+b	5	3	Y	N
+c	4	3	Y	N
+d	3	3	Y	N
+e	2	3	Y	N
+f	1	3	Y	N
+g	0	3	Y	N
+h	9	4	Y	N
+i	8	4	Y	N
+j	7	4	Y	N
+k	6	4	Y	N
+l	5	4	Y	N
+m	4	4	Y	N
+n	3	4	Y	N
+o	2	4	Y	N
+p	1	4	Y	N
+q	0	4	Y	N
+r	9	5	Y	N
+s	8	5	Y	N
+t	7	5	Y	N
+u	6	5	Y	N
+v	5	5	Y	N
+w	4	5	Y	N
+x	3	5	Y	N
+y	2	5	Y	N
+z	1	5	Y	N
+{	8	0	Y	N
+|	7	0	Y	N
+}	6	0	Y	N
+~	5	0	Y	N
+
+<caps>	4	0	~	N	<lock>
+<tab>	8	4	N	Y	C-I
+<esc>	0	5	~	N	<esc>
+<bck>	4	1	~	N	<del>
+<rtn>	6	1	~	N	<rtn>
+<up>	2	0	N	N
+<down>	2	0	Y	N
+<left>	3	0	Y	N
+<right>	3	0	N	N
+<ins>
+<del>	4	1	~	N	<del>
+
+<home>	5	0	N	Y	C-^
+<end>
+<Pup>
+<Pdown>
+<F1>	4	0	~	N
+<F2>
+<F3>
+<F4>
+<F5>
+<F6>
+<F7>
+<F8>
+<F9>
+<F10>
+<F11>
+<F12>
+<SysRq>
+<ScrLk>
+<Break>	<brk>
+<shift>	~
+<ctrl>	~
+<alt>	<rept>

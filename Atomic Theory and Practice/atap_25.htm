@@ -1,0 +1,382 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Type"
+content="text/html; charset=iso-8859-1">
+<meta name="GENERATOR" content="Microsoft FrontPage Express 2.0">
+<title>25 Operating System Routines and Addresses</title>
+</head>
+
+<body bgcolor="#FFFFFF">
+
+<h1><font color="#0000FF">25 Operating System Routines and
+Addresses</font></h1>
+
+<h2><font color="#0000FF">25.1 Input/Output Routines</font></h2>
+
+<p>The ATOM operating system contains several routines which can
+be called by user programs to provide input and output
+facilities. The routines are defined so that they are compatible
+with the other Acorn operating systems; in particular, if the
+ATOM is expanded to include a Disk Operating System the same
+routines will automatically function with the disk.</p>
+
+<p><font color="#0000FF"><strong>OSCLI Command line interpreter</strong></font></p>
+
+<p>This subroutine interprets a string of characters at address
+#0100 and terminated by carriage return as an operating system
+command. Detected errors are met with a BRK. All processor
+registers are used, and the decimal-mode flag is set to binary on
+exit.</p>
+
+<p><font color="#0000FF"><strong>OSWRCH Write character</strong></font></p>
+
+<p>This subroutine sends the byte in the accumulator to the
+output channel. Control characters are normally recognised as
+detailed in Section 18.1.3. All registers are preserved.</p>
+
+<p><font color="#0000FF"><strong>OSCRLF Carriage return -- line
+feed</strong></font></p>
+
+<p>This subroutine generates a line feed followed by a carriage
+return using OSWRCH. On exit A will contain #0D, N and Z will be
+0, and all other registers are preserved.</p>
+
+<p><font color="#0000FF"><strong>OSECHO Read character with echo</strong></font></p>
+
+<p>This subroutine reads a byte using OSRDCH and then writes it
+out using OSWRCH. The routine converts carriage returns to a line
+feed followed by a carriage return. On exit A will contain the
+byte read, N, Z, and C are undefined, and all other registers are
+preserved.</p>
+
+<p><font color="#0000FF"><strong>OSRDCH Read character</strong></font></p>
+
+<p>This subroutine reads a byte from the input channel and
+returns it in A. The state of N, Z, and C is undefined; all other
+reqisters are preserved.</p>
+
+<p><font color="#0000FF"><strong>OSLOAD Load file</strong></font></p>
+
+<p>This subroutine loads a complete file into a specified area of
+memory.<br>
+On entry X must point to the following data in zero page:</p>
+
+<p>X+0 address of string of characters, terminated by #0D, which
+is the file name.<br>
+X+2 Address in memory of the first byte of the destination.<br>
+X+4 Flag byte: if bit 7 = 0 use the file's start address.</p>
+
+<p>All processor registers are used. A break will occur if the
+file cannot be found. In interrupt or DMA driven systems a wait
+until completion should be performed if the carry flag was set on
+entry.</p>
+
+<p><font color="#0000FF"><strong>OSSAVE, Save file</strong></font></p>
+
+<p>This subroutine saves all of an area of memory to a specified
+file. On entry X must point to the following data in zero page:</p>
+
+<p>X+0 Address of string of characters, terminated by #0D, which
+is the file name.<br>
+X+2 Address for data to be reloaded to.<br>
+X+4 Execution address if data is to be executed<br>
+X+6 Start address of data in memory<br>
+X+8 End address + 1 of data in memory</p>
+
+<p>The data is copied by the operating system without being
+altered. All registers are used. In interrupt or DMA driven
+operating systems a wait until completion should be performed if
+the carry flag was set on entry. A break will occur if no storage
+space large enough can be found.</p>
+
+<p><font color="#0000FF"><strong>OSBPUT Put byte</strong></font></p>
+
+<p>This subroutine outputs the byte in the accumulator to a
+sequential write file. Registers X and Y are saved. In the ATOM
+operatinq system interrupts are disabled during OSBPUT but
+interrupt status is restored on exit. In the Disk Operating
+System the file's sequential file pointer will be incremented
+after the byte has been saved.</p>
+
+<p><font color="#0000FF"><strong>OSBGET Get byte</strong></font></p>
+
+<p>The subroutine returns, in A, the next byte from a sequential
+read file. Registers X and Y are retained. In the ATOM operating
+system interrupts are disabled during OSBGET but interrupt status
+is restored on exit. In the Disk Operating System the file's
+sequential file pointer will be incremented after the byte has
+been read.</p>
+
+<p><font color="#0000FF"><strong>OSFIND Find file</strong></font></p>
+
+<p>This subroutine returns, in A, a 'handle' for a file. The X
+register points to zero page locations containing the address of
+the first character of the file name; the file name is terminated
+by a #0D byte. The 'handle' is zero if the file does not exist;
+otherwise it is a byte uniquely specifying the file. If the file
+is to be used for sequential input the carry should be set, or if
+for sequential output the carry should be clear. In the ATOM
+operating system the file handle is set to 13, and the message
+&quot;PLAY TAPE&quot; or &quot;RECORD TAPE&quot; is produced. In
+the Disk Operating Systam the file's sequential pointer is set to
+zero.</p>
+
+<p><font color="#0000FF"><strong>OSSHUT Shut file</strong></font></p>
+
+<p>This subroutine removes a reference to a file whose handle is
+in the Y register. If a handle of zero is supplied, all files are
+shut. In the ATOM operating system the call does nothing.</p>
+
+<p>The following subroutines are not used in the cassette system,
+and cause an error if called:</p>
+
+<p>OSRDAR Read file's arguments<br>
+OSSTAR Store file's arguments</p>
+
+<h2><font color="#0000FF">25.2 Operating System Calls</font></h2>
+
+<p>The following table gives the addresses of all the operating
+system calls:</p>
+
+<pre>      Address:  Subroutine:  Instruction:
+       #FFCB      OSSHUT     JMP (SHTVEC)
+       #FFCE      OSFIND     JMP (FNDVEC)
+       #FFD1      OSBPUT     JMP (BPTVEC)
+       #FFD4      OSBGET     JMP (BGTVEC)
+       #FFD7      OSSTAR     JMP (STRVEC)
+       #FFDA      OSRDAR     JMP (RDRVEC)
+       #FFDD      OSSAVE     JMP (SAVVEC)
+       #FFED      OSLOAD     JMP (LODVEC)
+       #FFE3      OSRDCH     JMP (RDCVEC)
+       #FFE6      OSECHO     JSR  OSRDCH
+       #FFE9      OSASCI     CMP  @#0D
+       #FFEB                 BNE  OSWRCH
+       #FFED      OSCRLF     LDA  @#0A
+       #FFEF                 JSR  OSWRCH
+       #FFF2                 LDA  @#0D
+       #FFF4      OSWRCH     JMP (WRCVEC)
+       #FFF7      OSCLI      JMP (COMVEC)</pre>
+
+<p>The operating system calls are all indirected via addresses
+held in RAM, and these addresses may be changed to the addresses
+of user-supplied routines. The addresses are initialised on reset
+as follows:</p>
+
+<pre>      Address:  Subroutine:  Function:
+       #0200      NMIVEC     NMI service routine
+       #0202      BRKVEC     BRK service routine
+       #0204      IRQVEC     IRQ service routine
+       #0206      COMVEC     Command line interpreter
+       #0208      WRCVEC     Write character
+       #020A      RDCVEC     Read character
+       #020C      LODVEC     Load file
+       #020E      SAVVEC     Save file
+       #0210      RDRVEC     Error
+       #0212      STRVEC     Error
+       #0214      BGTVEC     Get byte from tape
+       #0216      BPTVEC     Put hyte to tape
+       #0218      FNDVEC     Print message
+       #021A      SHTVEC     Dummy</pre>
+
+<pre>A call to one of the routines OSRDAR or OSSTAR will cause the message:</pre>
+
+<pre>COM?</pre>
+
+<pre>to be output, followed by a BRK.</pre>
+
+<h2><font color="#0000FF">25.3 Interrupts</font></h2>
+
+<pre>The following action is taken on interrupts:</pre>
+
+<pre>NMI     PHA
+        JMP (NMIVEC)</pre>
+
+<pre>IRQ/BRQ STA #FF
+        PLA
+        PHA
+        AND @#10  which interrupt was it
+        BNE BRK
+        LDA #FF
+        PHA
+        JMP (IRQVEC)</pre>
+
+<pre>BRK     LDA #FF
+        PLP
+        PHP
+        JMP (BRKVEC)</pre>
+
+<p>Note that the accumulator is pushed before the jump occurs.</p>
+
+<h2><font color="#0000FF">25.4 Block Zero RAM Locations</font></h2>
+
+<pre>Hexadecimal:  Decimal:       Function:
+#0            0            Error number
+#1, #2        1, 2         BASIC line number.
+#8 - #C       8 - 12       Random number seed
+#10, #11      16, 17       Pointer to BASIC error handler
+#12           18           Text-space pointer
+#00 - #6F     0 - 111      BASIC zero-page workspace
+#70 - #7F     112 - 143    Floating-point workspace
+#80 - #AF     144 - 175    Free
+#B0 - #FF     176 - 255    Cassette system workspace
+#FE           254          Character not sent to printer
+#100 - #13F   256 - 319    Input line buffer
+#140 - #17F   320 - 383    Strinq processing &amp; INPUT statement buffer
+#180 - #1FF   384 - 511    Stack
+#200 - #21B   512 - 539    Operating system vectors
+#21C - #23F   540 - 575    Free
+#240 - #3FF   576 - 1023   BASIC workspace
+#3FE, #3FF    1022, 1023   Address of point-plotting routine</pre>
+
+<h2><font color="#0000FF">25.5 Input/Output Port Allocations</font></h2>
+
+<p>The 8255 Programmable Peripheral Interface Adapter contains
+three 8-bit ports, and all but one of these lines is used by the
+ATOM.</p>
+
+<pre>Port A - #B000
+       Output bits:      Function:
+            0 - 3      Keyboard row
+            4 - 7      Graphics mode
+
+Port B - #B001
+       Input bits:       Function:
+            0 - 5      Keyboard column
+              6        CTRL key (low when pressed)
+              7        SHIFT keys {low when pressed)
+
+Port C - #B002
+       Output bits:      Function:
+            0          Tape output
+            1          Enable 2.4 kHz to cassette output
+            2          Loudspeaker
+            3          Not used
+
+       Input bits:       Function:
+            4          2.4 kHz input
+            5          Cassette input
+            6          REPT key (low when pressed)
+            7          60 Hz sync signal (low during flyback)</pre>
+
+<p>The port C output lines, bits 0 to 3, may be used for user
+applications when the cassette interface is not being used.</p>
+
+<h2><font color="#0000FF">25.6 Memory Map</font></h2>
+
+<p>The following diagram shows how the ATOM's address space is
+allocated. Sections shown shaded are present in the
+minimal-system ATOM. The map includes the addresses of devices on
+the Acorn cards, which may be fitted inside the ATOM case.</p>
+
+<table border="1" cellpadding="3" cellspacing="0"
+bordercolor="#000000">
+    <tr>
+        <td>#0000</td>
+        <td bgcolor="#C0C0C0">Block Zero RAM</td>
+    </tr>
+    <tr>
+        <td>#0400</td>
+        <td>Teletext VDU RAM</td>
+    </tr>
+    <tr>
+        <td>#0800</td>
+        <td>VDU CRT Controller</td>
+    </tr>
+    <tr>
+        <td>#0900</td>
+        <td>&nbsp;</td>
+    </tr>
+    <tr>
+        <td>#0A00</td>
+        <td>Optional FDC</td>
+    </tr>
+    <tr>
+        <td>#0A80</td>
+        <td>&nbsp;</td>
+    </tr>
+    <tr>
+        <td>#1000</td>
+        <td>Peripherals space</td>
+    </tr>
+    <tr>
+        <td>#2000</td>
+        <td>Catalogue buffer</td>
+    </tr>
+    <tr>
+        <td>#2200</td>
+        <td>Sequential File buffers</td>
+    </tr>
+    <tr>
+        <td>#2800</td>
+        <td>Floating point variables</td>
+    </tr>
+    <tr>
+        <td>#2900</td>
+        <td>Extension Text space RAM</td>
+    </tr>
+    <tr>
+        <td>#3C00</td>
+        <td>Off-board Extension RAM</td>
+    </tr>
+    <tr>
+        <td>#8000</td>
+        <td>VDU Screen RAM</td>
+    </tr>
+    <tr>
+        <td>#8200</td>
+        <td bgcolor="#C0C0C0">Graphics Mode 1</td>
+    </tr>
+    <tr>
+        <td>#8400</td>
+        <td bgcolor="#C0C0C0">Graphics Mode 2</td>
+    </tr>
+    <tr>
+        <td>#8600</td>
+        <td>Graphics Mode 3</td>
+    </tr>
+    <tr>
+        <td>#8C00</td>
+        <td>Graphics Mode 4</td>
+    </tr>
+    <tr>
+        <td>#9800</td>
+        <td>&nbsp;</td>
+    </tr>
+    <tr>
+        <td>#A000</td>
+        <td>Optional Utility ROM</td>
+    </tr>
+    <tr>
+        <td>#B000</td>
+        <td bgcolor="#C0C0C0">PPIA I/O Device</td>
+    </tr>
+    <tr>
+        <td>#B800</td>
+        <td>Optional VIA I/O Device for Printer Interface</td>
+    </tr>
+    <tr>
+        <td>#C000</td>
+        <td bgcolor="#C0C0C0">ATOM BASIC Interpreter</td>
+    </tr>
+    <tr>
+        <td>#D000</td>
+        <td>Optional Extension ROM</td>
+    </tr>
+    <tr>
+        <td>#E000</td>
+        <td>Optional Disk Operating System</td>
+    </tr>
+    <tr>
+        <td>#F000</td>
+        <td bgcolor="#C0C0C0">Assembler</td>
+    </tr>
+    <tr>
+        <td>&nbsp;</td>
+        <td bgcolor="#C0C0C0">Cassette Operating System</td>
+    </tr>
+</table>
+
+<p align="right"><a href="atap_26.htm">Next chapter</a></p>
+</body>
+</html>

@@ -1,0 +1,193 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Type"
+content="text/html; charset=iso-8859-1">
+<meta name="GENERATOR" content="Microsoft FrontPage Express 2.0">
+<title>Planning a Program</title>
+</head>
+
+<body bgcolor="#FFFFFF">
+
+<h1><font color="#0000FF">3 Planning a Program</font></h1>
+
+<p>The first step in writing a program, whether it will
+eventually be programmed in BASIC or Assembler, is to express
+your problem in terms of simple steps that the computer can
+understand.</p>
+
+<p>The Atom could be put to an immense number of different uses;
+anything from solving mathematical problems, controlling external
+equipment, playing games, accounting and book-keeping, waveform
+processing, document preparation...etc. The list is endless.
+Obviously all these applications cannot be included in a
+computer's repertoire of operations. Instead what is provided is
+a versatile set of more fundamental operations and functions
+which, in combination, can be used to solve such problems.</p>
+
+<p>It is therefore,up to you to become familiar with the
+fundamental operations that are provided, and learn how to solve
+problems by combining these operations into programs.</p>
+
+<p>Programming is rather like trying to explain to a novice cook,
+who understands little more than the meanings of the operations
+'stir', 'boil&#146;, etc, how to bake a cake. The recipe
+corresponds to the program; it consists of a list of simple
+operations 'stir', 'bake', with certain objects such as 'flour',
+'eggs': </p>
+
+<p>Recipe 1. Sponge Cake <br>
+1. Mix together 4 oz. sugar and 4 oz. butter. <br>
+2. Stir in 2 eggs.<br>
+3. Stir in 4 oz. flour.<br>
+4. Put into tins. <br>
+5. Bake for 20 mins. at Mark 4.<br>
+6. Remove from oven and eat. <br>
+7. END</p>
+
+<p>The recipe is written so that, provided all the ingredients
+are already to hand, the cook can follow each command in turn
+without having to look ahead and worry about what is to come.
+Similarly, a computer only executes one operation at a time, and
+cannot look ahead at what is to come.</p>
+
+<h2><font color="#0000FF"><b>3.1 Flowcharts</b></font></h2>
+<p>Before writing a program in BASIC or Assembler it is a good
+idea to draw a 'flowchart' indicating the operations required,
+and the order in which they should be performed. The generally
+accepted standard is for operations to be drawn inside
+rectangular boxes, with lines linking these boxes to show the
+flow of control. A simple flowchart for the program to bake a
+cake might be drawn as follows:</p>
+<div align="center"><table><tr><td><p>
+<img src="atap18.gif"
+alt="atap18.gif" align="left" width="81" height="259" border="0" hspace="0"  /></p>
+</td></tr></table></div>
+<h2><font color="#0000FF"><b>3.2 Decisions</b></font></h2>
+
+<p>Many recipes do not just contain a sequence of steps to be
+performed, but contain conditions under which several different
+courses of action should be taken. For example, for a perfect
+cake line 5 would be better written: </p>
+
+<p>5. Bake until golden brown.</p>
+
+<p>It would then be necessary to open the oven door every five
+minutes and make a decision about the colour of the cake.
+Decisions are represented in flowcharts by diamond-shaped boxes,
+with multiple exits labelled with the possible outcomes of the
+decision. The new flowchart would then be:</p>
+<div align="center"><table><tr><td>
+<p><img src="atap19.gif"
+alt="atap19.gif" align="left" width="103" height="329" border="0" hspace="0"  /></p>
+</td></tr></table></div>
+<p>The action 'bake for 5 mins.' is repeatedly performed until
+the test 'is it brown?' gives the answer 'yes'. Of course the
+program would go dramatically wrong if the oven were not switched
+on; the program would remain trapped in a loop.</p>
+
+<p>With these two simple concepts, the action and the decision,
+almost anything can be flowcharted. Part of the trick in
+flowcharting programs is to decide how much detail to put into
+the flowchart. For example, in the cake program it would be
+possible to add the test 'is butter and sugar mixed?' and if not,
+loop back to the operation 'mix butter and sugar'. Usually
+flowcharts should be kept as short as possible so that the logic
+of the program is not obscured by a lot of unnecessary fine
+detail.</p>
+
+<h2><font color="#0000FF">3.3 Counting</font></h2>
+
+<p>Recipes sometimes require a particular series of operations to
+be performed a fixed number of times. The following recipe for
+puff pastry illustrates this: </p>
+
+<p>Recipe 2. Puff Pastry <br>
+1. Mix 6 oz. flour with 2 oz. butter. <br>
+2. Roll out pastry. <br>
+3. Spread with 2 oz. butter.<br>
+4. Fold in half. <br>
+5. Repeat steps 2 to 4 a further 3 times. <br>
+6. END</p>
+
+<p>In this recipe the cook has to perform operations a total of 4
+times. A cook would probably keep a mental note of how many times
+he has performed these operations; for the sake of the flowchart
+it is convenient to give the number of operations a label, such
+as T. The flowchart of the puff pastry recipe would then be:</p>
+<div align="center"><table><tr><td>
+<p><img src="atap20.gif"
+alt="atap20.gif" align="left" width="103" height="329" border="0" hspace="0"  /></p>
+</td></tr></table></div>
+<p>The loop consisting of statements 2 to 4 is performed 4 times;
+the test at the end gives the answer 'no' for T=1, 2, and 3, and
+the answer 'yes' for T=4. </p>
+
+<p>To perform an operation several times in a BASIC or Assembler
+program an identical method can be used; a counter, such as T, is
+used to count the number of operations and the counter is tested
+each time to determine whether enough operations have been
+completed.</p>
+
+<h2><font color="#0000FF"><b>3.4 Subroutines</b></font></h2>
+
+<p>A recipe may include a reference to another recipe. For
+example, a typical recipe for apple tart might be as follows:</p>
+
+<p>Recipe 3. Apple Tart <br>
+1. Peel and core 6 cooking apples. <br>
+2. Make pastry as in recipe 2. <br>
+3. Line tart tin with pastry. <br>
+4. Put in apple. <br>
+5. Bake for 40 mins. mark 4. <br>
+6. END</p>
+
+<p>To perform step 2 it is necessary to insert a marker in the
+book at the place of the original recipe, find the new recipe and
+follow it, and then return to the original recipe and carry on at
+the next statement.</p>
+
+<p>In computer programming a reference to a separate routine is
+termed a 'subroutine call'. The main recipe, for apple tart, is
+the main routine; one of its statements calls the recipe for puff
+pastry, the subroutine. Note that the subroutine could be
+referred to many times throughout the recipe book; in the recipe
+for steak and kidney pie, for example. One reason for giving it
+separately is to save space; otherwise it would have to be
+reproduced for every recipe that needed it. </p>
+
+<p>Note that, in order not to lose his place, the cook needed a
+marker to insert in the recipe book so that he should know where
+to return to at the end of the subroutine. In BASIC or assembler
+programs the computer keeps a record of where you were when you
+call a subroutine, and returns you there automatically at the end
+of the subroutine. In other respects, the process of executing a
+subroutine on a computer is just like this analogy.</p>
+
+<h2><font color="#0000FF"><b>3.5 Planning a Program</b></font></h2>
+
+<p>Before writing a program in BASIC or Assembler it is a good
+idea to express the problem in one of the forms used in this
+chapter:</p>
+
+<p>1. As a list of numbered steps describing, in words, exactly
+what to do at each step.</p>
+
+<p>2. As a flowchart using the following symbols:</p>
+
+<center>
+<table border="0">
+    <tr>
+        <td align="center"><font face="Courier New"><img src="atap21.gif"
+alt="atap21.gif" align="left" width="176" height="172" border="0" hspace="0"  /></font></td>
+         </tr>
+</table>
+        </center>
+
+
+<p>Having done this, the job of writing the program in BASIC or
+Assembler will be relatively easy.</p>
+
+<p align="right"><a href="atap_04.htm">Next chapter</a></p>
+</body>
+</html>

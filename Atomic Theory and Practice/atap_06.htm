@@ -1,0 +1,380 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Type"
+content="text/html; charset=iso-8859-1">
+<meta name="GENERATOR" content="Microsoft FrontPage Express 2.0">
+<title>Subroutines</title>
+</head>
+
+<body bgcolor="#FFFFFF">
+
+<h1><font color="#0000FF">6 Subroutines</font></h1>
+
+<p>As soon as a program becomes longer than a few lines it is
+probably more convenient to think of it as a sequence of steps,
+each step being written as a separate 'routine', an independent
+piece of program which can be tested in isolation, and which can
+be incorporated into other programs when the same function is
+needed.</p>
+
+<h2><font color="#0000FF">6.1 GOSUB</font></h2>
+
+<p>Sections of program can be isolated from the rest of the
+program using a BASIC construction called the 'subroutine'. In
+the main program a statement such as:</p>
+
+<pre>      GOSUB 1000</pre>
+
+<p>causes control to be transferred to the statement at line
+1000. The statements from line 1000 comprise the subroutine. The
+subroutine is terminated by a statement:</p>
+
+<pre>      RETURN</pre>
+
+<p>which causes a jump back to the main 'calling' program to the
+statement immediately following the GOSUB 1000. It is just as if
+the statements from 1000 up to the RETURN statement had simply
+been inserted in place of the GOSUB 1000 statement in the main
+program.</p>
+
+<p>As an example, consider the following program:</p>
+
+<pre>   10 A=10
+   20 GOSUB 100
+   30 A=20
+   40 GOSUB 100
+   50 END</pre>
+
+<pre>  100 PRINT A ' 
+  110 RETURN</pre>
+
+<p>Lines 100 and 110 form a subroutine, separate from the rest of
+the program, and they are terminated by RETURN. The subroutine is
+called twice from the main program, in lines 20 and 40. The
+program, when RUN, will print:</p>
+
+<pre><font color="#400040">   10
+   20
+&gt;</font></pre>
+
+<p><font color="#0000FF"><b>6.1.1 Chequebook-Balancing Program</b></font></p>
+
+<p>As a more serious example, consider a program for balancing a
+chequebook. The program will have three distinct stages; reading
+in the credits, reading in the debits, and printing the final
+amount. We can immediately write the main program as:</p>
+
+<pre>   10 REM Chequebook-Balancing Program 
+   20 PRINT &quot;ENTER CREDITS&quot;'
+   30 GOSUB 1000
+   40 PRINT &#148;ENTER DEBITS&quot;'
+   50 GOSUB 2000
+   60 PRINT &quot;TOTAL IS&quot;
+   70 GOSUB 3000
+   80 END</pre>
+
+<p>Now all we have to do is write the subroutines at lines 1000,
+2000, and 3000!</p>
+
+<p>The subroutines might be written as follows:</p>
+
+<pre> 1000 REM Sum Credits in C
+ 1010 REM Changes C,J
+ 1020 C=0
+ 1030 DO INPUT J; C=C+J
+ 1040 UNTIL J=0
+ 1050 RETURN</pre>
+
+<pre> 2000 REM Sum Debits in D
+ 2010 REM Changes D,J
+ 2020 D=0
+ 2030 DO INPUT J; D=D+J
+ 2040 UNTIL J=0
+ 2050 RETURN</pre>
+
+<pre> 3000 REM Print Total in T
+ 3010 REM Changes T; Uses C,D
+ 3020 T=C-D; @=5
+ 3030 PRINT T/100,&quot; POUNDS&quot;,T%100,&quot; PENCE&quot;
+ 3040 RETURN</pre>
+
+<p>Values are entered in pence, and entering zero will terminate
+the list of credits or debits.</p>
+
+<p>The two subroutines at 1000 and 2000 are strikingly similar,
+and this suggests that it might be possible to dispense with one
+of them. Indeed, the main part of the chequebook-balancing
+program can be written as follows, eliminating subroutine 1000:</p>
+
+<pre>   10 REM Chequebook-Balancing Program
+   20 PRINT &quot;ENTER CREDITS&quot;
+   30 GOSUB 2000
+   40 C=D
+   50 PRINT &quot;ENTER DEBITS&quot;
+   60 GOSUB 2000
+   70 PRINT &quot;TOTAL IS&quot;
+   80 GOSUB 3000
+   90 END</pre>
+
+<p>In conclusion, subroutines have two important uses:</p>
+
+<p>1. To divide programs into modules that can be written and
+tested separately, thereby making it easier to understand the
+operation of the program.</p>
+
+<p>2. To make it possible to use the same piece of program for a
+number of similar, related, functions.</p>
+
+<p>As a rough guide, if a program is too long to fit onto the
+screen of the VDU it should be broken down into subroutines. Each
+subroutine should state clearly, in REM statements at the start
+of the subroutine, the purpose of the subroutine, which variables
+are used by the subroutine, and which variables are altered by
+the subroutine. A few moments spent documenting the operation of
+the subroutine in this way will save hours spent at a later date
+trying to debug a program which uses the subroutine.</p>
+
+<h2><font color="#0000FF"><b>6.2 GOSUB Label</b></font></h2>
+
+<p>The GOSUB statement is just like the GOTO statement that has
+already been described, in that it can be followed by a line
+number, an expession evaluating to a line number, or a label.
+Labels are of the form a to z, and the first line of the
+subroutine should contain the label immediately following the
+line number.</p>
+
+<p><font color="#0000FF"><b>6.2.1 Linear Interpolation</b></font></p>
+
+<p>The following program uses linear interpolation to find the
+roots of an equation using only integer arithmetic, although the
+program could be modified to use floating-point statements.</p>
+
+<p>The equation is specified in a subroutine, y, giving Y in
+terms of X; the program finds solutions for Y=0.</p>
+
+<p>As given, the program finds the root of the equation:</p>
+
+<pre>x<sup>2</sup> - x - 1 = 0</pre>
+
+<p>The larger root of this equation is phi, the golden ratio. A
+scaling factor of S=1000 is included in the equation so that
+calculations can be performed to three decimal places.</p>
+
+<p>The program prompts for two values of X which lie either side
+of the root required.</p>
+
+<pre>    1 REM Linear Interpolation
+    5 S=1000; @=0; I=1
+   10 INPUT &quot;X1&quot;,A,&quot;X2&quot;,B
+   20 A=A*S; B=B*S
+   30 X=A; GOSUB y; C=Y
+   40 X=B; GOSUB y; D=Y
+   50 IF C*D&lt;0 GOTO 80
+   60 PRINT &quot;ROOT NOT BRACKETED&quot;
+   70 END
+   80 DO I=I+1
+   90 X=B-(B-A)*D/(D-C); GOSUB y
+  100 IF C*Y&lt;0 THEN A=X; C=Y; GOTO 120 
+  110 B=X; D=Y
+  120 UNTIL ABS(A-B)&lt;2 OR ABS(Y)&lt;2 
+  130 PRINT&quot;ROOT IS X=&quot;
+  140 IF X&lt;0 PRINT &quot;-&quot;
+  145 PRINT ABS(X)/S,&quot;.&quot;
+  150 DO X=ABS(X)%S; S=S/10
+  155 PRINT X/S; UNTIL S=1
+  160 PRINT'&quot;NEEDED &quot;,I,&quot; ITERATIONS.&quot;'
+  170 END
+  200yY=X*X/S-X-1*S
+  210 RETURN</pre>
+
+<pre>Description of Program:
+5-70      Check that starting values bracket a root
+80-120    Find root by successive approximation 
+130-145   Print integer part of root
+150-155   Print decimal places
+160       Print number of iterations needed
+200-210   y: Subroutine giving Y in terms of X, with appropriate
+          scaling.</pre>
+
+<pre>Variables:
+A - Lower starting value of X
+B - Upper starting value of X
+C - Value of Y for X=A
+D - Value of Y for X=B
+I - Iteration number
+S - Scaling factor; all numbers are multiplied by S and held as
+integers.
+X - Root being approximated
+Y - Value of equation for given,X
+Program size - 466 bytes </pre>
+
+<pre>Sample run:
+&gt;RUN
+X1?1
+X2?3
+ROOT IS X= 1.618
+NEEDED 7 ITERATIONS.</pre>
+
+<h2><font color="#0000FF"><b>6.3 Subroutines Calling Subroutines</b></font></h2>
+
+<p>Often the task carried out by a subroutine may itself usefully
+be broken down into a number of smaller steps, and so it might be
+convenient to include calls to subroutines within other
+subroutines. This is perfectly legal, and subroutines may be
+nested up to a maximum depth of 15 calls.</p>
+
+<h2><font color="#0000FF"><b>6.4 Recursive Subroutine Calls</b></font></h2>
+
+<p>Sometimes a problem can be more simply expressed if it is
+allowed to include a reference to itself. When a subroutine
+includes a call to itself in this way it is known as a
+'recursive' subroutine call, and it is possible to use recursive
+calls in ATOM BASIC provided that the depth of recursion is
+limited to 15 calls. The following half-hearted program uses a
+recursive call to print out ten stars without using a loop:</p>
+
+<pre>   10 REM Recursive Stars
+   20 P=10; GOSUB p
+   30 END</pre>
+
+<pre>  100pREM Print P stars
+  110 IF P=0 RETURN
+  120 P=P-1
+  130 GOSUB p; REM Print P-1 stars
+  140 PRINT &quot;*&quot;
+  150 RETURN</pre>
+
+<p>This program could, of course, be written more effectively
+using a simple FOR...NEXT loop. The following programs, however,
+use recursion to great benefit to solve mathematical problems
+that would be much harder to solve using iteration alone.</p>
+
+<h3><font color="#0000FF"><b>6.4.1 Tower of Hanoi Problem</b></font></h3>
+
+<p>In the Tower of Hanoi problem three pegs are fastened to a
+stand, and there are a number of wooden discs each with a hole at
+its centre. The discs are all of different diameters, and they
+all start on one peg, arranged in order of size with the largest
+disc at the bottom of the pile.</p>
+
+<p>The problem is to shift the pile to another peg by
+transferring one disc at a time, with the restriction that no
+disc may be placed on top of a smaller disc. The number of moves
+required rises rapidly with the number of discs used; the problem
+was classically described with 64 discs, and moving one disc per
+second the solution of this problem would take more than 500,000
+million years!</p>
+
+<p>A recursive solution to the problem, stated in words, is:</p>
+
+<pre>To move F discs from peg A to peg B:
+1. Move F-1 discs to peg C.
+2. Move bottom disc to peg B.
+3. Move F-1 discs to peg B.</pre>
+
+<p>Also, when F is zero there is no need to do anything. Steps 1
+and 3 of the procedure contain a reference to the whole
+procedure, so the solution is recursive.</p>
+
+<p>The following program will solve the problem for up to 13
+discs, and displays the piles of discs at every stage in the
+solution:</p>
+
+<pre>   1 REM Tower of Hanoi
+  10 PRINT$12 
+  20 A=TOP;D=A+4 
+  40 V=-3;W=-1	
+  60 !D=#1020300;!A=0 
+  70 INPUT&quot;NUMBER OF DISCS &quot;F 
+  80 A?1=F;?D=F
+  85 N=64/3 
+  90 CLEAR0
+ 100 FORQ=1TOF;MOVE(F-Q),(2*(F-Q));PLOTl,(2*Q-1),0;NEXT 
+ 110 GOSUBh;END 
+1000hIF?D=0 RETURN 
+1010 D!4=!D-1;D?6=D?1;D?5=D?2;D=D+4;GOSUBh 
+1020 MOVE(F-D?-4+D?V*N-N),(D?V?A*2);PLOT1,(D?-4*2-1),0 
+1030 MOVE(D?W*N-N),(D?W?A*2-2);PLOT3,(F+D?-4),0 
+1040 A?(D?W)=A?(D?W)+W;A?(D?V)=A?(D?V)-W 
+1050 D?3=D?-2;D?2=D?W;D?1=D?V;GOSUBh 
+1060 D=D-4;RETURN</pre>
+
+<pre>Description of Program:
+100 Draw starting pile of discs
+110 Subroutine h is called recursively to move the number of discs specified in ?D.
+1000 h: Subroutine to move ?D discs
+1010 Recursive call to move ?D-1 discs
+1020 Draw new disc on screen
+1030 Remove old disc from screen
+1040 Set up array A
+1050 Recursive call to put back ?D-1 discs</pre>
+
+<pre>Variables: A?N - Number of discs on pile N
+D - Stack pointer
+?D - How many discs to transfer
+D?1 - Destination Pile
+D?2 - Intermediate pile
+D?3 - Source pile
+F - Total number of discs
+N - One third of screen width
+V - Constant
+W - Constant</pre>
+
+<pre>Program size: 461 bytes
+Stack usage: (4 * number of discs) bytes</pre>
+
+<h3><font color="#0000FF"><b>6.3.2 Eight Queens Problem</b></font></h3>
+
+<p>A classical mathematical problem consists of placing eight
+queens on a chessboard so that no queen attacks any other. The
+following program find all possible solutions to the problem, and
+draws a diagram of the board to show each solution as it is
+found. The program uses many abbreviations to keep it small
+enough to fit on an unexpanded ATOM (for a complete explanation
+of these abbreviations, see section 10.1):</p>
+
+<pre>    1 REM Eight Queens
+   30 C=0;D=TOP;E=D+3;A=D+27;!D=0
+   60 @=0;GOS.t;P.$13&quot;THERE ARE &quot;C&quot; SOLUTIONS&quot;';END
+  100tIF?D=#FF C=C+1;GOTOd
+  110 ?A=(?D\D?1\3?2):#FF
+  120lIF?A=OR.
+  130 A?1=?A&amp;-?A
+  140 ?E=?D\A?1;E?l=(D?1\A?1)*2;E?2=(D?2\A?1)/2
+  150 D=D+3;E=E+3;A=A+2;GOS.t;D=D-3;E=E-3;A=A-2
+  160 ?A=?A&amp;(A?1:#FF);GOT01
+  200dCLEAR0;FORZ=0T032S.4;MOVE0,Z;DRAW31,Z;MOVEZ,0;DRAWZ,32;N.
+  210 Q=0;FORZ=3TO34STEP3;P=TOP?Z-Q;S=-2;DOS=S+4;P=P/2;UNTILP=0
+  220 Q=TOP?Z;PLOT13,(Z/3*4-2),S;N.;{P.$30 C;R.</pre>
+
+<pre>Description of Program:
+30      Initialise array space. D is vector of attacks, ?D is row attacks, 
+        D?1 is left diagonal attacks, D?2 is right diagonal attacks.
+60      Call recursive analyser and print answer.
+100     t: Recursive analyser: if all rows attacked have found a solution.
+110     Calculate possible places to put new queen.
+120     If no possible place, end this recursive attempt.
+130     Find least significant bit in possible places to use as new
+        queen position.
+140     Calculate new attacked values.
+150     Recursive call of analyser.
+160     Remove this position from possible position and see if done.
+200     d: Have solution, display board matrix.
+210     Plot pixels at positions of queens.
+220     Print the solution number at screen top and end recursion.</pre>
+
+<pre>Variables:
+?A - Possible position; value of A changes
+C - Solutions counter
+?D - Row attacks; value of D changes
+E - Holds D+3 to make program shorter</pre>
+
+<pre>Program size: 440 bytes
+Vectors:
+ 30 bytes
+Total storage: 470 bytes.</pre>
+
+<p align="right"><a href="atap_07.htm">Next chapter</a></p>
+</body>
+</html>

@@ -1,0 +1,798 @@
+<?XML version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type"
+content="text/html;" charset="iso-8859-1" />
+<title>CONSTRUCTION PROCEDURE</title>
+<link rel="StyleSheet" href="body.css" type="text/css" />
+</head>
+<body><center>
+<table valign="top" width="90%" border="0" summary="table">
+<tr><td>
+<b><font size="5">CONSTRUCTION PROCEDURE</font></b><p></p>
+<b>BEFORE YOU START</b>
+<p>Carefully unpack the ATOM kit and check that all the component
+parts are present. ard that none are damaged. In case of supply
+difficulties substitute components may be supplied; for instance
+100nF capacitors may replace 47nF parts.</p>
+<p>For capacitors note that values may be expressed in two ways:</p>
+<pre> O.1uF = 100nF
+10nF = 10000pF
+1nF = 1000pF
+O.1nF = 100pF etc.</pre>
+</p><p>Capacitors supplied with Acorn products are usually identified
+by a three digit number, the first two digits being the first two
+digits of the value followed by a third digit giving the number
+of zeros. For example:</p>
+<blockquote>
+<p>101 is 10 and one zero which is 100pF.<br />
+103 is 10 and three zeros which is 10000pF or 10nF.<br />
+473 is 47 and three zeros which is 47nF or 0.047uF.</p>
+</blockquote>
+<blockquote>
+<table border="1" cellpadding="4" cellspacing="0" summary="table">
+	<tr>
+		<td valign="top" width="300">Resistors are identified by coloured
+bands of which three at one end give the value with a
+fourth giving the components tolerance:</td>
+		<td width="200"><table border="0" cellspacing="0"
+bordercolor="#FFFFFF" bordercolordark="#FFFFFF"
+bordercolorlight="#FFFFFF" summary="table">
+<tr>
+<td>=====</td>
+<td bgcolor="#C0C0C0"><font color="#C0C0C0">__</font></td>
+<td bgcolor="#800000"><br />
+</td>
+<td bgcolor="#C0C0C0"><font color="#C0C0C0">_<br />
+_</font></td>
+<td bgcolor="#FF0000"><br />
+</td>
+<td bgcolor="#C0C0C0"><font color="#C0C0C0">_</font><br />
+</td>
+<td bgcolor="#FFC000">&nbsp;</td>
+<td colspan="3" bgcolor="#C0C0C0"><font
+color="#C0C0C0">___</font></td>
+<td bgcolor="#FFFF00"><br />
+</td>
+<td bgcolor="#C0C0C0"><font color="#C0C0C0">__</font></td>
+<td>=====</td>
+</tr>
+<tr>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>1</td>
+<td>&nbsp;</td>
+<td>2</td>
+<td>&nbsp;</td>
+<td>3</td>
+<td colspan="3">&nbsp;</td>
+<td>4</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+</tr>
+</table></td>
+	</tr>
+	<tr>
+		<td valign="top" width="300">The first and second bands give the
+first two digits of the value with the third indicating
+the number of following zeros:<p>For example consider a
+resistor with the coloured bands Yellow, Violet, Orange,
+space, Silver. This is 47 followed by three zeros, that
+is 47000 or 47K ohms. When writing the value of a
+resistor note that 4.7 Kohms is usually written 4K7, and
+270 ohms as 270R. </p>
+</td>
+		<td><table border="0" cellpadding="3" cellspacing="1"
+bordercolor="#FFFFFF" summary="table">
+<tr>
+<td bgcolor="#000000"><font color="#400040">__</font></td>
+<td>Black</td>
+<td>is 0</td>
+</tr>
+<tr>
+<td bgcolor="#800000">&nbsp;</td>
+<td>Brown</td>
+<td>is 1</td>
+</tr>
+<tr>
+<td bgcolor="#FF0000">&nbsp;</td>
+<td>Red</td>
+<td>is 2</td>
+</tr>
+<tr>
+<td bgcolor="#FFC000">&nbsp;</td>
+<td>Orange</td>
+<td>is 3</td>
+</tr>
+<tr>
+<td bgcolor="#FFFF00">&nbsp;</td>
+<td>Yellow</td>
+<td>is 4</td>
+</tr>
+<tr>
+<td bgcolor="#00FF00">&nbsp;</td>
+<td>Green</td>
+<td>is 5</td>
+</tr>
+<tr>
+<td bgcolor="#0000FF">&nbsp;</td>
+<td>Blue</td>
+<td>is 6</td>
+</tr>
+<tr>
+<td bgcolor="#FF00FF">&nbsp;</td>
+<td>Violet</td>
+<td>is 7</td>
+</tr>
+<tr>
+<td bgcolor="#808080">&nbsp;</td>
+<td>Grey</td>
+<td>is 8</td>
+</tr>
+<tr>
+<td bgcolor="#FFFFFF" bordercolor="#000000">&nbsp;</td>
+<td>White</td>
+<td>is 9</td>
+</tr>
+</table>
+</td>
+</tr>
+<tr>
+<td valign="top">The fourth band identifies the tolerance
+as follows:<br />
+Any of these may be used with the ATOM.</td>
+<td><table border="0" cellpadding="3" summary="table">
+<tr>
+<td bgcolor="#FF0000"><font color="#FF0000">__</font></td>
+<td>Red</td>
+<td>is +or-2%</td>
+</tr>
+<tr>
+<td bgcolor="#FFFF80">&nbsp;</td>
+<td>Gold</td>
+<td>is +or-5%</td>
+</tr>
+<tr>
+<td bgcolor="#C0C0C0">&nbsp;</td>
+<td>Silver</td>
+<td>is +or-10%</td>
+</tr>
+</table>
+</td>
+</tr>
+</table>	</blockquote>
+<b>SOLDERING TECHNIQUE</b>
+<p><a href="atm_05_1.gif"><img src="atm_05_1.gif"
+alt="Solder joint" align="right" border="0" hspace="0"
+width="163" height="94" alt="atm_05_1.gif" /></a>Assembling the ATOM will require a
+considerable amount of soldering and a small electric soldering
+iron is essential. The iron should be rated between 10 and 30
+Watts with a diameter at the end of the bit not exceeding 0.1
+inches. Fine 22-gauge flux cored solder should be used. People
+with no previous experience of this type of work should not
+attempt the ATOM assembly without assistance. When soldering make
+sure that the component is well pushed on to the board as shown,
+use a minimum of solder, and once the solder has run remove the
+iron.</p>
+<p>Some of the integrated circuits used in the ATOM employ MOS
+technology and they can be damaged by static electricity. As a
+general rule if there is no noticeable static charge in the area
+and no nylon clothes or carpets are present all will be well. An
+earthed soldering iron should be used when working on a board
+carrying MOS circuits.</p>
+<p>The ATOM printed circuit board is double sided, through-hole
+plated glass fibre. A layer of green solder resist ensures that
+accidental solder splashes do not short out tracks and a white
+component legend clearly indicates where each part goes.</p>
+<p>Examine the board for faults or damage before commencing work.
+Do not solder through holes on the board connecting tracks from
+one side to the other without a component in them as they may be
+damaged; in any case these holes should have solder resist over
+them.</p>
+<hr />
+<a name="PARTS LIST"><b>PARTS LIST</b></a>
+<p>Parts supplied with the basic ATOM kit are as follow</p>
+<blockquote>
+<table border="0" cellspacing="3" summary="table">
+<tr>
+<td>IC6</td>
+<td>74LS138</td>
+<td>TTL Decoder.</td>
+</tr>
+<tr>
+<td>IC7</td>
+<td>74LS02</td>
+<td>TTL NOR Gate.</td>
+</tr>
+<tr>
+<td>IC8</td>
+<td>74LS00</td>
+<td>TTL NAND Gate.</td>
+</tr>
+<tr>
+<td>IC9</td>
+<td>74LS04</td>
+<td>TTL Inverter</td>
+</tr>
+<tr>
+<td>IC20</td>
+<td>MM52164</td>
+<td>Read Only Memory.</td>
+</tr>
+<tr>
+<td>IC22</td>
+<td>6502-1MHz.</td>
+<td>Micro-Processor.</td>
+</tr>
+<tr>
+<td>IC23</td>
+<td>74LS138</td>
+<td>TTL Decoder.</td>
+</tr>
+<tr>
+<td>IC25</td>
+<td>INS8255</td>
+<td>Peripheral Interface.</td>
+</tr>
+<tr>
+<td>IC26</td>
+<td>7445</td>
+<td>TTL Decoder/Driver.</td>
+</tr>
+<tr>
+<td>IC27</td>
+<td>81LS95</td>
+<td>TTL Buffer.</td>
+</tr>
+<tr>
+<td>IC28</td>
+<td>81LS95</td>
+<td>TTL Buffer.</td>
+</tr>
+<tr>
+<td>IC29</td>
+<td>DP8304</td>
+<td>TTL Transceiver.</td>
+</tr>
+<tr>
+<td>IC30</td>
+<td>74LS138</td>
+<td>TTL Decoder.</td>
+</tr>
+<tr>
+<td>IC31</td>
+<td>6847</td>
+<td>Video Display Generator.</td>
+</tr>
+<tr>
+<td>IC42</td>
+<td>2114</td>
+<td>Random Access Memory.</td>
+</tr>
+<tr>
+<td>IC43</td>
+<td>2114</td>
+<td>Random Access Memory.</td>
+</tr>
+<tr>
+<td>IC44</td>
+<td>74LS393</td>
+<td>TTL Counter.</td>
+</tr>
+<tr>
+<td>IC45</td>
+<td>74LS04</td>
+<td>TTL Inverter.</td>
+</tr>
+<tr>
+<td>IC46</td>
+<td>LM358</td>
+<td>Operational Amplifier.</td>
+</tr>
+<tr>
+<td>IC47</td>
+<td>74LS163</td>
+<td>TTL Counter.</td>
+</tr>
+<tr>
+<td>IC48</td>
+<td>74LS00</td>
+<td>TTL NAND Gate.</td>
+</tr>
+<tr>
+<td>IC49</td>
+<td>74LS139</td>
+<td>TTL Decoder.</td>
+</tr>
+<tr>
+<td>IC51</td>
+<td>2114</td>
+<td>Random Access Memory.</td>
+</tr>
+<tr>
+<td>IC52</td>
+<td>2114</td>
+<td>Random Access Memory.</td>
+</tr>
+<tr>
+<td>IC53</td>
+<td>LM340T-5 </td>
+<td>Voltage Regulator.</td>
+</tr>
+<tr>
+<td>IC54</td>
+<td>LM340T-5 </td>
+<td>Voltage Regulator.</td>
+</tr>
+</table>
+</blockquote>
+<blockquote>
+<table border="0" summary="table">
+<tr>
+<td>R1</td>
+<td>4K7</td>
+<td>&nbsp;</td>
+<td>R26</td>
+<td>470R</td>
+</tr>
+<tr>
+<td>R2</td>
+<td>4K7</td>
+<td>&nbsp;</td>
+<td>R27</td>
+<td>470R</td>
+</tr>
+<tr>
+<td>R3</td>
+<td>470R</td>
+<td>&nbsp;</td>
+<td>R28</td>
+<td>470R</td>
+</tr>
+<tr>
+<td>R4</td>
+<td>470R</td>
+<td>&nbsp;</td>
+<td>R29</td>
+<td>4K7</td>
+</tr>
+<tr>
+<td>R5</td>
+<td>470R</td>
+<td>&nbsp;</td>
+<td>R30</td>
+<td>1K</td>
+</tr>
+<tr>
+<td>R6</td>
+<td>75 or 82R </td>
+<td>&nbsp;</td>
+<td>R31</td>
+<td>4K7</td>
+</tr>
+<tr>
+<td>R7</td>
+<td>8K2</td>
+<td>&nbsp;</td>
+<td>R32</td>
+<td>4K7</td>
+</tr>
+<tr>
+<td>R8</td>
+<td>3K3</td>
+<td>&nbsp;</td>
+<td>R33</td>
+<td>47K</td>
+</tr>
+<tr>
+<td>R9</td>
+<td>1K</td>
+<td>&nbsp;</td>
+<td>R34</td>
+<td>47K</td>
+</tr>
+<tr>
+<td>R10</td>
+<td>270R</td>
+<td>&nbsp;</td>
+<td>R35</td>
+<td>470K</td>
+</tr>
+<tr>
+<td>R11</td>
+<td>3K9</td>
+<td>&nbsp;</td>
+<td>R36</td>
+<td>4K7</td>
+</tr>
+<tr>
+<td>R12</td>
+<td>470R</td>
+<td>&nbsp;</td>
+<td>R37</td>
+<td>10K</td>
+</tr>
+<tr>
+<td>R13-16</td>
+<td>4 off 4K7</td>
+<td>&nbsp;</td>
+<td>R38</td>
+<td>1K</td>
+</tr>
+<tr>
+<td>R17-25</td>
+<td>9 off 4K7</td>
+<td>&nbsp;</td>
+<td>R39-41</td>
+<td>3 off 4K7</td>
+</tr>
+<tr>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td>C1</td>
+<td>10nF</td>
+<td>&nbsp;</td>
+<td>C8</td>
+<td>22uF *</td>
+</tr>
+<tr>
+<td>C2</td>
+<td>22uF *</td>
+<td>&nbsp;</td>
+<td>C9</td>
+<td>22 or 47nF</td>
+</tr>
+<tr>
+<td>C3</td>
+<td>22uF *</td>
+<td>&nbsp;</td>
+<td>C10</td>
+<td>10nF</td>
+</tr>
+<tr>
+<td>C4</td>
+<td>22uF *</td>
+<td>&nbsp;</td>
+<td>C11</td>
+<td>10uF *</td>
+</tr>
+<tr>
+<td>C5</td>
+<td>22uF *</td>
+<td>&nbsp;</td>
+<td>C12</td>
+<td>22uF *</td>
+</tr>
+<tr>
+<td>C6</td>
+<td>10nF</td>
+<td>&nbsp;</td>
+<td>C13</td>
+<td>22uF *</td>
+</tr>
+<tr>
+<td>C7</td>
+<td>47 or 100nF</td>
+<td>&nbsp;</td>
+<td>C14-28</td>
+<td>15 off 47nF</td>
+</tr>
+</table>
+</blockquote>
+<p>All of these resistors may be 0.25 or 0.33 Watt components
+with a tolerance of 5 or 10%.</p>
+<p>The electrolytic capacitors (marked *) may be replaced by any
+value in the range 10 to 47uF. They should be rated at 10 volts
+or greater.</p>
+<p>Other parts supplied with the basic ATOM kit include:</p>
+<pre> Injection Moulded Case.
+Printed Circuit Board 202,000
+Four short and two long self-tapping screws.
+Self-adhesive key surround.
+Four stick-on feet.
+Key Assembly and fixing screws.
+Xl 3.58 MHz crystal.
+X2 4.00 MHz crystal.
+Ll 1 mH choke.
+SK1 UHF Modulator.
+SK2 7 pin DIN socket.
+SK3 Power socket.
+Q1,2 2 NPN transistors type BC107 or 184,237,239
+Loudspeaker,adhesive pad and wire.
+Loudspeaker Baffle.
+Nut and screw for Regulator.
+Heat sink.</pre>
+</p><p>52 sockets for the complete set of Integrated Circuits as
+follows.</p>
+<pre> 1 off 8 pin
+7 off 14 pin
+6 off 16 pin
+24 off 18 pin
+7 off 20 pin
+3 off 24 pin
+4 off 40 pin</pre>
+</p><p>The remainder of the components required for the extensions
+are listed in the appropriate sections later on.</p>
+<b>IMPORTANT NOTE</b>
+<p>The ATOM printed circuit board is double sided with the sides
+being identified by the legends &quot;SIDE 1&quot; and &quot;SIDE
+2&quot;. All the IC sockets, the connectors PL/SK 1 to 7 and the
+passive components are mounted on side 2 and they are therefore
+soldered on side 1. PL 8 and the keyboard are mounted on side 1
+and soldered on side 2. The component layout diagram is a view of
+the circuit board from side 2 and it will assist in identifying
+components whose legend is obscured on the board itself.</p>
+<p>Read through the following instructions and then assemble the
+ATOM step by step.</p>
+<b>LINKS</b>
+<p>Several links may be fitted to the PCB to cater for different
+requirements. None of the links need to be fitted for a
+minimal-configuration ATOM powered by an ATOM mains adaptor.</p>
+<p><a href="atm_07.htm"><img src="side2.gif" alt="Side 2 layout (click to enlarge)" border="0" width="447" /></a> click to enlarge</p>
+<b>INTEGRATED CIRCUIT SOCKETS</b>
+<p>The sockets supplied with the ATOM are fitted to the circuit
+board in the locations for the ICs provided. Sockets are mounted
+on side 2 of the board and they are then soldered on side 1. Fit
+the sockets the right way round with pin 1 in the position
+identified on the circuit board as shown:</p>
+<p><a href="atm_10_1.gif"><img src="atm_10_1.gif" 
+alt="Intergrated circuit sockets" border="0" width="164" height="277" alt="atm_10_1.gif" /></a></p>
+<p>Pin 1 of the socket is identified by a chamfer or cut out as
+shown. Fit the sockets one at a time and ensure that they are
+pressed fully down with no pins bent under them. First solder two
+diagonally opposite pins and check that the socket is correctly
+fitted before soldering the remainder of the pins. There is no
+need to cut off the excess of the pins on side 1 of the board.</p>
+<b>PASSIVE COMPONENTS</b>
+<p>The passive components, that is the resistors and capacitors,
+are fitted next. Each resistor and capacitor position is marked
+on side 2 of the circuit board with a legend ie R7 or C12 and a
+line showing the two holes through which the leads pass. Identify
+each component from the parts list and bend its leads as shown
+before mounting it on side 2 of the board with the leads poking
+through to side 1. Solder the leads on side 1 and cut off any
+excess. The electrolytic capacitors are polarised and the
+positive ends of them must be towards the + sign on the board.
+Some electrolytics have an arrow or a band round them indicatinq
+the negative end and this must point or be away from the + sign.
+The 1mH choke is fitted in position Ll.</p>
+<p><a href="atm_10_2.gif"><img src="atm_10_2.gif"
+alt="Passive components" border="0" width="281" height="66" alt="atm_10_2.gif" /></a></p>
+<b>KEYBOARD</b>
+<p>The ATOM may already have its keyboard fitted; if not then
+proceed as follows. Carefully remove the key assembly from its
+protective backing and lay it key-top side down with the leads
+sticking upwards. Check that all of the leads are straight and
+correct any that are bent over. Taking great care not to bend any
+of the leads position the circuit board over the key assembly
+such that the keys will be on side 1 of the board, that is the
+side opposite to the ICs and passives etc .Lower the circuit
+board over the key leads so that they poke through the holes in
+the circuit board and then move the two parts until the fixing
+screw holes are aligned. Ensure that ALL of the key leads poke
+through the circuit board. Then fix the keyboard to the PCB using
+six self-tappinq screws with insulating washers to ensure that
+they do not short out the PCB tracks. Solder each key lead on to
+the side of the large plated through-holes in the circuit board
+pushing the leads over to the side of the hole where necessary.
+Do NOT fill the holes with solder; when the solder cools it may
+contract and break the plated-through connection. Do not allow
+blobs of solder to fall through the holes into the keys.</p>
+<b>CONNECTORS</b>
+<p>The power jack socket and the D.I.N. socket for the tape
+recorder are mounted on side 2 of the board and soldered on side
+1. The power socket, SK3, has two lugs which are soldered into
+the board and the third connection is made with a short piece of
+wire, such as an offcut from a resistor. SK2 is a 7 pin socket
+which is held by a spring clip through two holes near the front
+of the board and by the seven soldered leads.</p>
+<p>Plugs PL4, PL5, PL6, PL7, and PL8 are not required on the
+minimum configuration ATOM.</p>
+<b>LOUDSPEAKER</b>
+<p>Fix the loudspeaker to side 1 of the board to the right of the
+keyboard using a double-sided sticky pad. Connect it to the two
+marked holes beside C5 using twin-cored wire and press the baffle
+over the loudspeaker.</p>
+<b>MODULATOR</b>
+<p>This is mounted on side 2 with the two metal securing lugs
+through the board and soldered on side 1. The +5 volt and input
+signal wires are soldered into the two holes indicated on the
+board beside the modulator.</p>
+<b>VOLTAGE REGULATOR</b>
+<p><a href="atm_11_1.gif"><img src="atm_11_1.gif"
+alt="Voltage Regulator" align="right" hspace="0" border="0" width="314"
+height="212" alt="atm_11_1.gif" /></a>Both regulators and a heatsink should be fitted
+to all ATOMs. The first regulator is fitted as shown:</p>
+<p>Bend the leads taking care not to break them off as they enter
+the body of the device. Fit the second regulator in an identical
+manner, and then slide the heatsink between the regulators and
+the PCB. Screw down the regulatcrs with the nuts and screws
+supplied, taking care that they do not short out the adjacent
+tracks on the PCB, and then solder the leads on side 1 of the
+board. Cut off any excess lead.</p>
+<b>CRYSTALS</b>
+<p>The two crystals for the ATOM stand upright about a quarter of
+an inch above side 2 of the board. If necessary bend the leads so
+that they pass through the holes at positions X1 (3.58M) and X2
+(4.00M). Take care not to break off the lead where it enters the
+crystal and check that the metal can does not short to any
+adjacent components.</p>
+<b>TRANSISTORS</b>
+<p>Two transistors, Ql and Q2, are fitted taking care that they
+are oriented as on the circuit board legend.</p>
+<b>INTEGRATED CIRCUITS</b>
+<p>These may now be fitted in their sockets. Pin 1 of each device
+is identified by either a semi-circle or a dot as shown:</p>
+<p><a href="atm_12_1.gif"><img src="atm_12_1.gif" alt="IC pin 1" border="0" 
+width="335" height="115" /></a></p>
+<p>Devices which are liable to damage by static electricity will
+be supplied in anti-static packing and they should not be removed
+from this until required for insertion into their sockets.
+Identify each device from the parts list and plug it into the
+appropriate socket. If the pins on the IC are splayed out, press
+them all in together as shown until the device fits easily into
+the socket:</p>
+<p><a href="atm_12_2.gif"><img src="atm_12_2.gif" border="0" 
+alt="IC pin alignment" width="235" height="48" alt="atm_12_2.gif" /></a></p>
+<p>Take great care that no IC pins get bent under the IC when
+inserting and ensure that all of the ICs are correctly aligned
+with pin 1 in the right place. If available, more 2114s may be
+fitted in positions IC 10 to 19 and 32 to 41 as described in the
+extensions sections.</p>
+<b>FITTING THE CASE</b>
+<p>After checking that all soldering on side 1 is satisfactory
+the circuit board may be fitted in the case. If any extension
+kits are available they may be fitted as described in the
+relevant sections of this manual. Take the top of the case, that
+is the piece with the cut-out for the key-board, and lay it down
+with the pillars and screw holes facing upwards. The assembled
+circuit board should be placed over the case with the component
+side 2 upwards. Screw, but do not tighten, four self-tapping
+screws into the four corner mounting pillars in the case thus
+lightly holding the board in the case. Move the board in the case
+so that all the keys clear the edges of the cut-out in the top
+and then tighten up the four screws</p>
+<p>The bottom of the case is next placed over the circuit board
+and moved so that it lines up with the top. If the connectors do
+not then appear centrally in the cut-outs on the rear of the case
+bottom some adjustment of the position of the board in the top of
+the case may be required. Finally put two long self-tapping
+screws into the holes in the case bottom and fix the bottom to
+the top by tightening them up.</p>
+<p>Four self adhesive feet may be stuck to the bottom of the case
+and the surround for the keys is stuck to the top of case when
+its backing is peeled off revealing a layer of adhesive.</p>
+<a name="VIDEO"><b>T.V./VIDEO MONITOR</b></a>
+<p>The ATOM screen display may be on a domestic television or a
+video monitor. To connect to a domestic television use the phono
+to co-axial connecting lead supplied. The phono plug goes into
+SK1 (the modulator output) and the other end of the lead goes to
+the aerial socket of the television. If the television has a
+graduated tuning scale, set it to channel 36.</p>
+<p>A 1 volt into 75 ohm composite video signal for monitors is
+available on pin 9 of PL4 with a corresponding 0 volt return on
+pin 10. These are indicated on the following diagram.</p>
+<p><a href="atm_13_1.gif"><img src="atm_13_1.gif"
+alt="Composite video out" border="0" width="241" height="82" alt="atm_13_1.gif" /></a></p>
+<p>The normal ATOM produces a monochrome picture, even if a
+colour television or monitor is used. The PAL encoder circuit
+board can be fitted inside the case to give a colour picture.</p>
+<a name="POWER"><b>POWER SUPPLY</b></a>
+<p>The basic ATOM requires a power source of 8 volts DC which is
+regulated on the circuit board by IC53 and IC54 to produce a
+stabilised 5 volts. The ATOM high-efficiency mains adaptor
+provides such a source, and it is fitted with a jack plug for
+connecting to the ATOM. The high-efficiency mains adapter is
+capable of delivering up to 1600 mA and powering a fully-expanded
+ATOM using the low-power memory that is currently supplied. This
+current is obtained as follows:</p>
+<blockquote>
+<p>Minimal system 2K RAM 750 mA<br />
+10K expansion memory at 75 mA per K 750 mA<br />
+Bus buffers and 6522 VIA 100 mA</p>
+</blockquote>
+<p>Note that ATOMs supplied before October 1980 used normal-power
+RAM memory devices which have a current consumption of 100 mA per
+K; the total current consumption of a fully-expanded ATOM usinq
+normal-power memory is therefore too great for the ATOM mains
+adapter.</p>
+<b>REGULATED SUPPLY</b>
+<p>The ATOM may alternatively be powered by a 5v regulated
+supply. In this case two links, LK6 and LK7, should be fitted to
+the board. The power distribution on the board is normally
+separated into two sections; one for each regulator. These
+sections should be joined together by fitting a link at LK6 on
+the circuit board. The regulators should be bypassed by fitting
+link LK7 on the board. The power socket, SK3, is now for a
+stabilised 5 volt input and the mains adaptor must NOT be plugged
+into it. This part should be marked clearly on a label attached
+near the power socket on the back of the ATOM.</p>
+<p>A circuit far providing a stabilised 5 volts at up to 3000 mA
+capable of powering a fully expanded ATOM together with any Acorn
+eurocard is given here:</p>
+<table border="0" cellspacing="0" summary="table">
+<tr>
+<td align="center"><a href="atm_14_1.gif"><img src="atm_14_1.gif"
+alt="5 volt power supply" align="middle" border="0"
+width="298" height="153" alt="atm_14_1.gif" /></a> </td><td valign="bottom">Capacitor = 1500µF 16V.<br /><br />
+</td>
+</tr>
+</table>
+<p></p>
+<a name="SWITCHING ON"><b>SWITCHING ON</b></a>
+<p>When the T.V. or monitor is connected the power connector may
+be inserted into SK3. The ATOM is now on. Press the break key to
+reset the ATOM; the screen should now show:</p>
+<blockquote>
+<pre>ACORN ATOM
+&gt;<img src="bblock.gif" alt="cursor block (black)" width="8"
+height="10" /></pre>
+</blockquote>
+</p><p>At this stage if a television is being used it should be tuned
+until a display is found. Both monitors and televisions may now
+require adjustment of the vertical hold control. After further
+fine tuning in the case of the television to obtain a sharp
+display, the brilliance control should be set so that the
+background is slightly grey rather than black. The contrast
+control is then adjusted to make the characters as bright as
+required.</p>
+<p>If no display is found check that all the connections are
+correct and in the case of ATOMs assembled from kits check that
+the construction procedure has been followed correctly. when the
+display on the screen is correct refer to the book 'Atomic Theory
+and Practice' for details of how to program the ATOM.</p>
+<a name="TAPE RECORDER"><b>TAPE RECORDER</b></a>
+<p>Programs or data may be stored on standard audio tape using a
+domestic tape or cassette recorder. The ATOM contains a Computer
+Users Tape Standard (CUTS) interface, and connection to the
+recorder is by a 3 pin D.I.N. plug in SK2. Pin 1 is the output to
+the recorder, pin 2 is the 0 volt or common connection, and pin 3
+is the input to the ATOM from the recorder. These are shown in
+the diagram:</p>
+<blockquote>
+<table border="0" cellspacing="0" summary="table">
+<tr>
+<td><img src="atm_15_1.gif" border="0" width="163" height="140" alt="atm_15_1.gif" /></td>
+<td align="center">Back view of DIN plug<br />
+i.e. cable side</td>
+</tr>
+</table>
+</blockquote>
+<p>Only a 3 pin lead should be used as the other 4 pins of SK2
+carry digital outputs which may damage recorders with 5 or 7 pin
+connectors.</p>
+<p>Both recording and playback on the ATOM are crystal controlled
+and, except on very cheap recorders whose speed may vary, no
+trouble should be experienced when transferring tapes from one
+ATOM to another. The use of recorders with an input and output
+dedicated to connection to an external amplifier is recommended
+as opposed to those with only microphone and earpiece facilities;
+however good results should be obtained with most machines.</p>
+<p>The setting up of the recorder using a test program is
+described on page 8 of the book 'Atomic Theory and Practice'.
+Should correct results not be obtained the signal levels may
+require adjustment. Both the input and output are normally set to
+a level of 300 mV R.M.S. The output can be adjusted by changinq
+the value of R29 so that the recorder's VU meter reads 70% on
+recording (20% = -3dB). The gain of the input amplifier on the
+ATOM may be changed by altering R34; hi-fi cassette decks are
+generally more sensitive and often require that this resistor is
+changed from 47K to 220K.</p>
+<a name="OUTPUT PORTS"><b>OUTPUT PORTS</b></a>
+<p>Pins 4,5,6 and 7 of SK2 carry bits 1,2,0 and 3 respectively of
+port C of the INS8255 (address B002). These are normally set to
+output mode and they will drive a standard TTL load. Bits 0 and 1
+also drive the tape interface, bit 2 bleeps the loudspeaker, and
+bit 3 selects between the two possible sets of four colours.
+Refer to the book <a href="../atap/atap.htm">Atomic
+Theory and Practice</a>' for further details.</p>
+&nbsp;<a href="atm.htm"><img src="terug.gif" align="right" border="0"
+alt="terug.gif"  alt="terug.gif"/></a>
+</table></center></body>
+</html>

@@ -1,0 +1,63 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Type"
+content="text/html; charset=iso-8859-1">
+
+<title>ATOM MEMORY MAP</title>
+<link rel="StyleSheet" href="body.css" type="text/css" />
+</head>
+<body ><center>
+<table valign="top" width="90%" border="0" summary="table">
+<tr><td>
+
+<b><font size="5">ATOM MEMORY MAP</font></b>
+
+
+<pre> 
+          FFFF   Top of memory                  X
+                                                X
+                                                X 
+          F000   ROM     MM52164    IC20        X
+
+          E000   Reserved -Disk Operating System 
+                                                X
+                                                X
+          D000   ROM     MM52132    IC21        X
+                                                X
+                                                X
+          C000   ROM     MM52164    IC20        X
+                                                X
+          BC00   Empty                          X
+          B800   VIA     6522       IC1         X
+          B400   Extension          PL8         X
+          B000   PPI     INS8255    IC25	  X
+                                                X
+                                                X 
+          A000   ROM     MN52132    IC24        X
+                                                X
+          9800   Empty                          X
+          9400   RAM     2114       ICs 32&amp;33   X
+          9000   RAM     2114       ICs 34&amp;35   X
+          8C00   RAM     2114       ICs 36&amp;37   X
+          8800   RAM     2114       ICs 38&amp;39   X
+          8400   RAM     2114       ICs 40&amp;41   X
+          8000   RAM     2114       ICs 42&amp;43   X
+
+          3C00   For RAM expansion off board
+          3800   RAM     2114       ICs 18&amp;19   X
+          3400   RAM     2114       ICs 16&amp;17   X
+          3000   RAM     2114       ICs 14&amp;15   X
+          2C00   RAM     2114       ICs 12&amp;13   X
+          2800   RAM     2114       ICs 10&amp;ll   X
+
+          0400   Reserved for Eurocards
+          0000   RAM     2114       ICs 51&amp;52   X</pre>
+
+<p>Any memory access to an address indicated by an x will cause
+IC5 to generate an 'on card' signal, and disable the off card
+address and data bus buffers.</p>
+&nbsp;<a href="atm.htm"><img src="terug.gif" align="right" border="0" alt="terug.gif" /></a>
+</table></center></body>
+</html>
+

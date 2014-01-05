@@ -1,0 +1,97 @@
+<?XML version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type"
+content="text/html;" charset="iso-8859-1" />
+<title>CIRCUIT DESCRIPTION</title>
+<link rel="StyleSheet" href="body.css" type="text/css" />
+</head>
+<body><center>
+<table valign="top" width="90%" border="0" summary="table">
+<tr><td>
+<b><font size="5">CIRCUIT DESCRIPTION</font></b>
+<p>The block diagram of the ATOM shows the essential elements of
+a micro-computer system. The 6502 micro-processor is provided
+with a 1 MHz clock with which all action on its bus is
+synchronised. The bus has 8 data connections which allow data to
+be transferred from the processor to other devices or vice-versa.
+16 address lines select the location to which or from which data
+is transferred; the most significant lines feed the chip select
+logic which selects the device being accessed whilst the rest of
+the lines select the location within the device.</p>
+<p>The reset signal at break or power up causes the processor to
+fetch instructions down the data bus from the Operating
+System/BASIC ROM (Read Only Memory). Executing these instructions
+sets up the screen and scans the keys, and when BASIC statements
+are entered more instructions in the ROM interpret the statements
+and communicate with the screen, tape interface etc. using
+routines in the O.S. section of the ROM.</p>
+<p>The block zero RAM (Random Access Memory), from #0000 to
+#0400, is used by the processor for scratch pad and stack menory.
+This RAM should not normally be accessed by the user.</p>
+<p>The user RAM, that is the space in which lines of BASIC text
+are stored, can be the lower text space or, as in the unexpanded
+ATOM, the upper text space or graphics space may be used.</p>
+<p>A Video Display Generator (VDG) produces synchronisation
+signals for the television or monitor picture scan in time with a
+series of refresh addresses which fetch data for the screen from
+the video RAM. The screen is &quot;memory mapped&quot;; each dot
+on the screen shows the information in a corresponding piece of
+memory. Normally only the VDG accesses the video RAM obtaining
+information with which to refresh the screen. When the
+information on the screen is to be changed the tri-state buffers
+are enabled allowing the processor to write new data into the
+RAM. The VDG is fed with a 3.58 NHz frequency from which the sync
+and refresh timing is derived. Both monochrome and colour
+information are provided by the VDG.</p>
+<p>In the most basic ATOM the 1024 by 8 (that is 1 Kbyte) video
+RAM is divided into two sections. Half of the RAM is used for
+video so that a screen full of normal characters can be stored
+and the rest is used for the upper text space. Extended ATOMs
+will normally have RAM in the lower text space position and so
+the original video RAM together with the extension video RAM is
+used to provide the higer resolution graphics modes.</p>
+<p>Another device on the bus is a peripheral interface which
+provides 24 input and output signal lines. Some of these lines
+are used to control the VDG and one in particular is a signal
+from the VDG indicating the vertical blanking period of the
+screen. During this period the processor can enable the tri-state
+buffers and access the video RAN without producing interference
+on the screen. This signal also provides the timinq for the WAIT
+statement.</p>
+<p>The INS8255 PIA interfaces with the ATOM keyboard in which the
+keys are arranged in a matrix. A 4 to 10 line decoder-driver is
+driven by the peripheral interface and its 10 outputs drive each
+row of the key matrix in turn. The peripheral interface is used
+to read the outputs from the columns of the key matrix as each
+input is driven and so the matrix position of any depressed key
+is determined.</p>
+<p>A Computer Users Tape Standard interface is also connected via
+the peripheral interface. This standard saves data or programs on
+tape as a sequence of two different tones . A logical 1 signal is
+represented by a frequency of 2.4 KHz whilst logical 0 is a 1.2
+KHz frequency. Each bit, that is 0 or 1, lasts for 3.3 mS giving
+an operating speed of 300 bits per second. The 2.4 KHz standard
+is derived from the 4 MHz crystal with a frequency divider chain
+and it is fed to the peripheral interface and the tape output.
+The input from the tape recorder passes through an amplifier and
+a schmitt trigger before being fed into peripheral interface.
+Another line from the peripheral interface is used to drive the
+loudspeaker.</p>
+<p>Two more ROMs may be fitted in the ATOM. One contains
+instructions is for interpreting additional BASIC statements
+which deal with floating point numbers, scientific functions and
+colour graphics. The other ROM can provide extra utilities, such
+as programs to deal with serial interfaces to the ATOM, and the
+communications ring.</p>
+<p>An optional Versatile Interface Adaptor (VIA) may be fitted
+giving input or output lines allowing the ATOM to interface to
+external hardware. Also a driver device can be added allowing the
+VIA to connect to parallel printers of the Centronics type.</p>
+<p>Finally a set of bus buffers may be added allowing the ATOM
+bus to connect to external devices such as extension RAM floppy
+disc drives etc.</p>
+&nbsp;<a href="atm.htm"><img src="terug.gif" align="right" border="0" alt="terug.gif" /></a>
+</table></center></body>
+</html>

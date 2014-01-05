@@ -1,0 +1,491 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Type"
+content="text/html; charset=iso-8859-1">
+<meta name="GENERATOR" content="Microsoft FrontPage Express 2.0">
+<title>ATOM Operating System</title>
+</head>
+
+<body bgcolor="#FFFFFF">
+
+<h1><font color="#0000FF" size="6">18</font><font color="#0000FF">
+ATOM Operating System</font></h1>
+
+<h2><font color="#0000FF">18.1 Keyboard</font></h2>
+
+<h3><font color="#0000FF">18.1.1 Teletype/Typewriter Nodes</font></h3>
+
+<p>After switching on, or typing BREAK, the ATOM is in teletype
+mode. In this mode all the alphabetic keys produce upper case
+letters, and the SHIFT key is used to obtain the lower-case
+letters. This mode is most convenient for normal operation of the
+ATOM because all commands are typed in upper case.</p>
+
+<p>When entering documents which contain mixed lower and upper
+case it is convenient to have the ATOM keyboard behave like a
+standard typewriter; i.e. for the alphabetic keys to produce
+lower case, and upper case when shifted. This state may be
+obtained by typing the LOCK key. The mode is cancelled by typing
+LOCK a second time. Note that the LOCK key only affects the
+alphabetic keys, A -- Z.</p>
+
+<h3><font color="#0000FF">18.1.2 SHIFT Key</font></h3>
+
+<p>All but one of the 128 ASCII codes are available from the ATOM
+keyboard. The code which cannot be obtaiqed appears as a
+back-arrow on the display.</p>
+
+<p>The codes which can be obtained, but which are not marked on
+the keyboard, are as follows:</p>
+
+<pre>        SHIFT +    Displayed as    ASCII character   Code in hex
+          @        Inverted @           \              #60
+          A        Inverted A           a              #61
+          .             .               .               .
+          .             .               .               .
+          Z        Inverted Z           z              #7A
+          [        Inverted [           {              #7B
+          \        Inverted \           |              #7C
+          ]        Inverted ]           }              #7D
+          ^        Inverted ^           ~              #7E</pre>
+
+<h3><font color="#0000FF">18.1.3 Control Codes</font></h3>
+
+<p>The following list gives all the control codes that perform
+special functions on the ATOM. They are all available from the
+keyboard, by typing CTRL with the specified key, or from
+programs.</p>
+
+<pre>STX  (CTRL-B, 2)  Start printer</pre>
+
+<p>This code, which is not sent to the printer, starts the
+printer output stream. All further output is sent to the printer
+as well as the VDU until receipt of an ETX code.</p>
+
+<pre>ETX (CTRL-C, 3) End printer</pre>
+
+<p>Ends the printer output stream.</p>
+
+<pre>ACK  (CTRL-F, 6)  Start screen</pre>
+
+<p>Starts the output stream to the VDU screen, and resets the VDU
+to character mode. This code is sent to the VDU on BREAK.</p>
+
+<pre>BELL (CTRL-G, 7)  Bleep</pre>
+
+<p>Causes the output stream to make a 1/2 second bleep on the
+internal speaker.</p>
+
+<pre>BS   (CTRL-H, 8)  Backspace</pre>
+
+<p>Moves the cursor back one position.</p>
+
+<pre>HT (CTRL-I, 9) Horizontal tab</pre>
+
+<p>Moves the cursor forward one position.</p>
+
+<pre>LF (CTRL-J, 10) Linefeed</pre>
+
+<p>Moves the cursor down one line.</p>
+
+<pre>VT (CTRL-K, 11) Vertical tab</pre>
+
+<p>Moves the cursor up one line.</p>
+
+<pre>FF (CTRL-L, 12) Formfeed</pre>
+
+<p>Clears the screen, moves the cursor to the top left-hand
+corner, and sets the VDU to character mode.</p>
+
+<pre>CR (CTRL-M, 13) Return</pre>
+
+<p>Moves tle cursor to the start of the current line.</p>
+
+<pre>SO (CTRL-N, 14) Page mode on</pre>
+
+<p>Turns on paged mode, and resets the line count to zero. Every
+time the screen in scrolled the line count is incremented. In
+paged mode the UDU will wait for a key to be typed every time the
+line count reaches 16.</p>
+
+<pre>SI (CTRL-O, 15) Page mode off</pre>
+
+<p>Turns off paged mode. This is the mode set on BREAK and on
+power-up.</p>
+
+<pre>NAK (CTRL-U, 21) End screen</pre>
+
+<p>Ends the output stream to the VDU; the only code recognised
+when in this condition is ACK.</p>
+
+<pre>CAN (CTRL-X, 24) Cancel</pre>
+
+<p>Deletes the line currently being typed, and returns the cursor
+to the start of the following line. Only happens in BASIC's input
+modes.</p>
+
+<pre>ESC (CTRL-[, 27) Escape</pre>
+
+<p>Causes an escape from an executing BASIC program. If typed
+twice, resets the VDU to character mode.</p>
+
+<pre>RS (CTRL-^, 30) Home cursor</pre>
+
+<p>Moves the cursor to the top left-hand corner of the screen.</p>
+
+<h2><font color="#0000FF">18.4 Screen Editing</font></h2>
+
+<p>Three keys on the ATOM keyboard have special functions, and
+are used in conjunction with the SHIFT key for screen editing.
+Their functions are:</p>
+
+<blockquote>
+    <table border="0">
+        <tr>
+            <td><font face="Courier New"><img src="updown.gif"
+            width="9" height="24"></font></td>
+            <td>Cursor up</td>
+        </tr>
+        <tr>
+            <td><font face="Courier New">SHIFT <img
+            src="updown.gif" width="9" height="24"></font></td>
+            <td>Cursor down</td>
+        </tr>
+        <tr>
+            <td><font face="Courier New"><img src="leftright.gif"
+            width="24" height="9"></font></td>
+            <td>Cursor right</td>
+        </tr>
+        <tr>
+            <td><font face="Courier New">SHIFT <img
+            src="leftright.gif" width="24" height="9"></font></td>
+            <td>Cursor left</td>
+        </tr>
+        <tr>
+            <td><font face="Courier New">COPY</font></td>
+            <td>Read character under cursor</td>
+        </tr>
+    </table>
+</blockquote>
+
+<p>Pressing the first four key combinations move the cursor
+around the screen but do not send any new characters down the
+input channel. They may be typed at any time and will have no
+effect on the ATOM, or on programs; they just determine where the
+cursor is positioned.</p>
+
+<p>The COPY key will read the character under the cursor, and
+transmit that character to the input stream; the effect is the
+same as if that character had been typed at the keyboard. After
+reading a character the cursor is automatically moved one place
+to the right.</p>
+
+<p>For example, suppose we wanted to edit a piece of stored text.
+First the text is listed as shown:</p>
+
+<pre>&gt;LIST
+    10 PIECE OF TEXTUAL MATERIAL
+<img src="block.gif" width="8" height="11"></pre>
+
+<p>After listing the program the cursor is positioned after the
+prompt, as shown. First move the cursor vertically upwards, using
+the ) key, until it is opposite the line we wish to edit:</p>
+
+<pre>&gt;LIST
+ <img src="block.gif" width="8" height="11">  10 PIECE OF TEXTUAL MATERIAL</pre>
+
+<p>Now use the COPY key to read the correct part of the line:</p>
+
+<pre>&gt;LIST
+   10 PIECE OF<img src="block.gif" width="8" height="11">TEXTUAL MATERIAL&gt;</pre>
+
+<p>Note that the cursor inverts every character it passes over.
+If any inverted characters are present in the text, these will be
+un-inverted by the cursor.</p>
+
+<p>Now type in the corrected part of the line:</p>
+
+<pre>&gt;LIST
+   10 PIECE OF CAKE<img src="block.gif" width="8" height="11">AL MATERIAL
+&gt;</pre>
+
+<p>As no more of the old line is required the return key is
+pressed, and the program may be listed again to verify that the
+editing gave the correct result.</p>
+
+<p>The <img src="leftright.gif" width="24" height="9"> key may be
+used to omit parts of the old line that are no longer required
+and SHIFT <img src="leftright.gif" width="24" height="9"> may be
+used to backspace the cursor in order to make room for inserting
+extra characters in the line. If you change your mind while
+editing a line, type CTRL-X (cancel) and the old line will be
+unchanged. </p>
+
+<h2><font color="#0000FF">18.5 The VDU</font></h2>
+
+<p>The character display shows the contents of memory from #8000
+to #81FF, mapped one character cell per byte. The address of the
+top left-hand cell is #8000, and the address of the Cth column in
+the Lth line is simply:</p>
+
+<pre>       #8000+32*L+C</pre>
+
+<p>where 0&lt;=C&lt;=31 and 0&lt;=L&lt;=15, and L=0, C=0
+corresponds to the top left-hand character position.</p>
+
+<p>The value stored in the memory cell determines the character
+displayed. All 256 different possible codes produce different
+displayed characters (with two exceptions), and the codes are
+assigned as follows:</p>
+
+<pre>       Hex Code:               Characters:
+       #00 -- #1F              0 to &lt;- (including alphabet)
+       #20 -- #3F              space to ? (including digits)
+       #40 -- #7F              white graphics symbols
+       #80 -- #9F              inverted 0 to &lt;-
+       #A0 -- #BF              inverted space to ?
+       #C0 -- #FF              grey graphics symbols</pre>
+
+<p>The complete character set is displayed by executing:</p>
+
+<pre>       FOR N=O TO 255; N?#8000=N; NEXT N</pre>
+
+<p>which will generate the display shown below:</p>
+
+<pre>           <img src="charset.png" width="512" height="196"></pre>
+
+<p>The graphics symbols consist of a block divided into 6 pixels,
+the state of each pixel being determined by the lower 6 bits of
+the byte, as follows:</p>
+
+<table border="0">
+<TBODY>    <tr>
+        <td>5</td>
+        <td>4</td>
+    </tr>
+    <tr>
+        <td>3</td>
+        <td>2</td>
+    </tr>
+    <tr>
+        <td>1</td>
+        <td>0</td>
+    </tr>
+</TBODY></table>
+
+<p>If the bit is set, the corresponding pixel is grey or white;
+if the bit. is clear the pixel is black. Note that #20 and #40,
+and #7F and #A0 give the same graphics patterns.</p>
+
+<p>Note that in all cases except #20 to #3F the code stored in
+the cell differs from the ASCII code for the character displayed.
+If C is the ASCII code for the character to be displayed, the
+code to be stored in the cell is obtained by:</p>
+
+<pre>       C=C+#20; IF C&lt;#80 THEN C=C:#60</pre>
+
+<p>Similarly, to obtain the ASCII code for a character from the
+value V stored in the screen memory, execute:</p>
+
+<pre>       IF V&lt;#80 THEN V=V:#60
+       V=V-#20</pre>
+
+<h2><font color="#0000FF">18.6 Changing Text Spaces</font></h2>
+
+<p>The 'text space' is the region of memory used by the ATOM for
+storing the text of programs. On switching on, or pressing BREAK,
+the ATOM is initialised with a fixed text space at address #8200
+in the unexpanded ATOM, or at #2900 in the ATOM with extra memory
+in the lower text space. However, it is possible to change the
+value of the text-space pointer so that text can be entered and
+stored in different areas of memory. It is even possible to have
+several different programs resident concurrently in memory, in
+different text spaces.</p>
+
+<p>The memory location 18 (decimal) contains a pointer to the
+first page of the BASIC text. This value is refered to by the
+system in the following cases:--</p>
+
+<p>1. During line editing in direct mode<br>
+2. During a SAVE statement; the save parameters are ?18*256 and
+TOP<br>
+3. During a LOAD command; a new program is loaded to ?18*256 <br>
+4. During the execution of a GOTO or GOSUB statement or a RUN
+statement, labels with known values being the exception.</p>
+
+<p>Changing ?18 in programs permits a BASIC program in one text
+area to call subroutines in a BASIC program in another text area.
+The value of TOP will not change with use like this, so its use
+as a memory space allocator and pointer to the end of text in the
+line editor must be watched carefully.</p>
+
+<h3><font color="#0000FF">18.6.1 Calling Subroutines in Different
+Text Spaces</font></h3>
+
+<p>The following example shows the entering of a subprograrn and
+main program in different text spaces. First enter a subroutine
+in the first text space:</p>
+
+<pre>      ?18=#82
+      NEW
+   10 PRINT&quot;TEXT AREA ONE&quot;'
+   20 RETURN</pre>
+
+<p>Now change the value of the text-space pointer and enter a
+program; to call this subroutine into the second text space:</p>
+
+<pre>      ?18=#83
+      NEW
+   10 REM CALL SUBROUTINE IN 082
+   20 ?18=#82
+   30 GOSUB 10
+   40 REM PROVE YOU'RE BACK
+   50 PRINT&quot;TEXT AREA TWO&quot;'
+   60 GOSUB 10
+   70 ?18=#83;REM BACK FOREVER
+   80 END</pre>
+
+<p>Now run the program:</p>
+
+<pre>      RUN
+TEXT AREA ONE
+TEXT AREA TWO
+TEXT AREA ONE</pre>
+
+<p>Note that switching back to the first text space by typing:</p>
+
+<pre>?18=#82</pre>
+
+<p>will not change the value of TOP:</p>
+
+<pre>      PRINT &amp; TOP'
+    8398</pre>
+
+<p>To reset TOP, type:</p>
+
+<pre>      END
+      PRINT 6 TOP'
+    8225</pre>
+
+<h2><font color="#0000FF">18.7 Renumbering Programs</font></h2>
+
+<p>The following routine can be used to renumber the line-numbers
+of a program or piece of text. The program and renumber routine
+must both be in memory at the same time, in different text
+spaces. Note that the renumber program only renumbers the line
+numbers; it does not renumber numbers in GOTO or GOSUB
+statements.</p>
+
+<h3><font color="#0000FF">18.7.1 Renumbering in the Expanded ATOM</font></h3>
+
+<p>In an expanded ATOM, with the default text space at #2900, the
+renumber routine can conveniently be entered at #8200 by typing:</p>
+
+<pre>      ?18=#82
+      NEW</pre>
+
+<p>before loading it from tape, or entering it from the keyboard.</p>
+
+<pre>    1 REM Renumber
+   10 INPUT&quot;TEXT SPACE TO RENUMBER&quot;Z
+   15 Z=Z*256
+   20 INPUT&quot;START AT&quot;A,&quot;STEP&quot;B
+   30 ?18=Z/256
+   40 IFZ?1=255 END
+   50 DOZ?1=A/256;Z?2=A;A=A+B
+   55 Z=Z+3+LEN(Z+3)
+   60 UNTILZ?1=255;END</pre>
+
+<p>The program to be renumbered should be in the default text
+space, #29.<br>
+Then RUN the program, and reply to the prompts as follows:</p>
+
+<pre>TEXT SPACE TO RENUMBER ?029
+START AT?10
+STEP?10</pre>
+
+<p>The program will switch back to the usual text space, and the
+renumbered program can be listed.</p>
+
+<h3><font color="#0000FF">18.7.2 Renumbering Using the Screen
+Memory</font></h3>
+
+<p>In an unexpanded ATOM there may be no space in the upper text
+space to load the renumber program. However, with care, it can be
+loaded from tape, or typed in, and executed in the area of memory
+that is displayed on the VDU. The size of the program is about
+#A0 bytes, which will occupy memory corresponding to about 6
+lines of the display. Provided that the cursor is kept below the
+sixth line of the display, and is not allowed to reach the bottom
+line of the display when it will cause scrolling, the VDU memory
+can be safely used as a temporary text space in this way.<br>
+First type:</p>
+
+<pre>?18=#80</pre>
+
+<p>to set the text space to the screen area of memory. Move the
+cursor to the 6th. line of the display using the <font
+face="Courier New"><img src="updown.gif" width="9" height="24"></font>
+edit key, and type:</p>
+
+<pre>LOAD &quot;RENUMBER&quot;</pre>
+
+<p>Alternatively, enter the program from the keyboard in the
+usual way. The top few lines of the display will be filled with
+strange characters, corresponding to the text of the program
+stored directly in the screen memory. Now type:</p>
+
+<pre>RUN</pre>
+
+<p>and reply to the prompts of the renumber program as follows
+(or, as desired):</p>
+
+<pre>TEXT SPACE TO RENUMBER?082 START AT?10 STEP?10</pre>
+
+<p>When the program has run the screen can be allowed to scroll,
+corrupting the renumber program, and you can list the renumbered
+program.</p>
+
+<h2><font color="#0000FF">18.8 Trapping Errors</font></h2>
+
+<p>The memory locations 16 and 17 contain a pointer, low byte in
+16, high byte in 17, to the start of a BASIC program which is
+entered whenever an error occurs. In direct mode they are set to
+point at a program in the interpreter which reads: </p>
+
+<pre>@=1;P.$6$7'&quot;ERROR &quot;?0;@=8;IF?1\?2P.&quot; LINE&quot;!1&amp; #FFFF 0 P.';E. </pre>
+
+<p>Location 0 contains the error number and locations 1 and 2
+contain the line number where the interpreter thinks it occurred.
+Programs intended to handle errors should store the value of !1
+since it is changed whenever a return is executed. The first
+character in a text space that can be pointed to by ?16 and ?17
+is at the start of the text space plus three, and this is the
+first character of the listed program. All interpreter stacks are
+cleared after an error but the values of labels are not
+forgotten. </p>
+
+<h3><font color="#0000FF">18.8.1 On Error Goto</font></h3>
+
+<p>To provide a GOTO on an error it is necessary to provide a
+string containing the GOTO statement, and write the address of
+this string in locations 16 and 17. For example, to provide a
+jump to line 170 on an error:</p>
+
+<pre>10 DIM A(8) 20 $A=&quot;GOTO 170&quot; 30 ?16=A; ?17=A&amp;#FFFF/256</pre>
+
+<h3><font color="#0000FF">18.8.2 Calculator Program</font></h3>
+
+<p>The following program simulates a desk-top calculator; it will
+evaluate any expression which is typed in, and any error will
+cause the message &quot;BAD SYNTAX&quot; to be printed out. The
+program uses integer BASIC statements, but could easily be
+modified to use the floating-point extension: </p>
+
+<pre> 10 E=TOP; $E=&quot;P.&quot;&quot;BAD SYNTAX&quot;&quot;';G.30&quot;
+ 20 ?16=E; ?17=E/256
+ 30 @=0; DO IN.A; P.$320&quot;=&quot;A; U.0</pre>
+<p align="right"><a href="atap_19.htm">Next chapter</a></p>
+</body>
+</html>

@@ -1,0 +1,796 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Type"
+content="text/html; charset=iso-8859-1">
+<meta name="GENERATOR" content="Microsoft FrontPage Express 2.0">
+<title>13 Assembler Programming</title>
+</head>
+
+<body bgcolor="#FFFFFF">
+
+<h1><font color="#0000FF">13 Assembler Programming</font></h1>
+
+<p>In BASIC there are operators to perform multiplication,
+division, iteration etc., but in assembler the only operations
+provided are far more primitive and require a more thorough
+understanding of how the inside of the machine works. The ATOM is
+unique in that it enables BASIC and assembler to be mixed in one
+program. Thus the critical sections of programs, where speed is
+important, can be written in assembler, but the body of the
+program can be left in BASIC for simplicity and clarity.</p>
+
+<p>The following table gives the main differences between BASIC
+and assembler:</p>
+
+<table border="1" cellspacing="0" width="100%">
+    <tr>
+        <td><font color="#0000FF"><strong>BASIC</strong></font></td>
+        <td><font color="#0000FF"><strong>Assembler</strong></font></td>
+    </tr>
+    <tr>
+        <td>26 variables</td>
+        <td>3 registers</td>
+    </tr>
+    <tr>
+        <td>4-byte precision</td>
+        <td>1 byte precision</td>
+    </tr>
+    <tr>
+        <td>Slow &#150; assignment takes over 1 msec. </td>
+        <td>Fast &#150; assignments take 10 usec.</td>
+    </tr>
+    <tr>
+        <td>Multiply and divide</td>
+        <td>No multiply or divide</td>
+    </tr>
+    <tr>
+        <td>FOR...NEXT and DO...UNTIL loops </td>
+        <td>Loops must be set up by the programmer</td>
+    </tr>
+    <tr>
+        <td>Language independent of </td>
+        <td>Depends on instruction computer set of chip</td>
+    </tr>
+    <tr>
+        <td>Protection against overwriting program</td>
+        <td>No protection </td>
+    </tr>
+</table>
+
+<p>However, do not be discouraged; writing in assembler is
+rewarding and gives you a greater freedom and more ability to
+express the problem that you are trying to solve without the
+constraints imposed on you by the language. Remember that, after
+all, the BASIC interpreter itself was written in assembler.</p>
+
+<p>A computer consists of three main parts:</p>
+
+<blockquote>
+    <p>1. The memory<br>
+    2. The central processing unit, or CPU. <br>
+    3. The peripherals.</p>
+</blockquote>
+
+<p>In the ATOM these parts are as follows:</p>
+
+<blockquote>
+    <p>1. Random Access Memory (RAM) and Read-Only Memory (ROM).<br>
+    2. The 6502 microprocessor.<br>
+    3. The VDU, keyboard, cassette interface, speaker
+    interface...etc.</p>
+</blockquote>
+
+<p>When programming in BASIC it is not necessary to understand
+how these parts are working together, and how they are organised
+inside the computer. However in this section on assembler
+programming a thorough understanding of all these parts is
+needed.</p>
+
+<h2><font color="#0000FF">13.1 Memory</font></h2>
+
+<p>The computer's memory can be thought of as a number of
+'locations&#146;, each capable of holding a value. In the
+unexpanded ATOM there are 2048 locations, each of which can hold
+one of 256 different values. Only 512 of these locations are free
+for you to use for programs; the remainder are used by the ATOM
+operating system, and for BASIC's variables.</p>
+
+<p>Somehow it must be possible to distinguish between one
+location and another. Houses in a town are distinguished by each
+having a unique address; even when the occupants of a house
+change, the address of the house remains the same. Similarly,
+each location in a computer has a unique 'address', consisting of
+a number. Thus the first few locations in memory have the
+addresses 0, 1, 2, 3...etc. Thus we can speak of the 'contents'
+of location 100, being the number stored in the location of that
+address.</p>
+
+<h2><font color="#0000FF">13.2 Hexadecimal Notation</font></h2>
+
+<p>Having been brought up counting in tens it seems natural for
+us to use a base of ten for our numbers, and any other system
+seems clumsy. We have just ten symbols, 0, 1, 2, ... 8, 9, and we
+can use these symbols to represent numbers as large as we please
+by making the value of the digit depend on its position in the
+number. Thus, in the number 171 the first '1' means 100, and the
+second '1' means 1. Moving a digit one place to the left
+increases its value by 10; this is why our system is called 'base
+ten' or 'decimal'.</p>
+
+<p>It happens that base 10 is singularly unsuitable for working
+with computers; we choose instead base 16, or 'hexadecimal', and
+it will pay to spend a little time becoming familiar with this
+number system.</p>
+
+<p>First of all, in base 16 we need 16 different symbols to
+represent the 16 different digits. For convenience we retain 0 to
+9, and use the letters A to F to represent values of ten to
+fifteen:</p>
+
+<blockquote>
+    <pre>Hexadecimal digit: 0 1 2 3 4 5 6 7 8 9  A  B  C  D  E  F 
+Decimal value:     0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15</pre>
+</blockquote>
+
+<p>The second difference between base 16 and base 10 is the value
+accorded to the digit by virtue of its position. In base 16
+moving a digit one place to the left multiplies its value by 16
+(not 10).</p>
+
+<p>Because it is not always clear whether a number is hexadecimal
+or decimal, hexadecimal numbers will be prefixed with a hash
+&#146;#' symbol. Now look at the following examples of
+hexadecimal numbers:</p>
+
+<blockquote>
+    <pre>#B1</pre>
+</blockquote>
+
+<p>The 'B' has the value 11*16 because it is one position to the
+left of the units column, and there is 1 unit; the number
+therefore has the decimal value 176+1 or 177.</p>
+
+<blockquote>
+    <pre>#123</pre>
+</blockquote>
+
+<p>The '1' is two places to the left, so it has value 16*16*1.
+The '2' has the value 16*2. The '3' has the value 3. Adding these
+together we obtain: 256+32+3 = 291.<br>
+There is really no need to learn how to convert between
+hexadecimal and decimal because the ATOM can do it for you.</p>
+
+<h3><font color="#0000FF">13.2.1 Converting Hexadecimal to
+Decimal</font></h3>
+
+<p>To print out the decimal value of a hexadecimal number, such
+as #123, type:</p>
+
+<blockquote>
+    <pre>PRINT #123</pre>
+</blockquote>
+
+<p>The answer, 291, is printed out.</p>
+
+<h3><font color="#0000FF">13.2.2 Converting Decimal to
+Hexadecimal</font></h3>
+
+<p>To print, in hexadecimal, the value of a decimal number, type:</p>
+
+<blockquote>
+    <pre>PRINT &amp;123</pre>
+</blockquote>
+
+<p>The answer, #7B, is printed out. The '&amp;' symbol means
+'print in hexadecimal'. Thus writing:</p>
+
+<blockquote>
+    <pre>PRINT &amp;#123</pre>
+</blockquote>
+
+<p>will print 123.</p>
+
+<h2><font color="#0000FF">13.3 Examining Memory Locations &#150;
+'?'</font></h2>
+
+<p>We can now look at the contents of some memory, locations in
+the ATOM's memory. To do this we use the '?&#146; query operator,
+which means 'look in the following memory location'. The query is
+followed by the address of the memory location we want to
+examine. Thus:</p>
+
+<blockquote>
+    <pre>PRINT ?#e1</pre>
+</blockquote>
+
+<p>will look at the location whose address is #El, and print out
+its value, which will be 128 (the cursor flag). Try looking at
+the contents of other memory locations; they will all contain
+numbers between 0 and 255.<br>
+It is often convenient to look at several memory locations in a
+row. For example, to list the contents of the 32 memory locations
+from #80 upwards, type:</p>
+
+<blockquote>
+    <pre>FOR N=0 TO 31; PRINT N?#80; NEXT N</pre>
+</blockquote>
+
+<p>The value of N is added to #80 to give the address of the
+location whose contents are printed out; this is repeated for
+each value of N from 0 to 31. Note that N?#80 is identical to
+?(N+#80).</p>
+
+<h2><font color="#0000FF">13.4 Changing Memory Locations</font></h2>
+
+<p>A word of caution: although it is quite safe to look at any
+memory location in the ATOM, care should be exercised when
+changing memory locations. The examples given here specify
+locations that are not used by the ATOM system; if you change
+other locations, be sure you know what you are doing or you may
+lose the stored text, or have to reset the ATOM with BREAK.</p>
+
+<p>First print the contents of #80. The value there will be
+whatever was in the memory when you switched on, because the ATOM
+does not use this location. To change the contents of this
+location to 7, type:</p>
+
+<blockquote>
+    <pre>?#80=7</pre>
+</blockquote>
+
+<p>To verify the change, type:</p>
+
+<blockquote>
+    <pre>PRINT ?#80</pre>
+</blockquote>
+
+<p>Try setting the contents to other numbers. What happens if you
+try to set the contents of the location to a number greater than
+255?</p>
+
+<h2><font color="#0000FF">13.5 Numbers Representing Characters</font></h2>
+
+<p>If locations can only hold numbers between 0 and 255, how is
+text stored in the computer's memory? The answer is that each
+number is used to represent a different character, and so text is
+simply a sequence of numbers in successive memory locations.
+There is no danger in representing both numbers and characters in
+the same way because the context will always make it clear how
+they should be interpreted.</p>
+
+<p>To find the number corresponding to a character the CH
+function can be used. Type:</p>
+
+<blockquote>
+    <pre>PRINT CH&quot;A&quot;</pre>
+</blockquote>
+
+<p>and the number 65 will be printed out. The character
+&quot;A&quot; is represented internally by the number 65. Try
+repeating this for B, C, D, E... etc. You will notice that there
+is a certain regularity. Try:</p>
+
+<blockquote>
+    <pre>PRINT CH&quot;0&quot;</pre>
+</blockquote>
+
+<p>and repeat for 1, 2, 3, 4...etc.</p>
+
+<h2><font color="#0000FF">13.6 The Byte</font></h2>
+
+<p>The size of each memory location is called a 'byte'. A byte
+can represent any one of 256 different values. A byte can hold a
+number between 0 and 255 in decimal, or from #00 to #FF in
+hexadecimal. Note that exactly two digits of a hex number can be
+held in one byte. Alternatively a byte can be interpreted as one
+of 256 different characters. Yet another option is for the byte
+to be interpreted as one of 256 different instructions for the
+processor to execute.</p>
+
+<h2><font color="#0000FF">13.7 The CPU</font></h2>
+
+<p>The main part of this chapter will deal with the ATOM's brain,
+the Central Processing Unit or CPU. In the ATOM this is a 6502, a
+processor designed in 1975 and the best-selling 8-bit
+microprocessor in 1979. Much of what you learn in this chapter is
+specific to the 6502, and other microprocessors will do things
+more or less differently. However, the 6502 is an extremely
+popular microprocessor with a modern instruction set, and a
+surprisingly wide range of addressing modes; furthermore it uses
+pipelining to give extremely fast execution times; as fast as
+some other microprocessors running at twice the speed.</p>
+
+<p>The CPU is the active part of the computer; although many
+areas of memory may remain unchanged for hours on end when a
+computer is being used, the CPU is working all the time the
+machine is switched on, and data is being processed by it at the
+rate of 1 million times a second. The CPU's job is to read a
+sequence of instructions from memory and carry out the operations
+specified by those instructions.</p>
+
+<h2><font color="#0000FF">13.8 Instructions</font></h2>
+
+<p>The instructions to the CPU are again just values in memory
+locations, but this time they are interpreted by the CPU to
+represent the different operations it can perform, For example,
+the instruction #18 is interpreted to mean 'clear carry flag';
+you will find out what that means in a moment. The first byte of
+all instructions is the operation code, or 'op code'. Some
+instructions consist of just the op code; other instructions
+specify data or an address in the bytes following the op code.</p>
+
+<h2><font color="#0000FF">13.9 The Accumulator</font></h2>
+
+<p>Many of the operations performed by the CPU involve a
+temporary location inside the CPU known as the accumulator, or A
+for short (nothing to do with BASIC's variable A). For example,
+to add two numbers together you actually have to load the first
+number into the accumulator from memory, add in the second number
+from memory, and then store the result somewhere. The following
+instructions will be needed:</p>
+
+<table border="0" width="100%">
+    <tr>
+        <td><font color="#0000FF"><strong>Mnemonic</strong></font></td>
+        <td><font color="#0000FF"><strong>Description</strong></font></td>
+        <td align="right"><font color="#0000FF"><strong>Symbol</strong></font></td>
+    </tr>
+    <tr>
+        <td><font face="Courier New">LDA</font></td>
+        <td>Load accumulator with memory</td>
+        <td align="right">A=M</td>
+    </tr>
+    <tr>
+        <td><font face="Courier New">STA</font></td>
+        <td>Store accumulator in memory</td>
+        <td align="right">M=A</td>
+    </tr>
+    <tr>
+        <td><font face="Courier New">ADC</font></td>
+        <td>Add memory to accumulator with carry</td>
+        <td align="right">A=A+M+C</td>
+    </tr>
+    <tr>
+        <td>&nbsp;</td>
+        <td>We will also need one extra instruction:</td>
+        <td align="right">&nbsp;</td>
+    </tr>
+    <tr>
+        <td><font face="Courier New">CLC</font></td>
+        <td>Clear carry</td>
+        <td align="right">C=0</td>
+    </tr>
+</table>
+
+<p>The three letter names such as LDA and STA are called the
+instruction mnemonics; they are simply a more convenient way of
+representing the instruction than having to remember the actual
+op code, which is just a number.</p>
+
+<h2><font color="#0000FF">13.10 The Assembler</font></h2>
+
+<p>The ATOM automatically converts these mnemonics into the op
+codes. This process of converting mnemonics into codes is called
+'assembling'. The assembler takes a list of mnemonics, called an
+assembler program, and converts them into 'machine code', the
+numbers that are actually going to be executed by the processor.</p>
+
+<h3><font color="#0000FF">13.10.1 Writing an Assembler Program</font></h3>
+
+<p>Enter the following assembler program:</p>
+
+<blockquote>
+    <pre>10 DIM P(-1)
+20[
+30 LDA #80
+40 CLC
+50 ADC #81
+60 STA #82
+70 RTS
+80]
+90 END</pre>
+</blockquote>
+
+<p>The meaning of each line in this assembler program is as
+follows:</p>
+
+<table border="0">
+    <tr>
+        <td valign="top">10.</td>
+        <td>The DIM statement is not an assembler mnemonic; <br>
+        it just tells the assembler where to put the assembled
+        machine code; at TOP in this case.</td>
+    </tr>
+    <tr>
+        <td valign="top">20.</td>
+        <td>The '[' and ']&#146; symbols enclose the assembler
+        statements.</td>
+    </tr>
+    <tr>
+        <td valign="top">30.</td>
+        <td>Load the accumulator with the contents of the memory
+        location with address #80.<br>
+        (The contents of the memory location are not changed.)</td>
+    </tr>
+    <tr>
+        <td valign="top">40.</td>
+        <td>Clear the carry flag.</td>
+    </tr>
+    <tr>
+        <td valign="top">50.</td>
+        <td>Add the contents of location #81 to the accumulator,
+        with the carry.<br>
+        (Location #81 is not changed by this operation.)</td>
+    </tr>
+    <tr>
+        <td valign="top">60.</td>
+        <td>Store the contents of the accumulator to location
+        #82.<br>
+        (The accumulator is not changed by this operation.)</td>
+    </tr>
+    <tr>
+        <td valign="top">70.</td>
+        <td>The RTS instruction will usually be the last
+        instruction of any program; <br>
+        it causes a return to the ATOM BASIC system from the
+        machine-code program.</td>
+    </tr>
+    <tr>
+        <td valign="top">80.</td>
+        <td>See 20.</td>
+    </tr>
+    <tr>
+        <td valign="top">90.</td>
+        <td>The END statement is not an assembler mnemonic; it
+        just denotes the end of the text.</td>
+    </tr>
+</table>
+
+<p>Now type RUN and the assembler program will be assembled. An
+'assembler listing' will be printed out to show the machine code
+that the assembler has generated to the left of the corresponding
+assembler mnemonics:</p>
+
+<blockquote>
+    <pre>RUN</pre>
+    <table border="0">
+        <tr>
+            <td><font face="Courier New">20</font></td>
+            <td><font face="Courier New">824D</font></td>
+            <td><font face="Courier New"></font>&nbsp;</td>
+            <td><font face="Courier New"></font>&nbsp;</td>
+            <td colspan="2"><font face="Courier New"></font>&nbsp;</td>
+        </tr>
+        <tr>
+            <td><font face="Courier New">30</font></td>
+            <td><font face="Courier New">824D</font></td>
+            <td><font face="Courier New">A5</font></td>
+            <td><font face="Courier New">80</font></td>
+            <td colspan="2"><font face="Courier New">LDA #80</font></td>
+        </tr>
+        <tr>
+            <td><font face="Courier New">40</font></td>
+            <td><font face="Courier New">824F</font></td>
+            <td><font face="Courier New">18</font></td>
+            <td><font face="Courier New"></font>&nbsp;</td>
+            <td colspan="2"><font face="Courier New">CLC</font></td>
+        </tr>
+        <tr>
+            <td><font face="Courier New">50</font></td>
+            <td><font face="Courier New">8250</font></td>
+            <td><font face="Courier New">65</font></td>
+            <td><font face="Courier New">81</font></td>
+            <td colspan="2"><font face="Courier New">ADC #81</font></td>
+        </tr>
+        <tr>
+            <td><font face="Courier New">60</font></td>
+            <td><font face="Courier New">8252</font></td>
+            <td><font face="Courier New">85</font></td>
+            <td><font face="Courier New">82</font></td>
+            <td colspan="2"><font face="Courier New">STA #82</font></td>
+        </tr>
+        <tr>
+            <td><font face="Courier New">70</font></td>
+            <td><font face="Courier New">8254</font></td>
+            <td><font face="Courier New">60</font></td>
+            <td><font face="Courier New"></font>&nbsp;</td>
+            <td colspan="2"><font face="Courier New">RTS</font></td>
+        </tr>
+        <tr>
+            <td align="center">^</td>
+            <td align="center">^</td>
+            <td align="center">^</td>
+            <td align="center">^</td>
+            <td colspan="2">^</td>
+        </tr>
+        <tr>
+            <td align="center">|</td>
+            <td align="center">|</td>
+            <td align="center">|</td>
+            <td align="center">|</td>
+            <td align="center" colspan="2">mnemonic statement</td>
+        </tr>
+        <tr>
+            <td align="center">|</td>
+            <td align="center">|</td>
+            <td align="center">|</td>
+            <td colspan="3">instruction data/address</td>
+        </tr>
+        <tr>
+            <td align="center">|</td>
+            <td align="center">|</td>
+            <td colspan="4">instruction op code</td>
+        </tr>
+        <tr>
+            <td align="center">|</td>
+            <td colspan="5">location counter</td>
+        </tr>
+        <tr>
+            <td colspan="6">statement line number</td>
+        </tr>
+    </table>
+</blockquote>
+
+<p>The program has been assembled in memory starting at #824D,
+immediately after the program text. This address may, be
+different when you do this example if you have inserted extra
+spaces into the program, but that will not affect what follows.
+All the numbers in the listing, except for the line numbers on
+the left, are in hexadecimal; thus #18 is the op code for the CLC
+instruction, and #A5 is the op code for LDA. The LDA instruction
+consists of two bytes; the first byte is the op code, and the
+second byte is the address; #80 in this case.</p>
+
+<p>Typing RUN assembled the program and stored the machine code
+in memory directly after the assembler program. The address of
+the end of the program text is called TOP; type:</p>
+
+<blockquote>
+    <pre>PRINT &amp;TOP</pre>
+</blockquote>
+
+<p>and this value will be printed out in hexadecimal. It will
+correspond with the address opposite the first instruction, #A5.
+The machine code is thus stored in memory as follows:</p>
+
+<blockquote>
+    <pre>A5 80 18 65 81 85 82 60
+TOP</pre>
+</blockquote>
+
+<p>So far we have just assembled the program, generated the
+machine code, and put the machine code into memory.</p>
+
+<h3><font color="#0000FF">13.10.2 Executing a Machine-Code
+Program</font></h3>
+
+<p>To execute the machine-code program at TOP, type:</p>
+
+<blockquote>
+    <pre>LINK TOP</pre>
+</blockquote>
+
+<p>What happens? Nothing much; we just return to the '&gt;'
+prompt. But the program has been executed, although it only took
+17 microseconds, and the contents of locations #80 and #81 have
+indeed been added together and the result placed in #82.</p>
+
+<p>Execute it again, but first set up the contents of #80 and #81
+by typing:</p>
+
+<blockquote>
+    <pre>?#80=7; ?#81=9</pre>
+</blockquote>
+
+<p>If you wish you can also set the contents of #82 to 0. Now
+type:</p>
+
+<blockquote>
+    <pre>LINK TOP</pre>
+</blockquote>
+
+<p>and then look at the contents of #82 by typing:</p>
+
+<blockquote>
+    <pre>PRINT ?#82</pre>
+</blockquote>
+
+<p>The result is 16 (in decimal); the computer has just added 7
+and 9 and obtained 16!</p>
+
+<h2><font color="#0000FF">13.11 Carry Flag</font></h2>
+
+<p>Try executing the program for different numbers in #80 and
+#81. You might like to try the following:</p>
+
+<blockquote>
+    <pre>?#80=140; ?#81=150 LINK TOP</pre>
+</blockquote>
+
+<p>What is the result?</p>
+
+<p>The reason why the result is only 34, and not 290 as one might
+expect, is that the accumulator can only hold one byte.
+Performing the addition in hexadecimal:</p>
+
+<blockquote>
+    <pre>Decimal Hexadecimal
+140	8C
++150	+96
+290	122</pre>
+</blockquote>
+
+<p>Only two hex digits can fit in one byte, so the '1' of #122 is
+lost, and only the #22 is retained. Luckily the '1' carry is
+retained for us in, as you may have guessed, the carry flag. The
+carry flag is always set to the value of the carry out of the
+byte after an addition or subtraction operation.</p>
+
+<h2><font color="#0000FF">13.12 Adding Two-Byte Numbers</font></h2>
+
+<p>The carry flag makes it a simple matter to add numbers as
+large as we please. Here we shall add two two-byte numbers to
+give a two-byte answer, although the method can be extended to
+any number of bytes. Modify the program already in memory by
+retyping lines 50 to 120, leaving out the lower-case comments, to
+give the following program:</p>
+
+<blockquote>
+    <pre> 10 DIM P(-1)
+ 20[
+ 30 LDA #80 low byte of one number 
+ 40 CLC
+ 50 ADC #82 low byte of other number 
+ 60 STA #84 low byte of result
+ 70 LDA #81 high byte of one number 
+ 80 ADC #83 high byte of other number 
+ 90 STA #85 high byte of result
+100 RTS
+110]
+120 END</pre>
+    <pre>Assemble the program: RUN</pre>
+    <pre> 20 826K
+ 30 826E AS 80 LDA #80
+ 40 8270 18 CLC
+ 50 8271 65 82 ADC #82
+ 60 8273 85 84 STA #84
+ 70 8275 A5 81 LDA #81
+ 80 8277 65 83 ADC #83
+ 90 8279 85 85 STA #85
+100 827B 60 RTS</pre>
+</blockquote>
+
+<p>Now set up the two numbers as follows:</p>
+
+<blockquote>
+    <pre>?#80=#8C; ?#81=#00
+?#82=#96; ?#83=#00</pre>
+</blockquote>
+
+<p>Finally, execute the program:</p>
+
+<blockquote>
+    <pre>LINK TOP</pre>
+</blockquote>
+
+<p>and look at the result, printing it in hexadecimal this time
+for convenience:</p>
+
+<blockquote>
+    <pre>PRINT &amp;?#84, &amp;?#85</pre>
+</blockquote>
+
+<p>The low byte of the result is #22, as before using the
+one-byte addition program, but this time the high byte of the
+result, #1, has been correctly obtained. The carry generated by
+the first addition was added in to the second addition, giving:</p>
+
+<blockquote>
+    <pre>0+0+carry = 1</pre>
+</blockquote>
+
+<p>Try some other two-byte additions using the new program.</p>
+
+<h2><font color="#0000FF">13.13 Subtraction</font></h2>
+
+<p>The subtract instruction is just like the add instruction,
+except that there is a 'borrow&#146; if the carry flag is zero.
+Therefore to perform a single-byte subtraction the carry flag
+should first be set with the SEC instruction:</p>
+
+<blockquote>
+    <pre>SBC Subtract memory from accumulator with borrow A=A-M-(1-C)
+SEC Set carry flag	C=1</pre>
+</blockquote>
+
+<h2><font color="#0000FF">13.14 Printing a Character</font></h2>
+
+<p>The ATOM contains routines for the basic operations of
+printing a character to the VDU, and reading a character from the
+keyboard, and these routines can be called from assembler
+programs. The addresses of these routines are standardised
+throughout the Acorn range of software, and are as follows:</p>
+
+<blockquote>
+    <pre>Name Address Function
+OSWRCH OFFF4 Puts character in accumulator to output (VDU)
+OSRDCH 4FFE3 Read from input (keyboard) into accumulator</pre>
+</blockquote>
+
+<p>In each case all the other registers are preserved. The names
+of these routines are acronyms for 'Operating System WRite
+CHaracter' and 'Operating System ReaD CHaracter' respectively.
+These routines are executed with the following instruction:</p>
+
+<blockquote>
+    <pre>JSR Jump to subroutine</pre>
+</blockquote>
+
+<p>A detailed description of how the JSR instruction works will
+be left until later.</p>
+
+<p>The following program outputs the contents of memory location
+#80 as a character to the VDU, using a call to the subroutine
+OSWRCH:</p>
+
+<blockquote>
+    <pre>10 DIM P(-1)
+20 W=#FFF4
+30[
+40 LDA #80
+50 JSR W
+60 RTS
+70]
+80 END</pre>
+</blockquote>
+
+<p>The variable W is used for the address of the OSWRCH routine.
+Assemble the program, and then set the contents of 480 to #21:</p>
+
+<blockquote>
+    <pre>?#80=#21</pre>
+</blockquote>
+
+<p>Then execute the program:</p>
+
+<blockquote>
+    <pre>LINK TOP</pre>
+</blockquote>
+
+<p>and an exclamation mark will be printed out before returning
+to the ATOM's prompt character, because 021 is the code for an
+exclamation mark. Try executing the program with different values
+in #80.</p>
+
+<h2><font color="#0000FF">13.15 Immediate Addressing</font></h2>
+
+<p>In the previous example the instruction:</p>
+
+<blockquote>
+    <pre>LDA #80</pre>
+</blockquote>
+
+<p>loaded the accumulator with the contents of location #80,
+which was then set to contain #21, the code for an exclamation
+mark. If at the time that the program was written it was known
+that an exclamation mark was to be printed it would be more
+convenient to specify this in the program as the actual data to
+be loaded into the accumulator. Fortunately an 'Immediate'
+addressing mode is provided which achieves just this. Change the
+instruction to:</p>
+
+<blockquote>
+    <pre>LDA @#21</pre>
+</blockquote>
+
+<p>where the '@' (at) symbol specifies to the assembler that
+immediate addressing is required. Assemble the program again, and
+note that the instruction op-code for LDA @#21 is #A9, not #A5 as
+previously. The op-code of the instruction specifies to the CPU
+whether the following byte is to be the actual data loaded into
+the accumulator, or the address of the data to be loaded.</p>
+
+<p align="right"><a href="atap_14.htm">Next chapter</a></p>
+</body>
+</html>

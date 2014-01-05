@@ -1,0 +1,353 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Type"
+content="text/html; charset=iso-8859-1">
+<meta name="GENERATOR" content="Microsoft FrontPage Express 2.0">
+<title>14 Jumps, Branches, and Loops</title>
+</head>
+
+<body bgcolor="#FFFFFF">
+
+<h1><font color="#0000FF">14 Jumps, Branches, and Loops</font></h1>
+
+<p>All the assembler programs in the previous section have been
+executed instruction by instruction following the sequence
+specified by the order of the instructions in memory. The jump
+and branch instructions enable' the flow of control to be
+altered, making it possible to implement loops.</p>
+
+<h2><font color="#0000FF">14.1 Jumps</font></h2>
+
+<p>The JMP instruction is followed by the address of the
+instruction to be executed next.</p>
+
+<blockquote>
+    <pre>JMP Jump </pre>
+</blockquote>
+
+<h2><font color="#0000FF">14.2 Labels</font></h2>
+
+<p>Before using the JMP instruction we need to be able to
+indicate to the assembler where we want to jump to, and to do
+this conveniently 'labels' are needed. In the assembler labels
+are variables of the form AA to ZZ followed by a number (0, 1, 2
+... etc). If you are already familiar with ATOM BASIC you will
+recognise these as the arrays.</p>
+
+<p>First the labels to be used in an assembler program must be
+declared in the DIM statement. Note that we still need to declare
+P(-1) as before, and this must be the last thing declared. For
+example, to provide space for four labels LL0, LL1, LL2, and LL3
+we would declare:</p>
+
+<blockquote>
+    <pre>DIM LL(3), P(-1)</pre>
+</blockquote>
+
+<p>Labels used in a program are prefixed by a colon ':'
+character. For example, enter the following assembler program:</p>
+
+<blockquote>
+    <pre>10 DIM LL(3),P(-1)
+20 W=#FFF4
+30[
+40:LL0 LDA @#2A
+50:LL1 JSR W
+60 JMP LL0
+70]
+80 END</pre>
+</blockquote>
+
+<p>To execute the program the procedure is slightly different
+from the previous examples, because space has now been assigned
+at TOP for the labels. When using labels in an assembler program
+you should place a label at the start of the program, as with LLO
+in this example, and LINK to that label. So, in this example,
+execute the program with:</p>
+
+<blockquote>
+    <pre>LINK LL0</pre>
+</blockquote>
+
+<p>The program will output an asterisk, and then jump back to the
+previous instruction. The program has become stuck in an endless
+loop! If you know BASIC, compare this program with the BASIC
+program in section 4.6 that has the same effect.<br>
+A flowchart for this program is as follows:</p>
+
+<blockquote>
+    <pre><img src="atap25.gif" width="100" ></pre>
+</blockquote>
+
+<p>Try pressing ESCAPE. ESCAPE will not work; it only works in
+BASIC programs, and here we are executing machine code
+instructions so ESCAPE is no longer checked for. Fortunately
+there is one means of salvation: press BREAK, and then type OLD
+to retrieve the original program.</p>
+
+<h2><font color="#0000FF">14.3 Flags</font></h2>
+
+<p>The carry flag has already been introduced; it is set or
+cleared as the result of an ADC instruction. The CPU contains
+several other flags, which are set or cleared depending on the
+outcome of certain instructions; this section will introduce
+another one.</p>
+
+<h3><font color="#0000FF">14.3.1 Zero Flag</font></h3>
+
+<p>The zero flag, called Z, is set if the result of the previous
+operation gave zero, and is cleared otherwise. So, for example:</p>
+
+<blockquote>
+    <pre>LDA #80</pre>
+</blockquote>
+
+<p>would set the zero flag if the contents of #80 were zero.</p>
+
+<h2><font color="#0000FF">14.4 Conditional Branches</font></h2>
+
+<p>The conditional branches enable the program to act on the
+outcome of an operation. The branch instructions look at a
+specified flag, and then either carry on execution if the test
+was false, or cause a branch to a different address if the test
+was true. There are 8 different branch instructions, four of
+which will be introduced here:</p>
+
+<blockquote>
+    <pre>BEQ Branch if equal to zero (i.e. Z=1)
+BNE Branch if not equal to zero (i.e. Z=0)
+BCC Branch if carry-flag clear (i.e. C=0) BCS Branch if carry-flag set (i.e. C=1)</pre>
+</blockquote>
+
+<p>The difference between a 'branch' and a 'jump' is that the
+jump instruction is three bytes long (op-code and two-byte
+address) whereas the branch instructions are only two bytes long
+(op-code and one-byte offset). The difference is automatically
+looked after by the assembler.</p>
+
+<p>The following simple program will print an exclamation mark if
+#80 contains zero, and a star if it does not contain zero; the
+comments in lower-case can be omitted when you enter the program:</p>
+
+<blockquote>
+    <pre>10 DIM BB(3),P(-1)
+20 W=#FFF4
+30[
+40:BBO LDA #80
+50 BEQ BB1	if zero go to BB1
+60 LDA @#2A star
+70 JSR W print it
+BO RTS	return
+90:BB1 LDA @#21 exclamation mark 100 JSR W print it
+110 RTS return
+120]
+130 END</pre>
+</blockquote>
+
+<p>A flowchart for this program is as follows:</p>
+
+<img src="atap107.gif" width="173" >
+</blockquote>
+
+<p>Now assemble the program with RUN as usual. You will almost
+certainly get the message:</p>
+
+<blockquote>
+    <pre>OUT OF RANGE:</pre>
+</blockquote>
+
+<p>before the line containing the instruction BEQ BB1, and the
+offset in the branch instruction will have been set to zero. The
+message is produced because the label BB1 has not yet been met
+when the branch instruction referring to it is being assembled;
+in other words, the assembler program contains a forward
+reference. Therefore you should assemble the program a second
+time by typing RUN again. This time the message will not be
+produced and the correct offset will be calculated for the branch
+instruction.</p>
+
+<p>Note that whenever a program contains forward references it
+should be assembled twice before executing the machine code.</p>
+
+<p>Now execute the program by typing:</p>
+
+<blockquote>
+    <pre>LINK BB0</pre>
+</blockquote>
+
+<p>for different values in #80, and verify that the behaviour is
+as specified above.</p>
+
+<h2><font color="#0000FF">14.5 X and Y registers</font></h2>
+
+<p>The CPU contains two registers in addition to the accumulator,
+and these are called the X and Y registers. As with the
+accumulator, there are instructions to load and store the X and Y
+registers:</p>
+
+<blockquote>
+    <pre>LDX Load X register from memory	X=M
+LDY Load Y register from memory	Y=M
+STX Store X register to memory	M=X
+STY Store Y register to memory	M=Y</pre>
+</blockquote>
+
+<p>However the X and Y registers cannot be used as one of the
+operands in arithmetic or logical instructions like the
+accumulator; they have their own special uses, including loop
+control and indexed addressing.</p>
+
+<h2><font color="#0000FF">14.6 Loops in Machine Code</font></h2>
+
+<p>The X and Y registers are particularly useful as the control
+variables in iterative loops, because of four special
+instructions which will either increment (add 1 to) or decrement
+(subtract 1 from) their values:</p>
+
+<blockquote>
+    <pre>INX Increment X register	X=X+1
+INY Increment Y register	Y=Y+1
+DEX Decrement X register	X=X-1
+DEY Decrement Y register	Y=Y-1</pre>
+</blockquote>
+
+<p>Note that these instructions do not affect the carry flag, so
+incrementing #FF will give #00 without changing the carry bit.
+The zero flag is, however, affected by these instructions, and
+the following program tests the zero flag to detect when X
+reaches zero.</p>
+
+<h3><font color="#0000FF">14.6.1 Iterative Loop</font></h3>
+
+<p>The iterative loop enables the same set of instructions to be
+executed a fixed number of times. For example, enter the
+following program:</p>
+
+<blockquote>
+    <pre>10 DIM LL(4),P(-1)
+20 W=#FFF4
+30[
+40:LL0 LDX @8 initialise X
+50:LL1 LDA @#2A code for star
+60:LL2 JSR W output it
+70 DEX	count it
+80 BNE LL2 all done?
+90 RTS
+100 ]
+110 END</pre>
+</blockquote>
+
+<p>A flowchart for the program is as follows:</p>
+
+<img src="atap108.gif" width="111" >
+
+<p>Assemble the program by typing RUN. This program prints out a
+star, decrements the X register, and then branches back if the
+result after decrementing the X register is not zero. Consider
+what value X will have on successive times around the loop and
+predict how many stars will be printed out; then execute the
+program with LINK LLO and see if your prediction was correct. If
+you were wrong, try thinking about the case where X was initially
+set to 1 instead of 8 in line 40.</p>
+
+<p>How many stars are printed if you change the instruction on
+line 40 to LDX @0 ?</p>
+
+<h2><font color="#0000FF">14.7 Compare</font></h2>
+
+<p>In the previous example the condition X=0 was used to
+terminate the loop. Sometimes we might want to count up from 0
+and terminate on some specified value other than zero. The
+compare instruction can be used to compare the contents of a
+register with a value in memory; if the two are the same, the
+zero flag will be set. If they are not the same, the zero flag
+will be cleared. The compare instruction also affects the carry
+flag.</p>
+
+<blockquote>
+    <pre>CMP Compare accumulator with memory	A-M
+CPX Compare X register with memory	X-M
+CPY Compare Y register with memory	Y-M</pre>
+</blockquote>
+
+<p>Note that the compare instruction does not affect its two
+operands; it just changes the flags as a result of the
+comparison.</p>
+
+<p>The next example again prints 8 stars, but this time it uses X
+as a counter to count upwards from 0 to 8:</p>
+
+<blockquote>
+    <pre>10 DIM LL(2),P(-1)
+20 W=#FFF4
+30[
+40:LL0 LDX @0 start at zero
+50:LL1 LDA @#2A code for star
+60 JSR W	output it
+70 INX	next X
+80 CPX @8	all done?
+90 BNE LL1
+100 RTS return
+110]
+120 END</pre>
+</blockquote>
+
+<p>In this program X takes the values 0, 1, 2, 3, 4, 5, 6, and 7.
+The last time around the loop X is incremented to 8, and the loop
+terminates. Try drawing a flowchart for this program.</p>
+
+<h2><font color="#0000FF">14.8 Using the Control Variable</font></h2>
+
+<p>In the previous two examples X was simply used as a counter,
+and so it made no difference whether we counted up or down.
+However, it is often useful to use the value of the control
+variable in the program. For example, we could print out the
+character in the X register each time around the loop. We
+therefore need a way of transferring the value in the X register
+to the accumulator so that it can be printed out by the OSWRCH
+routine. One way would be to execute:</p>
+
+<blockquote>
+    <pre>STX #82 LDA #82</pre>
+</blockquote>
+
+<p>where #82 is not being used for any other purpose. There is a
+more convenient way, using one of four new instructions:</p>
+
+<blockquote>
+    <pre>TAX Transfer accumulator to X register	X=A
+TAY Transfer accumulator to Y register	Y=A
+TXA Transfer X register to accumulator	A=X
+TYA Transfer Y register to accumulator	A=Y</pre>
+</blockquote>
+
+<p>Note that the transfer instructions only affect the register
+being transferred to.<br>
+The following example prints out the alphabet by making X cover
+the range #41, the code for A, to #5A, the code for Z.</p>
+
+<blockquote>
+    <pre>10 DIM LL(2),P(-1)
+20 W=#FFF4
+30[
+40:LL0 LDX @#41 start at A
+50:LL1 TXA	put it in A
+60 JSR W	print it
+70 INX	next one
+80 CPX @#5B done Z?
+90 BNE LL1 if so &#150; continue
+100 RTS	else &#150; return
+110]
+120 END</pre>
+</blockquote>
+
+<p>Modify the program to print the alphabet in reverse order, Z
+to A.</p>
+
+<p>All these examples could have used Y as the control variable
+instead of X in exactly the same way.</p>
+
+<p align="right"><a href="atap_15.htm">Next chapter</a></p>
+</body>
+</html>

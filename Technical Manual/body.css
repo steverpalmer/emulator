@@ -1,0 +1,18 @@
+@charset "iso-8859-1";
+/* author: Haydn */
+/* Creation date: 11-10-02 */
+TD		    {FONT-FAMILY: Tahoma, Verdana,Helvetica; FONT-SIZE: 11px}
+BODY		{FONT-FAMILY: Tahoma, Verdana,Helvetica; FONT-SIZE: 16px; COLOR : #000000;}
+P		    {FONT-FAMILY: Tahoma, Verdana,Helvetica; FONT-SIZE: 11px}
+DIV		    {FONT-FAMILY: Tahoma, Verdana,Helvetica; FONT-SIZE: 11px}
+BODY        {BACKGROUND-COLOR: #EEEEEE; MARGIN-TOP : 0; MARGIN-RIGHT : 0; MARGIN-BOTTOM : 0; 
+MARGIN-LEFT : 0; PADDING-TOP : 0; PADDING-RIGHT : 0; PADDING-BOTTOM : 0; PADDING-LEFT : 0;}
+A:link      {FONT-FAMILY: Tahoma, Verdana, arial, Helvetica, sans-serif; 
+FONT-SIZE : 11px; COLOR : #0000CC<font color="#FFFF66"></font>; TEXT-DECORATION : underline;} 
+A:visited   {FONT-FAMILY: Tahoma, Verdana, arial, Helvetica, sans-serif; 
+FONT-SIZE : 11px; COLOR : #0000CC; TEXT-DECORATION : underline;} 
+A:hover     {FONT-FAMILY: Tahoma, Tahoma, Verdana, arial, Helvetica, sans-serif; 
+FONT-SIZE : 11px; COLOR : #FF0000; BACKGROUND-COLOR : #EEEEEE; TEXT-DECORATION : underline;} 
+A:active    {FONT-FAMILY: Verdana, Arial, Helvetica, sans-serif; 
+FONT-SIZE : 11px; COLOR :#FF0000; TEXT-DECORATION : underline;}
+<font color="#ffff66"></font>

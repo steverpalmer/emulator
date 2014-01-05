@@ -1,0 +1,959 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Type"
+content="text/html; charset=iso-8859-1">
+<meta name="GENERATOR" content="Microsoft FrontPage Express 2.0">
+<title>22 Extending the ATOM</title>
+</head>
+
+<body bgcolor="#FFFFFF">
+
+<h1><font color="#0000FF">22 Extending the ATOM</font></h1>
+
+<h2><font color="#0000FF">22.1 Floating-Point Extension to BASIC</font></h2>
+
+<p>The ATOM's BASIC can be extended to provide floating-point
+arithmetic, and many scientific functions, simply by inserting an
+extra 4K ROM chip into a socket on the ATOM board (see Technical
+Manual). The floating-point extension adds 27 new variables, %@
+and %A to %Z, 27 floating-point arrays %@@ and %AA to %ZZ, and
+the following special statements and functions to the existing
+integer BASIC, including a statement for plotting in the ATOM's
+four-colour graphics modes:</p>
+
+<p><font color="#0000FF"><strong>Floating-Point Statements</strong></font></p>
+
+<pre>COLOUR, FDIM, FIF, FINPUT, FPRINT, FPUT, FUNTIL, STR.</pre>
+
+<p><font color="#0000FF"><strong>Floating-Point Functions</strong></font></p>
+
+<pre>ABS, ACS, ASN, ATN, COS, DEG, EXP, FGET, FLT, HTN, LOG, PI, RAD, SGN,
+SIN, SQR, TAN, VAL.</pre>
+
+<p><font color="#0000FF"><strong>Floating-Point Operators</strong></font></p>
+
+<p>The extension ROM does not in any way alter the operation of
+the existing BASIC statements, functions, or operators, and
+floating-point arithmetic may be mixed with integer arithmetic in
+the same line.</p>
+
+<p>All the extension-ROM statements and functions, except COLOUR
+and FLT, and all the extension-ROM operators, expect
+floating-point expressions as their arguments.</p>
+
+<p>Whenever the context demands a floating-point expression, or
+factor, all calculations are performed in floating-point
+arithmetic and all integer functions and variables are
+automatically floated. An integer expression may be explicitly
+floated with the FLT function, which takes an integer argument.
+For example:</p>
+
+<pre>         FPRINT FLT(2/3)</pre>
+
+<p>will print 0.0 because the division is performed in integer
+arithmetic and then floated. Therefore:</p>
+
+<pre>         FPRINT FLT(PI)</pre>
+
+<p>will convert PI to an integer, and then float it, printing
+3.00000000.</p>
+
+<p>When the context demands an integer expression, or factor, all
+calculations are performed in integer arithmetic, and
+floating-point functions will be automatically converted to
+integers. For example:</p>
+
+<pre>         PRINT SQR(10)</pre>
+
+<p>will print 3. Floating-point expressions used in an integer
+context must be fixed by the '%' operator. For example:</p>
+
+<pre>         PRINT %(3/2+1/2)</pre>
+
+<p>will print 2, since the expression is evaluated using
+floating-point arithmetic and then fixed, whereas:</p>
+
+<pre>        PRINT 3/2+1/7</pre>
+
+<p>will print 1, since in each case integer division is used.</p>
+
+<p>Since there are both integer and floating-point versions of
+the ABS function, the context will determine how its argument is
+evaluated. For example:</p>
+
+<pre>        PRINT ABS(2/3+1/3)</pre>
+
+<p>will print 0, whereas:</p>
+
+<pre>        FPRINT ABS(2/3+1/3)</pre>
+
+<p>will print 1.00000000. The floating-point function may be
+obtained in an integer context by prefixing it with the '%'
+operator. Thus:</p>
+
+<pre>        PRINT %ABS(2/3+1/3)</pre>
+
+<p>will print 1.</p>
+
+<h3><font color="#0000FF">22.1.1 Floating-Point Representation</font></h3>
+
+<p>Each floating-point number occupies five bytes; a four-byte
+mantissa and a one-byte exponent:</p>
+
+<blockquote>
+    <table border="0">
+        <tr>
+            <td>.</td>
+            <td bgcolor="#C0C0C0">0</td>
+            <td bgcolor="#C0C0C0">1</td>
+            <td bgcolor="#C0C0C0">2</td>
+            <td bgcolor="#C0C0C0">3</td>
+            <td bgcolor="#C0C0C0">4</td>
+        </tr>
+        <tr>
+            <td>&nbsp;</td>
+            <td colspan="4">&lt;--31 bits of mantissa---&gt;</td>
+            <td>&lt;----&gt;</td>
+        </tr>
+        <tr>
+            <td>&nbsp;</td>
+            <td colspan="4">^<br>
+            sign bit </td>
+            <td>8-bit<br>
+            exponent</td>
+        </tr>
+        <tr>
+            <td colspan="6">^<br>
+            assumed position of binary point</td>
+        </tr>
+    </table>
+</blockquote>
+
+<p>The mantissa is stored in sign and magnitude form. Since it
+will always be normalized, it logically always has a '1' as its
+top bit. This position is therefore used to store the sign. The
+exponent is an ordinary 8-bit signed number. A higher precision
+is used for internal calculations to preserve accuracy. The
+representation provides about 9.5 significant figures of
+accuracy, and allows for numbers in the range 1E-38 to 1E+38
+approximately. All the possible 32-bit integers in the standard
+integer BASIC can be floated without loss of accuracy.</p>
+
+<h3><font color="#0000FF">22.1.2 Floating-Point Statements</font></h3>
+
+<table border="0" width="100%">
+    <tr>
+        <td width="10%"><font color="#0000FF"><strong>FDIM</strong></font></td>
+        <td width="50%"><font color="#0000FF"><strong>Floating-point
+        dimension</strong></font></td>
+        <td align="right" width="40%">&nbsp;</td>
+    </tr>
+</table>
+
+<p>Allocates space after the end of text for the floating-point
+arrays %@@ and %AA to %ZZ. Example:</p>
+
+<pre>        FDIM %JJ(5)</pre>
+
+<p>allocates space for elements %JJ(0) to %JJ(5), a total of 30
+bytes.</p>
+
+<table border="0" width="100%">
+    <tr>
+        <td width="10%"><font color="#0000FF"><strong>FIF</strong></font></td>
+        <td width="50%"><font color="#0000FF"><strong>Floating-point
+        IF</strong></font></td>
+        <td align="right" width="40%">&nbsp;</td>
+    </tr>
+</table>
+
+<p>Same syntax as IF, but connectives such as AND and OR are not
+allowed. Example:</p>
+
+<pre>        FIF %A &lt; %B FPRINT %A &quot;IS LOWER THAN &quot;%B</pre>
+
+<table border="0" width="100%">
+    <tr>
+        <td width="10%"><font color="#0000FF"><strong>FINPUT</strong></font></td>
+        <td width="50%"><font color="#0000FF"><strong>Floating-point
+        input</strong></font></td>
+        <td align="right" width="40%"><font color="#0000FF"><strong>FIN.</strong></font></td>
+    </tr>
+</table>
+
+<p>Exactly as INPUT, but takes a floating-point variable or array
+element, and does not allow strings to be input. Example:</p>
+
+<pre>     FINPUT&quot;Your weight &quot;%A</pre>
+
+<table border="0" width="100%">
+    <tr>
+        <td width="10%"><font color="#0000FF"><strong>FPRINT</strong></font></td>
+        <td width="50%"><font color="#0000FF"><strong>Floating-point
+        print</strong></font></td>
+        <td align="right" width="40%"><font color="#0000FF"><strong>FP.</strong></font></td>
+    </tr>
+</table>
+
+<p>Exactly as PRINT except that no $ expressions are allowed, and
+all expressions are treated as floating-point expressions.
+Floating-point numbers are printed out right justified in a field
+size determined by the value of 0. Example:</p>
+
+<pre>     FPRINT&quot;You are &quot;%H&quot; metres tall&quot;''</pre>
+
+<table border="0" width="100%">
+    <tr>
+        <td width="10%"><font color="#0000FF"><strong>FPUT</strong></font></td>
+        <td width="50%"><font color="#0000FF"><strong>Floating-point
+        put</strong></font></td>
+        <td align="right" width="40%">&nbsp;</td>
+    </tr>
+</table>
+
+<p>FPUT writes the 5 bytes representing a floating-point number
+to the sequential file whose handle is specified by its argument.
+Example:</p>
+
+<pre>     FPUTA,2&quot;32+1</pre>
+
+<table border="0" width="100%">
+    <tr>
+        <td width="10%"><font color="#0000FF"><strong>FUNTIL</strong></font></td>
+        <td width="50%"><font color="#0000FF"><strong>Floating-point
+        until</strong></font></td>
+        <td align="right" width="40%"><font color="#0000FF"><strong>FU.</strong></font></td>
+    </tr>
+</table>
+
+<p>As UNTIL, except no connectives (OR or AND) are allowed.
+Matches with DO statement. Example:</p>
+
+<pre>     D0%A=%A+.1;FUNTIL%A&gt;2</pre>
+
+<table border="0" width="100%">
+    <tr>
+        <td width="10%"><font color="#0000FF"><strong>STR</strong></font></td>
+        <td width="50%"><font color="#0000FF"><strong>Convert to
+        string</strong></font></td>
+        <td align="right" width="40%">&nbsp;</td>
+    </tr>
+</table>
+
+<p>STR converts a floating-point expression into a string of
+characters. It takes two arguments, the floating point
+expression, and an integer expression which is evaluated to give
+the address wher the string is to be stored. Example:</p>
+
+<pre>     STR PI, TOP
+     PRINT $TOP1
+ 3.14159265</pre>
+
+<h3><font color="#0000FF">22.1.3 Floating-Point Functions</font></h3>
+
+<table border="0" width="100%">
+    <tr>
+        <td width="10%"><font color="#0000FF"><strong>ABS</strong></font></td>
+        <td width="50%"><font color="#0000FF"><strong>Absolute
+        value</strong></font></td>
+        <td align="right" width="40%"><font color="#0000FF"><strong></strong></font>&nbsp;</td>
+    </tr>
+</table>
+
+<p>Returns the absolute value of a floating-point argument.
+Example:</p>
+
+<pre>    FPRINT ABS -2.2
+2.20000000</pre>
+
+<table border="0" width="100%">
+    <tr>
+        <td width="10%"><font color="#0000FF"><strong>ACS</strong></font></td>
+        <td width="50%"><font color="#0000FF"><strong>Arc cosine</strong></font></td>
+        <td align="right" width="40%">&nbsp;</td>
+    </tr>
+</table>
+
+<p>Returns arc cosine of argument, in radians. Example:</p>
+
+<pre>    FPRINT ACS 1
+   0.0</pre>
+
+<table border="0" width="100%">
+    <tr>
+        <td width="10%"><font color="#0000FF"><strong>ASN</strong></font></td>
+        <td width="50%"><font color="#0000FF"><strong>Arc sine</strong></font></td>
+        <td align="right" width="40%">&nbsp;</td>
+    </tr>
+</table>
+
+<p>Returns arc sine of argument, in radians. Example:</p>
+
+<pre>    FPRINT ASN 1
+1.57079633</pre>
+
+<table border="0" width="100%">
+    <tr>
+        <td width="10%"><font color="#0000FF"><strong>ATN</strong></font></td>
+        <td width="50%"><font color="#0000FF"><strong>Arc tangent</strong></font></td>
+        <td align="right" width="40%">&nbsp;</td>
+    </tr>
+</table>
+
+<p>Returns arc tangent of argument, in radians. Example:</p>
+
+<pre>    FPRINT ATN 1
+ 7.85398163E-1</pre>
+
+<table border="0" width="100%">
+    <tr>
+        <td width="10%"><font color="#0000FF"><strong>COS</strong></font></td>
+        <td width="50%"><font color="#0000FF"><strong>Cosine</strong></font></td>
+        <td align="right" width="40%"><font color="#0000FF"><strong>C.</strong></font></td>
+    </tr>
+</table>
+
+<p>Returns cosine of angle in radians. Example:</p>
+
+<pre>         FPRINT COS 1
+ 5.40302306E-1</pre>
+
+<table border="0" width="100%">
+    <tr>
+        <td width="10%"><font color="#0000FF"><strong>DEG</strong></font></td>
+        <td width="50%"><font color="#0000FF"><strong>Radians to
+        degrees</strong></font></td>
+        <td align="right" width="40%"><font color="#0000FF"><strong>D.</strong></font></td>
+    </tr>
+</table>
+
+<p>Converts its argument from radians to degrees. Example:</p>
+
+<pre>         FPRINT DEG PI
+ 180.000000</pre>
+
+<table border="0" width="100%">
+    <tr>
+        <td width="10%"><font color="#0000FF"><strong>EXP</strong></font></td>
+        <td width="50%"><font color="#0000FF"><strong>Exponent</strong></font></td>
+        <td align="right" width="40%"><font color="#0000FF"><strong>E.</strong></font></td>
+    </tr>
+</table>
+
+<p>Returns exponent (i.e. e^&lt;FACTOR&gt;). Example:</p>
+
+<pre>         FPRINT EXP 1
+ 2.71828183</pre>
+
+<table border="0" width="100%">
+    <tr>
+        <td width="10%"><font color="#0000FF"><strong>FGET</strong></font></td>
+        <td width="50%"><font color="#0000FF"><strong>Floating-point
+        GET</strong></font></td>
+        <td align="right" width="40%">&nbsp;</td>
+    </tr>
+</table>
+
+<p>Same as GET, but reads five bytes from a serial file and
+returns a floating-point number.</p>
+
+<table border="0" width="100%">
+    <tr>
+        <td width="10%"><font color="#0000FF"><strong>FLT</strong></font></td>
+        <td width="50%"><font color="#0000FF"><strong>Float</strong></font></td>
+        <td align="right" width="40%"><font color="#0000FF"><strong>F.</strong></font></td>
+    </tr>
+</table>
+
+<p>Takes an integer argument and converts it to a floating-point
+number.<br>
+Example:</p>
+
+<pre>         FPRINT FLT(4/3)
+ 1.00000000</pre>
+
+<table border="0" width="100%">
+    <tr>
+        <td width="10%"><font color="#0000FF"><strong>HTN</strong></font></td>
+        <td width="50%"><font color="#0000FF"><strong>Hyperbolic
+        tangent</strong></font></td>
+        <td align="right" width="40%"><font color="#0000FF"><strong>H.</strong></font></td>
+    </tr>
+</table>
+
+<p>Returns the hyperbolic tangent of an angle in radians.
+Example:</p>
+
+<pre>         FPRINT HTN 1
+ 7.61594156E-l</pre>
+
+<table border="0" width="100%">
+    <tr>
+        <td width="10%"><font color="#0000FF"><strong>LOG</strong></font></td>
+        <td width="50%"><font color="#0000FF"><strong>Natural
+        logarithm</strong></font></td>
+        <td align="right" width="40%"><font color="#0000FF"><strong>L.</strong></font></td>
+    </tr>
+</table>
+
+<p>Returns the natural logarithm of its argument. Example:</p>
+
+<pre>         FPRINT LOG 1
+        0.0</pre>
+
+<table border="0" width="100%">
+    <tr>
+        <td width="10%"><font color="#0000FF"><strong>PI</strong></font></td>
+        <td width="50%">&nbsp;</td>
+        <td align="right" width="40%">&nbsp;</td>
+    </tr>
+</table>
+
+<p>Returns the constant pi. Example:</p>
+
+<pre>         FPRINT PI
+ 3.14159265</pre>
+
+<table border="0" width="100%">
+    <tr>
+        <td width="10%"><font color="#0000FF"><strong>RAD</strong></font></td>
+        <td width="50%"><font color="#0000FF"><strong>Degrees to
+        radians</strong></font></td>
+        <td align="right" width="40%"><font color="#0000FF"><strong>R.</strong></font></td>
+    </tr>
+</table>
+
+<p>Converts its argument from degrees to radians. Example:</p>
+
+<pre>         FPRINT RAD 90
+ 1 57079632</pre>
+
+<table border="0" width="100%">
+    <tr>
+        <td width="10%"><font color="#0000FF"><strong>SGN</strong></font></td>
+        <td width="50%"><font color="#0000FF"><strong>Sign</strong></font></td>
+        <td align="right" width="40%"><font color="#0000FF"><strong>C.</strong></font></td>
+    </tr>
+</table>
+
+<p>Returns -1, 0, or 1 depending on whether its floating-point
+argument is negative, zero, or positive respectively.</p>
+
+<table border="0" width="100%">
+    <tr>
+        <td width="10%"><font color="#0000FF"><strong>SIN</strong></font></td>
+        <td width="50%"><font color="#0000FF"><strong>Sine</strong></font></td>
+        <td align="right" width="40%">&nbsp;</td>
+    </tr>
+</table>
+
+<p>Returns sine of an angle in radians. Example:</p>
+
+<pre>          FPRINT SIN PI
+        0.0</pre>
+
+<table border="0" width="100%">
+    <tr>
+        <td width="10%"><font color="#0000FF"><strong>SQR</strong></font></td>
+        <td width="50%"><font color="#0000FF"><strong>Square root</strong></font></td>
+        <td align="right" width="40%">&nbsp;</td>
+    </tr>
+</table>
+
+<p>Returns square root of argument. Example:</p>
+
+<pre>         FPRINT SQR 2
+ 1.41421356</pre>
+
+<table border="0" width="100%">
+    <tr>
+        <td width="10%"><font color="#0000FF"><strong>TAN</strong></font></td>
+        <td width="50%"><font color="#0000FF"><strong>Tangent</strong></font></td>
+        <td align="right" width="40%"><font color="#0000FF"><strong>T.</strong></font></td>
+    </tr>
+</table>
+
+<p>Returns tangent of angle in radians. Example:</p>
+
+<pre>          FPRINT TAN PI
+       0.0</pre>
+
+<table border="0" width="100%">
+    <tr>
+        <td width="10%"><font color="#0000FF"><strong>VAL</strong></font></td>
+        <td width="50%"><font color="#0000FF"><strong>Value of a
+        string</strong></font></td>
+        <td align="right" width="40%"><font color="#0000FF"><strong>V.</strong></font></td>
+    </tr>
+</table>
+
+<p>Returns a number representing the string converted to a
+number. If no number is present, zero will be returned. VAL will
+read up to the first illegal character, and cannot cause an
+error. Example:</p>
+
+<pre>          FPRINT VAL &quot;2.2#&quot;
+ 2.20000000</pre>
+
+<h3><font color="#0000FF">22.1.4 Floating-Point Operators</font></h3>
+
+<table border="0" width="100%">
+    <tr>
+        <td width="10%"><font color="#0000FF"><strong>!</strong></font></td>
+        <td width="50%"><font color="#0000FF"><strong>Floating
+        point indirection</strong></font></td>
+        <td align="right" width="40%"><font color="#0000FF"><strong>{pling}</strong></font></td>
+    </tr>
+</table>
+
+<p>The floating-point indirection operation makes it possible to
+set up vectors of floating-point numbers. The operator returns
+the five bytes at the address specified by its operand. For
+example, to set up a floating-point vector of three elements:</p>
+
+<pre>          DIM A(14); %!A=PI; %!(A+5)=3; %!(A+10)=4</pre>
+
+<table border="0" width="100%">
+    <tr>
+        <td width="10%"><font color="#0000FF"><strong>%</strong></font></td>
+        <td width="50%"><font color="#0000FF"><strong>Convert to
+        integer</strong></font></td>
+        <td align="right" width="40%"><font color="#0000FF"><strong>{percent}</strong></font></td>
+    </tr>
+</table>
+
+<p>The unary % operator converts its floating-point argument to
+an integer. For example:</p>
+
+<pre>          PRINT %(3/2+1/2)
+          2</pre>
+
+<table border="0" width="100%">
+    <tr>
+        <td width="10%"><font color="#0000FF"><strong>^</strong></font></td>
+        <td width="50%"><font color="#0000FF"><strong>Raise to
+        power</strong></font></td>
+        <td align="right" width="40%"><font color="#0000FF"><strong>{up
+        arrow}</strong></font></td>
+    </tr>
+</table>
+
+<p>Binary operator which raises its left-hand argument to the
+power of its right-hand argument; both arguments must be
+floating-point factors.<br>
+Example:</p>
+
+<pre>          FPRINT 2&quot;32
+ 4.29496728E9&gt;</pre>
+
+<h3><font color="#0000FF">22.1.5 Floating-Point Variables</font></h3>
+
+<p>The floating-point variables %0 and %A to %Z are stored from
+#2800 onwards, five bytes per variable, thus taking a total of
+135 bytes. Thus, for example, a floating-point vector:</p>
+
+<pre>          %!#2800</pre>
+
+<p>may be set up whose elements:</p>
+
+<pre>          %!(#2800+0), %!(#2800+5), %!(#2800+10)</pre>
+
+<p>will correspond to the variables:</p>
+
+<pre>%@, %A, %B ... etc.</pre>
+
+<p>For example, the floating-point variables may be initialised
+to zero by executing:</p>
+
+<pre>	FOR J=0 TO 26*5 STEP 5
+	%!(#2800+z)=0
+	NEXT J</pre>
+
+<h3><font color="#0000FF">22.1.6 Examples</font></h3>
+
+<p>The following program plots curves of the sine and tangent
+functions, using the floating-point routines.</p>
+
+<pre>    1 REM Sine and Tangent
+    5 PRINT $30 ; CLEAR 0
+    7 PRINT&quot;PLOT OF SIN AND TAN FUNCTIONS&quot;
+    9 %t=2*PI/64
+   10 %V=0
+   12 FOR Z=0 TO 64
+   15 %V=%V+%I
+   20 PLOT13,Z,(22+%(22*SIN%V))
+   25 PLOT13,Z,(22+TAN%V)
+   30 NEXT
+  100 END</pre>
+
+<pre>Program size: 206 bytes</pre>
+
+<p><img src="cycloid.png" width="256" height="192" align="right">The following program plots a cycloid curve:</p>
+
+<pre>    1 REM Cycloid
+   10 %Z=60
+   20 CLEAR2
+   30 FORQ=0TO359
+   40 %S=RAD Q
+   50 %R=%Z*SIN(%S*2)
+   60 PLOT13,%(%R*SIN%S+64.5),%(%R*COS%S+48.5)
+   70 NEXT
+   80 END</pre>
+
+<pre>Program size: 142 bytes</pre>
+
+<h3><font color="#0000FF">22.1.7 Three-Dimensional Plotting</font></h3>
+
+<p>The following program plots a perspective view of a saddle
+curve, with any desired viewing point. The program is a
+floating-point version of the program in Section 11.5.2.</p>
+
+<pre>    1 REM Saddle Curve
+  100 FINPUT&quot;CHOOSE VIEW POSlTION&quot;'&quot;X=&quot;%L,&quot;Y=&quot;%M,&quot;Z=&quot;%N
+  110 FINPUT&quot;LOOKING TOWARDS&quot;'&quot;X=&quot;%A,&quot;Y=&quot;%B,&quot;Z=&quot;%C
+  115 %L=%L-%A;%M=%M-%B;%N=%N-%C
+  120 W=4;CLEAR4
+  150 %S=%L*%L+%M*%M;%R=SQR%S
+  160 % -%S+%N*%N;%Q=SQR%T
+  200 FORX=-10TO10
+  210 Y=-10;GOS.c;GOS.m
+  220 FORY=-9T010;GOS.c;GOS.p;N.;N.
+  230 FORY=-10T010
+  240 X=-10;GOS.c;GOS.m
+  250 FORX=-9T010;GOS.c;GOS.p;N.;N.
+  260 END
+  400pW=5
+  410m%U=%X-%A;%V=%Y-%B;%W=%Z-%C
+  420 %0=(%T-%X*%L-%Y*%M-%Z*%N)*%R
+  425 FIF %0&lt;0.1 W=4
+  430 G=%{400*(%Y*%L-%X*%M)*%Q/%0)+128
+  440 H=%(500*(%Z*%S-%N*($X*%L+%Y*$M))/%0)+96
+  460 PLOTW,G,H;W=4;R.
+  600c%Y=Y;%X=X
+  610 %2=.05*(%Y*%Y-%X*%X);R.</pre>
+
+<pre>Description of Program:
+100-110   Input view position and shifted origin.
+115       Shift view position for new origin.
+120       Clear screen and get ready to move.
+150-160   Set up constants for plot projection.
+200-250   Scan X,Y plane.
+400       p: Entry for drawing.
+410       m: Entry for moving; also shift coordinates for new origin.
+420       Calculate how far away X,Y,Z is from eye.
+425       Avoid plotting too close.
+430-440   Project image onto plane.
+460       Move or draw and return.
+600       c: Define function to be plotted.</pre>
+
+<pre>Variables:
+G,H -- Plot position on screen
+W -- 4 for move, 5 for draw.
+X,Y -- Used to scan X,Y plane.
+%A,%B,%C -- Position centred on screen.
+%L,%M,%N -- View position.
+%O -- Distance of point from eye.
+%Q,%R,%S,%T -- Constants for projection.
+%U,%V,SW -- 3D coordinates referred to new origin.
+%X,%Y,%Z -- 3D coordinates of point being plotted
+Program size: 594 bytes</pre>
+
+<h2><font color="#0000FF">22.2 Colour Graphics Extension --
+COLOUR</font></h2>
+
+<p>The extension ROM also contains routines for plotting in the
+colour<br>
+graphics modes. The following colour graphics modes are
+available:</p>
+
+<blockquote>
+    <pre>Mode:              Resolution.         Memory:
+                  X:       Y:
+la                64       64            1 K
+2a               128       64            2 K
+3a               128       96            3 K
+4a               128      192            6 K</pre>
+</blockquote>
+
+<p>The graphics modes are obtained by specifying the CLEAR
+statement followed by the mode number (without the 'a'), and the
+COLOUR statement to determine which colour is to be plotted. The
+parameter to the COLOUR statement determines the colour as
+follows; on a black and white television or monitor the colours
+will be displayed as shades of grey:</p>
+
+<blockquote>
+    <pre>Value:	Colour:	Grey scale:
+0	Green	Grey
+1	Yellow	White
+2	Blue	Black
+3	RedBlack</pre>
+</blockquote>
+
+<p>COLOUR 0 corresponds to the background colour.</p>
+
+<p>When a colour has been specified, all subsequent DRAW
+statements will draw lines in that colour. The PLOT statement
+will 'set' lines and points in that colour, will always 'clear'
+to the background colour, and will always 'invert' to a different
+colour, irrespective of the current COLOUR.</p>
+
+<h3><font color="#0000FF">22.2.1 Random Coloured Lines</font></h3>
+
+<p>The following simple program illustrates the use of the COLOUR
+command by drawing coloured lines between randomly-chosen points
+on the screen.</p>
+
+<pre>   10 REM Random Coloured Lines
+   20 CLEAR 4
+   30 DO COLOUR RND
+   40 DRAW(ABSRND%128),(ABSRND%192)
+   50 UNTIL 0</pre>
+
+<h2><font color="#0000FF">22.3 Memory Expansion</font></h2>
+
+<p>The ATOM's memory can be expanded, on the same board, in units
+of 1K bytes (1024 bytes) up to a maximum on-board memory capacity
+of 12K bytes. Refer to the Technical Manual for details of how to
+insert the extra memory devices. The unexpanded ATOM contains 1K
+of Block 0 memory, from #0000 to #0400, and 1K of VDU and
+text-space memory, occupying between #8000 and #8400. The lower
+half is used by the VDU and graphics mode 0, and the upper half
+forms the BASIC text-space starting at $8200 and giving 512 free
+bytes for programs. The three different areas of RAM that can be
+fitted on the main circuit board are referred to as follows:</p>
+
+<blockquote>
+    <pre>Addresses:           Area:
+#0000-#0400   Block zero RAM
+#2800-#3C00   Lover text space
+#8000-#9800   Graphics space/Upper text space</pre>
+</blockquote>
+
+<p>The following staqes in expansion are recommended:</p>
+
+<h3><font color="#0000FF">22.3.1. Lower Text Space</font></h3>
+
+<p>Extra memory can be added starting at #2800 in the lower text
+space. If memory is present in this text space BASIC will
+automatically be initialised using this region as its text space.
+The text space starts at #2900 to allow space between #2800 and
+#2900 for the floating-point variables, but if the floating-point
+scientific package is not being used the extra memory between
+#2800 and #2900 can be used for the text space by typing:</p>
+
+<blockquote>
+    <pre>?18=#28
+NEW</pre>
+</blockquote>
+
+<p>A total of 5K of memory can be added in the extra text space.<br>
+There are two advantages in using the lower text space for
+programs:</p>
+
+<p>1. Whenever the graphics memory is accessed noise will be
+generated on the screen. Although this noise is slight under most
+circumstances, it can become annoying when running machine-code
+programs assembled in the upper text area, which is shared with
+the graphics area. Moving to the lower text area will eliminate
+this noise.</p>
+
+<p>2. When the upper text area is used it is only possible to use
+the lower graphics modes. The lower text area permits all
+graphics modes to be used.</p>
+
+<h3><font color="#0000FF">22.3.2 Graphics Space</font></h3>
+
+<p>Memory can be added in the graphics area from #8400 up to
+#9800, providing a total of 6K of graphics memory. This will make
+the higher graphics modes available, or can be used for programs
+in the graphics space.</p>
+
+<h2><font color="#0000FF">22.4 Versatile Interface Adapter</font></h2>
+
+<p>A Versatile Interface Adapter, or VIA, can be added to the
+ATOM to provide two eight-bit parallel I/O ports, together with
+four control lines, a pair of interval timers for providing real
+time interrupts, and a serial to parallel or parallel to serial
+shift register. Both eight-bit ports and the control lines are
+connected to side B of the Acorn Bus connector.</p>
+
+<p>Each of the 16 lines can be individually programmed to act as
+either an input or an output. The two additional control lines
+per port can be used to control handshaking of data via the port,
+and to provide interrupts. Several of the' lines can be
+controlled directly from the interval timers for generating
+programmable frequency square waves or for counting externally
+generated pulses. Only the most basic use of the VIA will be
+explained here; for more of its functions consult the VIA data
+sheet (available from Acorn Computers). The VIA registers occur
+in the following memory addresses:</p>
+
+<blockquote>
+    <table border="0">
+        <tr>
+            <td>Register:</td>
+            <td>Address:</td>
+            <td>Name:</td>
+        </tr>
+        <tr>
+            <td>Data Register B</td>
+            <td>#B800</td>
+            <td>DB</td>
+        </tr>
+        <tr>
+            <td>Data Register A</td>
+            <td>#B801</td>
+            <td>DA</td>
+        </tr>
+        <tr>
+            <td>Data Direction Register B</td>
+            <td>#B802</td>
+            <td>DDRB</td>
+        </tr>
+        <tr>
+            <td>Data Direction Register A</td>
+            <td>#B803</td>
+            <td>DDRA</td>
+        </tr>
+        <tr>
+            <td>Timer 1 low counter, latch </td>
+            <td>#B804 </td>
+            <td>T1CL</td>
+        </tr>
+        <tr>
+            <td>Timer 1 high counter</td>
+            <td>#B805</td>
+            <td>T1CH</td>
+        </tr>
+        <tr>
+            <td>Timer 1 low latch</td>
+            <td>#B806</td>
+            <td>T1LL</td>
+        </tr>
+        <tr>
+            <td>Timer 1 high latch</td>
+            <td>#B807</td>
+            <td>T1LH</td>
+        </tr>
+        <tr>
+            <td>Timer 2 low counter, latch</td>
+            <td>#B808</td>
+            <td>T2CL</td>
+        </tr>
+        <tr>
+            <td>Timer 2 high counter</td>
+            <td>#B809</td>
+            <td>T2CH</td>
+        </tr>
+        <tr>
+            <td>Shift Register</td>
+            <td>#B80A</td>
+            <td>SR</td>
+        </tr>
+        <tr>
+            <td>Auxiliary Control Register</td>
+            <td>#B80B</td>
+            <td>ACR</td>
+        </tr>
+        <tr>
+            <td>Peripheral Control Register</td>
+            <td>#B80C</td>
+            <td>PCR</td>
+        </tr>
+        <tr>
+            <td>Interrupt Flag Register</td>
+            <td>#B80D</td>
+            <td>IFR</td>
+        </tr>
+        <tr>
+            <td>Interrupt Enable Register</td>
+            <td>#B80E</td>
+            <td>IER</td>
+        </tr>
+        <tr>
+            <td>Data Register A</td>
+            <td>#B80F</td>
+            <td>DA</td>
+        </tr>
+    </table>
+</blockquote>
+
+<pre>            </pre>
+
+<p>On BREAK all registers of the VIA are reset to 0 (except Tl,
+T2 and SR). This places all peripheral lines in the input state,
+disables the timers, shift register, etc. and disables
+interrupts.</p>
+
+<h3><font color="#0000FF">22.4.1 Printer Interface</font></h3>
+
+<p>Port A has a high current output buffer leading to a 26-way
+printer connector to produce a Centronics-type parallel
+interface, capable of driving most parallel-interface printers
+with the software already in the operating system. Printer output
+is enabled by printing a CTRL-B character, and disabled by
+printing a CTRL-C character; see Section 18.1.3.</p>
+
+<h3><font color="#0000FF">22.4.2 Parallel Input/Output</font></h3>
+
+<p>To use the ports in a simple I/O mode with no handshake, the
+Data Direction Register associated with each I/O register must be
+programmed. A byte is written to each of the DDR's to specify
+which lines are to be inputs and outputs. A zero in a DDR bit
+causes the corresponding bit in the I/O register to act as an
+input, while a one causes the line to act as an output. Writing
+to the data register (DA or DB) will affect only the bits which
+have been programmed as outputs, while reading from the data
+register will produce a byte composed of the current status of
+both input and output lines.</p>
+
+<p>In order to use the printer port for ordinary I/0, the printer
+software driver should be removed from the output stream by
+setting the vector WRCVEC (address #208) to WRCVEC+3; e.g.:</p>
+
+<pre>	!#208=!#208+3</pre>
+
+<h3><font color="#0000FF">22.4.3 Writinq to a Port</font></h3>
+
+<p>The following program illustrates how to write to one of the
+VIA's output ports from a BASIC program:</p>
+
+<pre>   10 !#208=!#208+3
+   20 ?#B80C=0
+   30 ?#B802=#FF
+   40 INPUT J
+   50 ?#B800=J
+   60 GOTO 40</pre>
+
+<pre>Description of Program:
+10	Remove printer drive from port B.
+20	Remove all handshaking.
+30	Program all lines as outputs.
+50	Output byte.</pre>
+
+<h2><font color="#0000FF">22.4.4 Timing to 1 Microsecond</font></h2>
+
+<p>The following program demonstrates how the VIA's timer 2 can
+be used to measure the execution-time of different BASIC
+statements to the nearest microsecond. The same method could be
+used to time events signalled by an input to one of the ports:</p>
+
+<pre>   10 REM Microsecond Timer
+   20 B=#B808
+   30 !B=65535
+   40 X=Y
+   50 B?3=32; Q=!B&amp;#FFFF
+   60 PRINT 65535-Q-1755 &quot;MICROSECONDS&quot;'
+   70 END</pre>
+
+<pre>Description of Program:
+20	Point to timer 2 in VIA.
+30	Set timer to maximum count.
+40	Line to be timed; if absent, time should be 0.
+50	Turn off timer; read current count.
+60	Print time, allowing for time taken to read count.</pre>
+</body>
+<p align="right"><a href="atap_23.htm">Next chapter</a></p>
+</html>

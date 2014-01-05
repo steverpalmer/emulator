@@ -1,0 +1,642 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Type"
+content="text/html; charset=iso-8859-1">
+<meta name="GENERATOR" content="Microsoft FrontPage Express 2.0">
+<title>16 Addressing Modes and Registers</title>
+</head>
+
+<body bgcolor="#FFFFFF">
+
+<h1><font color="#0000FF">16 Addressing Modes and Registers</font></h1>
+
+<h2><font color="#0000FF">16.1 Indexed Addressing</font></h2>
+
+<p>So far the X and Y registers have simply been used as
+counters, but their most important use is in 'indexed
+addressing'. We have already met two different addressing modes:
+absolute addressing, as in:</p>
+
+<blockquote>
+    <pre>LDA U</pre>
+</blockquote>
+
+<p>where the instruction loads the accumulator with the contents
+of location U, and immediate addressing as in:</p>
+
+<blockquote>
+    <pre>LDA @#21</pre>
+</blockquote>
+
+<p>where the instruction loads the accumulator with the actual
+value #21.</p>
+
+<p>In indexed addressing one of the index registers, X or Y, is
+used as an offset which is added to the address specified in the
+instruction to give the actual address of the data. For example,
+we can write:</p>
+
+<blockquote>
+    <pre>LDA S,X</pre>
+</blockquote>
+
+<p>If X contains zero this instruction will behave just like LDA
+S. However, if X contains 1 it will load the accumulator with the
+contents of 'one location further on from S'. In other words it
+will behave like LDA S+1. Since X can contain any value from 0 to
+255, the instruction LDA S,X gives you access to 256 different
+memory locations. If you are familiar with BASIC's byte vectors
+you can think of S as the base of a vector, and of X as
+containing the subscript.</p>
+
+<h3><font color="#0000FF">16.1.1 Print Inverted String</font></h3>
+
+<p>The following program uses indexed addressing to print out a
+string of characters inverted. Recall that a string is held as a
+sequence of character codes terminated by a #D byte:</p>
+
+<blockquote>
+    <pre>10 DIM LL(2),S(64),P(-1)
+20 W=#FFF4
+30[
+40:LL0 LDX @0
+50:LL1 LDA S,X
+60 CMP @#D
+70 BEQ LL2
+80 ORA @#20
+90 JSR W
+100 INX
+110 BNE LL1
+120:LL2 RTS
+130]
+140 END</pre>
+</blockquote>
+
+<p>Assemble the program by typing RUN twice, and then try the
+program by entering:</p>
+
+<blockquote>
+    <pre>$S=&quot;TEST STRING&quot;</pre>
+    <pre>LINK LL0</pre>
+</blockquote>
+
+<h3><font color="#0000FF">16.1.2 Index Subroutine</font></h3>
+
+<p>Another useful operation that can easily be performed in a
+machine-code routine is to look up a character in a string, and
+return its position in that string. The following subroutine
+reads in a character, using a call to the OSRDCH read-character
+routines, and saves in ?F the position of the first occurrence of
+that character in $T.</p>
+
+<blockquote>
+    <pre>1 REM Index Routine
+10 DIM RR(3),T(25),F(0),P(-1)
+20 R=#FFE3; $T=&quot;ABCDEFGH&quot;
+30[
+160\Look up A in T
+165:RR1 STX F; RTS
+180:RR0 JSR R; LDX @LEN(T)-1
+190:RR2 CMP T,X; BEQ RR1
+210 DEX; BPL RR2; BMI RR0
+220]
+230 END</pre>
+</blockquote>
+
+<p>The routine is entered at RR0, and as it stands it looks for
+one of the letters A to H.</p>
+
+<h2><font color="#0000FF">16.2 Summary of Addressing Modes</font></h2>
+
+<p>The following sections summarise all the addressing modes that
+are available on the 6502.</p>
+
+<h2><font color="#0000FF">16.3 Immediate</font></h2>
+
+<p>When the data for an instruction is known at the time that the
+program being written, immediate addressing can be used. In
+immediate addressing the second byte of the instruction contains
+the actual 8-bit data to be used by the instruction.</p>
+
+<p>The '@' symbol denotes an immediate operand.</p>
+
+<blockquote>
+    <table border="0">
+        <tr>
+            <td><font face="Courier New">LDA @7</font></td>
+            <td><font face="Courier New"></font>&nbsp;</td>
+            <td bgcolor="#C0C0C0"><font face="Courier New">A9</font></td>
+            <td bgcolor="#C0C0C0"><font face="Courier New">07</font></td>
+        </tr>
+        <tr>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td align="center">V</td>
+        </tr>
+        <tr>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td><font face="Courier New">A:</font></td>
+            <td bgcolor="#C0C0C0"><font face="Courier New">07</font></td>
+        </tr>
+        <tr>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+        </tr>
+    </table>
+    <pre>Examples: LDA @M
+CPY @J+2</pre>
+</blockquote>
+
+<h2><font color="#0000FF">16.4 Absolute</font></h2>
+
+<p>Absolute addressing is used when the effective address, to be
+used by the instruction, is known at the time the program is
+being written. In absolute addressing the two bytes following the
+op-code contain the 16-bit effective address to be used by the
+instruction.</p>
+
+<blockquote>
+    <table border="0">
+        <tr>
+            <td>&nbsp;</td>
+            <td><font face="Courier New"></font>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td><font face="Courier New"></font>&nbsp;</td>
+            <td align="center"><font face="Courier New">Data</font>:</td>
+        </tr>
+        <tr>
+            <td><font face="Courier New">LDA #3010,X</font></td>
+            <td>&nbsp;</td>
+            <td bgcolor="#C0C0C0"><font face="Courier New">AD</font></td>
+            <td bgcolor="#C0C0C0"><font face="Courier New">10</font></td>
+            <td bgcolor="#C0C0C0"><font face="Courier New">31</font></td>
+            <td><font face="Courier New">#3010:</font></td>
+            <td align="center" bgcolor="#C0C0C0"><font
+            face="Courier New">34</font></td>
+        </tr>
+        <tr>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td align="right">&nbsp;</td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td align="center">V</td>
+        </tr>
+        <tr>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td align="right"><font face="Courier New">A:</font></td>
+            <td align="center" bgcolor="#C0C0C0"><font
+            face="Courier New">34</font></td>
+        </tr>
+    </table>
+    <pre>Examples: LDA K
+SBC #3010</pre>
+</blockquote>
+
+<h2><font color="#0000FF">16.5 Zero Page</font></h2>
+
+<p>Zero page addressing is like absolute addressing in that the
+instruction specifies the effective address to be used by the
+instruction, but only the lower byte of the address is specified
+in the instruction. The upper byte of the address is assumed to
+be zero, so only addresses in page zero, from #0000 to #00FF, can
+be addressed. The assembler will automatically produce zero-page
+instructions when possible.</p>
+
+<blockquote>
+    <table border="0">
+        <tr>
+            <td>&nbsp;</td>
+            <td><font face="Courier New"></font>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td><font face="Courier New"></font>&nbsp;</td>
+            <td align="center"><font face="Courier New">Data</font>:</td>
+        </tr>
+        <tr>
+            <td><font face="Courier New">LDA #80</font></td>
+            <td>&nbsp;</td>
+            <td bgcolor="#C0C0C0"><font face="Courier New">A5</font></td>
+            <td bgcolor="#C0C0C0"><font face="Courier New">80</font></td>
+            <td><font face="Courier New">#0080:</font></td>
+            <td align="center" bgcolor="#C0C0C0"><font
+            face="Courier New">34</font></td>
+        </tr>
+        <tr>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td align="center">V</td>
+        </tr>
+        <tr>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td align="right"><font face="Courier New">A:</font></td>
+            <td align="center" bgcolor="#C0C0C0"><font
+            face="Courier New">34</font></td>
+        </tr>
+    </table>
+    <pre>Examples: BIT #80
+ASL #9A</pre>
+</blockquote>
+
+<h2><font color="#0000FF">16.6 Indexed Addressing</font></h2>
+
+<p>Indexed addressing is used to access a table of memory
+locations by specifying them in terms of an offset from a base
+address. The base address is known at the time that the program
+is written; the offset, which is provided in one of the index
+registers, can be calculated by the program.</p>
+
+<p>In all indexed addressing modes one of the 8-bit index
+registers, X and Y, is used in a calculation of the effective
+address to be used by the instruction. Five different indexed
+addressing modes are available, and are listed in the following
+section.</p>
+
+<h3><font color="#0000FF">16.6.1 Absolute,X &#150; Absolute,Y</font></h3>
+
+<p>The simplest indexed addressing mode is absolute indexed
+addressing. In this mode the two bytes following the instruction
+specify a 16-bit address which is to be added to one of the index
+registers to form the effective address to be used by the
+instruction:</p>
+
+<blockquote>
+    <table border="0">
+        <tr>
+            <td><font face="Courier New">LDA #3120,X</font></td>
+            <td><font face="Courier New"></font>&nbsp;</td>
+            <td bgcolor="#C0C0C0"><font face="Courier New">BD</font></td>
+            <td bgcolor="#C0C0C0"><font face="Courier New">20</font></td>
+            <td bgcolor="#C0C0C0"><font face="Courier New">31</font></td>
+            <td><font face="Courier New"></font>&nbsp;</td>
+            <td align="center"><font face="Courier New">Data</font>:</td>
+        </tr>
+        <tr>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td><font face="Courier New">+ = #3132:</font></td>
+            <td align="center" bgcolor="#C0C0C0"><font
+            face="Courier New">78</font></td>
+        </tr>
+        <tr>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td align="right"><font face="Courier New">X:</font></td>
+            <td bgcolor="#C0C0C0"><font face="Courier New">12</font></td>
+            <td>&nbsp;</td>
+            <td align="center">V</td>
+        </tr>
+        <tr>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td align="right"><font face="Courier New">A:</font></td>
+            <td align="center" bgcolor="#C0C0C0"><font
+            face="Courier New">78</font></td>
+        </tr>
+    </table>
+    <pre>Examples: LDA M,X 
+          LDX J,Y
+          INC N,X</pre>
+</blockquote>
+
+<h3><font color="#0000FF">16.6.2 Zero,X</font></h3>
+
+<p>In zero,X indexed addressing the second byte of the
+instruction specifies an 8-bit address which is added to the
+X-register to give a zero-page address to be used by the
+instruction.</p>
+
+<p>Note that in the case of the LDX instruction a zero,Y
+addressing mode is provided instead of the zero,X mode.</p>
+
+<blockquote>
+    <table border="0">
+        <tr>
+            <td><font face="Courier New">LDA #80,X</font></td>
+            <td><font face="Courier New"></font>&nbsp;</td>
+            <td bgcolor="#C0C0C0"><font face="Courier New">B6</font></td>
+            <td bgcolor="#C0C0C0"><font face="Courier New">80</font></td>
+            <td><font face="Courier New"></font>&nbsp;</td>
+            <td align="center"><font face="Courier New">Data</font>:</td>
+        </tr>
+        <tr>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td><font face="Courier New">+ = #0082:</font></td>
+            <td align="center" bgcolor="#C0C0C0"><font
+            face="Courier New">78</font></td>
+        </tr>
+        <tr>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td><font face="Courier New">X:</font></td>
+            <td bgcolor="#C0C0C0"><font face="Courier New">12</font></td>
+            <td>&nbsp;</td>
+            <td align="center">V</td>
+        </tr>
+        <tr>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td align="right"><font face="Courier New">A:</font></td>
+            <td align="center" bgcolor="#C0C0C0"><font
+            face="Courier New">78</font></td>
+        </tr>
+    </table>
+</blockquote>
+
+<blockquote>
+    <pre>Examples: LSR #80,X LDX #82,Y</pre>
+</blockquote>
+
+<h2><font color="#0000FF">16.7 Indirect Addressing</font></h2>
+
+<p>It is sometimes necessary to use an address which is actually
+computed when the program runs, rather than being an offset from
+a base address or a constant address. In this case indirect
+addressing is used.<br>
+The indirect mode of addressing is available for the JMP
+instruction. Thus control can be transferred to an address
+calculated at the time that the program is run.</p>
+
+<blockquote>
+    <pre>Examples: JMP (#2800)
+          JMP (#80)</pre>
+</blockquote>
+
+<p>For the dual-operand instructions ADC, AND, CMP, EOR, LDA,
+ORA, SEC, and STA, two different modes of indirect addressing are
+provided: pre-indexed indirect, and post-indexed indirect. Pure
+indirect addressing can be obtained, using either mode, by first
+setting the respective index register to zero.</p>
+
+<h3><font color="#0000FF">16.7.1 Pre-Indexed Indirect</font></h3>
+
+<p>This mode of addressing is used when a table of effective
+addresses is provided in page zero; the X index register is used
+as a pointer to select one of these addresses from the table.</p>
+
+<p>In pre-indexed indirect addressing the second byte of the
+instruction is added to the X register to give an address in page
+zero. The two bytes at this page zero address are then used as
+the effective address for the instruction.</p>
+
+<blockquote>
+    <table border="0">
+        <tr>
+            <td><font face="Courier New">LDA (#70,X)</font></td>
+            <td><font face="Courier New"></font>&nbsp;</td>
+            <td bgcolor="#C0C0C0"><font face="Courier New">A1</font></td>
+            <td bgcolor="#C0C0C0"><font face="Courier New">70</font></td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td><font face="Courier New"></font>&nbsp;</td>
+            <td align="center"><font face="Courier New">Data</font>:</td>
+        </tr>
+        <tr>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td><font face="Courier New">+ = #0075:</font></td>
+            <td bgcolor="#C0C0C0"><font face="Courier New">23</font></td>
+            <td bgcolor="#C0C0C0"><font face="Courier New">30</font></td>
+            <td>&nbsp;</td>
+            <td><font face="Courier New">#3023:</font></td>
+            <td align="center" bgcolor="#C0C0C0"><font
+            face="Courier New">AC</font></td>
+        </tr>
+        <tr>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td><font face="Courier New">X:</font></td>
+            <td bgcolor="#C0C0C0"><font face="Courier New">05</font></td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td align="center">V</td>
+        </tr>
+        <tr>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td align="right"><font face="Courier New">A:</font></td>
+            <td align="center" bgcolor="#C0C0C0"><font
+            face="Courier New">AC</font></td>
+        </tr>
+    </table>
+    <pre>Examples: STA (J,X) 
+          EOR (#60,X)	</pre>
+</blockquote>
+
+<h3><font color="#0000FF">16.7.2 Post-Indexed Indirect</font></h3>
+
+<p>This indexed addressing mode is like the absolute,X or
+absolute,Y indexed addressing modes, except that in this case the
+base address of the table is provided in page zero, rather than
+in the bytes following the instruction. The second byte of the
+instruction specifies the page-zero base address.</p>
+
+<p>In post-indexed indirect addressinq the second byte of the
+instruction specifies a page zero address. The two bytes at this
+address are added to the Y index register to give a 16-bit
+address which is then used as the effective address for the
+instruction.</p>
+
+<blockquote>
+    <table border="0">
+        <tr>
+            <td><font face="Courier New">LDA (#70),Y</font></td>
+            <td><font face="Courier New"></font>&nbsp;</td>
+            <td bgcolor="#C0C0C0"><font face="Courier New">A1</font></td>
+            <td bgcolor="#C0C0C0"><font face="Courier New">70</font></td>
+            <td><font face="Courier New">#0070:</font></td>
+            <td bgcolor="#C0C0C0"><font face="Courier New">43</font></td>
+            <td bgcolor="#C0C0C0"><font face="Courier New">35</font></td>
+            <td>&nbsp;</td>
+            <td><font face="Courier New"></font>&nbsp;</td>
+            <td align="center"><font face="Courier New">Data</font>:</td>
+        </tr>
+        <tr>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td>+=</td>
+            <td><font face="Courier New">#3553:</font></td>
+            <td align="center" bgcolor="#C0C0C0"><font
+            face="Courier New">23</font></td>
+        </tr>
+        <tr>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td><font face="Courier New">Y:</font></td>
+            <td bgcolor="#C0C0C0"><font face="Courier New">10</font></td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td align="center">V</td>
+        </tr>
+        <tr>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td align="right"><font face="Courier New">A:</font></td>
+            <td align="center" bgcolor="#C0C0C0"><font
+            face="Courier New">23</font></td>
+        </tr>
+    </table>
+    <pre>Examples: CMP (J),Y 
+          ADC (066),Y	</pre>
+</blockquote>
+
+<h2><font color="#0000FF">16.8 Registers</font></h2>
+
+<p>This section gives a short description of all the 6502's
+registers:</p>
+
+<p><font color="#0000FF"><strong>Accumulator &#150; A</strong></font></p>
+
+<p>8-bit general-purpose register, which forms one operand in all
+the arithmetic and logical instructions.</p>
+
+<p><font color="#0000FF"><strong>Index Register &#150; X</strong></font></p>
+
+<p>8-bit register used as the offset in indexed and pre-indexed
+indirect addressing modes, or as a counter.</p>
+
+<p><font color="#0000FF"><strong>Index Register &#150; Y</strong></font></p>
+
+<p>8-bit register used as the offset in indexed and post-indexed
+indirect addressing modes.</p>
+
+<p><font color="#0000FF"><strong>Status Register &#150; S</strong></font></p>
+
+<p>8-bit register containing status flags and interrupt mask:</p>
+
+<blockquote>
+    <table border="1" cellspacing="0" width="95%">
+        <tr>
+            <td valign="top">Bit</td>
+            <td valign="top">&nbsp;</td>
+            <td>&nbsp;</td>
+        </tr>
+        <tr>
+            <td valign="top">0</td>
+            <td valign="top">Carry flag (C)</td>
+            <td>Set if a carry occurs during an add operation; <br>
+            cleared if a borrow occurs during a subtract
+            operation; <br>
+            used as a ninth bit in the shift and rotate
+            instructions.</td>
+        </tr>
+        <tr>
+            <td valign="top">1</td>
+            <td valign="top">Zero flag (Z)</td>
+            <td>Set if the result of an operation is zero;
+            cleared otherwise.</td>
+        </tr>
+        <tr>
+            <td valign="top">2</td>
+            <td valign="top">Interrupt disable (I)</td>
+            <td>If set, disables the effect of the IRQ interrupt.
+            <br>
+            Is set by the processor during interrupts.</td>
+        </tr>
+        <tr>
+            <td valign="top">3</td>
+            <td valign="top">Decimal mode flag (0)</td>
+            <td>If set, the add and subtract operations work <br>
+            in binary-coded-decimal arithmetic; <br>
+            if clear, the add and subtract operations work <br>
+            in binary arithmetic.</td>
+        </tr>
+        <tr>
+            <td valign="top">4</td>
+            <td valign="top">Break command (B)</td>
+            <td>Set by the processor during a BRK interrupt;
+            otherwise cleared.</td>
+        </tr>
+        <tr>
+            <td valign="top">5</td>
+            <td valign="top">Unused</td>
+            <td>&nbsp;</td>
+        </tr>
+        <tr>
+            <td valign="top">6</td>
+            <td valign="top">Overflow flag (V)</td>
+            <td>Set if a carry occurred from bit 6 during an add
+            operation; <br>
+            cleared if a borrow occurred to bit 6 in a subtract
+            operation.</td>
+        </tr>
+        <tr>
+            <td valign="top">7</td>
+            <td valign="top">Negative flag (N)</td>
+            <td>Set if bit 7 of the result of an operation is
+            set; otherwise cleared.</td>
+        </tr>
+    </table>
+</blockquote>
+
+<p><font color="#0000FF"><strong>Stack Pointer &#150; SP</strong></font></p>
+
+<p>8-bit register which forms the lower byte of the address of
+the next free stack location; the upper byte of this address is
+always #01.</p>
+
+<p><font color="#0000FF"><strong>Program Counter &#150; PC</strong></font></p>
+
+<p>16-bit register which always contains the address of the next
+instruction to be fetched by the processor.</p>
+
+<p align="right"><a href="atap_17.htm">Next chapter</a></p>
+</body>
+</html>

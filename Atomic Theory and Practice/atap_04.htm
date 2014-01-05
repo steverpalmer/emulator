@@ -1,0 +1,567 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Type"
+content="text/html; charset=iso-8859-1">
+<meta name="GENERATOR" content="Microsoft FrontPage Express 2.0">
+<title>Writing a BASIC Program</title>
+</head>
+
+<body bgcolor="#FFFFFF">
+
+<h1><font color="#0000FF">4 Writing a BASIC Program</font></h1>
+
+<p>Commands and statements typed after the ATOM's prompt are
+executed immediately, as we have seen in Chapter 3. However if
+you start the line with a number, the line is not executed but
+stored as text in the ATOM's memory.</p>
+
+<h2><font color="#0000FF"><b>4.1 RUN</b></font></h2>
+
+<p>First type 'NEW' to clear the text area. Then try typing in
+the following:</p>
+
+<pre>   10 PRINT &quot;A PROGRAM!&quot; 
+   20 END</pre>
+
+<p>When these lines have been typed in you can list the text by
+typing LIST. Now type: RUN The stored text will be executed, one
+statement at a time, starting with the lowest-numbered statement,
+and the message 'A PROGRAM!' will be printed out. The text you
+entered formed a 'program', and the program was executed,
+statement by statement, when you typed RUN. The END statement is
+used to stop execution of the program; if it is omitted an error
+message will be given.</p>
+
+<h2><font color="#0000FF">4.2 INPUT</font></h2>
+
+<p>Type NEW again, and then enter the following program:</p>
+
+<pre>   10 INPUT N
+   20 N=N+1
+   30 PRINT N </pre>
+
+<p>The INPUT statement enables you to supply numbers to a running
+program. When it is executed it will print a question mark and
+wait for a number to be typed in. The variable specified in the
+INPUT statement will then be set to the value typed in. To
+illustrate, type: RUN The program will add 1 to the number you
+type in; try running it again and try different numbers. The
+INPUT statement may contain more than one variable; a question
+mark will be printed for each one, and the values typed in will
+be assigned to the variables in turn. The INPUT statement may
+also contain strings; these will be printed out before each
+question mark. The following program illustrates this; it
+converts Fahrenheit to Celsius (Centigrade), giving the answer to
+the nearest degree: </p>
+
+<pre>   10 INPUT &quot;FAHRENHEIT&quot; F
+   20 PRINT (10*F-315)/18 &quot;CELSIUS&quot; '
+   30 END</pre>
+
+<p>The value, in Fahrenheit, is stored in the variable F. The
+expression in the PRINT statement converts this to Celsius. </p>
+
+<h2><font color="#0000FF">4.3 Comments - REM</font></h2>
+
+<p>The REM statement means 'remark&#146;; everything on the line
+following the REM statement will be ignored when the program is
+being executed, so it can be used to insert comments into a
+program. For example:</p>
+
+<pre>    5 REM PROGRAM FOR TEMPERATURE CONVERSION</pre>
+
+<h2><font color="#0000FF">4.4 Functions</font></h2>
+
+<p>Functions are operations that return a value. Functions are
+like statements in that they have names, consisting of a sequence
+of letters, but unlike statements they return a value and so can
+appear within expressions. </p>
+
+<h3><font color="#0000FF">4.4.1 RND</font></h3>
+
+<p>The RND function returns a random number with a value anywhere
+between the most negative and most positive numbers that can be
+represented in BASIC. To obtain smaller random numbers the '%'
+remainder operator can be used; for example:</p>
+
+<pre>      PRINT RND%4</pre>
+
+<p>will print a number between -3 and +3. </p>
+
+<h3><font color="#0000FF">4.4.2 TOP</font></h3>
+
+<p>TOP returns the address of the first free memory location
+after the BASIC program. </p>
+
+<pre>      PRINT &amp;TOP</pre>
+
+<p>will print TOP in hexadecimal. This will be #8202 if you have
+not entered a program (or have just typed NEW) on the unexpanded
+ATOM, and #2902 on an expanded ATOM.</p>
+
+<pre>      PRINT TOP-#8200</pre>
+
+<p>is a useful way of finding out how many bytes are used up by a
+program; on an unexpanded ATOM there is a total of 512 bytes for
+programs.</p>
+
+<h3><font color="#0000FF">4.4.3 ABS</font></h3>
+
+<p>The ABS function can be used to give the absolute or positive
+value of a number; the number is written in brackets after the
+function name. For example:</p>
+
+<pre>      PRINT ABS(-57)</pre>
+
+<p>will print 57. One use of ABS is in generating positive random
+numbers. For example:</p>
+
+<pre>      PRINT ABS(RND)%6</pre>
+
+<p>gives a random number between 0 and 5.</p>
+
+<h2><font color="#0000FF">4.5 Escape - ESC</font></h2>
+
+<p>It is possible to create programs which will never stop; see
+the following example in section 4.6. The escape key 'ESC' at the
+top left of the keyboard will stop any BASIC program and return
+control to the '&gt;' prompt.</p>
+
+<h2><font color="#0000FF">4.6 GOTO</font></h2>
+
+<p>In the above programs the statements were simply executed in
+ascending order of their line numbers. However it is sometimes
+necessary to transfer control forwards or backwards to somewhere
+other than the next numbered statement. The GOTO (go to)
+statement is used for this purpose; the GOTO statement specifies
+the statement to be executed next. For example, type:</p>
+
+<pre>     1 REM Stars 
+    10 PRINT &quot;*&quot; 
+    20 GOTO 10</pre>
+
+<p>A flowchart for this program makes it clear that the program
+will never stop printing stars:</p>
+<div align="center"><table><tr><td>
+<img src="atap25.gif"
+alt="atap25.gif" align="left" width="100" height="78" border="0" hspace="0"  />
+</td></tr></table></div>
+<p>To stop the program you will have to type ESC (escape).</p>
+
+<h3><font color="#0000FF">4.6.1 Labels - a to z</font></h3>
+
+<p>ATOM BASIC offers another option for the GOTO statement.
+Instead of giving the number of the statement to be executed
+next, a statement can be designated by a 'label', and the GOTO is
+followed by the required label.</p>
+
+<p>A label can be one of the lower-case letters a to z, which are
+obtained on the ATOM by typing the letter with the shift key held
+down. Labels appear on the VDU as upper-case inverted letters, so
+they are very easily identified in programs. For typographical
+convenience labels will be represented as lower-case letters in
+this manual.</p>
+
+<p>To illustrate the use of labels, rewrite the &#146;STARS'
+program as follows, using the label 's':</p>
+
+<pre>   10s PRINT &quot;*&quot; 
+   20 GOTO s</pre>
+
+<p>Note that there must be no spaces between the line number and
+the label.</p>
+
+<p>There are two advantages to using labels, rather than line
+numbers, in GOTO statements. First, programs are clearer, and do
+not depend on how the program lines are numbered. Secondly, the
+GOTO statement is faster using a label than using a line number.
+To demonstrate this, enter the following program which generates
+a tone of 187 Hz in the loudspeaker:</p>
+
+<pre>   10 P=#B002
+   20a ?P=?P:4; GOTO a</pre>
+
+<p>This program works as follows: P is the location corresponding
+to the input/output port, and exclusive-ORing this location with
+4 will change the output line connected to the loudspeaker. The
+frequency generated implies that the statements on line 20 are
+executed in about 2.5 milliseconds (twice per cycle).</p>
+
+<p>Try removing the label and rewrite the program as follows:</p>
+
+<pre>   10 P=OB002 
+   20 ?P=?P:4; GOTO 20 </pre>
+
+<p>The GOTO statement is now slightly slower, and the tone
+generated will have the lower frequency of 144 Hz. The highest
+frequency that can be generated by a BASIC program is 322 Hz, as
+follows:</p>
+
+<pre>   10 REM 322 Hz 20 P=#B002 
+   30 FOR Z=0 TO 10000000 STEP 4;?P=Z;N.</pre>
+
+<p>To play tunes you will need to use an assembler program; see
+Section 15.4. </p>
+
+<h3><font color="#0000FF">4.6.2 Switches</font></h3>
+
+<p>The GOTO statement may be followed by any expression which
+evaluates to a valid line number; for example:</p>
+
+<pre>   10 REM Two-Way Switch
+   20 INPUT &quot;TYPE 1 OR 2&quot; L
+   30 GOTO (40*L)
+   40 PRINT &quot;ONE&quot;
+   50 END
+   80 PRINT &quot;TWO&quot;
+   90 END</pre>
+
+<p>If L is 1 the expression (40*L) will be equal to 40, and the
+program will print 'ONE'. If L is 2 the expression will be equal
+to 80 and the program will print 'TWO&#146;. The flowchart for
+this program is as follows:</p>
+
+<div align="center"><table><tr><td><img src="atap26.gif"
+alt="atap26.gif" align="left" width="175" height="218" border="0" hspace="0"  />
+</td></tr></table></div>
+
+<h3><font color="#0000FF">4.6.3 Multi-Way Switches</font></h3>
+
+<p>Finally here is an example of a multi-way switch using GOTO.
+The program calculates a random number between 0 and 5 and then
+goes to a line number between 30 and 35. Each of these lines
+consists of a PRINT statement which prints the face of a dice.
+The single quote in the print statement gives a 'return' to the
+start of the next line.</p>
+
+<pre>   10 REM Dice Tossing
+   20 GOTO (30+ABS(RND)%6)
+   30 PRINT'&quot; *&quot;''; END
+   31 PRINT&quot;  *&quot;''&quot;*&quot;'; END
+   32 PRINT&quot;  *&quot;'&quot; *&#148;&#146;&#148;*&quot;'; END
+   33 PRINT&quot;* *&#148;''&quot;* *&quot;&#146;; END
+   34 PRINT&quot;* *&quot;'&quot; *&quot;'&#148;* *&quot;'; END
+   35 PRINT&quot;* *&quot;'&quot;* *&quot;'&quot;* *&quot;'; END</pre>
+
+<pre>Description of Program:
+20	Choose random number between 30 and 35
+30-35   Print corresponding face of a dice</pre>
+
+<p>Sample runs:</p>
+
+<pre>&gt;RUN
+  *
+ *
+*
+&gt;RUN
+* *
+*
+* *
+&gt;RUN
+* *
+* *
+* *</pre>
+
+<h2><font color="#0000FF">4.7 Graphics</font></h2>
+
+<p>The ATOM has no less than 9 different graphics modes available
+from BASIC. This section provides a brief introduction to
+graphics mode 0, the lowest resolution mode, which is available
+on the unexpanded ATOM. With more memory added to the ATOM the
+other graphics modes are available, and these are explained in
+Chapter 11. A special feature of mode 0 is that it is possible to
+mix graphics with any of the ATOM's characters.</p>
+
+<p>Graphics treats the screen as a piece of graph paper on which
+it is possible to draw lines and plot points. Points on the
+screen are called 'picture elements' or &#146;pixels' for short,
+because they are actually small squares. Each pixel on the screen
+is specified by its coordinates in the two directions, horizontal
+and vertical, and these coordinates will be referred to as X and
+Y respectively. The graphics screen is labelled as follows in
+mode 0: </p>
+
+<p>&nbsp;</p>
+
+<p>This statement clears the screen and puts it into graphics
+mode. It is followed by a number, or expression in brackets, to
+specify the mode. The graphics screen is labelled as follows:</p>
+
+<table border="0" cellspacing="0">
+    <tr>
+        <td>0,47</td>
+        <td>&nbsp;</td>
+        <td>63,47</td>
+    </tr>
+    <tr>
+        <td align="center">^<br>
+        |<br>
+        Y<br>
+        |</td>
+        <td><img src="atom_1.png" width="256" height="192"> </td>
+        <td>&nbsp;</td>
+    </tr>
+    <tr>
+        <td>0,0</td>
+        <td align="center">-- X --&gt;</td>
+        <td>63,0</td>
+    </tr>
+</table>
+
+<h3><font color="#0000FF">4.7.1 CLEAR</font></h3>
+
+<p>To prepare the screen for graphics the statement CLEAR is
+used. It is followed by the graphics mode number. On the
+unexpanded ATOM the only legal option is:</p>
+
+<pre>      CLEAR 0</pre>
+
+<h3><font color="#0000FF">4.7.2 MOVE</font></h3>
+
+<p>Any point on the screen can be specified by moving the
+'graphics cursor' to that point with the MOVE statement. The
+graphics cursor does not show on the screen, and it is different
+from the ordinary cursor which is visible in character mode. The
+format of the statement is:</p>
+
+<pre>      MOVE X,Y</pre>
+
+<p>where X and Y can be numbers, or arbitrary expressions
+provided they are enclosed in brackets. For example, to move the
+graphics cursor to the origin, X=0 Y=0, type:</p>
+
+<pre>      MOVE 0,0</pre>
+
+<p>The MOVE statement will normally be the first graphics
+statement of any program.</p>
+
+<h3><font color="#0000FF">4.7.3 DRAW</font></h3>
+
+<p>The DRAW statement will plot a line anywhere on the screen.
+The line starts from the position of the graphics cursor, and
+ends at the point specified in the statement, and tie graphics
+cursor will be moved to that point. For example:</p>
+
+<pre>      DRAW 63,47</pre>
+
+<p>will draw a line to the top right-hand corner of the screen,
+and leave the graphics cursor at that point. It is quite legal,
+and safe, to draw off the screen; the line will just not appear.</p>
+
+<h3><font color="#0000FF">4.7.4 Example</font></h3>
+
+<p>The following simple program will draw a rectangle, rotated by
+the amount entered for R. Try typing in numbers between 0 and 47
+for R:</p>
+
+<pre>   10 REM Rotating Rectangle
+   20 X=63; Y=47
+   30 INPUT R
+   40 CLEAR 0
+   50 MOVE R,0
+   60 DRAW X,R; DRAW (X-R),Y
+   70 DRAW 0,(Y-R); DRAW R,0
+   80 GOTO 30</pre>
+
+<h3><font color="#0000FF">4.7.5 Plotting Points</font></h3>
+
+<p>One way of plotting a single point at X,Y on the screen is to
+write:</p>
+
+<pre>      MOVE X,Y; DRAW X,Y</pre>
+
+<p>A more elegant way is given in Section 11.3.</p>
+
+<h2><font color="#0000FF">4.8 Conditions - IF...THEN</font></h2>
+
+<p>One of the most useful facilities in BASIC is the ability to
+execute a statement only under certain specified conditions. To
+do this the IF...THEN statement is used; for example:</p>
+
+<pre>      IF A=0 THEN PRINT &quot;ZERO&quot;</pre>
+
+<p>will execute the PRINT statement, and print &quot;ZERO&quot;,
+only if the condition A=0 is true; otherwise everything after
+THEN will be skipped and execution will continue with the next
+line.</p>
+
+<h3><font color="#0000FF">4.8.1 Relational Operators</font></h3>
+
+<p>The part of the IF...THEN statement after the IF is the
+'condition' which can be any two expressions separated by a
+'relational operator' which compares the two expressions. Six
+different relational operators can be used:</p>
+
+<pre>          =  equal           &lt;&gt;  not equal
+          &gt;  greater than    &lt;=  less than or equal
+          &lt;  less than       &gt;=  greater than or equal</pre>
+
+<p>where each operator on the left is the opposite of the
+operator on the right.</p>
+
+<p>The expressions on each side of the relational operators can
+be as complicated as required, and the order is unimportant.
+There is no need to put brackets around the expressions.</p>
+
+<p>For example, the following program prints one of three
+messages depending on whether a number typed in is less than 7,
+equal to 7, or greater than 7:</p>
+
+<pre>   10 REM Guess a number
+   20 INPUT&quot;GUESS A NUMBER&quot; N
+   30 IF N&lt;7 THEN PRINT &quot;TOO SMALL&quot; 
+   40 IF N=7 THEN PRINT &quot;CORRECT!&quot; 
+   50 IF N&gt;7 THEN PRINT &quot;TOO LARGE&quot; 
+   60 END
+</pre>
+
+<p>A flowchart for this program is as follows:</p>
+<div align="center"><table><tr><td>
+<img src="atap30.gif"
+alt="atap30.gif" align="left" width="136" height="389" border="0" hspace="0"  />
+</td></tr></table></div>
+<h3><font color="#0000FF">4.8.2 THEN Statement</font></h3>
+
+<p>The statement after THEN can be any statement, even an
+assignment statement as in:</p>
+
+<pre>      IF A=7 THEN A=6</pre>
+
+<p>Note that the meaning of each '=' sign is different. The first
+'A=7' is a condition which can be either true or false; the
+second 'A=6' is an assignment statement which instructs the
+computer to set the variable A to the value 6. To make this
+distinction clear the above statement should be read as: 'If A is
+equal to 7 then A becomes 6'.</p>
+
+<h3><font color="#0000FF">4.8.3 Conjunctions - AND and OR</font></h3>
+
+<p>Conditions can be strung together using the conjunctions AND
+and OR, so, for example:</p>
+
+<pre>   10 INPUT A,B
+   20 IF A=2 AND B=2 THEN PRINT &quot;BOTH&quot;
+   30 GOTO 10</pre>
+
+<p>will only print &quot;BOTH&quot; if both A and B are given the
+value 2. <br>
+Alternatively:</p>
+
+<pre>   10 INPUT A,B
+   20 IF A=2 OR B=2 THEN PRINT &#148;EITHER&quot; 
+   30 GOTO 40</pre>
+
+<p>will only print &quot;EITHER&quot; if at least one of A and B
+is equal to 2.</p>
+
+<h2><font color="#0000FF">4.9 Logical Variables</font></h2>
+
+<p>An alternative form for the condition in an IF...THEN
+statement is to specify a variable whose value denotes either
+'true' or 'false'. The values 'true&#146; and 'false' are
+represented by 1 and 0 respectively, so:</p>
+
+<pre>      A=1; B=0</pre>
+
+<p>sets A to 'true' and B 'false'. Logical variables can be used
+in place of conditions in the IF statement; for example:</p>
+
+<pre>      IF A THEN PRINT &quot;TRUE&quot;</pre>
+
+<p>will print &quot;TRUE&quot;.</p>
+
+<p>A logical variable can also be set to the value of a
+condition:</p>
+
+<pre>      A=(L=100)</pre>
+
+<p>This statement will set A to 'true' if L is 100, and to
+'false&#146; otherwise. The condition must be placed in brackets
+as shown.</p>
+
+<h2><font color="#0000FF">4.10 Iteration</font></h2>
+
+<p>One way of printing the powers of 2 would be to write:</p>
+
+<pre>   10 REM Powers of Two
+   20 P=1; T=2; @=0
+   30 PRINT &quot;2   &quot;, P, &quot;= &quot;, T '
+   40 T=T*2; P=P+1
+   50 GOTO 30</pre>
+
+<p>which will print out:</p>
+
+<pre>2 ^ 1 = 2
+2 ^ 2 = 4
+2 ^ 3 = 8
+2 ^ 4 = 16
+2 ^ 5 = 32
+2 ^ 6 = 64</pre>
+
+<p>and so on without stopping. This is a bit inelegant; suppose
+we wished to print out just the first 12 powers of 2. It is
+simply a matter of detecting when the 12th. power has just been
+printed out, and stopping then. This can be done with the IF
+statement as follows:</p>
+
+<pre>   10 REM First Twelve Powers of Two
+   20 P=l; T=2; @=0
+   30 PRINT &quot;2&quot; ^, P, &quot; = &quot;, T '
+   40 T=T*2; P=P+1
+   50 IF PC&lt;=12 GOTO 30
+   60 END</pre>
+
+<p>The IF statement is followed by a GOTO statement; if P is less
+than 12 the condition will be true, and the program will go back
+to line 30.</p>
+
+<p>After the twelth power of 2 has been printed out P will have
+the value 13, which is not less than or equal to 12, and so the
+program will stop.</p>
+
+<p>With the IF statement we have the ability to make the computer
+do vast amounts of work as a result of very little effort on our
+part. For example we can print 256 exclamation marks simply by
+running the following program:</p>
+
+<pre>   10 I=0
+   20 PRINT&quot;!&quot;; I=I+1 
+   30 IF I&lt;256 GOTO 20 
+   40 END</pre>
+
+<h3><font color="#0000FF">4.10.1 Cubic Curve</font></h3>
+
+<p>Perhaps a more useful example is the following program, which
+calculates the value of:</p>
+
+<p>x<sup>3</sup> - 600x</p>
+
+<p>for 64 values of x and plots a graph of the resulting curve:</p>
+
+<pre>    1 REM Cubic Curve
+   10 CLEAR 0
+   20 MOVE 0,24; DRAW fi3,24
+   30 MOVE 32,0; DRAW 32,47
+   40 MOVE -1,-1
+   50 X=-33
+   55 Y=(X*X*X-600*X)/400
+   60 DRAW (32+X),(24+Y)
+   70 X=X+1
+   80 IF X&lt;33 THEN GOTO 55
+   90 END</pre>
+
+<pre>Description of Program:
+10        Use graphics mode 0
+20-30     Draw axes
+40        Move graphics cursor off screen
+50-80     Plot curve for values of X from -32 to 32
+55        Equation to be evaluated divided by 400 to bring the
+          interesting part of the cubic curve into range
+60        Draw to next point, with origin at (32,24).</pre>
+
+<pre>Program size: 190 bytes</pre>
+
+<p align="right"><a href="atap_05.htm">Next chapter</a></p>
+</body>
+</html>

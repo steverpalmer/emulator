@@ -1,0 +1,625 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Type"
+content="text/html; charset=iso-8859-1">
+<meta name="GENERATOR" content="Microsoft FrontPage Express 2.0">
+<title>1 Start Here</title>
+<HEADER>
+</HEADER>
+</head>
+
+<body bgcolor="#FFFFFF">
+
+<h1><font color="#0000FF">1 Start Here</font></h1>
+
+<p>If you bought the ATOM ready built, together with a power
+supply and a cable to connect it to a TV set, then carry on
+reading. Otherwise you should refer to the Technical Manual for
+details of how to assemble an ATOM kit, and for details of the
+required accessories.</p>
+
+<p>The ATOM connects to the aerial socket of an ordinary
+black-and-white or colour TV set. The ATOM will not affect the
+normal operation of the TV in any way. Connect the UHF output
+from the ATOM to the aerial socket of the TV set; see Fig. 1.
+Connect the ATOM's power supply to a mains socket, and plug the
+power connector into the back of the ATOM; again, see Fig. 1.
+Press the key marked BREAK on the top right of the ATOM's
+keyboard. Switch on the TV set, and turn the set's volume control
+down. </p>
+
+<p>The ATOM makes use af a TV channel that is not occupied by any
+TV stations, and it is necessary to tune to this channel in order
+to get the correct display from the ATOM. If the TV set you are
+usinq has push buttons to select stations, choose an unused
+button and tune the TV by rotating the button. If the TV has a
+single numbered tuning dial, turn the dial to somewhere near
+channel 36. Tune in the TV set until the screen is black, with
+the following display in the top left-hand corner of the screen:</p>
+
+<table border="0" cellspacing="0" width="256">
+    <tr>
+        <td bgcolor="#000000"><font color="#FFFFFF"
+        face="Fixedsys">ACORN ATOM<br>
+        <br>
+        &gt;_ </font></td>
+    </tr>
+</table>
+
+<p>Adjust the contrast and brightness controls so that the
+letters are clearly legible, and tune the TV set carefully until
+the letters are sharp and clear.</p>
+
+<p>The '&gt;' sign is called the ATOM's 'prompt'. It indicates
+that the computer is waiting for something to be typed in; a
+command, perhaps, or a program. The white rectangle, '_', is
+called the 'cursor'; it indicates where on the screen the next
+character you type in will appear.</p>
+
+<h2><font color="#0000FF"><b>1.1 What the ATOM Can Do</b></font></h2>
+
+<p>The ATOM understands the following special words and symbols:</p>
+
+<p><font color="#0000FF"><strong>Commands</strong></font></p>
+
+<pre>LIST, LOAD, NEW.</pre>
+
+<p><font color="#0000FF"><strong>Functions</strong></font></p>
+
+<pre>ABS, BGET, 0 CH, COUNT, EXT, FIN, FOUT, GET, LEN, PTR, RND, TOP.</pre>
+
+<p><font color="#0000FF"><strong>Connectives</strong></font></p>
+
+<pre>AND, OR, STEP, THEN, TO.</pre>
+
+<p><font color="#0000FF"><strong>Statements</strong></font></p>
+
+<pre>BPUT, CLEAR, DIM, DO, DRAW, END, FOR, GOSUB, GOTO, IF, INPUT, LET, LINK, MOVE, NEXT, OLD, PLOT, PRINT, PUT, REM, RETURN, RUN, SAVE, SGET, 
+SHUT, SPUT, UNTIL, WAIT.</pre>
+
+<p><font color="#0000FF"><strong>Operators</strong></font></p>
+
+<pre>!, #, $, &amp;, *, +, -, /, :, &lt; =, &gt;, ?, \, &lt;&gt;, &lt; &gt;=.</pre>
+
+<p>These words and symbols will be explained over the course of
+the next 12 chapters; for the moment just observe that many of
+these words have an obvious meaning; for example, try typing:</p>
+
+<blockquote>
+    <pre>PRINT &quot;HELLO&quot;</pre>
+</blockquote>
+
+<p>after the '&gt;' prompt sign. Note that the quotation marks
+are obtained by holding down the SHIFT key and typing the '2'
+key. Now type RETURN to indicate that the line is finished, and
+the ATOM will do just that:</p>
+
+<blockquote>
+    <pre>HELLO&gt;_</pre>
+</blockquote>
+
+<p>To perform calculations you just need to type PRINT followed
+by the expression you want to evaluate. For example, try:</p>
+
+<blockquote>
+    <pre>PRINT 7+6*2</pre>
+</blockquote>
+
+<p>When you type RETURN the answer will be printed out. You can
+try typing anything you like, but any words not on the above
+lists will probably cause an error. For example, try typinq:</p>
+
+<blockquote>
+    <pre>HELLO</pre>
+</blockquote>
+
+<p>after the ATOM's ','&#146; prompt. The ATOM will reply with a
+'bleep' and will print:</p>
+
+<blockquote>
+    <pre>ERROR 94</pre>
+</blockquote>
+
+<p>which means that HELLO is not one of the statements or
+commands that the ATOM understands.</p>
+
+<h2><font color="#0000FF"><b>1.2 A Demonstration</b></font></h2>
+
+<p>Now that you are in control of your ATOM you may like a quick
+demonstration of some more complicated things that it can do. No
+attempt is made here to explain how these examples work; for that
+you will have to read the rest of the first section of this
+manual. You can make ATOM do a lot of typing with very little
+effort; try entering:</p>
+
+<blockquote>
+    <pre>DO PRINT &quot;ATOM-&quot;; UNTIL 0</pre>
+</blockquote>
+
+<p>Note the difference between the '0' of DO, which is the letter
+'0', and the '0' at the end of the statement, which is the digit
+'0' on the top row of the keyboard. You will have to type the ESC
+(escape) key, which is at the top left of the keyboard, to stop
+this program. Now try typing in the following line:</p>
+
+<blockquote>
+    <pre>DO PRINT $RND&amp;3+8,$8,$128; UNTIL 0</pre>
+</blockquote>
+
+<p>You will need to use the SHIFT key to get some of the special
+symbols. This program is longer than one line of the screen, but
+just keep typing and it will appear on a second line. Then press
+RETURN to run the program. Again, you will have to type ESC to
+stop this program. To demonstrate the graphics commands type:</p>
+
+<blockquote>
+    <pre>CLEAR0; MOVE 10,0; DRAW 60,50</pre>
+</blockquote>
+
+<p>and the ATOM will draw a line on the screen. If you feel like
+trying a more complicated graphics program, type in the
+following:</p>
+
+<blockquote>
+    <pre>CLEAR0;MOVE32,24;Y=l;DOPLOT1,0,Y;PLOT1,Y,0;Y=-Y-2*Y/A.Y;U.0</pre>
+</blockquote>
+
+<p>Press ESC to get back the ATOM's prompt.<br>
+To demonstrate the ATOM's assembler enter the following line
+after the prompt:</p>
+
+<blockquote>
+    <pre>P=320;[INX; LDA 0,X; STA #B002; JMP 320;]</pre>
+</blockquote>
+
+<p>An assembler listing will be printed out, and the machine code
+will be put into memory at 320. To execute the program, type:</p>
+
+<blockquote>
+    <pre>LINK 320</pre>
+</blockquote>
+
+<p>and the ATOM will make a buzzing noise. It is playing the
+random contents of its memory through its internal loudspeaker.
+To stop the program you will have to type BREAK, because it is a
+machine-code program.</p>
+
+<p>You may question the usefulness of these examples, but they do
+illustrate the wide range of different tasks the ATOM is capable
+of. These 'programs' all fitted onto two lines of the display; to
+see what you will be able to do with a longer program take a look
+at the many examples later on in this manual.</p>
+
+<h2><font color="#0000FF"><b>1.3 The Keyboard</b></font></h2>
+
+<p>The ATOM keyboard is designed to the standard layout generally
+accepted in the computer industry; see Fig. 2. In most respects
+it is just like the keyboard of an ordinary typewriter, but there
+are some important differences. For a start there are several
+keys not found on typewriters, such as DELETE, REPT, CTRL, and
+BREAK. The purpose of each of these keys will be explained in the
+following sections.</p>
+
+<p>Another difference is that the letters A-Z will appear in
+capitals, rather than lower-case, when they are typed by
+themselves. Try typing in the letters 'ABC' and observe that they
+appear, as you type them, on the screen:</p>
+
+<blockquote>
+    <pre>&gt;ABC_</pre>
+</blockquote>
+
+<p>From now on, in the examples, the cursor will not be drawn in
+for simplicity.</p>
+
+<h3><font color="#0000FF"><b>1.3.1 SHIFT</b></font></h3>
+
+<p>Some keys carry two legends. For example, each digit key
+(except 0) also has a special symbol or punctuation mark above
+it. The lower symbol on each of these keys is obtained by simply
+typing that key; the upper symbol is obtained by holding one of
+the SHIFT keys down, and typing that key. This aspect of the
+keyboard is just like a typewriter.</p>
+
+<p>If the SHIFT key is held down in conjunction with one of the
+keys bearing a single legend, such as A-Z and 0, [, etc, then the
+character will appear inverted; i.e. as a black character on a
+white square. Inverted A-Z correspond to lower case letters, and
+will be represented by lower case letters a-z in this manual.
+Inverted @, [, \ etc. will be represented by <font
+color="#000000"><u>@</u>, <u>[,</u> <u>\</u></font> etc. </p>
+
+<h3><font color="#0000FF"><b>1.3.2 LOCK</b></font></h3>
+
+<p>The LOCK key, when pressed on its own, changes the way the
+SHIFT key operates with the letters A-Z. Initially the keyboard
+will give inverted A-Z in conjunction with the SHIFT key, and
+plain A-Z otherwise. If the LOCK key is now pressed once the
+keyboard will normally give inverted A-Z, and will give plain A-Z
+only when the SHIFT key is held down. Pressing LOCK again will
+revert to the previous state.</p>
+
+<h3><font color="#0000FF"><b>1.3.3 DELETE</b></font></h3>
+
+<p>The advantage of a TV screen over a piece of paper is that
+mistakes can be corrected without trace of the error. The DELETE
+key will erase the last character on the line, and the cursor
+will back up one space. Mistakes can thus be deleted and retyped
+with little effort.</p>
+
+<h3><font color="#0000FF"><b>1.3.4 RETURN</b></font></h3>
+
+<p>The RETURN key is a signal to the computer that you have
+finished typing in a line of characters. The cursor will move to
+the start of the next line, and the computer may respond to what
+you have typed by typing out a reply.</p>
+
+<h3><font color="#0000FF"><b>1.3.5 Repeat - REPT</b></font></h3>
+
+<p>If the 'repeat' key, marked REPT, is held down with another
+key, that key is typed repeatedly. REPT is useful in conjunction
+with DELETE to erase several characters very rapidly. Note that
+pressing REPT on its own will have no effect.</p>
+
+<h3><font color="#0000FF"><b>1.3.6 Control - CTRL</b></font></h3>
+
+<p>There are several special functions available from the
+keyboard which are obtained by typing certain keys with the
+'control' key - marked CTRL - held down. Only the following two
+control functions will be mentioned here:</p>
+
+<p>CTRL-G gives a bleep in the ATOM's loudspeaker.<br>
+CTRL-L clears the screen.</p>
+
+<h3><font color="#0000FF"><b>1.3.7 BREAK</b></font></h3>
+
+<p>The BREAK key will reset the computer, and return it to the
+state it was in just after switching on. It should not normally
+be necessary to type BREAK, but some assembler programs can cause
+loops which cannot be stopped in any other way. Note that the
+contents of memory are preserved when BREAK is typed, and any
+stored program can be recovered.</p>
+
+<h2><font color="#0000FF"><b>1.4 Scrolling</b></font></h2>
+
+<p>When the cursor reaches the bottom of the screen further lines
+typed in will cause the screen to 'scroll'; every line is shifted
+up so that you always see the last 16 lines of what has been
+typed, and the top line of text on the screen will be lost.</p>
+
+<h2><font color="#0000FF"><b>1.5 Storing Text</b></font></h2>
+
+<p>Any line typed after the ATOM's '&gt;' prompt which starts
+with a number is not executed, but stored as text in the ATOM's
+memory. Any type of input can be stored in this way; it could be
+the text of a document, a program in BASIC, an assembler program,
+or data for a program. This section shows how to enter a piece of
+text, which can then be stored on cassette, edited, or output to
+a printer. The same method would be used for entering a program.</p>
+
+<p>The line must start with a line number, which can be any
+number within the range 1 to 32767, and there is no need to use
+consecutive line numbers for consecutive lines; indeed, it is
+wise to choose line numbers spaced by about 10 as you will soon
+realise. After the line number you should type the line of text.
+For example, enter the following:</p>
+
+<blockquote>
+    <pre>10 IN XANADU DID KUBLA KHAN
+20 A STATELY PLEASURE-DOME DECREE: 
+30 WHERE ALPH, THE SACRED RIVER, RAN 
+40 DOWN TO A SUNLESS SEA.</pre>
+</blockquote>
+
+<p>Remember to type RETURN at the end of each line. Each line
+number can be followed by up to 64 characters; if you try to type
+more than 64 characters the ATOM will refuse to proceed until you
+have deleted some characters.</p>
+
+<p>The reason for spacing line numbers somewhat apart is that it
+is then a simple matter to insert new lines between existing
+lines. For example, to insert a line before line 40, type:</p>
+
+<blockquote>
+    <pre>36 THROUGH CAVERNS MEASURELESS TO MAN</pre>
+</blockquote>
+
+<p>The computer will sort the lines into the right order,
+according to their line numbers, irrespective of the order in
+which you entered them.</p>
+
+<h2><font color="#0000FF"><b>1.6 Commands</b></font></h2>
+
+<p>Commands typed in after the '&gt;' prompt, without a preceding
+line number, and followed by RETURN, are executed immediately by
+ATOM rather than being stored in its memory. For example, now
+type the command:</p>
+
+<blockquote>
+    <pre>LIST</pre>
+</blockquote>
+
+<p>This will cause the stored text to be typed out:</p>
+
+<blockquote>
+    <pre>10 IN XANADU DID KUBLA KHAN
+20 A STATELY PLEASURE-DOME DECREE:
+30 WHERE ALPH, THE SACRED RIVER, RAN
+36 THROUGH CAVERNS MEASURELESS TO MAN
+40 DOWN TO A SUNLESS SEA.</pre>
+</blockquote>
+
+<p>There are several options with the LIST command. For example:</p>
+
+<table border="0">
+    <tr>
+        <td><font face="Courier New">LIST 10</font></td>
+        <td>will list line 10 only.</td>
+    </tr>
+    <tr>
+        <td><font face="Courier New">LIST 20,40</font></td>
+        <td>will list lines 20 to 40 inclusive.</td>
+    </tr>
+    <tr>
+        <td><font face="Courier New">LIST 20,</font></td>
+        <td>will list line 20 onwards.</td>
+    </tr>
+    <tr>
+        <td><font face="Courier New">LIST ,30</font></td>
+        <td>will list up to line 30.</td>
+    </tr>
+</table>
+
+<p>A listing can be stopped by typing ESC (escape).</p>
+
+<h2><font color="#0000FF"><b>1.7 Editing</b></font></h2>
+
+<p>One powerful feature of the ATOM's text and program storage is
+that stored lines can be modified very simply by typing the same
+line number followed by the new version. For example, to change
+line 20 in the text just type:</p>
+
+<blockquote>
+    <pre>20 NEW LINE TWO</pre>
+</blockquote>
+
+<p>and try listing the program again to see the effect.<br>
+To delete a line simply type the line number followed by RETURN.</p>
+
+<h2><font color="#0000FF"><b>1.8 Other Commands</b></font></h2>
+
+<p>Some other useful commands are described here:</p>
+
+<p>NEW will clear the stored text so that a new piece of text can
+be <br>
+typed in. It should always be typed before entering a new piece
+of <br>
+text.</p>
+
+<p>OLD can be typed after typing BREAK to retrieve the text
+previously in memory. Note that you should only type OLD if there
+is already text in <br>
+memory.</p>
+
+<h2><font color="#0000FF"><b>1.9 Errors</b></font></h2>
+
+<p>By now you the ATOM will probably have made a 'bleep' followed
+by the message:</p>
+
+<blockquote>
+    <pre>ERROR X</pre>
+</blockquote>
+
+<p>where X is the error code number. There are two possible
+reasons for errors:</p>
+
+<p>1. You typed something, probably a command, that the ATOM was
+not expecting or could not interpret.</p>
+
+<p>2. The ATOM was commanded to do something that it could not
+do.</p>
+
+<p>For example, typing 'ABC' followed by a RETURN will give the
+error message:</p>
+
+<blockquote>
+    <pre>ERROR 94</pre>
+</blockquote>
+
+<p>which is probably the most common error; it means that 'ABC'
+was not a legal command.</p>
+
+<p>Remember that it is impossible to cause physical damage to the
+ATOM, whatever you type at the keyboard. The worst you can do is
+to lose the stored text, and even that is extremely unlikely.
+Most errors are really warnings, and a complete explanation of
+all the error codes is given in Chapter 27.</p>
+
+<h2><font color="#0000FF"><b>1.10 Saving Text or Programs on Tape</b></font></h2>
+
+<p>Having entered some stored text into the ATOM's memory, this
+section will show how to save this text, and load it back at a
+later time. Text and programs can be saved on standard cassette
+(or reel-to-reel) tapes using the ATOM's cassette interface.
+Connect the cassette output from the ATOM to the input of a
+cassette recorder, and the output from tne recorder to the input
+of the ATOM. The tape load routine uses software averaging
+techniques to minimise the likelihood of errors on loading, and
+no trouble should be experienced in transferring tapes from one
+machine to another.</p>
+
+<h3><font color="#0000FF"><b>1.10.1 Setting Up</b></font></h3>
+
+<p>Before loading and saving files using the cassette interface
+it is worth entering the following simple routines to check that
+the cassette system is working correctly, and to find out the
+best setting of the recorder's volume control.</p>
+
+<p>Enter the following line after the ATOM's prompt:</p>
+
+<blockquote>
+    <pre>DO BPUT A,88; WAIT; WAIT; WAIT; WAIT; UNTIL 0</pre>
+</blockquote>
+
+<p>Type RETURN and record on the recorder for a few minutes. To
+stop the program type ESC (escape). This program has recorded a
+sequence of Xs, in coded form, on the tape. If you play it back
+it should sound like a series of short buzzes.</p>
+
+<p>Now enter the following line, which is a program to read <br>
+characters from the tape and print them on the screen:</p>
+
+<blockquote>
+    <pre>DO PRINT $BGET A; UNTIL 0</pre>
+</blockquote>
+
+<p>The dollar symbol is obtained by holding the SHIFT key down
+and typing '4'. Press RETURN, rewind the tape, and play back the
+'X's that you recorded. If all is well a stream of 'X's should be
+printed out, and adjust the volume setting on the recorder so
+that no other characters appear, indicating errors. When you are
+satisfied that all is well, proceed to the next section.</p>
+
+<h3><font color="#0000FF"><b>1.10.2 Text Files</b></font></h3>
+
+<p>The information is stored as a stream of audible tones on
+tape; each section of information is referred to as a 'file'.
+Several different files can be saved on one tape, and they are
+identified by having unique 'filenames'. Filenames can be
+anything containing up to 16 letters, digits, or spaces: suitable
+names are &quot;DATA FILE&quot;, &quot;22/4/80&quot;, <br>
+etc.</p>
+
+<h3><font color="#0000FF"><b>1.10.3 SAVE</b></font></h3>
+
+<p>First check that the stored text is still there by typing
+LIST. To save the stored text to tape, type:</p>
+
+<blockquote>
+    <pre>SAVE &quot;EXAMPLE&quot;</pre>
+</blockquote>
+
+<p>where &quot;EXAMPLE&quot; is the filename chosen for
+illustration. Type RETURN, and the message:</p>
+
+<blockquote>
+    <pre>RECORD TAPE</pre>
+</blockquote>
+
+<p>will be printed on the screen. Put the tape recorder to
+record, and allow the tape to run well past the leader. Now type
+RETURN (or any other key) and the cursor will move to the start
+of the next line, indicating that the text is being recorded.
+After a short delay the '&gt;' prompt will reappear, and you can
+turn the tape-recorder off.</p>
+
+<h3><font color="#0000FF"><b>1.10.4 *CAT</b></font></h3>
+
+<p>The *CAT command will give a complete catalogue of all the
+files on a cassette. The '*' asterisk is used to distinguish the
+cassette operating-system commands from the BASIC commands.
+Rewind the tape and type:</p>
+
+<blockquote>
+    <pre>*CAT</pre>
+</blockquote>
+
+<p>The ATOM will reply with: </p>
+
+<blockquote>
+    <pre>PLAY TAPE</pre>
+</blockquote>
+
+<p>and you should then play the tape, and press any key to start
+the catalogue. As a file is encountered on the tape the filename
+will be printed out, together with additional information about
+the file:</p>
+
+<blockquote>
+    <pre>EXAMPLE XXXX XXXX XXXX XX</pre>
+</blockquote>
+
+<p>where the 'X's represent four numbers which you can ignore for
+the moment (see Section 19.3 for details).<br>
+When you have finished you can get back to the '&gt;' prompt by
+typing CTRL (control).</p>
+
+<h3><font color="#0000FF"><b>1.10.5 LOAD</b></font></h3>
+
+<p>Switch off the ATOM, in order to cause the saved text to be
+lost, and then switch on again and type:</p>
+
+<blockquote>
+    <pre>LOAD &quot;EXAMPLE&quot;</pre>
+</blockquote>
+
+<p>The ATOM will reply with:</p>
+
+<blockquote>
+    <pre>PLAY TAPE</pre>
+</blockquote>
+
+<p>and the tape should be rewound and played, and RETURN pressed.
+The computer will search through the tape for a file of the
+specified filename, EXAMPLE in this case, and then load it into
+its memory. If all is well the prompt should reappear, and then
+typing:</p>
+
+<blockquote>
+    <pre>LIST</pre>
+</blockquote>
+
+<p>will give a listing of the text that was previously saved.</p>
+
+<h3><font color="#0000FF"><b>1.10.6 File Blocks</b></font></h3>
+
+<p>If you save a long file on tape, and play it back, you will
+discover that it is broken up into a number of short blocks, with
+gaps in between, and that when the file is catalogued its name
+appears several times, once for each block. This is done for
+greater reliability, and if the tape is damaged in the middle of
+one block it will still be possible to load back the other blocks
+of the file.One further message that may be given when loading
+tapes is:</p>
+
+<blockquote>
+    <pre>REWIND TAPE</pre>
+</blockquote>
+
+<p>This implies that you have started playing the tape in the
+middle of the file you wanted to load. Rewind the tape, press
+RETURN, and the message:</p>
+
+<blockquote>
+    <pre>PLAY TAPE</pre>
+</blockquote>
+
+<p>will be given again.</p>
+
+<h3><font color="#0000FF"><b>1.10.7 Errors when Using Tape</b></font></h3>
+
+<p>If an error is found when loading back a tape file, the
+message:</p>
+
+<blockquote>
+    <pre>SUM
+ERROR 6</pre>
+</blockquote>
+
+<p>is given. This might be caused by bad adjustment of the
+tape-recorder playback volume, a damaged or dirty tape, or
+recording a file over part of a previous file.</p>
+
+<p>If you choose an invalid name for a file, the message:</p>
+
+<blockquote>
+    <pre>NAME
+ERROR 118</pre>
+</blockquote>
+
+<p>will be given.</p>
+
+<p align="right"><a href="atap_02.htm">Next chapter</a></p>
+</body>
+</html>

@@ -1,0 +1,1086 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Type"
+content="text/html; charset=iso-8859-1">
+<meta name="GENERATOR" content="Microsoft FrontPage Express 2.0">
+<title>20 BASIC Statements,</title>
+</head>
+
+<body bgcolor="#FFFFFF">
+
+<h1><font color="#0000FF">20 BASIC Statements, Functions, and
+Commands</font></h1>
+
+<p>All the ATOM BASIC statements, functions, and commands are
+listed in the following pages in alphabetical order. Following
+each name is, where applicable, an explanation of the name and
+the shortest abbreviation of that name. The following symbols
+will be used; these are defined more fully in Chapter 26:</p>
+
+<p><font face="Arial">&lt;VARIABLE&gt;</font> -- one of the
+variables A to Z, or @.</p>
+
+<p>&lt;FACTOR&gt; -- a variable, a constant, a function, an
+array, an indirection, or an expression in brackets, any of which
+may optionally be preceded by a + or -- sign; e.g.:</p>
+
+<pre>A, -1234, ABS(12), AA(3), !A, (2*A+B).</pre>
+
+<p>&lt;EXPRESSION&gt; -- any arithmetic expression; e.g.:</p>
+
+<pre>A+B/2*(27-R)&amp;H.</pre>
+
+<p>&lt;RELATIONAL expression&gt; -- an expression, or a pair of
+expressons<br>
+linked by a relational operator; e.g.:</p>
+
+<pre>A, A&gt;=B, $A=&quot;CAT&quot;</pre>
+
+<p>&lt;TESTABLE expression&gt; -- any number of &lt;RELATIONAL
+expressions&gt;<br>
+connected by AND or OR; e.g.:</p>
+
+<pre>A&gt;B AND C&gt;D.</pre>
+
+<p>&lt;STRING right&gt; -- a quoted string, or an expression
+optionally preceded<br>
+by a dollar; e.g.:</p>
+
+<pre>&quot;STRING&quot;, $A.</pre>
+
+<table border="0" width="100%">
+    <tr>
+        <td width="10%"><font color="#0000FF"><strong>ABS</strong></font></td>
+        <td width="80%"><font color="#0000FF"><strong>Absolute
+        value</strong></font></td>
+        <td align="right" width="10%"><font color="#0000FF"><strong>A.</strong></font></td>
+    </tr>
+</table>
+
+<p>This function returns the absolute value of its argument,
+which is a &lt;FACTOR&gt;. ABS will fail to take the absolute
+value of the maximum negative integer, -2147483648, since this
+has no corresponding positive value. The most common use of ABS
+is in conjunction with RND to produce random numbers in a
+specified range, see RND. Example:</p>
+
+<pre>      PRINT ABS-1,ABS(-1),ABS1,ABS(1)'
+       1       1       1       1</pre>
+
+<table border="0" width="100%">
+    <tr>
+        <td width="10%"><font color="#0000FF"><strong>AND</strong></font></td>
+        <td width="80%"><font color="#0000FF"><strong>Relational
+        AND</strong></font></td>
+        <td align="right" width="10%"><font color="#0000FF"><strong>A.</strong></font></td>
+    </tr>
+</table>
+
+<p>This symbol provides the logical AND operation between two
+&lt;RELATIONAL expression&gt;s. Its form is &lt;RELATIONAL
+expression a&gt; AND &lt;RELATIONAL expression b&gt; and the
+result will be true only if both &lt;RELATIONAL expression&gt;s
+are true. AND has the same priority as OR. Example:</p>
+
+<pre>      IF A=B AND C=D PRINT&quot;EQUAL PAIRS&quot;'</pre>
+
+<table border="0" width="100%">
+    <tr>
+        <td width="10%"><font color="#0000FF"><strong>BGET</strong></font></td>
+        <td width="80%"><font color="#0000FF"><strong>Byte get</strong></font></td>
+        <td align="right" width="10%"><font color="#0000FF"><strong>B.</strong></font></td>
+    </tr>
+</table>
+
+<p>This function returns a single byte from a random file. The
+form of the instruction is:</p>
+
+<pre>      BGET &lt;FACTOR&gt;</pre>
+
+<p>where &lt;FACTOR&gt; is the file's handle returned by the FIN
+function. The next byte from the random file is returned as the
+least significant byte of the value, the other three bytes being
+zero. In the DOS the sequential pointer will be moved on by one
+and the operating system will cause an error if the pointer
+passes the end of the file.<br>
+Example:</p>
+
+<pre>      A=FIN&quot;FRED&quot;
+      PRINT &quot;THE FIRST BYTE FROM FRED IS &quot;BGET A'</pre>
+
+<table border="0" width="100%">
+    <tr>
+        <td width="10%"><font color="#0000FF"><strong>BPUT</strong></font></td>
+        <td width="80%"><font color="#0000FF"><strong>Byte put</strong></font></td>
+        <td align="right" width="10%"><font color="#0000FF"><strong>B.</strong></font></td>
+    </tr>
+</table>
+
+<p>This statement sends a single byte to a random file. The form
+of the statement is:</p>
+
+<pre>        BPUT &lt;FACTOR&gt;, &lt;EXPRESSION&gt;</pre>
+
+<p>where &lt;FACTOR&gt; is the file's handle returned by the FOUT
+function; the &lt;EXPRESSION&gt; is evaluated and its least
+significant byte is sent to the random file. If you are using the
+DOS, the random file's sequential pointer will be moved on by one
+and the operating system will cause an error if the length of the
+file exceeds the space allowed. Example:</p>
+
+<pre>        A=FOUT&quot;FRED&quot;
+        BPUT A, 23</pre>
+
+<table border="0" width="100%">
+    <tr>
+        <td width="10%"><font color="#0000FF"><strong>CH</strong></font></td>
+        <td width="80%"><font color="#0000FF"><strong>Change
+        character to number</strong></font></td>
+        <td align="right" width="10%"><font color="#0000FF"><strong>CH</strong></font></td>
+    </tr>
+</table>
+
+<p>This function returns the number representing the first ASCII
+character of the string supplied as its argument. It differs from
+straight use of the '?' operator in that it can take an immediate
+string argument or an &lt;EXPRESSION&gt;. Examples:</p>
+
+<pre>      PRINT CH&quot;&quot;'
+      13       (value of string terminatinq character)
+      PRINT CH&quot;BETA&quot;'
+      66
+      S=TOP;$S=&quot;BETA&quot;
+      PRINT ?S/CH$S,CHS'
+      66      66      66
+      PRINT S?LENS,CH$S+LENS'
+      65      65</pre>
+
+<table border="0" width="100%">
+    <tr>
+        <td width="10%"><font color="#0000FF"><strong>CLEAR</strong></font></td>
+        <td width="80%"><font color="#0000FF"><strong>Clear
+        graphics screen</strong></font></td>
+        <td align="right" width="10%"><font color="#0000FF"><strong>CLEAR</strong></font></td>
+    </tr>
+</table>
+
+<p>This statement clears the screen and initialises the display
+for the graphics mode specified its argument:</p>
+
+<pre>CLEAR 0 : Screen is 64*48 (semi-graphics mode)
+CLEAR 1 : Screen is 128*64
+CLEAR 2 : Screen is 128*96
+CLEAR 3 : Screen is 128*192
+CLEAR 4 : Screen is 256*192</pre>
+
+<p>In graphics modes 1 to 4 an error will be caused if the text
+space and graphics area conflict.</p>
+
+<table border="0" width="100%">
+    <tr>
+        <td width="10%"><font color="#0000FF"><strong>COUNT</strong></font></td>
+        <td width="80%"><font color="#0000FF"><strong>Count of characters printed</strong></font></td>
+        <td align="right" width="10%"><font color="#0000FF"><strong>C.</strong></font></td>
+    </tr>
+</table>
+
+<p>This function returns the number of characters printed since
+the last return, and is thus the column position on a line at
+which the next character will be printed. COUNT is useful for
+positioning table elements etc. Example:</p>
+
+<pre>      DO PRINT&quot;=&quot;;UNTIL COUNT=20
+====================&gt;</pre>
+
+<table border="0" width="100%">
+    <tr>
+        <td width="10%"><font color="#0000FF"><strong>DIM</strong></font></td>
+        <td width="80%"><font color="#0000FF"><strong>Dimension
+        statement</strong></font></td>
+        <td align="right" width="10%"><font color="#0000FF"><strong>DIM</strong></font></td>
+    </tr>
+</table>
+
+<p>This statement automatically allocates space after the end of
+the text for arrays or strings. DIM causes an error if used in
+direct mode. Associated with DIM is a 16 bit location referred to
+as the 'free space pointer'. The RUN statement sets this pointer
+to the value of TOP. A declaration:</p>
+
+<pre>      DIM A(Q)</pre>
+
+<p>sets A to the current value of the free space pointer, and the
+pointer is moved up by (Q+1) bytes. A declaration:</p>
+
+<pre>      DIM AA(Q)</pre>
+
+<p>allocates space for an array AA with elements AA(0) to AA(Q),
+and moves the value of the free space pointer up by 4*(Q+1)
+bytes.</p>
+
+<p>A special use of DIM is to set the value of P for assembling:</p>
+
+<pre>      DIM P(-1)</pre>
+
+<p>sets P to the current value of the free space pointer, without
+changing the pointer's value. Several items may be dimensioned in
+one DIM statement:</p>
+
+<pre>      DIM A(2),AA 45,BB(67),CC(F)</pre>
+
+<table border="0" width="100%">
+    <tr>
+        <td width="10%"><font color="#0000FF"><strong>DRAW</strong></font></td>
+        <td width="80%"><font color="#0000FF"><strong>Draw line to absolute position</strong></font></td>
+        <td align="right" width="10%"><font color="#0000FF"><strong>DRAW</strong></font></td>
+    </tr>
+</table>
+
+
+
+<p>The statement DRAW A,B is equivalent to PLOT 5,A,B.</p>
+
+<table border="0" width="100%">
+    <tr>
+        <td width="10%"><font color="#0000FF"><strong>DO</strong></font></td>
+        <td width="80%"><font color="#0000FF"><strong>Start of DO...UNTIL loop</strong></font></td>
+        <td align="right" width="10%"><font color="#0000FF"><strong>DO</strong></font></td>
+    </tr>
+</table>
+
+<p>This statement is part of the DO...UNTIL control expression.
+As the BASIC interpreter passes DO it saves that position and
+will return to it if the UNTIL statement's condition is false. No
+more than 11 active DO statements are allowed. See UNTIL for
+examples.</p>
+
+<table border="0" width="100%">
+    <tr>
+        <td width="10%"><font color="#0000FF"><strong>END</strong></font></td>
+        <td width="80%"><font color="#0000FF"><strong>End of
+        program</strong></font></td>
+        <td align="right" width="10%"><font color="#0000FF"><strong>E.</strong></font></td>
+    </tr>
+</table>
+
+<p>This statement has two functions:</p>
+
+<p>1. Termination of an executing program<br>
+2. Resetting the value of TOP to point to the first free byte
+after the program text.</p>
+
+<p>END can be used in direct mode to set TOP. Programs can have
+as many END statements as required and they do not need to have
+an END statement as a last line, although an error will be caused
+on execution past the end of the program. See also TOP. Example:</p>
+
+<pre>      IF SZ=&quot;FINISH&quot; END; REM conditional end</pre>
+
+<table border="0" width="100%">
+    <tr>
+        <td width="10%"><font color="#0000FF"><strong>EXT</strong></font></td>
+        <td width="80%"><font color="#0000FF"><strong>Extent of
+        random file</strong></font></td>
+        <td align="right" width="10%"><font color="#0000FF"><strong>E.</strong></font></td>
+    </tr>
+</table>
+
+<p>In the DOS this function returns the EXTent (length) of a
+random file in bytes. The file can be either an input or an
+output file, and the form of the instruction is</p>
+
+<pre>      EXT&lt;FACTOR&gt;</pre>
+
+<p>where factor is the file's handle found using either FIN or
+FOUT.</p>
+
+<p>In the COS, execution of this function results in an error.<br>
+Example:</p>
+
+<pre>      A=FIN&quot;FRED&quot;
+      PRINT &quot;FRED IS &quot;EXT(A)&quot; BYTES LONG&quot;'</pre>
+
+<table border="0" width="100%">
+    <tr>
+        <td width="10%"><font color="#0000FF"><strong>FIN</strong></font></td>
+        <td width="80%"><font color="#0000FF"><strong>Find Input</strong></font></td>
+        <td align="right" width="10%"><font color="#0000FF"><strong>F.</strong></font></td>
+    </tr>
+</table>
+
+<p>In the DOS this function initialises a random file for input
+(with GET, BGET, and SGET) and updating (with PUT, BPUT, and
+SPUT), and returns a number which uniquely represents the file.
+This 'file handle' is used in all future references to the file.
+Zero is returned if the file does not exist. The file handle is
+only a byte long (1 -- 255) and can be stored in variables or
+using ! or ?. Usage of a file handle not given by the operating
+system will result in an error.</p>
+
+<p>In the COS the message PLAY TAPE will be printed, and the
+system will wait for any key to be pressed.</p>
+
+<table border="0" width="100%">
+    <tr>
+        <td width="10%"><font color="#0000FF"><strong>FOR</strong></font></td>
+        <td width="80%"><font color="#0000FF"><strong>Start of FOR...NEXT loop</strong></font></td>
+        <td align="right" width="10%"><font color="#0000FF"><strong>F.</strong></font></td>
+    </tr>
+</table>
+
+<p>This statement is the first part of the FOR...NEXT loop, which
+allows a section of BASIC text to be executed several times. The
+form of the FOR statement is:</p>
+
+<pre>     FOR (a) = (b) TO (c) STEP (d)</pre>
+
+<p>where</p>
+
+<blockquote>
+    <p>(a) is the CONTROL VARIABLE which is used to test for loop
+    completion<br>
+    (b) is the initial value of the control variable<br>
+    (c) is the limit to the value of the control variable<br>
+    (d) is the step size in value of the control variable for
+    each pass of the loop; if omitted, it is assumed to be 1.</p>
+</blockquote>
+
+<p>Items (b) (c) (d) are &lt;EXPRESSION&gt;s they are evaluated
+only once, when the FOR statement is encountered, and the values
+are stored for later reference by the NEXT statement. No more
+than 11 nested FOR statements are allowed by the interpreter.
+Examples:</p>
+
+<pre>      FOR Z=0 TO 11
+      FOR @=X TO Y
+      FOR U=-7 TO 0
+      FOR G=(X+1)*2 TO Y-100
+      FOR J=0 TO 9 STEP 3
+      FOR K=X+1 TO Y+2 STEP I
+      FOR Q=-10*ABSX TO -20*ABSY STEP -ABSQ</pre>
+
+<table border="0" width="100%">
+    <tr>
+        <td width="10%"><font color="#0000FF"><strong>FOUT</strong></font></td>
+        <td width="80%"><font color="#0000FF"><strong>Find output</strong></font></td>
+        <td align="right" width="10%"><font color="#0000FF"><strong>FO.</strong></font></td>
+    </tr>
+</table>
+
+<p>In the DOS this function initialises a random file for output
+(with PUT, BPUT, and SPUT), and returns a number which uniquely
+specifies the output file. This 'file handle' is used in all
+future references to the file. Zero will be returned there is a
+problem associated with using the file as an output file; e.g.:</p>
+
+<blockquote>
+    <p>(a) write protected file<br>
+    (b) write protected disc<br>
+    (c) insufficient space in directory<br>
+    (d) file already in use as an input file<br>
+    (e) insufficient memory space</p>
+</blockquote>
+
+<p>The number returned is only a byte long (1-255) and can be
+stored in variables or using ! or ?. Usage of a number not given
+by the operating system will result in an error.</p>
+
+<p>In the COS the message RECORD TAPE will be printed, and any
+key waited for. Example:</p>
+
+<pre>      A=FOUT&quot;FRED&quot;
+      IF A=O PRINT &quot;WE HAVE A PROBLEM WITH FRED&quot;'</pre>
+
+<table border="0" width="100%">
+    <tr>
+        <td width="10%"><font color="#0000FF"><strong>GET</strong></font></td>
+        <td width="80%"><font color="#0000FF"><strong>Get word from file</strong></font></td>
+        <td align="right" width="10%"><font color="#0000FF"><strong>G.</strong></font></td>
+    </tr>
+</table>
+
+<p>This function reads a 32 bit word from a random file and
+returns its value. The form of the instruction is:</p>
+
+<pre>      GET&lt;FACTOR&gt;</pre>
+
+<p>where &lt;FACTOR&gt; is the file's handle found with the FIN
+function. The first byte fetched from the file becomes the least
+significant byte of the value.</p>
+
+<p>In the the DOS the random file's sequential pointer will be
+moved on by 4 and the operating system will cause an error if the
+pointer passes the end of the file. Example:</p>
+
+<pre>      A=FIN&quot;FRED&quot;
+      PRINT &quot;THE FIRST WORD FROM FRED IS &quot;GET A'</pre>
+
+<table border="0" width="100%">
+    <tr>
+        <td width="10%"><font color="#0000FF"><strong>GOSUB</strong></font></td>
+        <td width="80%"><font color="#0000FF"><strong>Go to subroutine</strong></font></td>
+        <td align="right" width="10%"><font color="#0000FF"><strong>GOS.</strong></font></td>
+    </tr>
+</table>
+
+<p>This statement gives the ability for programs to call sub
+programs. The GOSUB statement stores its position so that it can
+come back later on execution of a RETURN statement. Like GOTO it
+ran be followed by an &lt;FACTOR&gt; whose value is a line
+number, or by a label. No more than 14 GOSUB statements without
+RETURNs are allowed. Example:</p>
+
+<pre>   10 GOSUB a
+   20 GOSUB a
+   30 END
+  100a PRINT&quot;THIS IS A SUB PROGRAM&quot;'
+  200 RETURN</pre>
+
+<p>When RUN this will print.:</p>
+
+<pre>THIS  IS A  SUB PROGRAM
+THIS  IS A  SUB PROGRAM</pre>
+
+<table border="0" width="100%">
+    <tr>
+        <td width="10%"><font color="#0000FF"><strong>GOTO</strong></font></td>
+        <td width="80%"><font color="#0000FF"><strong>Go to line</strong></font></td>
+        <td align="right" width="10%"><font color="#0000FF"><strong>G.</strong></font></td>
+    </tr>
+</table>
+
+<p>This statement overrides the sequential order of proqram
+statement execution. It can be used after an IF statement to give
+a conditional change in the proqram execution. The form of the
+statement is either:</p>
+
+<pre>      GOTO &lt;FACTOR&gt; 
+or    GOTO &lt;label&gt;</pre>
+
+<p>The GOTO statement can transfer to either an unlabelled line,
+by specifying the line's number, or to a labelled line, by
+specifying the line's label.. Examples:</p>
+
+<pre>    10 IF A=0 PRINT&quot;ATTACK BY KLINGON &quot;Z;GOTO x
+    20 PRINT&quot;YOU ARE IN QUADRANT &quot;X Y
+    30x PRINT'&quot;STARDATE &quot;T'</pre>
+
+<pre>   100m INPUT&quot;CHOICE &quot;A
+   110 IF A&lt;1 OR A&gt;9 PRINT&quot;!!!!!&quot;; GOTO m
+   120 GOTO(A*200); REM GO EVERYWHERE !</pre>
+
+<table border="0" width="100%">
+    <tr>
+        <td width="10%"><font color="#0000FF"><strong>IF</strong></font></td>
+        <td width="80%"><font color="#0000FF"><strong>If
+        statement</strong></font></td>
+        <td align="right" width="10%"><font color="#0000FF"><strong>IF</strong></font></td>
+    </tr>
+</table>
+
+<p>This statement is the main control mechanism of BASIC. It is
+followed by a &lt;TESTABLE expression&gt;, which is a single
+byte. If TRUE (non-zero) the remainder of the line will be
+interpreted; if FALSE (zero) execution will continue on the next
+line. After the &lt;TESTABLE expression&gt;, IF can be followed
+by one of two different options:</p>
+
+<p>1. The symbol THEN, followed by any statement.<br>
+2. Any statement, provided that the statement does not begin with
+T or a unary operator '!' or '?'.</p>
+
+<p>Examples:</p>
+
+<pre>      IF A&lt;3 AND B&gt;4 THEN C=26
+      IF A&lt;3 IF B&gt;4 C=26; REM equivalent condition to above
+      IF A&gt;3 OR B&lt;4 THEN C=22; REM complementary condition to above
+      IF A&gt;3 AND $S=&quot;FRED&quot; OR C=22; REM AND and OR have equal priority</pre>
+
+<table border="0" width="100%">
+    <tr>
+        <td width="10%"><font color="#0000FF"><strong>INPUT</strong></font></td>
+        <td width="80%"><font color="#0000FF"><strong>Input statement</strong></font></td>
+        <td align="right" width="10%"><font color="#0000FF"><strong>IN</strong></font></td>
+    </tr>
+</table>
+
+<p>This statement receives data from the keyboard. The INPUT
+statement consists of a list of items which can be:</p>
+
+<blockquote>
+    <p>(a) a string delimited by &quot;quotes<br>
+    (b) any ' new-line symbols<br>
+    (c) a &lt;VARIABLE&gt; or a $&lt;EXPRESSION&gt; separated
+    from succeeding items by a comma.</p>
+</blockquote>
+
+<p>Items (a) and (b) are printed out, and for each item (c) a '?'
+is printed and the the program will wait for a response. If the
+item is a &lt;VARIABLE&gt;, the response can be any valid
+&lt;EXPRESSION&gt; if the item was a $&lt;EXPRESSION&gt;, the
+response is reated as a stririg and will be located in memory
+starting at the address given by evaluating the
+&lt;EXPRESSION&gt;. If an invalid response is typed, no chanqe to
+the original is made. Example:</p>
+
+<pre>         INPUT&quot;WHAT IS YOUR NAME &quot;$TOP,&quot;AND HOW OLD ARE YOU &quot;A</pre>
+
+<p>When RUN this will produce:</p>
+
+<pre>WHAT IS YOUR NAME ?FRED
+AND HOW OLD ARE YOU ?100</pre>
+
+<table border="0" width="100%">
+    <tr>
+        <td width="10%"><font color="#0000FF"><strong>LEN</strong></font></td>
+        <td width="80%"><font color="#0000FF"><strong>Length of
+        string</strong></font></td>
+        <td align="right" width="10%"><font color="#0000FF"><strong>L.</strong></font></td>
+    </tr>
+</table>
+
+<p>This function returns the number of characters in a string.
+The argument for LEN is a &lt;FACTOR&gt; which points to the
+first character in the string. Valid strings have between 0 and
+255 characters before a terminating return; invalid strings for
+which the terminating return is not found after 255 characters
+will return length zero. Example:</p>
+
+<pre>      $TOP=&quot;FRED&quot;;PRINT&quot;LENGTH OF &quot;$TOP&quot; IS &quot;LEN TOP'</pre>
+
+<table border="0" width="100%">
+    <tr>
+        <td width="10%"><font color="#0000FF"><strong>LET</strong></font></td>
+        <td width="80%"><font color="#0000FF"><strong>Assignment
+        statement</strong></font></td>
+        <td align="right" width="10%"><font color="#0000FF"><strong>omit</strong></font></td>
+    </tr>
+</table>
+
+<p>This statement is the assignment statement and the word LET is
+optional. There are two types of assignment statement:</p>
+
+<pre>l. Arithmetic
+      LET&lt;VARIABLE&gt;=&lt;EXPRESSION&gt;
+         &lt;VARIABLE&gt;!&lt;FACTOR&gt;=&lt;EXPRESSION&gt;
+         &lt;VARIABLE&gt;?&lt;FACTOR&gt;=&lt;EXPRESSION&gt;
+         !&lt;FACTOR&gt;=&lt;EXPRESSION&gt;
+         ?&lt;FACTOR&gt;=&lt;EXPRESSION&gt;
+2. String movement
+      LET$&lt;EXPRESSION&gt;=&lt;STRING right&gt;</pre>
+
+<p>In each case the value of the right hand side is evaluated,
+and then stored as designated by the left hand side. The word LET
+is not legal in an array assignment.</p>
+
+<table border="0" width="100%">
+    <tr>
+        <td width="10%"><font color="#0000FF"><strong>LINK</strong></font></td>
+        <td width="80%"><font color="#0000FF"><strong>Link to
+        machine code subroutine</strong></font></td>
+        <td align="right" width="10%"><font color="#0000FF"><strong>LI.</strong></font></td>
+    </tr>
+</table>
+
+<p>This statement causes execution of a machine code subroutine
+at a specified address. Its form is:</p>
+
+<pre>    LINK &lt;FACTOR&gt;</pre>
+
+<p>where &lt;FACTOR&gt; specifies the address of the subroutine.
+The processor's A, X and Y registers will be initialised to the
+least significant bytes of the BASIC variables A, X and Y, and
+the decimal mode flag will be cleared. The return to the
+interpreter from the machine code program is via an RTS
+instruction. Examples:</p>
+
+<pre>      Q-TOP; !Q=06058; LINK Q; REM clear interrupt flag
+      Q-ZOP; !Q=06078; LINK Q; REM set interrupt flag
+      LINK #FFE3;REM wait for key to be pressed</pre>
+
+<table border="0" width="100%">
+    <tr>
+        <td width="10%"><font color="#0000FF"><strong>LIST</strong></font></td>
+        <td width="80%"><font color="#0000FF"><strong>List BASIC
+        text</strong></font></td>
+        <td align="right" width="10%"><font color="#0000FF"><strong>L.</strong></font></td>
+    </tr>
+</table>
+
+<p>This command will list program lines in the current text area.
+It can be interrupted by pressing ESC and can take any of these
+forms:</p>
+
+<pre>      LIST         list all lines
+      LIST 10      list line 10
+      LIST , 40    list all lines up to 40
+      LIST 100 ,   list all lines from 100
+      LIST 10,40   list all lines between 10 and 40</pre>
+
+<table border="0" width="100%">
+    <tr>
+        <td width="10%"><font color="#0000FF"><strong>LOAD</strong></font></td>
+        <td width="80%"><font color="#0000FF"><strong>Load BASIC
+        program</strong></font></td>
+        <td align="right" width="10%"><font color="#0000FF"><strong>LO.</strong></font></td>
+    </tr>
+</table>
+
+<p>This command will load a BASIC program into the current text
+area. Its form is:</p>
+
+<pre>       LOAD &lt;STRING right&gt;</pre>
+
+<p>and it will pass the string to the operating system and
+request the operating system to complete the transfer before
+returning (in case the transfer is by interrupt or direct memory
+access). Then the text area is scanned through to set the value
+of TOP; if the file was machine code or data and not a valid
+BASIC program the prompt may not reappear. Example:</p>
+
+<pre>      LOAD&quot;FRED&quot;</pre>
+
+<table border="0" width="100%">
+    <tr>
+        <td width="10%"><font color="#0000FF"><strong>MOVE</strong></font></td>
+        <td width="80%"><font color="#0000FF"><strong>Move to absolute position</strong></font></td>
+        <td align="right" width="10%"><font color="#0000FF"><strong>MOVE</strong></font></td>
+    </tr>
+</table>
+
+<p>The statement MOVE A,B is equivalent to PLOT 4,A,B.</p>
+
+<table border="0" width="100%">
+    <tr>
+        <td width="10%"><font color="#0000FF"><strong>NEW</strong></font></td>
+        <td width="80%"><font color="#0000FF"><strong>Initialise text area</strong></font></td>
+        <td align="right" width="10%"><font color="#0000FF"><strong>N.</strong></font></td>
+    </tr>
+</table>
+
+<p>This command inserts an 'end of text' marker at the start of
+the text area, and changes the value of TOP accordingly. The OLD
+command provides an immediate recovery.</p>
+
+<table border="0" width="100%">
+    <tr>
+        <td width="10%"><font color="#0000FF"><strong>NEXT</strong></font></td>
+        <td width="80%"><font color="#0000FF"><strong>Terminator of FOR...NEXT loop</strong></font></td>
+        <td align="right" width="10%"><font color="#0000FF"><strong>N.</strong></font></td>
+    </tr>
+</table>
+
+<p>This statement is half of the FOR...NEXT control loop. When
+the word NEXT is encountered, the interpreter increases the value
+of the control variable by the step size, and if the control
+variable has not exceeded the loop termination value control is
+transfered back to the statement after the FOR statement;
+otherwise execution proceeds to the statement after the NEXT
+statement. The NEXT statement optionally takes a &lt;VARIABLE&gt;
+which will cause a return to the same level of nesting as the FOR
+statement with the same control variable, or an error if no such
+FOR statement is active. Examples:</p>
+
+<pre>      @=2
+      FOR Z=0 TO 9; PRINT Z; NEXT; PRINT'
+ 0 1 2 3 4 5 6 7 8 9
+      FOR Z=0 TO 9 STEP 2; PRINT Z; NEXT Z;PRINT'
+ 0 2 4 6 8
+      FOR Z=0 TO 9; PRINT Z; NEXT Y
+ 0
+ERROR  230
+&gt;</pre>
+
+<table border="0" width="100%">
+    <tr>
+        <td width="10%"><font color="#0000FF"><strong>OLD</strong></font></td>
+        <td width="80%"><font color="#0000FF"><strong>Recover text area</strong></font></td>
+        <td align="right" width="10%"><font color="#0000FF"><strong>OLD</strong></font></td>
+    </tr>
+</table>
+
+<p>This statement executes ?(?18*256+1)=0;END to recover a text
+space after typing NEW. If the first line number in the text area
+is greater than 255 it will be changed by the OLD statement.</p>
+
+<table border="0" width="100%">
+    <tr>
+        <td width="10%"><font color="#0000FF"><strong>OR</strong></font></td>
+        <td width="80%"><font color="#0000FF"><strong>Relational OR</strong></font></td>
+        <td align="right" width="10%"><font color="#0000FF"><strong>OR</strong></font></td>
+    </tr>
+</table>
+
+<p>This symbol provides the logical OR operation between two
+&lt;RELATIONAL expressions&gt;. Its form is &lt;RELATIONAL
+expression a&gt; OR &lt;RELATIONAL expression b&gt; and the
+result will be true (non-zero) if either &lt;RELATIONAL
+expression&gt; is true. OR has the same priority as AND.<br>
+Example:</p>
+
+<pre>IF A=B OR C=D PRINT&quot;At least one pair equal&quot;'</pre>
+
+<table border="0" width="100%">
+    <tr>
+        <td width="10%"><font color="#0000FF"><strong>PLOT</strong></font></td>
+        <td width="80%"><font color="#0000FF"><strong>Plot statement</strong></font></td>
+        <td align="right" width="10%"><font color="#0000FF"><strong>PLOT</strong></font></td>
+    </tr>
+</table>
+
+<p>This statement takes three arguments: a parameter that
+determines how to plot, and a pair of relative or absolute
+cartesian coordinates. The first parameter is as follows:</p>
+
+<pre> 0 plot line relative to last point with no change in pixels
+ 1 as 0 but set pixels
+ 2 as 0 but invert pixels
+ 3 as 0 but clear pixels
+ 4 plot line to absolute position with no change in pixels
+ 5 as 4 but set pixels
+ 6 as 4 but invert pixels
+ 7 as 4 but clear pixels
+ 8 plot point relative to last point with no change in pixel
+ 9 as 8 but set pixel
+10 as 8 but invert pixel
+11 as 8 but clear pixel
+12 plot point at absolute position with no change in pixel
+13 as 12 but set pixel
+14 as 12 but invert pixel
+15 as 12 but clear pixel</pre>
+
+<table border="0" width="100%">
+    <tr>
+        <td width="10%"><font color="#0000FF"><strong>PRINT</strong></font></td>
+        <td width="80%"><font color="#0000FF"><strong>Print statement</strong></font></td>
+        <td align="right" width="10%"><font color="#0000FF"><strong>P.</strong></font></td>
+    </tr>
+</table>
+
+<p>This statement outputs results and strings to the screen.. A
+PRINT statement consists of a list of the following items:</p>
+
+<blockquote>
+    <p>(a) a string delimited by &quot;quotes, which will be
+    printed.<br>
+    (b) any ' symbols which will cause a 'newline'.<br>
+    (c) the character '&amp;' which forces hexadecimal numerical
+    print out until the next comma.<br>
+    (d) an &lt;EXPRESSION&gt; whose value is printed out in
+    either decimal or hexadecimal, right hand justified in a
+    field width defined by '@'<br>
+    (e) a $&lt;EXPRESSION&gt; if the value of the
+    &lt;EXPRESSION&gt; is between 0 and 255, the ASCII character
+    corresponding to that value will be printed out; otherwise
+    the string pointed to by that value will be printed out.</p>
+</blockquote>
+
+<p>Examples:</p>
+
+<pre>       PRINT '
+       PRINT&quot;Hello&quot;'
+ Hello
+       PRINT 1'
+        1
+       PRINT 1'2'3'
+        1
+        2
+        3
+       PRINT&quot;40*25=&quot;40*25'
+ 40*25=    1000
+       PRINT$CH&quot;e&quot;'
+ e
+       PRINT$12
+       DO INPUT&quot;Who are you &quot;$TOP;PRINT&quot;Hi &quot;$TOP'; UNTIL $TOP=&quot;&quot;
+ Who are you ?fred
+ Hi fred
+ Who are you ?
+       PRINT&amp;0 10 20 30'
+        O       A      14      1E</pre>
+
+
+
+<table border="0" width="100%">
+    <tr>
+        <td width="10%"><font color="#0000FF"><strong>PTR</strong></font></td>
+        <td width="80%"><font color="#0000FF"><strong>Pointer of random file</strong></font></td>
+        <td align="right" width="10%"><font color="#0000FF"><strong>PTR</strong></font></td>
+    </tr>
+</table>
+
+<p>In the DOS this function and statement allows the manipulation
+of the pointers in sequential files. Its form is:</p>
+
+<pre>       PTR&lt;FACTOR&gt;</pre>
+
+<p>where &lt;FACTOR&gt; is the file's handle found using FIN or
+FOUT, and it may appear on the left hand side of an equal sign or
+in an expression.</p>
+
+<p>In the COS PTR will cause an error. Examples:</p>
+
+<pre>      A=FIN&quot;FRED&quot;
+      PRINT PTR AI
+       0
+      PTRA=PTRA+23</pre>
+
+<table border="0" width="100%">
+    <tr>
+        <td width="10%"><font color="#0000FF"><strong>PUT</strong></font></td>
+        <td width="80%"><font color="#0000FF"><strong>Put word to random file</strong></font></td>
+        <td align="right" width="10%"><font color="#0000FF"><strong>PUT</strong></font></td>
+    </tr>
+</table>
+
+<p>This statement sends a four byte word to a sequential output
+file. The form of the instruction is:</p>
+
+
+<pre>      PUT &lt;FACTOR&gt; , &lt;EXPRESSION&gt;</pre>
+
+<p>where &lt;FACTOR&gt; is the file's handle returned by the FOUT
+function. The &lt;EXPRESSION&gt; is evaluated and sent, least
+significant byte first, to the sequential output file. The
+seguential output file's pointer will be moved on by four and the
+operating system will cause an error if the length of the file
+exceeds the space allowed. Example:</p>
+
+<pre>      A=FOUT&quot;FRED&quot;
+      PUT A , 123456</pre>
+
+<table border="0" width="100%">
+    <tr>
+        <td width="10%"><font color="#0000FF"><strong>REM</strong></font></td>
+        <td width="80%"><font color="#0000FF"><strong>Remark</strong></font></td>
+        <td align="right" width="10%"><font color="#0000FF"><strong>REM</strong></font></td>
+    </tr>
+</table>
+
+<p>This statement causes the interpreter to ignore the rest of
+the line, enabling comments to be written into the program.
+Alternatively comments can be written on lines branched around by
+a GOTO statement.</p>
+
+<table border="0" width="100%">
+    <tr>
+        <td width="10%"><font color="#0000FF"><strong>RETURN</strong></font></td>
+        <td width="80%"><font color="#0000FF"><strong>Return from
+        subroutine</strong></font></td>
+        <td align="right" width="10%"><font color="#0000FF"><strong>R.</strong></font></td>
+    </tr>
+</table>
+
+<p>This statement causes a return to the last encountered GOSUB
+statement. See GOSUB for examples.</p>
+
+<table border="0" width="100%">
+    <tr>
+        <td width="10%"><font color="#0000FF"><strong>RND</strong></font></td>
+        <td width="80%"><font color="#0000FF"><strong>Random
+        number</strong></font></td>
+        <td align="right" width="10%"><font color="#0000FF"><strong>R.</strong></font></td>
+    </tr>
+</table>
+
+<p>This function returns a random number between -2147483648 and
+2147483647, generated from a 33 bit pseudo-random binary sequence
+generator which will only repeat after over eight thousand
+million calls. The sequence is not initialised on entering the
+interpreter, but locations 8 to 12 contain the seed, and can be
+set using '!' to a chosen startinq point. To produce random
+numbers in some range A to B use:</p>
+
+<pre>       ABSRND%(B-A)+A</pre>
+
+<table border="0" width="100%">
+    <tr>
+        <td width="10%"><font color="#0000FF"><strong>RUN</strong></font></td>
+        <td width="80%"><font color="#0000FF"><strong>Execute BASIC text from beginning</strong></font></td>
+        <td align="right" width="10%"><font color="#0000FF"><strong>RUN</strong></font></td>
+    </tr>
+</table>
+
+<p>This statement will cause the interpreter to cornmence
+execution at the lowest numbered line of the current text area.
+Since it is a statement, it may be used in both direct mode and
+programs.</p>
+
+<table border="0" width="100%">
+    <tr>
+        <td width="10%"><font color="#0000FF"><strong>SAVE</strong></font></td>
+        <td width="80%"><font color="#0000FF"><strong>Save BASIC text space</strong></font></td>
+        <td align="right" width="10%"><font color="#0000FF"><strong>SA.</strong></font></td>
+    </tr>
+</table>
+
+<p>This statement will cause the current contents of the memory
+between the start of the text area, given by ?18*256, and the
+value of TOP, to be saved by the operating system with a
+specified name. The operating system is not requested to wait
+until the transfer is finished before returning to the
+interpreter. Example:</p>
+
+<pre>      SAVE&quot;FRED&quot;</pre>
+
+<table border="0" width="100%">
+    <tr>
+        <td width="10%"><font color="#0000FF"><strong>SGET</strong></font></td>
+        <td width="80%"><font color="#0000FF"><strong>String get</strong></font></td>
+        <td align="right" width="10%"><font color="#0000FF"><strong>S.</strong></font></td>
+    </tr>
+</table>
+
+<p>This statement reads a string from a random file. The form of
+the statement is:</p>
+
+<pre>      SGET &lt;FACTOR&gt;, &lt;EXPRESSION&gt;</pre>
+
+<p>where &lt;FACTOR&gt; is the file's handle returned by the FIN
+function. The &lt;EXPRESSION&gt; is evaluated to form an address,
+and bytes are taken from the sequential input file and put in
+memory at consecutive locations starting at that address, until a
+'return' is read. The sequential input file's pointer will be
+moved on by the length of the string plus one and the operating
+system will cause an error if the pointer passes the end of the
+input file.</p>
+
+<table border="0" width="100%">
+    <tr>
+        <td width="10%"><font color="#0000FF"><strong>SHUT</strong></font></td>
+        <td width="80%"><font color="#0000FF"><strong>Finish with random file</strong></font></td>
+        <td align="right" width="10%"><font color="#0000FF"><strong>SH.</strong></font></td>
+    </tr>
+</table>
+
+<p>In the DOS this statement closes random input or output files.
+The form of the statement is:</p>
+
+<pre>      SHUT &lt;FACTOR&gt;</pre>
+
+<p>where &lt;FACTOR&gt; is the file's handle found with either
+FIN or FOUT. If it is an output file any information remaining in
+buffer areas in memory is written to the file. If the
+&lt;FACTOR&gt; has value zero, all current sequential files will
+be closed. In the COS this statement is ignored.</p>
+
+<table border="0" width="100%">
+    <tr>
+        <td width="10%"><font color="#0000FF"><strong>SPUT</strong></font></td>
+        <td width="80%"><font color="#0000FF"><strong>String put</strong></font></td>
+        <td align="right" width="10%"><font color="#0000FF"><strong>SP.</strong></font></td>
+    </tr>
+</table>
+
+<p>This statement writes a string to a random file. The form of
+the instruction is:</p>
+
+<pre>      SPUT &lt;FACTOR&gt;, &lt;STRING right&gt;</pre>
+
+<p>where &lt;FACTOR&gt; is the file's handle returned by the FOUT
+function. Every byte of the string, including the terminating
+'return' character, is sent to the file. In the DOS the random
+file's sequential pointer will be moved on by the length of the
+string plus one, and the operating system will cause an error if
+the length of the file exceeds the space allowed; Example:</p>
+
+<pre>      A=FOUT&quot;FRED&quot;
+      SPUT A , &quot;THIS IS FILE FRED&quot;</pre>
+
+<table border="0" width="100%">
+    <tr>
+        <td width="10%"><font color="#0000FF"><strong>STEP</strong></font></td>
+        <td width="80%"><font color="#0000FF"><strong>Step specifier in FOR statement</strong></font></td>
+        <td align="right" width="10%"><font color="#0000FF"><strong>S.</strong></font></td>
+    </tr>
+</table>
+
+<p>This symbol is an optional parameter in the FOR statement,
+used to specify step sizes other than the default of +1. It is
+followed by an &lt;EXPRESSION&gt; which is evaluated and its
+value stored along with the other FOR parameters. See FOR for
+examples.</p>
+
+<table border="0" width="100%">
+    <tr>
+        <td width="10%"><font color="#0000FF"><strong>THEN</strong></font></td>
+        <td width="80%"><font color="#0000FF"><strong>Connective in IF statement</strong></font></td>
+        <td align="right" width="10%"><font color="#0000FF"><strong>omit</strong></font></td>
+    </tr>
+</table>
+
+<p>This symbol is an option in the IF statement; it can be
+followed by any statement.</p>
+
+<table border="0" width="100%">
+    <tr>
+        <td width="10%"><font color="#0000FF"><strong>TO</strong></font></td>
+        <td width="80%"><font color="#0000FF"><strong>Limit specifier in FOR statement</strong></font></td>
+        <td align="right" width="10%"><font color="#0000FF"><strong>TO</strong></font></td>
+    </tr>
+</table>
+
+<p>This symbol is required in a FOR statement to specify the
+limit which is to be reached before the FOR..NEXT loop can be
+terminated. See FOR for examples.</p>
+
+<table border="0" width="100%">
+    <tr>
+        <td width="10%"><font color="#0000FF"><strong>TOP</strong></font></td>
+        <td width="80%"><font color="#0000FF"><strong>First free
+        byte</strong></font></td>
+        <td align="right" width="10%"><font color="#0000FF"><strong>T.</strong></font></td>
+    </tr>
+</table>
+
+<p>This function returns the address of the first free byte after
+the end of a stored BASIC program. Its value is adjusted during
+line editing and by the END statement and LOAD command. It is
+vital for TOP to have the correct value (set by END) before using
+the line editor. See also END.</p>
+
+<table border="0" width="100%">
+    <tr>
+        <td width="10%"><font color="#0000FF"><strong>UNTIL</strong></font></td>
+        <td width="80%"><font color="#0000FF"><strong>Terminator of DO...UNTIL loop</strong></font></td>
+        <td align="right" width="10%"><font color="#0000FF"><strong>U.</strong></font></td>
+    </tr>
+</table>
+
+<p>This statement is part of the DO..UNTIL repetitive loop. UNTIL
+takes a &lt;TESTABLE expression&gt; and will return control to
+the character after DO if this is zero (false), otherwise
+execution will continue with the next statement. Examples:</p>
+
+<pre>      DO  PRINT&quot;O&quot;;UNTIL  O;  REM  do forever
+      DO  PRINT&quot;$&quot;;  UNTIL  COUNT=20;  PRINT'
+####################
+      DO INPUT&quot;Calculation &quot;A; PRINT&quot;Answer is &quot;A'; UNTIL A=12345678
+Calulation ?2*3
+Answer is         6
+Calculation ?A
+Answer is         6
+Calculation ?12345678
+Answer is 12345678</pre>
+
+<table border="0" width="100%">
+    <tr>
+        <td width="10%"><font color="#0000FF"><strong>WAIT</strong></font></td>
+        <td width="80%"><font color="#0000FF"><strong>Wait
+        statement</strong></font></td>
+        <td align="right" width="10%"><font color="#0000FF"><strong>WAIT</strong></font></td>
+    </tr>
+</table>
+
+<p>This statement waits until the next 60 Hz vertical sync pulse
+from the CRT controller. The statement has two uses: to give a
+delay of one sixtieth of a second, and to wait until flyback so
+that a subsequent graphics command will not cause noise on the
+screen. Examples:</p>
+
+<pre>      FOR Z=l TO 60; WAIT; NEXT; REM wait a second.
+      MOVE 0,0; WAIT; DRAW 8,8; REM noise-free plotting
+</pre>
+<p align="right"><a href="atap_21.htm">Next chapter</a></p>
+</body>
+</html>

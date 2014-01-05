@@ -1,0 +1,257 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Type"
+content="text/html; charset=iso-8859-1">
+<meta name="GENERATOR" content="Microsoft FrontPage Express 2.0">
+<title>26 Syntax Definition</title>
+</head>
+
+<body bgcolor="#FFFFFF">
+
+<h1><font color="#0000FF">26 Syntax Definition</font></h1>
+
+<p>This syntax definition is written in B.N.F., or Backus-Naur
+Form, with some additions. In the places where a proper
+definition in B.N.F. would be far too long, a description has
+been used. The rules are:</p>
+
+<p>Things in triangular &lt;&gt; brackets are defined things,
+&quot;syntactic entities&quot;, everything else is itself</p>
+
+<p>The ::= symbol is read as &quot;is defined&quot;.<br>
+The | sign is read as OR: one of the alternatives must be true.<br>
+Concatenation of things is read as &quot;followed by&quot;.<br>
+The ^ sign is read as &quot;any number of&quot;.<br>
+The {} brackets allow concatenations to be grouped together.</p>
+
+<h2><font color="#0000FF">26.1 BASIC Syntax Definition</font></h2>
+
+<h3><font color="#0000FF">26.1.1 Basic Symbols</font></h3>
+
+<pre>! &quot; # $ % &amp; ' ( ) * + , - . / O 1 2 3 4 5 6 7 8 9 : ; &lt; = &gt; ? @ A B C
+D E F G H I J K L M N O P Q R S T U V W X Y Z a b c d e f g h i j k l
+m n o p q r s t u v w x y z [ \ &lt;&gt; &lt;= &gt;= @@ AA BB CC CH DD DO EE FF GG
+HH II IF JJ KK LL MM NN 00 OR PP QQ RR SS TO TT UU VV WW XX YY ZZ ABS
+AND DIM END EXT FIN FOR GET LEN LET NEW OLD PTR PUT REM RND RUN TOP
+BGET BPUT DRAW FOUT GOTO LINK LIST LOAD MOVE NEXT PLOT SAVE SGET SHUT
+SPUT STEP THEN WAIT CLEAR COUNT GOSUB INPUT PRINT UNTIL RETURN</pre>
+
+<p>No multi-character basic symbols may include blanks; otherwise
+blanks may be used freely to improve the readability of the
+program. The character '.' can be used to provide a shorter
+representation of all multi-character basic symbols</p>
+
+<pre>&lt;ASCIIC&gt;::={ascii characters excluding carriage return}</pre>
+
+<pre>&lt;DIGIT&gt;::=0|1|2|3|4|5|6|7|8|9</pre>
+
+<pre>&lt;HEX digit&gt;::=&lt;DIGIT&gt;|A|B|C|D|E|F</pre>
+
+<pre>&lt;POSITIVE number&gt;::=&lt;DIGIT&gt;&lt;DIGIT&gt;^
+      such that &lt;POSITIVE number&gt; is less than 2147483648</pre>
+
+<pre>&lt;HEX number&gt;::=&lt;HEX digit&gt;&lt;HEX digit&gt;^</pre>
+
+<pre>&lt;INTEGER size field&gt;::=@</pre>
+
+<pre>&lt;P-VARIABLE&gt;::=&lt;INTEGER size field&gt;|A|B|C|D|E|F|G|H|I|J|K|L|M|N|O|P|Q
+          |R|S|T|U|V|W|X|Y|Z</pre>
+
+<pre>&lt;VARIABLE&gt;::=&lt;P-VARIABLE&gt;{character which is not &lt;P-VARIABLE&gt; or .}</pre>
+
+<pre>&lt;ARRAY name&gt;::=@@|AA|BB|CC|DD|EE|FF|GG|HH|II|JJ|KK|LL|MM|NN|OO|PP|QQ
+          |RR|SS|TT|UU|VV|WW|XX|YY|ZZ</pre>
+
+<pre>&lt;LABEL&gt;::=a|b|c|d|e|f|q|h|i|j|k|l|m|n|o|p|q|r|s|t|u|v|w|x|y|z</pre>
+
+<pre>&lt;CONJUNCTION&gt;::=AND|OR</pre>
+
+<pre>&lt;RELATION operation&gt;::= &lt; | &gt; | &lt;= | &gt;= | = | &lt;&gt;</pre>
+
+<pre>&lt;EXPRESSION operator&gt;::=+|-|\|:</pre>
+
+<pre>&lt;TERM operator&gt;::=*|/|%|&amp;|!|?</pre>
+
+<pre>&lt;FACTOR&gt;::=+&lt;UNARY plus&gt;|-&lt;UNARY plus&gt;|&lt;UNARY plus&gt;</pre>
+
+<pre>&lt;UNARY plus&gt;::=&lt;VARIABLE&gt;|&lt;POSITIVE number&gt;|#&lt;HEX number&gt;|
+          (&lt;TESTABLE expression&gt;)|!&lt;FACTOR&gt;|?&lt;FACTOR&gt;)TOP|COUNT
+          |RND|ABS&lt;FACTOR&gt;|LEN&lt;FACTOR&gt;|CH&lt;STRING right&gt;
+          |PTR&lt;FACTOR&gt;|EXT&lt;FACTOR&gt;|GET&lt;FACTOR&gt;|BGET&lt;FACTOR&gt;|
+          FIN&lt;STRING right&gt;|FOUT&lt;STRING right&gt;|
+          &lt;ARRAY name&gt;&lt;FACTOR&gt;</pre>
+
+<pre>&lt;TERM&gt;::=&lt;FACTOR&gt;{&lt;TERM operation&gt;&lt;FACTOR&gt;}^</pre>
+
+<pre>&lt;EXPRESSION&gt;::=&lt;TERM&gt;{&lt;EXPRESSION operator&gt;&lt;TERM&gt;}^</pre>
+
+<pre>&lt;RELNL expression&gt;::=&lt;EXPRESSION&gt;|&lt;EXPRESSION&gt;&lt;RELATION operation&gt;
+          &lt;EXRESSION&gt;|$&lt;EXPRESSION&gt;=&lt;STRING right&gt;</pre>
+
+<pre>&lt;TESTABLE expression&gt;::=&lt;RELNL expression&gt;{&lt;CONJUNCTION&gt;
+          &lt;RELNL expression&gt;}^</pre>
+
+<pre>&lt;DELIMIT quote&gt;::=&quot;{any ascii character not a &quot;}</pre>
+
+<pre>&lt;STRING right&gt;::=&lt;EXPRESSION&gt;|$&lt;EXPRESSION&gt;|&quot;&lt;ASCIIC&gt;^&lt;DELIMIT quote&gt;</pre>
+
+<pre>&lt;SD&gt;::=&lt;STATEMENT delimiter&gt;::={carriage return}|;</pre>
+
+<pre>&lt;WORKING let&gt;::={{{&lt;VARIABLE&gt;|!&lt;FACTOR&gt;|?&lt;FACTOR&gt;|&lt;VARIABLE&gt;!&lt;FACTOR&gt;|
+          &lt;VARIABLE&gt;?&lt;FACTOR&gt;}=&lt;EXPRESSION&gt;}|$&lt;EXPRESSION&gt;=
+          &lt;STRING right&gt;}&lt;SD&gt;</pre>
+
+<pre>&lt;LET statement&gt;::=LET&lt;WORKING let&gt;&lt;SD&gt;|&lt;WORKING let&gt;&lt;SD&gt;</pre>
+
+<pre>&lt;VECTOR statement&gt;::=&lt;ARRAY name&gt;&lt;FACTOR&gt;=&lt;EXPRESSION&gt;</pre>
+
+<pre>&lt;PRINTABLE string&gt;::={'|&quot;&lt;ASCIIC&gt;^&lt;DELIMIT quote&gt;}^</pre>
+
+<pre>&lt;INPUT section&gt;::=&lt;PRINTABLE string&gt;{&lt;VARIABLE&gt;|$&lt;EXPRESSION&gt;|{null}}</pre>
+
+<pre>&lt;INPUT statement&gt;::=INPUT&lt;INPUT section&gt;{,&lt;INPUT section&gt;}^&lt;SD&gt;</pre>
+
+<pre>&lt;RETURN statement&gt;::=RETURN&lt;SD&gt;</pre>
+
+<pre>&lt;NEW command&gt;::=NEW&lt;SD&gt;</pre>
+
+<pre>&lt;OLD statement&gt;::=OLD&lt;SD&gt;</pre>
+
+<pre>&lt;LINK statement&gt;::=LINK&lt;FACTOR&gt;&lt;SD&gt;</pre>
+
+<pre>&lt;OS statement&gt;::=*&lt;ASCIIC&gt;^</pre>
+
+<pre>&lt;PLOT statement&gt;::=PLOT&lt;FACTOR&gt;,&lt;FACTOR&gt;,&lt;FACTOR&gt;&lt;SD&gt;</pre>
+
+<pre>&lt;DRAW statement&gt;::=DRAW&lt;FACTOR&gt;,&lt;FACTOR&gt;&lt;SD&gt;</pre>
+
+<pre>&lt;MOVE statement&gt;::=MOVE&lt;FACTOR&gt;,&lt;FACTOR&gt;&lt;SD&gt;</pre>
+
+<pre>&lt;CLEAR statement&gt;::=CLEAR&lt;FACTOR&gt;&lt;SD&gt;</pre>
+
+<pre>&lt;WAIT statement&gt;::=WAIT&lt;SD&gt;</pre>
+
+<pre>&lt;GO entity&gt;::=&lt;LABEL&gt;|&lt;FACTOR&gt;</pre>
+
+<pre>&lt;GOTO statement&gt;:: GOTO&lt;GO entity&gt;&lt;SD&gt;</pre>
+
+<pre>&lt;GOSUB statement&gt;:: GOSUB&lt;GO entity&gt;&lt;SD&gt;</pre>
+
+<pre>&lt;END statement&gt;::=END&lt;SD&gt;</pre>
+
+<pre>&lt;ENTER statement assembler&gt;:=[</pre>
+
+<pre>&lt;DO statement&gt;::=DO</pre>
+
+<pre>&lt;UNTIL statement&gt;::=UNTIL&lt;TESTABLE expression&gt;&lt;SD&gt;</pre>
+
+<pre>&lt;NEXT statement&gt;::=NEXT&lt;SD&gt;|NEXT&lt;VARIABLE&gt;&lt;SD&gt;</pre>
+
+<pre>&lt;HALF for&gt;::=FOR&lt;VARIABLE&gt;=&lt;EXPRESSION&gt;TO&lt;EXPRESSION&gt;</pre>
+
+<pre>&lt;FOR statement&gt;::=&lt;HALF for&gt;&lt;SD&gt;|&lt;HALF for&gt;&lt;STEP&lt;expression&gt;&lt;SD&gt;</pre>
+
+<pre>&lt;DIM section&gt;::=&lt;VARIABLE)&lt;FACTOR&gt;|&lt;ARRAY name&gt;&lt;FACTOR&gt;</pre>
+
+<pre>&lt;DIM statement&gt;::=DIM&lt;DIM section&gt;{,&lt;DIM section&gt;}^&lt;SD&gt;</pre>
+
+<pre>&lt;SAVE statement&gt;::=SAVE&lt;STRING right&gt;&lt;SD&gt;</pre>
+
+<pre>&lt;LOAD command&gt;::=LOAD&lt;STRING right&gt;&lt;SD&gt;</pre>
+
+<pre>&lt;RUN statement&gt;::=RUN&lt;SD&gt;</pre>
+
+<pre>&lt;LIST command&gt;::=LIST&lt;SD&gt;|LIST&lt;POSITIVE number&gt;&lt;SD&gt;|
+          LIST,&lt;POSITIVE number&gt;&lt;SD&gt;|LIST&lt;POSITIVE number&gt;,&lt;SD&gt;|
+          LIST&lt;POSITIVE number&gt;,&lt;POSITIVE number&gt;&lt;SD&gt;</pre>
+
+<pre>&lt;IF statement&gt;::=IF&lt;TESTABLE expression&gt;{THEN&lt;STATEMENT&gt;|&lt;STATEMENT&gt;}</pre>
+
+<pre>&lt;PRINT comma&gt;::={nothing, if possible}|,</pre>
+
+<pre>&lt;PRINT statement&gt;::=PRINT{&lt;PRINTABLE string&gt;{&lt;EXPRESSION&gt;|
+          $&lt;EXPRESSION&gt;|{nothing}}&lt;PRINT comma&gt;}^&lt;SD&gt;</pre>
+
+<pre>&lt;ENTER command line&gt;::=&lt;POSITIVE number&gt;&lt;ASCIIC&gt;&quot;(carriage return}</pre>
+
+<pre>&lt;put statement&gt;::=PUT&lt;FACTOR&gt;,&lt;EXPRESSION&gt;&lt;SD&gt;</pre>
+
+<pre>&lt;BPUT statement&gt;::=BPUT&lt;FACTOR&gt;,&lt;EXPRESSION&gt;&lt;SD&gt;</pre>
+
+<pre>&lt;SPUT statement&gt;::=SPUT&lt;FACTOR&gt;,&lt;STRING right&gt;&lt;SD&gt;</pre>
+
+<pre>&lt;SGET statement&gt;::=SGET&lt;FACTOR&gt;,&lt;EXPRESSION&gt;&lt;SD&gt;</pre>
+
+<pre>&lt;PTR statement&gt;::=PTR&lt;FACTOR&gt;=&lt;EXPRESSION&gt;&lt;SD&gt;</pre>
+
+<pre>&lt;NULL statement&gt;::=&lt;SD&gt;</pre>
+
+<h2><font color="#0000FF">26.2 Assembler Syntax Definition</font></h2>
+
+<p>This uses the same syntax as Section 26.1, and refers to some
+of the syntactic entities given there. Basic symbols may not be
+abbreviated; spaces may be used freely to improve readability.</p>
+
+<h3><font color="#0000FF">26.2.1 Basic Symbols</font></h3>
+
+<pre>( ) , : @ A X Y \ ] ADC AND ASL BCC BCS BEQ BIT BMI BNE BPL BRK BVC
+BVS CLC CLD CLI CLV CMP CPX CPY DEC DEX DEY EOR INC INX INY JMP JSR
+LDA LDX LDY LSR NOP ORA PHA PHP PLA PLP ROL ROR RTI RTS SBC SEC SED
+SEI STA STX STY TAX TAY TSX TXS TXA TXS TYA</pre>
+
+<pre>&lt;SET statement label&gt;::=&lt;TWO chars&gt;:&lt;LABEL name&gt;&lt;ASSEMBLER statement&gt;</pre>
+
+<pre>&lt;COMMENT statement&gt;::=&lt;two chars&gt;\&lt;comment field&gt;</pre>
+
+<pre>&lt;back to basic&gt;::=]</pre>
+
+<pre>&lt;empty statement&gt;::=&lt;two chars&gt;&lt;sd&gt;</pre>
+
+<pre>&lt;two chars&gt;::=&lt;asciic&gt;|&lt;asciic&gt;&lt;asciic&gt;|{no character at all}</pre>
+
+<pre>&lt;comment field&gt;::={ascii until &lt;sd&gt;}</pre>
+
+<pre>&lt;immed&gt;::=@&lt;expression&gt;</pre>
+
+<pre>&lt;indexX&gt;::=&lt;expression&gt;,X</pre>
+
+<pre>&lt;indexY&gt;::=&lt;expression&gt;,Y</pre>
+
+<pre>&lt;groupl&gt;::=&lt;indexX&gt;|&lt;indexY&gt;|(&lt;indexX&gt;)|(&lt;expression&gt;),Y|&lt;expression&gt;</pre>
+
+<pre>&lt;branch&gt;::={BCC|BCS|BEQ|BMI|BNE|BPL|BVC|BVS}&lt;expression&gt;</pre>
+
+<pre>&lt;memory to A&gt;::=ADC|AND|CMP|EOR|LDA|ORA|SBC{&lt;groupl&gt;(&lt;immed&gt;}</pre>
+
+<pre>&lt;A to memory&gt;::=STA&lt;groupl&gt;</pre>
+
+<pre>&lt;single byte A&gt;::={ASL|LSR|ROL|ROR}A</pre>
+
+<pre>&lt;single byte&gt;::=&lt;single byte A&gt;|BRK|CLC|CLD|CLI|CLV|DEX|DEY|INX|INY
+          |NOP|PHA|PHP|PLA|PLP|RTI|RTS|TAX|TAY|TSX|TXA|TXS|TYA</pre>
+
+<pre>&lt;read modify write&gt;::={ASL|DEC|INC|LSR|ROL|ROR}{&lt;indexX&gt;|&lt;expression&gt;}</pre>
+
+<pre>&lt;bit&gt;::=BIT&lt;expression&gt;</pre>
+
+<pre>&lt;cp&gt;.:={CPX|CPY}{&lt;immed&gt;(&lt;expression&gt;}</pre>
+
+<pre>&lt;jmp&gt;::=JMP{&lt;expression&gt;|(&lt;expression&gt;)}</pre>
+
+<pre>&lt;jsr&gt;::=JSR&lt;expression&gt;</pre>
+
+<pre>&lt;ldx&gt;::=LDX{&lt;immmed&gt;|&lt;indexY&gt;|&lt;expression&gt;}</pre>
+
+<pre>&lt;1dy&gt;::=LDY{&lt;immmed&gt;|&lt;indexX&gt;|&lt;expression&gt;}</pre>
+
+<pre>&lt;stx&gt;::=STX{&lt;indexY|&lt;expression&gt;}</pre>
+
+<pre>&lt;sty&gt;::=STY{&lt;indexX&gt;|&lt;expression&gt;}</pre>
+
+<pre>&lt;assembler statement&gt;::={&lt;branch&gt;|&lt;memory to A&gt;|&lt;A to memory&gt;
+          |&lt;single byte&gt;|&lt;read modify write&gt;|&lt;bit&gt;|&lt;cp&gt;|&lt;jmp&gt;|&lt;jsr&gt;
+          |&lt;1dx&gt;|&lt;ldy&gt;|&lt;stx&gt;|&lt;sty&gt;|&lt;comment field&gt;</pre>
+<p align="right"><a href="atap_27.htm">Next chapter</a></p>
+</body>
+</html>

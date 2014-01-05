@@ -1,0 +1,201 @@
+﻿<?xml version="1.0" ?>
+<rng:grammar xmlns:rng="http://relaxng.org/ns/structure/1.0" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
+
+  <rng:start>
+    <rng:ref name="atom_elm"/>
+  </rng:start>
+
+  <rng:define name="atom_elm">
+    <rng:element name="atom">
+      <rng:ref name="version_att"/>
+      <rng:optional>
+        <rng:ref name="name_att"/>
+      </rng:optional>
+      <rng:interleave>
+        <rng:zeroOrMore>
+          <rng:choice>
+            <rng:ref name="ram_elm"/>
+            <rng:ref name="rom_elm"/>
+            <rng:ref name="ppia_elm"/>
+            <rng:ref name="screen_elm"/>
+            <rng:ref name="keyboard_elm"/>
+            <rng:ref name="traceOn_elm"/>
+            <rng:ref name="traceOff_elm" />
+            <rng:ref name="watch_elm"/>
+          </rng:choice>
+        </rng:zeroOrMore>
+      </rng:interleave>
+    </rng:element>
+  </rng:define>
+
+  <rng:define name="version_att">
+    <rng:attribute name="version">
+      <!-- data type="decimal">
+           <param name="minExclusive">0</param>
+           <param name="fractionDigits">2</param>
+           </data -->
+    </rng:attribute>
+  </rng:define>
+
+  <!-- Atom Computer Configuration -->
+
+  <rng:define name="ram_elm">
+    <rng:element name="ram">
+      <rng:ref name="ram_name_att"/>
+      <rng:interleave>
+        <rng:ref name="base_elm"/>
+        <rng:ref name="size_elm"/>
+        <!-- rng:optional>
+          <rng:ref name="filename"/>
+        </rng:optional -->
+      </rng:interleave>
+    </rng:element>
+  </rng:define>
+
+  <rng:define name="ram_name_att">
+    <rng:attribute name="name">
+      <rng:choice>
+        <rng:value type="string">block0</rng:value>
+        <rng:value type="string">lower</rng:value>
+        <rng:value type="string">video</rng:value>
+      </rng:choice>
+    </rng:attribute>
+  </rng:define>
+
+  <rng:define name="rom_elm">
+    <rng:element name="rom">
+      <rng:interleave>
+        <rng:ref name="rom_name_att"/>
+        <rng:ref name="base_elm"/>
+        <rng:optional>
+          <rng:ref name="size_elm"/>
+        </rng:optional>
+        <rng:ref name="filename_elm"/>
+      </rng:interleave>
+    </rng:element>
+  </rng:define>
+
+  <rng:define name="rom_name_att">
+    <rng:attribute name="name">
+      <rng:choice>
+        <rng:value type="string">basic</rng:value>
+        <rng:value type="string">float</rng:value>
+        <rng:value type="string">kernel</rng:value>
+      </rng:choice>
+    </rng:attribute>
+  </rng:define>
+
+  <!-- For completeness -->
+  <rng:define name="ppia_elm">
+    <rng:element name="ppia">
+      <rng:interleave>
+        <rng:ref name="base_elm"/>
+        <rng:ref name="size_elm"/>
+      </rng:interleave>
+    </rng:element>
+  </rng:define>
+
+  <!-- Emulator Parameters -->
+
+  <rng:define name="screen_elm">
+    <rng:element name="screen">
+      <rng:interleave>
+        <rng:optional>
+          <rng:ref name="scale_elm"/>
+        </rng:optional>
+        <rng:optional>
+          <rng:ref name="filename_elm"/>
+        </rng:optional>
+     </rng:interleave>
+    </rng:element>
+  </rng:define>
+
+  <rng:define name="scale_elm">
+    <rng:element name="scale">
+      <rng:data type="float"/>
+    </rng:element>
+  </rng:define>
+
+  <rng:define name="keyboard_elm">
+    <rng:element name="keyboard">
+      <rng:interleave>
+        <rng:optional>
+          <rng:ref name="filename_elm"/>
+        </rng:optional>
+        <rng:optional>
+          <rng:ref name="viewscreen_elm"/>
+        </rng:optional>
+      </rng:interleave>
+    </rng:element>
+  </rng:define>
+
+  <rng:define name="viewscreen_elm">
+    <rng:element name="viewscreen">
+      <rng:text/>
+    </rng:element>
+  </rng:define>
+
+  <!-- Hooks -->
+
+  <rng:define name="traceOn_elm">
+    <rng:element name="traceOn">
+      <rng:ref name="hex16_type"/>
+    </rng:element>
+  </rng:define>
+
+  <rng:define name="traceOff_elm">
+    <rng:element name="traceOff">
+      <rng:ref name="hex16_type"/>
+    </rng:element>
+  </rng:define>
+
+  <rng:define name="watch_elm">
+    <rng:element name="watch">
+      <rng:interleave>
+        <rng:ref name="log_elm"/>
+        <rng:ref name="base_elm"/>
+        <rng:optional>
+          <rng:ref name="size_elm"/>
+        </rng:optional>
+      </rng:interleave>
+    </rng:element>
+  </rng:define>
+
+  <rng:define name="log_elm">
+    <rng:element name="log">
+      <rng:text/>
+    </rng:element>
+  </rng:define>
+
+  <!-- Utilities -->
+
+  <rng:define name="base_elm">
+    <rng:element name="base">
+      <rng:ref name="hex16_type"/>
+      </rng:element>
+  </rng:define>
+
+  <rng:define name="size_elm">
+    <rng:element name="size">
+      <rng:ref name="hex16_type"/>
+    </rng:element>
+  </rng:define>
+
+  <rng:define name="hex16_type">
+    <rng:text/>
+    <!-- rng:data type="hexBinary">
+         <rng:param name="maxLength">4</rng:param>
+         </rng:data -->
+  </rng:define>
+
+  <rng:define name="filename_elm">
+    <rng:element name="filename">
+      <rng:text/>
+    </rng:element>
+  </rng:define>
+
+  <rng:define name="name_att">
+    <rng:attribute name="name"/>
+  </rng:define>
+
+</rng:grammar>
