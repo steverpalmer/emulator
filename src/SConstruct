@@ -25,6 +25,6 @@ atom_gui_sdl_env.Program('atom', [ r'memory.cpp',
                                  [ r'screen_graphics_controller.cpp',
                                    r'screen_graphics_view.cpp',
                                    r'keyboard_controller.cpp',
-                                   r'config.cpp',
+                                   r'config_fixed.cpp',
                                    r'main.cpp'
                                  ])

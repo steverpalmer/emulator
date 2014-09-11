@@ -26,16 +26,16 @@ extern std::ostream &operator<<(std::ostream&, const AccessType);
 class Device : public Named {
     // Types
 public:
-	class Configurator : public Named::Configurator
-	{
-	public:
-		virtual Device *factory() const = 0;
-		virtual word base() const = 0;
-		virtual word size() const = 0;
-		virtual word memory_size() const {return size(); }
+    class Configurator : public Named::Configurator
+    {
+    public:
+        virtual Device *factory() const = 0;
+        virtual word base() const = 0;
+        virtual word size() const = 0;
+        virtual word memory_size() const {return size(); }
 
-		friend std::ostream &::operator <<(std::ostream &, const Configurator &);
-	};
+        friend std::ostream &::operator <<(std::ostream &, const Configurator &);
+    };
     // Attributes
 public:
     const word m_size;
@@ -73,14 +73,14 @@ public:
 /// In that sense, the class is little more than a "safe" array.
 class Ram : public Device {
 public:
-	class Configurator : public Device::Configurator
-	{
-	public:
-		virtual Device *factory() const { return new Ram(*this); }
-		virtual word base() const = 0;
+    class Configurator : public Device::Configurator
+    {
+    public:
+        virtual Device *factory() const { return new Ram(*this); }
+        virtual word base() const = 0;
 
-		friend std::ostream &::operator <<(std::ostream &, const Configurator &);
-	};
+        friend std::ostream &::operator <<(std::ostream &, const Configurator &);
+    };
     // Attributes
 private:
     const word m_base;
@@ -111,14 +111,14 @@ public:
 /// On construction, a ROM is not writeable.
 class Rom : public Ram {
 public:
-	class Configurator : public Ram::Configurator
-	{
-	public:
-		virtual Device *factory() const { return new Rom(*this); }
-		virtual const std::string &filename() const = 0;
+    class Configurator : public Ram::Configurator
+    {
+    public:
+        virtual Device *factory() const { return new Rom(*this); }
+        virtual const std::string &filename() const = 0;
 
-		friend std::ostream &::operator <<(std::ostream &, const Configurator &);
-	};
+        friend std::ostream &::operator <<(std::ostream &, const Configurator &);
+    };
     // Attributes
 private:
     bool m_is_writeable;
@@ -138,14 +138,14 @@ public:
 class Hook: public Device
 {
 public:
-	class Configurator : public Device::Configurator
-	{
-	public:
-		friend std::ostream &::operator <<(std::ostream &, const Configurator &);
-	};
+    class Configurator : public Device::Configurator
+    {
+    public:
+        friend std::ostream &::operator <<(std::ostream &, const Configurator &);
+    };
     // Attributes
 public:
-	std::weak_ptr<Device> m_device;
+    std::weak_ptr<Device> m_device;
     // Methods
 protected:
     explicit Hook(const Configurator &);
@@ -167,18 +167,18 @@ public:
 /// combinations of getting and putting words (Low Endian).
 class Memory : public Device {
 public:
-	class Configurator : public Device::Configurator
-	{
-	public:
-		virtual Device *factory() const { return new Memory(*this); }
-		virtual word size() const;
-		virtual word base() const;
+    class Configurator : public Device::Configurator
+    {
+    public:
+        virtual Device *factory() const { return new Memory(*this); }
+        virtual word size() const;
+        virtual word base() const;
 
-		friend std::ostream &::operator <<(std::ostream &, const Configurator &);
-	};
+        friend std::ostream &::operator <<(std::ostream &, const Configurator &);
+    };
     // Attributes
 private:
-	std::vector<std::weak_ptr<Device>> m_cell;
+    std::vector<std::weak_ptr<Device>> m_cell;
     // Methods
 private:
     void operator=(const Memory&);

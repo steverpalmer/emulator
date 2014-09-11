@@ -13,7 +13,7 @@
 #include <log4cxx/logger.h>
 #include "log4cxx/propertyconfigurator.h"
 
-#include "config.hpp"
+#include "config_fixed.hpp"
 #include "atom.hpp"
 #include "keyboard_controller.hpp"
 #include "screen_graphics_controller.hpp"
@@ -25,7 +25,7 @@ static log4cxx::LoggerPtr cpptrace_log()
 }
 
 class Main {
-	Configurator              m_cfg;
+    Configurator              m_cfg;
     Atom                     *m_atom;
     KeyboardController       *m_kc;
     ScreenGraphicsController *m_sgc;
@@ -62,10 +62,10 @@ Main::Main(int argc, char *argv[])
         switch( event.type ){
         case SDL_KEYDOWN:
         case SDL_KEYUP:
-        	m_kc->update(&event.key);
+            m_kc->update(&event.key);
             break;
         case SDL_USEREVENT:
-        	m_sgc->update();
+            m_sgc->update();
             break;
         case SDL_QUIT:
             m_more = false;

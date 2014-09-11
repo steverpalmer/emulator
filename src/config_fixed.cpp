@@ -5,7 +5,7 @@
  *      Author: steve
  */
 
-#include "config.hpp"
+#include "config_fixed.hpp"
 
 Configurator::Configurator(int argc, char *argv[])
 {

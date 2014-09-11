@@ -22,10 +22,10 @@ static log4cxx::LoggerPtr cpptrace_log()
 
 static Uint32 callback(Uint32 interval, void *param)
 {
-	static SDL_UserEvent timer_event = {SDL_USEREVENT, 0, 0, 0 };
-	const int rv = SDL_PushEvent((SDL_Event *)&timer_event);
-	assert (!rv);
-	return interval;
+    static SDL_UserEvent timer_event = {SDL_USEREVENT, 0, 0, 0 };
+    const int rv = SDL_PushEvent((SDL_Event *)&timer_event);
+    assert (!rv);
+    return interval;
 }
 
 ScreenGraphicsController::ScreenGraphicsController(Atom &p_atom, const Configurator &p_cfg)
@@ -57,10 +57,10 @@ void ScreenGraphicsController::update()
 
 std::ostream &operator<<(std::ostream &p_s, const ScreenGraphicsController::Configurator &p_cfg)
 {
-	p_s << static_cast<const Named::Configurator &>(p_cfg)
-	    << ", view=(" << p_cfg.view() << ")"
-	    << ", RefreshRate_ms=" << p_cfg.RefreshRate_ms();
-	return p_s;
+    p_s << static_cast<const Named::Configurator &>(p_cfg)
+        << ", view=(" << p_cfg.view() << ")"
+        << ", RefreshRate_ms=" << p_cfg.RefreshRate_ms();
+    return p_s;
 }
 
 std::ostream &operator<<(std::ostream &p_s, const ScreenGraphicsController &p_sgc)

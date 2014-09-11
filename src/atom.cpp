@@ -23,19 +23,19 @@ static log4cxx::LoggerPtr cpptrace_log()
 
 Atom::Atom(const Configurator &p_cfg)
     : Named    ("atom")
-	, m_devices(p_cfg.devices().size())
+    , m_devices(p_cfg.devices().size())
     , m_memory ( p_cfg.memory() )
     , m_6502   ( m_memory, p_cfg.mcs6502() )
 {
     LOG4CXX_INFO(cpptrace_log(), "Atom::Atom(" << p_cfg << ")");
     const std::vector<const Device::Configurator *> &d_cfg(p_cfg.devices());
     for (unsigned int i(0); i < d_cfg.size(); i++) {
-    	m_devices[i] = std::shared_ptr<Device>(d_cfg[i]->factory());
-    	m_memory.add_device(d_cfg[i]->base(), m_devices[i], d_cfg[i]->memory_size());
-    	if (m_devices[i]->name() == "video")
-    		m_video_storage = &dynamic_cast<Ram * >(m_devices[i].operator->())->m_storage;
-    	else if (m_devices[i]->name() == "ppia")
-    		m_ppia  = std::shared_ptr<Ppia>(dynamic_cast<Ppia *>(m_devices[i].operator->()));
+        m_devices[i] = std::shared_ptr<Device>(d_cfg[i]->factory());
+        m_memory.add_device(d_cfg[i]->base(), m_devices[i], d_cfg[i]->memory_size());
+        if (m_devices[i]->name() == "video")
+            m_video_storage = &dynamic_cast<Ram * >(m_devices[i].operator->())->m_storage;
+        else if (m_devices[i]->name() == "ppia")
+            m_ppia  = std::shared_ptr<Ppia>(dynamic_cast<Ppia *>(m_devices[i].operator->()));
     }
     reset();
 }
@@ -55,7 +55,7 @@ void Atom::reset()
 {
     LOG4CXX_INFO(cpptrace_log(), "[" << name() << "].reset()");
     for (std::shared_ptr<Device> d : m_devices)
-    	d->reset();
+        d->reset();
     m_memory.reset();
     m_6502.reset();
 }
@@ -135,10 +135,10 @@ void Atom::set_is_rept_pressed(bool p_is_rept_pressed)
 std::ostream &operator<<(std::ostream &p_s, const Atom::Configurator &p_cfg)
 {
     for (const Device::Configurator * d : p_cfg.devices())
-    	p_s << "(" << *d << "), ";
+        p_s << "(" << *d << "), ";
     p_s << "(" << p_cfg.memory() << "), ";
     p_s << "(" << p_cfg.mcs6502() << ")";
-	return p_s;
+    return p_s;
 }
 
 std::ostream &operator<<(std::ostream &p_s, const Atom &p_atom)

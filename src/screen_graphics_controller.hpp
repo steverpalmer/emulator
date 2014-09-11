@@ -19,14 +19,14 @@
 class ScreenGraphicsController : public Named {
     // Types
 public:
-	class Configurator : public Named::Configurator
-	{
-	public:
-		virtual const ScreenGraphicsView::Configurator &view() const = 0;
-		virtual int RefreshRate_ms() const = 0;
+    class Configurator : public Named::Configurator
+    {
+    public:
+        virtual const ScreenGraphicsView::Configurator &view() const = 0;
+        virtual int RefreshRate_ms() const = 0;
 
-		friend std::ostream &::operator <<(std::ostream &, const Configurator &);
-	};
+        friend std::ostream &::operator <<(std::ostream &, const Configurator &);
+    };
 private:
     Atom               &m_atom;
     ScreenGraphicsView *m_view;

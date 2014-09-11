@@ -5,8 +5,6 @@
  *      Author: steve
  */
 
-#include "config.hpp"
-
 #if 0
 Configurator::Configurator(int argc, char *argv[])
 {
@@ -23,7 +21,7 @@ Configurator::Configurator(int argc, char *argv[])
 #include <libxml/relaxng.h>
 #include <libxml/xpath.h>
 
-#include "config.h"
+#include "config_xml.hpp"
 
 #include "assert.h"
 

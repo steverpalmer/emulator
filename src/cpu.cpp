@@ -46,8 +46,8 @@ Core::~Core()
 {
     LOG4CXX_INFO(cpptrace_log(), "[" << name() << "].~Core()");
     if (!pthread_equal(m_thread, pthread_self())) {
-    	pthread_cancel(m_thread);
-    	pthread_join(m_thread, 0); // Wait for thread to terminate
+        pthread_cancel(m_thread);
+        pthread_join(m_thread, 0); // Wait for thread to terminate
         m_thread = pthread_self();
     }
 }
@@ -55,25 +55,25 @@ Core::~Core()
 // Crude implementation of "core_loop" with a busy wait
 void *loop(void *p)
 {
-	Core &c(*static_cast<Core *>(p));
+    Core &c(*static_cast<Core *>(p));
     LOG4CXX_INFO(cpptrace_log(), "[" << c.name() << "].loop() started");
     for(;;) {
-		if (c.m_steps_to_go) {
-			c.single_step();
-			if (c.m_steps_to_go != INFINITE_STEPS_TO_GO)
-				c.m_steps_to_go--;
-		}
-	}
-	return 0;
+        if (c.m_steps_to_go) {
+            c.single_step();
+            if (c.m_steps_to_go != INFINITE_STEPS_TO_GO)
+                c.m_steps_to_go--;
+        }
+    }
+    return 0;
 }
 
 void Core::start()
 {
     LOG4CXX_INFO(cpptrace_log(), "[" << name() << "].start()");
-	if (pthread_equal(m_thread, pthread_self())) {
-		const int rv = pthread_create(&m_thread, 0, loop, this);
-		assert (!rv);
-	}
+    if (pthread_equal(m_thread, pthread_self())) {
+        const int rv = pthread_create(&m_thread, 0, loop, this);
+        assert (!rv);
+    }
 }
 
 void Core::step(int p_cnt)
@@ -83,7 +83,7 @@ void Core::step(int p_cnt)
     dump(m_6502tracelog, 1);
 #endif
     if (p_cnt < 1)
-    	p_cnt = 1;
+        p_cnt = 1;
     m_steps_to_go = p_cnt;
     start();
 }
@@ -120,44 +120,76 @@ const byte NEGATIVE(1 << 7);
 
 static const byte BCD_to_BIN[256] =
     {
-        // 00      01      02      03      04      05      06      07      08      09      0A      0B      0C      0D      0E      0F
-        '\x00', '\x01', '\x02', '\x03', '\x04', '\x05', '\x06', '\x07', '\x08', '\x09', '\xFF', '\xFF', '\xFF', '\xFF', '\xFF', '\xFF', // 00
-        '\x0A', '\x0B', '\x0C', '\x0D', '\x0E', '\x0F', '\x10', '\x11', '\x12', '\x13', '\xFF', '\xFF', '\xFF', '\xFF', '\xFF', '\xFF', // 10
-        '\x14', '\x15', '\x16', '\x17', '\x18', '\x19', '\x1A', '\x1B', '\x1C', '\x1D', '\xFF', '\xFF', '\xFF', '\xFF', '\xFF', '\xFF', // 20
-        '\x1E', '\x1F', '\x20', '\x21', '\x22', '\x23', '\x24', '\x25', '\x26', '\x27', '\xFF', '\xFF', '\xFF', '\xFF', '\xFF', '\xFF', // 30
-        '\x28', '\x29', '\x2A', '\x2B', '\x2C', '\x2D', '\x2E', '\x2F', '\x30', '\x31', '\xFF', '\xFF', '\xFF', '\xFF', '\xFF', '\xFF', // 40
-        '\x32', '\x33', '\x34', '\x35', '\x36', '\x37', '\x38', '\x39', '\x3A', '\x3B', '\xFF', '\xFF', '\xFF', '\xFF', '\xFF', '\xFF', // 50
-        '\x3C', '\x3D', '\x3E', '\x3F', '\x40', '\x41', '\x42', '\x43', '\x44', '\x45', '\xFF', '\xFF', '\xFF', '\xFF', '\xFF', '\xFF', // 60
-        '\x46', '\x47', '\x48', '\x49', '\x4A', '\x4B', '\x4C', '\x4D', '\x4E', '\x4F', '\xFF', '\xFF', '\xFF', '\xFF', '\xFF', '\xFF', // 70
-        '\x50', '\x51', '\x52', '\x53', '\x54', '\x55', '\x56', '\x57', '\x58', '\x59', '\xFF', '\xFF', '\xFF', '\xFF', '\xFF', '\xFF', // 80
-        '\x5A', '\x5B', '\x5C', '\x5D', '\x5E', '\x5F', '\x60', '\x61', '\x62', '\x63', '\xFF', '\xFF', '\xFF', '\xFF', '\xFF', '\xFF', // 90
-        '\xFF', '\xFF', '\xFF', '\xFF', '\xFF', '\xFF', '\xFF', '\xFF', '\xFF', '\xFF', '\xFF', '\xFF', '\xFF', '\xFF', '\xFF', '\xFF', // A0
-        '\xFF', '\xFF', '\xFF', '\xFF', '\xFF', '\xFF', '\xFF', '\xFF', '\xFF', '\xFF', '\xFF', '\xFF', '\xFF', '\xFF', '\xFF', '\xFF', // B0
-        '\xFF', '\xFF', '\xFF', '\xFF', '\xFF', '\xFF', '\xFF', '\xFF', '\xFF', '\xFF', '\xFF', '\xFF', '\xFF', '\xFF', '\xFF', '\xFF', // C0
-        '\xFF', '\xFF', '\xFF', '\xFF', '\xFF', '\xFF', '\xFF', '\xFF', '\xFF', '\xFF', '\xFF', '\xFF', '\xFF', '\xFF', '\xFF', '\xFF', // D0
-        '\xFF', '\xFF', '\xFF', '\xFF', '\xFF', '\xFF', '\xFF', '\xFF', '\xFF', '\xFF', '\xFF', '\xFF', '\xFF', '\xFF', '\xFF', '\xFF', // E0
-        '\xFF', '\xFF', '\xFF', '\xFF', '\xFF', '\xFF', '\xFF', '\xFF', '\xFF', '\xFF', '\xFF', '\xFF', '\xFF', '\xFF', '\xFF', '\xFF'  // F0
+        // 0x0/8  0x1/9     0x2/A     0x3/B     0x4/C     0x5/D     0x6/E     0x7/F
+        byte( 0), byte( 1), byte( 2), byte( 3), byte( 4), byte( 5), byte( 6), byte( 7), // 0x00
+        byte( 8), byte( 9), byte(-1), byte(-1), byte(-1), byte(-1), byte(-1), byte(-1), // 0x08
+        byte(10), byte(11), byte(12), byte(13), byte(14), byte(15), byte(16), byte(17), // 0x10
+        byte(18), byte(19), byte(-1), byte(-1), byte(-1), byte(-1), byte(-1), byte(-1), // 0x18
+        byte(20), byte(21), byte(22), byte(23), byte(24), byte(25), byte(26), byte(27), // 0x20
+        byte(28), byte(29), byte(-1), byte(-1), byte(-1), byte(-1), byte(-1), byte(-1), // 0x28
+        byte(30), byte(31), byte(32), byte(33), byte(34), byte(35), byte(36), byte(37), // 0x30
+        byte(38), byte(39), byte(-1), byte(-1), byte(-1), byte(-1), byte(-1), byte(-1), // 0x38
+        byte(40), byte(41), byte(42), byte(43), byte(44), byte(45), byte(46), byte(47), // 0x40
+        byte(48), byte(49), byte(-1), byte(-1), byte(-1), byte(-1), byte(-1), byte(-1), // 0x48
+        byte(50), byte(51), byte(52), byte(53), byte(54), byte(55), byte(56), byte(57), // 0x50
+        byte(58), byte(59), byte(-1), byte(-1), byte(-1), byte(-1), byte(-1), byte(-1), // 0x58
+        byte(60), byte(61), byte(62), byte(63), byte(64), byte(65), byte(66), byte(67), // 0x60
+        byte(68), byte(69), byte(-1), byte(-1), byte(-1), byte(-1), byte(-1), byte(-1), // 0x68
+        byte(70), byte(71), byte(72), byte(73), byte(74), byte(75), byte(76), byte(77), // 0x70
+        byte(78), byte(79), byte(-1), byte(-1), byte(-1), byte(-1), byte(-1), byte(-1), // 0x78
+        byte(80), byte(81), byte(82), byte(83), byte(84), byte(85), byte(86), byte(87), // 0x80
+        byte(88), byte(89), byte(-1), byte(-1), byte(-1), byte(-1), byte(-1), byte(-1), // 0x88
+        byte(90), byte(91), byte(92), byte(93), byte(94), byte(95), byte(96), byte(97), // 0x90
+        byte(98), byte(99), byte(-1), byte(-1), byte(-1), byte(-1), byte(-1), byte(-1), // 0x98
+        byte(-1), byte(-1), byte(-1), byte(-1), byte(-1), byte(-1), byte(-1), byte(-1), // 0xA0
+        byte(-1), byte(-1), byte(-1), byte(-1), byte(-1), byte(-1), byte(-1), byte(-1), // 0xA8
+        byte(-1), byte(-1), byte(-1), byte(-1), byte(-1), byte(-1), byte(-1), byte(-1), // 0xB0
+        byte(-1), byte(-1), byte(-1), byte(-1), byte(-1), byte(-1), byte(-1), byte(-1), // 0xB8
+        byte(-1), byte(-1), byte(-1), byte(-1), byte(-1), byte(-1), byte(-1), byte(-1), // 0xC0
+        byte(-1), byte(-1), byte(-1), byte(-1), byte(-1), byte(-1), byte(-1), byte(-1), // 0xC8
+        byte(-1), byte(-1), byte(-1), byte(-1), byte(-1), byte(-1), byte(-1), byte(-1), // 0xD0
+        byte(-1), byte(-1), byte(-1), byte(-1), byte(-1), byte(-1), byte(-1), byte(-1), // 0xD8
+        byte(-1), byte(-1), byte(-1), byte(-1), byte(-1), byte(-1), byte(-1), byte(-1), // 0xE0
+        byte(-1), byte(-1), byte(-1), byte(-1), byte(-1), byte(-1), byte(-1), byte(-1), // 0xE8
+        byte(-1), byte(-1), byte(-1), byte(-1), byte(-1), byte(-1), byte(-1), byte(-1), // 0xF0
+        byte(-1), byte(-1), byte(-1), byte(-1), byte(-1), byte(-1), byte(-1), byte(-1), // 0xF8
     };
 
 static const byte BIN_to_BCD[256] =
     {
-        // 00      01      02      03      04      05      06      07      08      09      0A      0B      0C      0D      0E      0F
-        '\x00', '\x01', '\x02', '\x03', '\x04', '\x05', '\x06', '\x07', '\x08', '\x09', '\x10', '\x11', '\x12', '\x13', '\x14', '\x15', // 00
-        '\x16', '\x17', '\x18', '\x19', '\x20', '\x21', '\x22', '\x23', '\x24', '\x25', '\x26', '\x27', '\x28', '\x29', '\x30', '\x31', // 10
-        '\x32', '\x33', '\x34', '\x35', '\x36', '\x37', '\x38', '\x39', '\x40', '\x41', '\x42', '\x43', '\x44', '\x45', '\x46', '\x47', // 20
-        '\x48', '\x49', '\x50', '\x51', '\x52', '\x53', '\x54', '\x55', '\x56', '\x57', '\x58', '\x59', '\x60', '\x61', '\x62', '\x63', // 30
-        '\x64', '\x65', '\x66', '\x67', '\x68', '\x69', '\x70', '\x71', '\x72', '\x73', '\x74', '\x75', '\x76', '\x77', '\x78', '\x79', // 40
-        '\x80', '\x81', '\x82', '\x83', '\x84', '\x85', '\x86', '\x87', '\x88', '\x89', '\x90', '\x91', '\x92', '\x93', '\x94', '\x95', // 50
-        '\x96', '\x97', '\x98', '\x99', '\xFF', '\xFF', '\xFF', '\xFF', '\xFF', '\xFF', '\xFF', '\xFF', '\xFF', '\xFF', '\xFF', '\xFF', // 60
-        '\xFF', '\xFF', '\xFF', '\xFF', '\xFF', '\xFF', '\xFF', '\xFF', '\xFF', '\xFF', '\xFF', '\xFF', '\xFF', '\xFF', '\xFF', '\xFF', // 70
-        '\xFF', '\xFF', '\xFF', '\xFF', '\xFF', '\xFF', '\xFF', '\xFF', '\xFF', '\xFF', '\xFF', '\xFF', '\xFF', '\xFF', '\xFF', '\xFF', // 80
-        '\xFF', '\xFF', '\xFF', '\xFF', '\xFF', '\xFF', '\xFF', '\xFF', '\xFF', '\xFF', '\xFF', '\xFF', '\xFF', '\xFF', '\xFF', '\xFF', // 90
-        '\xFF', '\xFF', '\xFF', '\xFF', '\xFF', '\xFF', '\xFF', '\xFF', '\xFF', '\xFF', '\xFF', '\xFF', '\xFF', '\xFF', '\xFF', '\xFF', // A0
-        '\xFF', '\xFF', '\xFF', '\xFF', '\xFF', '\xFF', '\xFF', '\xFF', '\xFF', '\xFF', '\xFF', '\xFF', '\xFF', '\xFF', '\xFF', '\xFF', // B0
-        '\xFF', '\xFF', '\xFF', '\xFF', '\xFF', '\xFF', '\xFF', '\xFF', '\xFF', '\xFF', '\xFF', '\xFF', '\xFF', '\xFF', '\xFF', '\xFF', // C0
-        '\xFF', '\xFF', '\xFF', '\xFF', '\xFF', '\xFF', '\xFF', '\xFF', '\xFF', '\xFF', '\xFF', '\xFF', '\xFF', '\xFF', '\xFF', '\xFF', // D0
-        '\xFF', '\xFF', '\xFF', '\xFF', '\xFF', '\xFF', '\xFF', '\xFF', '\xFF', '\xFF', '\xFF', '\xFF', '\xFF', '\xFF', '\xFF', '\xFF', // E0
-        '\xFF', '\xFF', '\xFF', '\xFF', '\xFF', '\xFF', '\xFF', '\xFF', '\xFF', '\xFF', '\xFF', '\xFF', '\xFF', '\xFF', '\xFF', '\xFF'  // F0
+        // 0x0/8    0x1/9       0x2/A       0x3/B       0x4/C       0x5/D       0x6/E       0x7/F
+        byte(0x00), byte(0x01), byte(0x02), byte(0x03), byte(0x04), byte(0x05), byte(0x06), byte(0x07), // 0x00
+        byte(0x08), byte(0x09), byte(0x10), byte(0x11), byte(0x12), byte(0x13), byte(0x14), byte(0x15), // 0x08
+        byte(0x16), byte(0x17), byte(0x18), byte(0x19), byte(0x20), byte(0x21), byte(0x22), byte(0x23), // 0x10
+        byte(0x24), byte(0x25), byte(0x26), byte(0x27), byte(0x28), byte(0x29), byte(0x30), byte(0x31), // 0x18
+        byte(0x32), byte(0x33), byte(0x34), byte(0x35), byte(0x36), byte(0x37), byte(0x38), byte(0x39), // 0x20
+        byte(0x40), byte(0x41), byte(0x42), byte(0x43), byte(0x44), byte(0x45), byte(0x46), byte(0x47), // 0x28
+        byte(0x48), byte(0x49), byte(0x50), byte(0x51), byte(0x52), byte(0x53), byte(0x54), byte(0x55), // 0x30
+        byte(0x56), byte(0x57), byte(0x58), byte(0x59), byte(0x60), byte(0x61), byte(0x62), byte(0x63), // 0x38
+        byte(0x64), byte(0x65), byte(0x66), byte(0x67), byte(0x68), byte(0x69), byte(0x70), byte(0x71), // 0x40
+        byte(0x72), byte(0x73), byte(0x74), byte(0x75), byte(0x76), byte(0x77), byte(0x78), byte(0x79), // 0x48
+        byte(0x80), byte(0x81), byte(0x82), byte(0x83), byte(0x84), byte(0x85), byte(0x86), byte(0x87), // 0x50
+        byte(0x88), byte(0x89), byte(0x90), byte(0x91), byte(0x92), byte(0x93), byte(0x94), byte(0x95), // 0x58
+        byte(0x96), byte(0x97), byte(0x98), byte(0x99), byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), // 0x60
+        byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), // 0x68
+        byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), // 0x70
+        byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), // 0x78
+        byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), // 0x80
+        byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), // 0x88
+        byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), // 0x90
+        byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), // 0x98
+        byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), // 0xA0
+        byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), // 0xA8
+        byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), // 0xB0
+        byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), // 0xB8
+        byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), // 0xC0
+        byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), // 0xC8
+        byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), // 0xD0
+        byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), // 0xD8
+        byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), // 0xE0
+        byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), // 0xE8
+        byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), // 0xF0
+        byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), // 0xF8
     };
 
 /// Cpu::Instruction Addressing Modes
@@ -326,7 +358,7 @@ inline void PUSH_WORD(MCS6502 &p_6502, word p_word)
 class MCS6502::Instruction : public Named {
     // Attributes
 private:
-	const std::string m_prefix;
+    const std::string m_prefix;
     const int         m_args;
     const std::string m_suffix;
 protected:
@@ -355,7 +387,7 @@ MCS6502::Instruction::Instruction(MCS6502 &p_6502, int p_opcode, int p_cycles, c
 {
     LOG4CXX_INFO(cpptrace_log(), "Cpu::Instruction::Instruction(" << p_opcode << ", " << p_cycles << ", \"" << p_prefix << "\", " << p_args << ", \"" << p_suffix << "\")");
     if (p_opcode >= 0)
-    	p_6502.m_opcode_mapping[p_opcode] = std::shared_ptr<MCS6502::Instruction>(this);
+        p_6502.m_opcode_mapping[p_opcode] = std::shared_ptr<MCS6502::Instruction>(this);
 }
 
 
@@ -2477,50 +2509,50 @@ void MCS6502::single_step()
 #endif
     if (m_InterruptSource != NO_INTERRUPT) { // Interrupt Pending
 #if JUMP_TRACE
-    	const word from(m_6502.m_register.PC);
+        const word from(m_6502.m_register.PC);
 #endif
-    	if (m_InterruptSource & RESET_INTERRUPT_ON) { // Process RESET
-    		if (m_InterruptSource & RESET_INTERRUPT_PULSE)
-    			m_InterruptSource &= ~(RESET_INTERRUPT_ON | RESET_INTERRUPT_PULSE);
-    		// Datasheet says Reset prefixed by useless stack reads
-    		(void)m_memory.get_byte(STACK_ADDRESS + m_register.S--);
-    		(void)m_memory.get_byte(STACK_ADDRESS + m_register.S--);
-    		(void)m_memory.get_byte(STACK_ADDRESS + m_register.S--);
-    		m_register.P |= IRQB;
-    		m_register.PC = m_memory.get_word(VECTOR_RESET, AT_DATA);
-    		m_cycles += 7;
-    	}
-    	else if (m_InterruptSource & NMI_INTERRUPT_ON) { // Process NMI
-    		if (m_InterruptSource & NMI_INTERRUPT_PULSE)
-    			m_InterruptSource &= ~(NMI_INTERRUPT_ON | NMI_INTERRUPT_PULSE);
-    		PUSH_WORD(*this, m_register.PC);
-    		PUSH_BYTE(*this, m_register.P);
-    		m_register.P |= IRQB;
-    		m_register.PC = m_memory.get_word(VECTOR_NMI, AT_DATA);
-    		m_cycles += 7;
-    	}
-    	else if ((m_InterruptSource & IRQ_INTERRUPT_ON) && !(m_register.P & IRQB)) { // Process IRQ
-    		if (m_InterruptSource & IRQ_INTERRUPT_PULSE)
-    			m_InterruptSource &= ~(IRQ_INTERRUPT_ON | IRQ_INTERRUPT_PULSE);
-    		PUSH_WORD(*this, m_register.PC);
-    		PUSH_BYTE(*this, m_register.P);
-    		m_register.P |= IRQB;
-    		m_register.P &= ~BREAK;
-    		m_register.PC = m_memory.get_word(VECTOR_INTERRUPT, AT_DATA);
-    		m_cycles += 7;
-    	}
-    	else if (m_InterruptSource & BRK_INTERRUPT) { // Process BRK
-    		m_InterruptSource &= ~BRK_INTERRUPT;
-    		PUSH_WORD(*this, m_register.PC+1); // Obscure Point
-    		PUSH_BYTE(*this, m_register.P | BREAK);
-    		m_register.P |= IRQB;
-    		m_register.PC = m_memory.get_word(VECTOR_INTERRUPT, AT_DATA);
-    		m_cycles += 7;
-    	}
+        if (m_InterruptSource & RESET_INTERRUPT_ON) { // Process RESET
+            if (m_InterruptSource & RESET_INTERRUPT_PULSE)
+                m_InterruptSource &= ~(RESET_INTERRUPT_ON | RESET_INTERRUPT_PULSE);
+            // Datasheet says Reset prefixed by useless stack reads
+            (void)m_memory.get_byte(STACK_ADDRESS + m_register.S--);
+            (void)m_memory.get_byte(STACK_ADDRESS + m_register.S--);
+            (void)m_memory.get_byte(STACK_ADDRESS + m_register.S--);
+            m_register.P |= IRQB;
+            m_register.PC = m_memory.get_word(VECTOR_RESET, AT_DATA);
+            m_cycles += 7;
+        }
+        else if (m_InterruptSource & NMI_INTERRUPT_ON) { // Process NMI
+            if (m_InterruptSource & NMI_INTERRUPT_PULSE)
+                m_InterruptSource &= ~(NMI_INTERRUPT_ON | NMI_INTERRUPT_PULSE);
+            PUSH_WORD(*this, m_register.PC);
+            PUSH_BYTE(*this, m_register.P);
+            m_register.P |= IRQB;
+            m_register.PC = m_memory.get_word(VECTOR_NMI, AT_DATA);
+            m_cycles += 7;
+        }
+        else if ((m_InterruptSource & IRQ_INTERRUPT_ON) && !(m_register.P & IRQB)) { // Process IRQ
+            if (m_InterruptSource & IRQ_INTERRUPT_PULSE)
+                m_InterruptSource &= ~(IRQ_INTERRUPT_ON | IRQ_INTERRUPT_PULSE);
+            PUSH_WORD(*this, m_register.PC);
+            PUSH_BYTE(*this, m_register.P);
+            m_register.P |= IRQB;
+            m_register.P &= ~BREAK;
+            m_register.PC = m_memory.get_word(VECTOR_INTERRUPT, AT_DATA);
+            m_cycles += 7;
+        }
+        else if (m_InterruptSource & BRK_INTERRUPT) { // Process BRK
+            m_InterruptSource &= ~BRK_INTERRUPT;
+            PUSH_WORD(*this, m_register.PC+1); // Obscure Point
+            PUSH_BYTE(*this, m_register.P | BREAK);
+            m_register.P |= IRQB;
+            m_register.PC = m_memory.get_word(VECTOR_INTERRUPT, AT_DATA);
+            m_cycles += 7;
+        }
 #if JUMP_TRACE
-    	if (from != m_6502.m_register.PC)
-    		log4c_category_info(m_6502.m_jumptracelog, JUMP_TRACE_LOGFORMAT,
-    				"Interrupt!", from, m_6502.m_register.PC);
+        if (from != m_6502.m_register.PC)
+            log4c_category_info(m_6502.m_jumptracelog, JUMP_TRACE_LOGFORMAT,
+                    "Interrupt!", from, m_6502.m_register.PC);
 #endif
     }
     const byte opcode(m_memory.get_byte(m_register.PC++, AT_INSTRUCTION));
@@ -2539,20 +2571,20 @@ void MCS6502::reset(InterruptState p_is)
     LOG4CXX_INFO(cpptrace_log(), "[" << name() << "].reset(" << p_is << ")");
     switch (p_is) {
     case INTERRUPT_ON:
-    	m_InterruptSource |= RESET_INTERRUPT_ON;
-    	m_InterruptSource &= ~RESET_INTERRUPT_PULSE;
-    	break;
+        m_InterruptSource |= RESET_INTERRUPT_ON;
+        m_InterruptSource &= ~RESET_INTERRUPT_PULSE;
+        break;
     case INTERRUPT_OFF:
-    	m_InterruptSource &= ~RESET_INTERRUPT_ON;
-    	m_InterruptSource &= ~RESET_INTERRUPT_PULSE;
-    	break;
+        m_InterruptSource &= ~RESET_INTERRUPT_ON;
+        m_InterruptSource &= ~RESET_INTERRUPT_PULSE;
+        break;
     case INTERRUPT_PULSE:
-    	m_InterruptSource |= RESET_INTERRUPT_ON;
-    	m_InterruptSource |= RESET_INTERRUPT_PULSE;
-    	break;
+        m_InterruptSource |= RESET_INTERRUPT_ON;
+        m_InterruptSource |= RESET_INTERRUPT_PULSE;
+        break;
     default:
-    	assert (false);
-    	break;
+        assert (false);
+        break;
     }
 }
 
@@ -2561,20 +2593,20 @@ void MCS6502::NMI(InterruptState p_is)
     LOG4CXX_INFO(cpptrace_log(), "[" << name() << "].NMI(" << p_is << ")");
     switch (p_is) {
     case INTERRUPT_ON:
-    	m_InterruptSource |= NMI_INTERRUPT_ON;
-    	m_InterruptSource &= ~NMI_INTERRUPT_PULSE;
-    	break;
+        m_InterruptSource |= NMI_INTERRUPT_ON;
+        m_InterruptSource &= ~NMI_INTERRUPT_PULSE;
+        break;
     case INTERRUPT_OFF:
-    	m_InterruptSource &= ~NMI_INTERRUPT_ON;
-    	m_InterruptSource &= ~NMI_INTERRUPT_PULSE;
-    	break;
+        m_InterruptSource &= ~NMI_INTERRUPT_ON;
+        m_InterruptSource &= ~NMI_INTERRUPT_PULSE;
+        break;
     case INTERRUPT_PULSE:
-    	m_InterruptSource |= NMI_INTERRUPT_ON;
-    	m_InterruptSource |= NMI_INTERRUPT_PULSE;
-    	break;
+        m_InterruptSource |= NMI_INTERRUPT_ON;
+        m_InterruptSource |= NMI_INTERRUPT_PULSE;
+        break;
     default:
-    	assert (false);
-    	break;
+        assert (false);
+        break;
     }
 }
 
@@ -2583,20 +2615,20 @@ void MCS6502::IRQ(InterruptState p_is)
     LOG4CXX_INFO(cpptrace_log(), "[" << name() << "].IRQ(" << p_is << ")");
     switch (p_is) {
     case INTERRUPT_ON:
-    	m_InterruptSource |= IRQ_INTERRUPT_ON;
-    	m_InterruptSource &= ~IRQ_INTERRUPT_PULSE;
-    	break;
+        m_InterruptSource |= IRQ_INTERRUPT_ON;
+        m_InterruptSource &= ~IRQ_INTERRUPT_PULSE;
+        break;
     case INTERRUPT_OFF:
-    	m_InterruptSource &= ~IRQ_INTERRUPT_ON;
-    	m_InterruptSource &= ~IRQ_INTERRUPT_PULSE;
-    	break;
+        m_InterruptSource &= ~IRQ_INTERRUPT_ON;
+        m_InterruptSource &= ~IRQ_INTERRUPT_PULSE;
+        break;
     case INTERRUPT_PULSE:
-    	m_InterruptSource |= IRQ_INTERRUPT_ON;
-    	m_InterruptSource |= IRQ_INTERRUPT_PULSE;
-    	break;
+        m_InterruptSource |= IRQ_INTERRUPT_ON;
+        m_InterruptSource |= IRQ_INTERRUPT_PULSE;
+        break;
     default:
-    	assert (false);
-    	break;
+        assert (false);
+        break;
     }
 }
 
@@ -2636,14 +2668,14 @@ void MCS6502::trace_finish()
 
 std::ostream &operator<<(std::ostream &p_s, const Core::Configurator &p_cfg)
 {
-	p_s << static_cast<const Named::Configurator &>(p_cfg);
-	return p_s;
+    p_s << static_cast<const Named::Configurator &>(p_cfg);
+    return p_s;
 }
 
 std::ostream &operator<<(std::ostream &p_s, const MCS6502::Configurator &p_cfg)
 {
-	p_s << static_cast<const Core::Configurator &>(p_cfg);
-	return p_s;
+    p_s << static_cast<const Core::Configurator &>(p_cfg);
+    return p_s;
 }
 
 std::ostream &operator<<(std::ostream &p_s, const InterruptState &p_is)
@@ -2667,7 +2699,7 @@ std::ostream &operator<<(std::ostream &p_s, const Core &p_c)
         << ", Memory:"    << p_c.m_memory.name()
         << ", Running:"   << !pthread_equal(p_c.m_thread, pthread_self())
         << ", StepsToGo:" << p_c.m_steps_to_go;
-	return p_s;
+    return p_s;
 }
 
 std::ostream &operator<<(std::ostream &p_s, const InterruptSource &p_is)
@@ -2720,7 +2752,7 @@ std::ostream &operator<<(std::ostream &p_s, const MCS6502::Instruction &p_i)
 
 std::ostream &operator<<(std::ostream &p_s, const MCS6502 &p_6502)
 {
-	p_s << static_cast<const Named &>(p_6502)
+    p_s << static_cast<const Named &>(p_6502)
         << ", PC:" << Hex(p_6502.m_register.PC)
         << ", A:"  << Hex(p_6502.m_register.A)
         << ", X:"  << Hex(p_6502.m_register.X)
