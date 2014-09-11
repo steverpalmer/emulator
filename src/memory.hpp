@@ -69,7 +69,7 @@ public:
 /// the Ram is destructed.
 ///
 /// Addresses supplied to get_ and put_byte are relative to the start of the
-/// device. That is, the address range is [0 .. p_size-1].
+/// device. That is, the address range is [0 .. m_size-1].
 /// In that sense, the class is little more than a "safe" array.
 class Ram : public Device {
 public:
