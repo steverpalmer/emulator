@@ -14,8 +14,6 @@
 
 #include "screen_graphics_controller.hpp"
 
-const int ScrRefreshRate_ms = 100;
-
 static log4cxx::LoggerPtr cpptrace_log()
 {
     static log4cxx::LoggerPtr result(log4cxx::Logger::getLogger(CTRACE_PREFIX ".screen_graphics_controller.cpp"));
