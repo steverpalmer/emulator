@@ -2,3 +2,5 @@
 /.project
 /src/*.o
 /src/atom
+/src/atom.rnc
+/src/relaxng.rnc

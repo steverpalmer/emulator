@@ -7,6 +7,9 @@ common_env['CCFLAGS']   = r'-Wall -g -pipe -std=c++0x -pthread'
 common_env['CPPPATH']   = [r'.']
 common_env['LIBS']      = [r'log4cxx']
 common_env['LINKFLAGS'] = r'-pthread'
+common_env['BUILDERS']['rng2rnc'] = Builder(action='trang -I rng -O rnc $SOURCE $TARGET', suffix='rnc')
+common_env.rng2rnc('relaxng.rnc', 'relaxng.rng')
+common_env.rng2rnc('atom.rnc', 'atom.rng')
 
 #TODO: Building as a library screws up the order on the gcc link command:-(
 #libatom_env = common_env.Clone()
