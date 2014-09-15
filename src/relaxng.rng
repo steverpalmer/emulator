@@ -23,9 +23,9 @@
       <element name="attribute">
         <ref name="common-atts"/>
         <choice>
-	  <attribute name="name">
-	    <data type="QName"/>
-	  </attribute>
+	      <attribute name="name">
+	        <data type="QName"/>
+	      </attribute>
           <ref name="open-name-class"/>
         </choice>
         <interleave>
@@ -106,19 +106,19 @@
         <interleave>
           <ref name="other"/>
           <group>
-	    <zeroOrMore>
-	      <element name="param">
-		<attribute name="name">
-		  <data type="NCName"/>
-		</attribute>
+	        <zeroOrMore>
+	          <element name="param">
+		        <attribute name="name">
+		          <data type="NCName"/>
+		        </attribute>
                 <ref name="common-atts"/>
-		<text/>
-	      </element>
-	    </zeroOrMore>
+		        <text/>
+	          </element>
+	        </zeroOrMore>
             <optional>
               <element name="except">
-		<ref name="common-atts"/>
-		<ref name="open-patterns"/>
+		        <ref name="common-atts"/>
+		        <ref name="open-patterns"/>
               </element>
             </optional>
           </group>
