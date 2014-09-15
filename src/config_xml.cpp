@@ -413,6 +413,7 @@ Configurator::Configurator(int argc, char *argv[])
     process_XML();
     if (!check_and_complete_params())
         exit(1);
+    LOG4CXX_INFO(cpptrace_log(), "Configurator::Configurator(...) => " << static_cast<const Atom::Configurator &>(m_atom));
 }
 
 
@@ -421,6 +422,7 @@ Configurator::~Configurator()
     xmlCleanupParser();
 }
 
+#if 0
 std::ostream &operator<<(std::ostream &p_s, const AtomConfigurator &p_cfg)
 {
     p_s << static_cast<const Named::Configurator &>(p_cfg)
@@ -429,6 +431,7 @@ std::ostream &operator<<(std::ostream &p_s, const AtomConfigurator &p_cfg)
             << p_cfg.m_mcs6502;
     return p_s;
 }
+#endif
 
 std::ostream &operator<<(std::ostream &p_s, const KeyboardControllerConfigurator &p_cfg)
 {
@@ -456,6 +459,9 @@ std::ostream &operator<<(std::ostream &p_s, const ScreenGraphicsControllerConfig
 
 std::ostream &operator<<(std::ostream &p_s, const Configurator &p_cfg)
 {
-    p_s << p_cfg.m_atom << p_cfg.m_keyboard << p_cfg.m_screen;
+    p_s << "Configurator::Configurator("
+        << static_cast<const Atom::Configurator &>(p_cfg.m_atom) << ", "
+        << p_cfg.m_keyboard << ", "
+        << p_cfg.m_screen << ")";
     return p_s;
 }

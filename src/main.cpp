@@ -45,13 +45,12 @@ Main::Main(int argc, char *argv[])
 {
     LOG4CXX_INFO(cpptrace_log(), "Main::Main(" << argc << ", " << argv << ")");
     int rv;
+    LOG4CXX_INFO(cpptrace_log(), "Atom::Configurator(" << m_cfg.atom() << ")");
     LOG4CXX_INFO(cpptrace_log(), "SDL_Init");
     rv = SDL_Init( SDL_INIT_VIDEO | SDL_INIT_TIMER );
     assert (!rv);
-    LOG4CXX_INFO(cpptrace_log(), "Atom::Configurator");
-    const Atom::Configurator &atom_cfg(m_cfg.atom());
     LOG4CXX_INFO(cpptrace_log(), "Atom");
-    m_atom = new Atom(atom_cfg);
+    m_atom = new Atom(m_cfg.atom());
     assert (m_atom);
     LOG4CXX_INFO(cpptrace_log(), "Keyboard");
     m_kc = new KeyboardController(*m_atom, m_cfg.keyboard());

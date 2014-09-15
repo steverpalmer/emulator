@@ -394,7 +394,9 @@ void Ppia::reset()
 
 std::ostream &operator<<(std::ostream &p_s, const Ppia::Configurator &p_cfg)
 {
-    p_s << static_cast<const Device::Configurator &>(p_cfg) << ", base=" << Hex(p_cfg.base()) << ", memory_size=" << Hex(p_cfg.memory_size());
+    p_s << "Ppia::Configurator("
+        << static_cast<const Device::Configurator &>(p_cfg)
+        << ")";
     return p_s;
 }
 

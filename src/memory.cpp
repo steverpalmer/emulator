@@ -219,31 +219,45 @@ void Memory::add_hook(word p_base, std::weak_ptr<Hook> p_hook, word p_size)
 
 std::ostream &operator<<(std::ostream &p_s, const Device::Configurator &p_cfg)
 {
-    p_s << static_cast<const Named::Configurator &>(p_cfg)  << ", size=" << Hex(p_cfg.size());
+    p_s << "Device::Configurator("
+        << static_cast<const Named::Configurator &>(p_cfg)
+        << ", base=" << Hex(p_cfg.base())
+        << ", size=" << Hex(p_cfg.size())
+        << ", memory_size=" << Hex(p_cfg.memory_size())
+        << ")";
     return p_s;
 }
 
 std::ostream &operator<<(std::ostream &p_s, const Ram::Configurator &p_cfg)
 {
-    p_s << static_cast<const Device::Configurator &>(p_cfg) << ", base=" << Hex(p_cfg.base());
+    p_s << "Ram::Configurator("
+        << static_cast<const Device::Configurator &>(p_cfg)
+        << ")";
     return p_s;
 }
 
 std::ostream &operator<<(std::ostream &p_s, const Rom::Configurator &p_cfg)
 {
-    p_s << static_cast<const Ram::Configurator &>(p_cfg) << ", filename=\"" << p_cfg.filename() << "\"";
+    p_s << "Rom::Configurator("
+        << static_cast<const Ram::Configurator &>(p_cfg)
+        << ", filename=\"" << p_cfg.filename()
+        << "\")";
     return p_s;
 }
 
 std::ostream &operator<<(std::ostream &p_s, const Hook::Configurator &p_cfg)
 {
-    p_s << static_cast<const Device::Configurator &>(p_cfg);
+    p_s << "Hook::Configurator("
+        << static_cast<const Device::Configurator &>(p_cfg)
+        << ")";
     return p_s;
 }
 
 std::ostream &operator<<(std::ostream &p_s, const Memory::Configurator &p_cfg)
 {
-    p_s << static_cast<const Device::Configurator &>(p_cfg);
+    p_s << "Memory::Configurator("
+        << static_cast<const Device::Configurator &>(p_cfg)
+        << ")";
     return p_s;
 }
 

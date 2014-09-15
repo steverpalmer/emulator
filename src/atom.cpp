@@ -22,10 +22,10 @@ static log4cxx::LoggerPtr cpptrace_log()
 }
 
 Atom::Atom(const Configurator &p_cfg)
-    : Named    ("atom")
+    : Named    (p_cfg)
     , m_devices(p_cfg.devices().size())
-    , m_memory (p_cfg.memory() )
-    , m_6502   (m_memory, p_cfg.mcs6502() )
+    , m_memory (p_cfg.memory())
+    , m_6502   (m_memory, p_cfg.mcs6502())
 {
     LOG4CXX_INFO(cpptrace_log(), "Atom::Atom(" << p_cfg << ")");
     const std::vector<const Device::Configurator *> &d_cfg(p_cfg.devices());
@@ -134,10 +134,12 @@ void Atom::set_is_rept_pressed(bool p_is_rept_pressed)
 
 std::ostream &operator<<(std::ostream &p_s, const Atom::Configurator &p_cfg)
 {
+    p_s << "Atom::Configurator([";
     for (const Device::Configurator * d : p_cfg.devices())
         p_s << "(" << *d << "), ";
-    p_s << "(" << p_cfg.memory() << "), ";
+    p_s << "], (" << p_cfg.memory() << "), ";
     p_s << "(" << p_cfg.mcs6502() << ")";
+    p_s << ")";
     return p_s;
 }
 

@@ -2668,13 +2668,17 @@ void MCS6502::trace_finish()
 
 std::ostream &operator<<(std::ostream &p_s, const Core::Configurator &p_cfg)
 {
-    p_s << static_cast<const Named::Configurator &>(p_cfg);
+    p_s << "Core::Configurator("
+        << static_cast<const Named::Configurator &>(p_cfg)
+        << ")";
     return p_s;
 }
 
 std::ostream &operator<<(std::ostream &p_s, const MCS6502::Configurator &p_cfg)
 {
-    p_s << static_cast<const Core::Configurator &>(p_cfg);
+    p_s << "MCS6502::Configurator("
+        << static_cast<const Core::Configurator &>(p_cfg)
+        << ")";
     return p_s;
 }
 
