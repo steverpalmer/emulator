@@ -15,7 +15,7 @@
 #include "common.hpp"
 
 enum AccessType {AT_UNKNOWN, AT_INSTRUCTION, AT_OPERAND, AT_DATA, AT_LAST};
-extern std::ostream &operator<<(std::ostream&, const AccessType);
+extern std::ostream &operator<<(std::ostream &, const AccessType);
 
 
 /// This is the interface that must be supported by all Memory classes.
@@ -32,7 +32,7 @@ public:
         virtual Device *factory() const = 0;
         virtual word base() const = 0;
         virtual word size() const = 0;
-        virtual word memory_size() const {return size(); }
+        virtual word memory_size() const { return size(); }
 
         friend std::ostream &::operator <<(std::ostream &, const Configurator &);
     };
@@ -41,8 +41,8 @@ public:
     const word m_size;
     // Methods
 private:
-    void operator=(const Device&);
-    Device(const Device &);
+    void operator=(const Device &);
+    Device(const Device&);
 protected:
     explicit Device(const Configurator &);
 public:
@@ -50,7 +50,7 @@ public:
     virtual byte get_byte(word p_addr, AccessType p_at = AT_UNKNOWN) = 0;
     virtual void set_byte(word p_addr, byte p_byte, AccessType = AT_UNKNOWN) = 0;
 
-    friend std::ostream &::operator<<(std::ostream&, const Device &);
+    friend std::ostream &::operator<<(std::ostream &, const Device &);
 };
 
 
@@ -88,7 +88,7 @@ public:
     std::vector<byte> m_storage;
     // Methods
 private:
-    void operator=(const Ram&);
+    void operator=(const Ram &);
     Ram(const Ram &);
 public:
     explicit Ram(const Configurator &);
@@ -98,7 +98,7 @@ public:
     void         load(const std::string &p_filename);
     void         save(const std::string &p_filename) const;
 
-    friend std::ostream &::operator<<(std::ostream&, const Ram &);
+    friend std::ostream &::operator<<(std::ostream &, const Ram &);
 
 };
 
@@ -124,14 +124,14 @@ private:
     bool m_is_writeable;
     // Methods
 private:
-    void operator=(const Rom&);
+    void operator=(const Rom &);
     Rom(const Rom &);
 public:
     explicit Rom(const Configurator &);
     virtual void set_byte(word p_addr, byte p_byte, AccessType p_at = AT_UNKNOWN);
     void         set_writeable(bool p_writeable);
 
-    friend std::ostream &::operator<<(std::ostream&, const Rom &);
+    friend std::ostream &::operator<<(std::ostream &, const Rom &);
 
 };
 
@@ -154,7 +154,7 @@ public:
     virtual void set_byte(word p_addr, byte p_byte, AccessType = AT_UNKNOWN);
     virtual int  execute (word p_addr, int p_byte, AccessType p_at = AT_UNKNOWN) = 0;
 
-    friend std::ostream &::operator<<(std::ostream&, const Hook &);
+    friend std::ostream &::operator<<(std::ostream &, const Hook &);
 };
 
 /// This is the Main Memory class whose primary client in the CPU.
@@ -181,7 +181,7 @@ private:
     std::vector<std::weak_ptr<Device>> m_cell;
     // Methods
 private:
-    void operator=(const Memory&);
+    void operator=(const Memory &);
     Memory(const Memory &);
 public:
     explicit Memory(const Configurator &);
@@ -193,7 +193,7 @@ public:
     std::weak_ptr<Device> get_device(word p_addr) const;
     void                  add_hook  (word p_addr, std::weak_ptr<Hook> p_hook, word p_size = 0);
 
-    friend std::ostream &::operator<<(std::ostream&, const Memory &);
+    friend std::ostream &::operator<<(std::ostream &, const Memory &);
 };
 
 
