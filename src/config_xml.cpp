@@ -5,16 +5,12 @@
  *      Author: steve
  */
 
-#if 0
-Configurator::Configurator(int argc, char *argv[])
-{
-
-}
-#endif
-
 #include <stdio.h>
 #include <stdarg.h>
 #include <unistd.h>
+
+#include <cassert>
+#include <log4cxx/logger.h>
 
 #include <libxml/tree.h>
 #include <libxml/parser.h>
@@ -23,81 +19,119 @@ Configurator::Configurator(int argc, char *argv[])
 
 #include "config_xml.hpp"
 
-#include "assert.h"
-
 #define CFG_FNAME "atomrc"
 
-static log4c_category_t *ctracelog;
-
-#define CFG_CTRACE_LOG(...) CTRACE_LOG(ctracelog, __VA_ARGS__)
-
-struct My_Cfg {
-    const char *   progname;
-    const char *   XMLname;
-    struct {
-        float      scale;
-        char       *filename;
-    }              screen;
-    struct {
-        bool   viewscreen;
-        char       *filename;
-    }              keyboard;
-    struct AtomCfg atom;
-    struct {
-        Scr        scr;
-        Kbd        kbd;
-        Atom       *atom;
-    }              build;
-};
-
-
-/******************************************************************************/
-static void init_params(Cfg cfg)
-/******************************************************************************/
+static log4cxx::LoggerPtr cpptrace_log()
 {
-    CFG_CTRACE_LOG("init_params()");
-    assert (cfg);
-    cfg->progname          = 0;
-    cfg->XMLname           = CFG_FNAME;
-    cfg->screen.scale      = 0.0;
-    cfg->screen.filename   = 0;
-    cfg->keyboard.viewscreen = true;
-    cfg->keyboard.filename = 0;
-    cfg->atom.block0_base  = 0x0000;
-    cfg->atom.block0_size  = 0x0000;
-    cfg->atom.lower_base   = 0x0000;
-    cfg->atom.lower_size   = 0x0000;
-    cfg->atom.video_base   = 0x0000;
-    cfg->atom.video_size   = 0x0000;
-    cfg->atom.ppia_base    = 0x0000;
-    cfg->atom.ppia_size    = 0x0000;
-    cfg->atom.basic_base   = 0x0000;
-    cfg->atom.basic_size   = 0x0000;
-    cfg->atom.basic_fname  = 0;
-    cfg->atom.float_base   = 0x0000;
-    cfg->atom.float_size   = 0x0000;
-    cfg->atom.float_fname  = 0;
-    cfg->atom.kernel_base  = 0x0000;
-    cfg->atom.kernel_size  = 0x0000;
-    cfg->atom.kernel_fname = 0;
-    cfg->atom.hooks        = 0;
-    cfg->build.scr  = NULL;
-    cfg->build.kbd  = NULL;
-    cfg->build.atom = NULL;
-    cfg_dump(ctracelog, cfg);
+    static log4cxx::LoggerPtr result(log4cxx::Logger::getLogger(CTRACE_PREFIX ".config_xml.cpp"));
+    return result;
 }
 
-
-/******************************************************************************/
-static void process_command_line(Cfg cfg, int argc, char *argv[])
-/******************************************************************************/
+RamConfigurator::RamConfigurator(const std::string &p_name, word p_base, word p_size)
+    : m_name(p_name)
+    , m_base(p_base)
+    , m_size(p_size)
 {
-    CFG_CTRACE_LOG("process_command_line(%d, ...)", argc);
-    cfg->progname = argv[0];
+    LOG4CXX_INFO(cpptrace_log(),
+                 "RamConfigurator::RamConfigurator(\""
+                 << p_name << "\", "
+                 << p_base << ", "
+                 << p_size << ")");
+}
+
+RomConfigurator::RomConfigurator(const std::string &p_name, word p_base, word p_size, std::string p_filename)
+    : m_name(p_name)
+    , m_base(p_base)
+    , m_size(p_size)
+    , m_filename(p_filename)
+{
+    LOG4CXX_INFO(cpptrace_log(),
+                 "RomConfigurator::RomConfigurator(\""
+                 << p_name << "\", "
+                 << p_base << ", "
+                 << p_size << ", \""
+                 << p_filename << "\")");
+}
+
+PpiaConfigurator::PpiaConfigurator(const std::string &p_name)
+    : m_name(p_name)
+    , m_base(0xB000)
+    , m_memory_size(0x0400)
+{
+    LOG4CXX_INFO(cpptrace_log(),
+                 "PpiaConfigurator::PpiaConfigurator(\""
+                 << p_name << "\")");
+}
+
+MemoryConfigurator::MemoryConfigurator(const std::string &p_name)
+    : m_name(p_name)
+{
+    LOG4CXX_INFO(cpptrace_log(),
+                 "MemoryConfigurator::MemoryConfigurator(\""
+                 << p_name << "\")");
+}
+
+MCS6502Configurator::MCS6502Configurator(const std::string &p_name)
+    : m_name(p_name)
+{
+    LOG4CXX_INFO(cpptrace_log(),
+                 "MCS6502Configurator::MCS6502Configurator(\""
+                 << p_name << "\")");
+}
+
+AtomConfigurator::AtomConfigurator(const std::string &p_name)
+    : m_name(p_name)
+    , m_devices(0)
+    , m_block0("block0", 0x0000, 0x0400)
+    , m_lower( "lower",  0x2800, 0x1400)
+    , m_video( "video",  0x8000, 0x1800)
+    , m_basic( "basic",  0xC000, 0x1000, "basic.rom")
+    , m_float( "float",  0xD000, 0x1000, "float.rom")
+    , m_kernel("kernel", 0xF000, 0x1000, "kernel.rom")
+{
+    LOG4CXX_INFO(cpptrace_log(),
+                 "AtomConfigurator::AtomConfigurator(\""
+                 << p_name << "\")");
+    m_devices.push_back(&m_block0);
+    m_devices.push_back(&m_lower);
+    m_devices.push_back(&m_video);
+    m_devices.push_back(&m_ppia);
+    m_devices.push_back(&m_basic);
+    m_devices.push_back(&m_float);
+    m_devices.push_back(&m_kernel);
+}
+
+KeyboardControllerConfigurator::KeyboardControllerConfigurator()
+    : m_name("KeyboardController")
+{
+    LOG4CXX_INFO(cpptrace_log(), "KeyboardControllerConfigurator::KeyboardControllerConfigurator()");
+}
+
+ScreenGraphicsViewConfigurator::ScreenGraphicsViewConfigurator()
+    : m_name("ScreenGraphicsView")
+    , m_scale(2.0)
+    , m_fontfilename("mc6847.bmp")
+    , m_window_title("Acorn Atom")
+    , m_icon_title("Acorn Atom")
+{
+    LOG4CXX_INFO(cpptrace_log(), "ScreenGraphicsViewConfigurator::ScreenGraphicsViewConfigurator()");
+}
+
+ScreenGraphicsControllerConfigurator::ScreenGraphicsControllerConfigurator()
+    : m_name("ScreenGraphicsController")
+    , m_RefreshRate_ms(100)
+{
+    LOG4CXX_INFO(cpptrace_log(), "ScreenGraphicsControllerConfigurator::ScreenGraphicsControllerConfigurator()");
+}
+
+void Configurator::process_command_line(int argc, char *argv[])
+{
+    LOG4CXX_INFO(cpptrace_log(), "Configurator::process_command_line(" << argc << ", " << argv << ")");
     opterr = 0;
     int c;
-    while ((c = getopt(argc, argv, "i:o:f:")) != -1)
+    while ((c = getopt(argc, argv, "f:")) != -1)
         switch (c) {
+#if 0
         case 'i': /* Stream Input from ... */
             cfg->keyboard.filename = (strcmp(optarg, "-")?optarg:"");
             cfg->keyboard.viewscreen = true;
@@ -106,29 +140,29 @@ static void process_command_line(Cfg cfg, int argc, char *argv[])
             cfg->screen.filename = (strcmp(optarg, "-")?optarg:"");
             cfg->keyboard.viewscreen = false;
             break;
+#endif
         case 'f': /* Use Config File ... */
-            cfg->XMLname = optarg;
+            m_XMLfilename = optarg;
             break;
         case '?': /* Unknown Option */
-            LOG_WARN("Unknown Option '%c'", optopt);
+            LOG4CXX_WARN(cpptrace_log(), "Unknown Option '" << optopt << "'");
             break;
         default: /* Unexpected response from getopt() */
-            LOG_WARN("Unexpected responce from getopt() %d", c);
+            LOG4CXX_WARN(cpptrace_log(), "Unexpected responce from getopt() " << c);
             break;
         }
-    cfg_dump(ctracelog, cfg);
 }
 
-/******************************************************************************/
+#if 0
 static int xpath_count(xmlXPathContextPtr ctx, const char *path)
-/******************************************************************************/
 {
-    CFG_CTRACE_LOG("xpath_count(%p, \"%s\")", ctx, path);
+    LOG4CXX_INFO(cpptrace_log(), "xpath_count(_, " << path << ")");
     int result = -1;
     /* FIXME: Dodgy Cast */
     xmlXPathObjectPtr n = xmlXPathEvalExpression((const xmlChar *)path, ctx);
-    if (!n)
-        LOG_ERROR("Failed to read \"%s\"", path);
+    if (!n) {
+        LOG4CXX_ERROR(cpptrace_log(), "Failed to read \"" << path << "\"");
+    }
     else {
         assert (n->type == XPATH_NODESET);
         result = xmlXPathNodeSetGetLength(n->nodesetval);
@@ -136,18 +170,16 @@ static int xpath_count(xmlXPathContextPtr ctx, const char *path)
     }
     return result;
 }
+#endif
 
-
-/******************************************************************************/
 static void xpath_rd_txt(xmlXPathContextPtr ctx, const char *path, char **valptr)
-/******************************************************************************/
 {
-    CFG_CTRACE_LOG("xpath_rd_txt(%p, \"%s\", %p)", ctx, path, valptr);
+    LOG4CXX_INFO(cpptrace_log(), "xpath_rd_txt(_, " << path << ", _)");
     assert (valptr);
     /* FIXME: Dodgy Cast */
     xmlXPathObjectPtr n = xmlXPathEvalExpression((const xmlChar *)path, ctx);
     if (!n) {
-        LOG_ERROR("Failed to read \"%s\"", path);
+        LOG4CXX_ERROR(cpptrace_log(), "Failed to read \"" << path << "\"");
         *valptr = 0;
     }
     else {
@@ -163,43 +195,37 @@ static void xpath_rd_txt(xmlXPathContextPtr ctx, const char *path, char **valptr
 }
 
 
-/******************************************************************************/
 static void xpath_rd_guint16(xmlXPathContextPtr ctx, const char *path, word *valptr)
-/******************************************************************************/
 {
-    CFG_CTRACE_LOG("xpath_rd_guint16(%p, \"%s\", %p)", ctx, path, valptr);
+    LOG4CXX_INFO(cpptrace_log(), "xpath_rd_guint16(_, " << path << ", _)");
     char * txt = 0;
     xpath_rd_txt(ctx, path, &txt);
-    if (txt)
-        {
-            const int rv = sscanf(txt, "%hx", valptr);
-            assert(rv != EOF);
-            xmlFree(txt);
-        }
+    if (txt) {
+        const int rv = sscanf(txt, "%hx", valptr);
+        assert(rv != EOF);
+        xmlFree(txt);
+    }
 }
 
-
-/******************************************************************************/
+#if 0
 static void xpath_rd_float(xmlXPathContextPtr ctx, const char *path, float *valptr)
-/******************************************************************************/
 {
-    CFG_CTRACE_LOG("xpath_rd_float(%p, \"%s\", %p)", ctx, path, valptr);
+    LOG4CXX_INFO(cpptrace_log(), "xpath_rd_float(_, " << path << ", _)");
     char * txt = 0;
     xpath_rd_txt(ctx, path, &txt);
-    if (txt)
-        {
-            const int rv = sscanf(txt, "%f", valptr);
-            assert(rv != EOF);
-            xmlFree(txt);
-        }
+    if (txt) {
+        const int rv = sscanf(txt, "%f", valptr);
+        assert(rv != EOF);
+        xmlFree(txt);
+    }
 }
-
+#endif
 
 static void xml_callback_error(void *ctx, const char *msg, ...)
 {
     va_list ap;
     va_start(ap, msg);
-    log4c_category_vlog(rootlog, LOG4C_PRIORITY_ERROR, msg, ap);
+    LOG4CXX_ERROR(cpptrace_log(), msg);
     va_end(ap);
 }
 
@@ -207,315 +233,229 @@ static void xml_callback_warn(void *ctx, const char *msg, ...)
 {
     va_list ap;
     va_start(ap, msg);
-    log4c_category_vlog(rootlog, LOG4C_PRIORITY_WARN, msg, ap);
+    LOG4CXX_WARN(cpptrace_log(), msg);
     va_end(ap);
 }
 
-/******************************************************************************/
-static void process_XML( Cfg cfg )
-/******************************************************************************/
+void Configurator::process_XML()
 {
-    CFG_CTRACE_LOG("process_XML()");
-    FILE *dummy = fopen(cfg->XMLname, "r");
-    if (dummy && (getc(dummy) != EOF))
-        {
-            fclose(dummy);
-            xmlDocPtr doc = xmlParseFile(cfg->XMLname);
-            if (!doc) {
-                LOG_ERROR("Failed to parse configuration file \"%s\"", cfg->XMLname);
-                return;
-            }
-            xmlDocPtr atomRNGdoc = xmlParseFile("atom.rng");
-            if (!atomRNGdoc) LOG_ERROR("Failed to parse Relax NG schema file \"atom.rng\" - Stage 1");
-            else {
-                xmlRelaxNGParserCtxtPtr atomRNGParserCtxt = xmlRelaxNGNewDocParserCtxt(atomRNGdoc);
-                if (!atomRNGParserCtxt) LOG_ERROR("Failed to parse Relax NG schema file \"atom.rng\" - Stage 2");
-                else {
-                    xmlRelaxNGSetParserErrors(atomRNGParserCtxt, xml_callback_error, xml_callback_warn, 0);
-                    xmlRelaxNGPtr atomRNGPtr = xmlRelaxNGParse(atomRNGParserCtxt);
-                    if (!atomRNGPtr) LOG_ERROR("Failed to parse Relax NG schema file \"atom.rng\" - Stage 3");
-                    else {
-                        xmlRelaxNGValidCtxtPtr atomRNGValidCtx = xmlRelaxNGNewValidCtxt(atomRNGPtr);
-                        if (!atomRNGValidCtx) LOG_ERROR("Failed to parse Relax NG schema file \"atom.rng\" - Stage 4");
-                        else {
-                            xmlRelaxNGSetValidErrors(atomRNGValidCtx, xml_callback_error, xml_callback_warn, 0);
-                            const int atomRNGValid = xmlRelaxNGValidateDoc(atomRNGValidCtx, doc);
-                            if (atomRNGValid) LOG_ERROR("Failed to validate file \"%s\": %d", cfg->XMLname, atomRNGValid);
-                            xmlRelaxNGFreeValidCtxt(atomRNGValidCtx);
-                        }
-                        xmlRelaxNGFree(atomRNGPtr);
-                    }
-                    xmlRelaxNGFreeParserCtxt(atomRNGParserCtxt);
-                }
-                xmlFreeDoc(atomRNGdoc);
-            }
-            xmlXPathContextPtr ctx = xmlXPathNewContext(doc);
-            if (!ctx) {
-                LOG_ERROR("Failed to generate new XPath context");
-                return;
-            }
-            xpath_rd_float  (ctx, "/atom/screen/scale/text()", &cfg->screen.scale);
-            if (!cfg->screen.filename)
-                switch (xpath_count(ctx, "/atom/screen/filename")) {
-                case 0: /* No screen filename element */
-                    break;
-                case 1: /* screen filename requested */
-                    xpath_rd_txt    (ctx, "/atom/screen/filename/text()", &cfg->screen.filename);
-                    if (!cfg->screen.filename)
-                        cfg->screen.filename = "";
-                    break;
-                default: /* Error */
-                    LOG_ERROR("Incorrect screen stream entry in configuration file");
-                    assert (false);
-                    break;
-                }
-            if (!cfg->keyboard.filename)
-                switch (xpath_count(ctx, "/atom/keyboard/filename")) {
-                case 0: /* No keyboard stream element */
-                    break;
-                case 1: /* keyboard streaming requested */
-                    xpath_rd_txt    (ctx, "/atom/keyboard/filename/text()", &cfg->keyboard.filename);
-                    if (!cfg->keyboard.filename)
-                        cfg->keyboard.filename = "";
-                    cfg->keyboard.viewscreen = ( xpath_count(ctx, "/atom/keyboard/viewscreen") > 0 );
-                    break;
-                default: /* Error */
-                    LOG_ERROR("Incorrect keyboard stream entry in configuration file");
-                    assert (false);
-                    break;
-                }
-            xpath_rd_guint16(ctx, "/atom/ram[@name='block0']/base/text()",     &cfg->atom.block0_base);
-            xpath_rd_guint16(ctx, "/atom/ram[@name='block0']/size/text()",     &cfg->atom.block0_size);
-            xpath_rd_guint16(ctx, "/atom/ram[@name='lower']/base/text()",      &cfg->atom.lower_base);
-            xpath_rd_guint16(ctx, "/atom/ram[@name='lower']/size/text()",      &cfg->atom.lower_size);
-            xpath_rd_guint16(ctx, "/atom/ram[@name='video']/base/text()",      &cfg->atom.video_base);
-            xpath_rd_guint16(ctx, "/atom/ram[@name='video']/size/text()",      &cfg->atom.video_size);
-            xpath_rd_guint16(ctx, "/atom/ppia/base/text()",                    &cfg->atom.ppia_base);
-            xpath_rd_guint16(ctx, "/atom/ppia/size/text()",                    &cfg->atom.ppia_size);
-            xpath_rd_guint16(ctx, "/atom/rom[@name='basic']/base/text()",      &cfg->atom.basic_base);
-            xpath_rd_guint16(ctx, "/atom/rom[@name='basic']/size/text()",      &cfg->atom.basic_size);
-            xpath_rd_txt    (ctx, "/atom/rom[@name='basic']/filename/text()",  &cfg->atom.basic_fname);
-            xpath_rd_guint16(ctx, "/atom/rom[@name='float']/base/text()",      &cfg->atom.float_base);
-            xpath_rd_guint16(ctx, "/atom/rom[@name='float']/size/text()",      &cfg->atom.float_size);
-            xpath_rd_txt    (ctx, "/atom/rom[@name='float']/filename/text()",  &cfg->atom.float_fname);
-            xpath_rd_guint16(ctx, "/atom/rom[@name='kernel']/base/text()",     &cfg->atom.kernel_base);
-            xpath_rd_guint16(ctx, "/atom/rom[@name='kernel']/size/text()",     &cfg->atom.kernel_size);
-            xpath_rd_txt    (ctx, "/atom/rom[@name='kernel']/filename/text()", &cfg->atom.kernel_fname);
-            xmlXPathFreeContext(ctx);
-            xmlFreeDoc(doc);
-            cfg_dump(ctracelog, cfg);
+    LOG4CXX_INFO(cpptrace_log(), "Configurator::process_XML()");
+    FILE *dummy = fopen(m_XMLfilename, "r");
+    if (dummy && (getc(dummy) != EOF)) {
+        fclose(dummy);
+        xmlDocPtr doc = xmlParseFile(m_XMLfilename);
+        if (!doc) {
+            LOG4CXX_ERROR(cpptrace_log(), "Failed to parse configuration file \"" << m_XMLfilename << "\"");
+            return;
         }
+        xmlDocPtr atomRNGdoc = xmlParseFile("atom.rng");
+        if (!atomRNGdoc) {
+            LOG4CXX_ERROR(cpptrace_log(), "Failed to parse Relax NG schema file \"atom.rng\" - Stage 1");
+        }
+        else {
+            xmlRelaxNGParserCtxtPtr atomRNGParserCtxt = xmlRelaxNGNewDocParserCtxt(atomRNGdoc);
+            if (!atomRNGParserCtxt) {
+                LOG4CXX_ERROR(cpptrace_log(), "Failed to parse Relax NG schema file \"atom.rng\" - Stage 2");
+            }
+            else {
+                xmlRelaxNGSetParserErrors(atomRNGParserCtxt, xml_callback_error, xml_callback_warn, 0);
+                xmlRelaxNGPtr atomRNGPtr = xmlRelaxNGParse(atomRNGParserCtxt);
+                if (!atomRNGPtr) {
+                    LOG4CXX_ERROR(cpptrace_log(), "Failed to parse Relax NG schema file \"atom.rng\" - Stage 3");
+                }
+                else {
+                    xmlRelaxNGValidCtxtPtr atomRNGValidCtx = xmlRelaxNGNewValidCtxt(atomRNGPtr);
+                    if (!atomRNGValidCtx) {
+                        LOG4CXX_ERROR(cpptrace_log(), "Failed to parse Relax NG schema file \"atom.rng\" - Stage 4");
+                    }
+                    else {
+                        xmlRelaxNGSetValidErrors(atomRNGValidCtx, xml_callback_error, xml_callback_warn, 0);
+                        const int atomRNGValid = xmlRelaxNGValidateDoc(atomRNGValidCtx, doc);
+                        if (atomRNGValid) {
+                            LOG4CXX_ERROR(cpptrace_log(), "Failed to validate file \"" << m_XMLfilename << "\": " << atomRNGValid);
+                        }
+                        xmlRelaxNGFreeValidCtxt(atomRNGValidCtx);
+                    }
+                    xmlRelaxNGFree(atomRNGPtr);
+                }
+                xmlRelaxNGFreeParserCtxt(atomRNGParserCtxt);
+            }
+            xmlFreeDoc(atomRNGdoc);
+        }
+        xmlXPathContextPtr ctx = xmlXPathNewContext(doc);
+        if (!ctx) {
+            LOG4CXX_ERROR(cpptrace_log(), "Failed to generate new XPath context");
+            return;
+        }
+
+        // Atom Stuff
+        xpath_rd_guint16(ctx, "/atom/memorymap/ram[@name='block0']/base/text()",     &m_atom.m_block0.m_base);
+        xpath_rd_guint16(ctx, "/atom/memorymap/ram[@name='block0']/size/text()",     &m_atom.m_block0.m_size);
+        xpath_rd_guint16(ctx, "/atom/memorymap/ram[@name='lower']/base/text()",      &m_atom.m_lower.m_base);
+        xpath_rd_guint16(ctx, "/atom/memorymap/ram[@name='lower']/size/text()",      &m_atom.m_lower.m_size);
+        xpath_rd_guint16(ctx, "/atom/memorymap/ram[@name='video']/base/text()",      &m_atom.m_video.m_base);
+        xpath_rd_guint16(ctx, "/atom/memorymap/ram[@name='video']/size/text()",      &m_atom.m_video.m_size);
+        xpath_rd_guint16(ctx, "/atom/memorymap/ppia/base/text()",                    &m_atom.m_ppia.m_base);
+        xpath_rd_guint16(ctx, "/atom/memorymap/ppia/size/text()",                    &m_atom.m_ppia.m_memory_size);
+        xpath_rd_guint16(ctx, "/atom/memorymap/rom[@name='basic']/base/text()",      &m_atom.m_basic.m_base);
+        xpath_rd_guint16(ctx, "/atom/memorymap/rom[@name='basic']/size/text()",      &m_atom.m_basic.m_size);
+        {
+            char *tmp;
+            xpath_rd_txt(ctx, "/atom/memorymap/rom[@name='basic']/filename/text()",  &tmp);
+            //FIXME: Dodgy cast
+            m_atom.m_basic.m_filename = tmp;
+        }
+        xpath_rd_guint16(ctx, "/atom/memorymap/rom[@name='float']/base/text()",      &m_atom.m_float.m_base);
+        xpath_rd_guint16(ctx, "/atom/memorymap/rom[@name='float']/size/text()",      &m_atom.m_float.m_size);
+        {
+            char *tmp;
+            xpath_rd_txt(ctx, "/atom/memorymap/rom[@name='float']/filename/text()",  &tmp);
+            m_atom.m_float.m_filename = tmp;
+        }
+        xpath_rd_guint16(ctx, "/atom/memorymap/rom[@name='kernel']/base/text()",     &m_atom.m_kernel.m_base);
+        xpath_rd_guint16(ctx, "/atom/memorymap/rom[@name='kernel']/size/text()",     &m_atom.m_kernel.m_size);
+        {
+            char *tmp;
+            xpath_rd_txt(ctx, "/atom/memorymap/rom[@name='kernel']/filename/text()", &tmp);
+            m_atom.m_kernel.m_filename = tmp;
+        }
+
+#if 0
+        // Screen Stuff
+        float screen_scale;
+        xpath_rd_float  (ctx, "/atom/io/scale/text()", &screen_scale);
+#endif
+
+#if 0
+        // Keyboard Stuff
+        if (!cfg->keyboard.filename)
+            switch (xpath_count(ctx, "/atom/keyboard/filename")) {
+            case 0: /* No keyboard stream element */
+                break;
+            case 1: /* keyboard streaming requested */
+                xpath_rd_txt    (ctx, "/atom/keyboard/filename/text()", &cfg->keyboard.filename);
+                if (!cfg->keyboard.filename)
+                    cfg->keyboard.filename = "";
+                cfg->keyboard.viewscreen = ( xpath_count(ctx, "/atom/keyboard/viewscreen") > 0 );
+                break;
+            default: /* Error */
+                LOG_ERROR("Incorrect keyboard stream entry in configuration file");
+                assert (false);
+                break;
+            }
+#endif
+
+        xmlXPathFreeContext(ctx);
+        xmlFreeDoc(doc);
+    }
 }
 
-
-/******************************************************************************/
-static bool check_and_complete_params( Cfg cfg )
-/******************************************************************************/
+bool Configurator::check_and_complete_params()
 {
-    CFG_CTRACE_LOG("check_and_complete_params()");
+    LOG4CXX_INFO(cpptrace_log(), "Configurator::check_and_complete_params()");
     bool result = true;
+#if 0
     struct HookNode **ptr = &cfg->atom.hooks;
     if (cfg->screen.scale && (cfg->screen.scale < 1.0)) {
         LOG_ERROR("Bad Scale Factor %f", cfg->screen.scale);
         result = false;
     }
-    if (cfg->screen.filename)
-        {
-            *ptr = malloc(sizeof(**ptr));
-            assert (*ptr);
-            (*ptr)->action = HK_STREAM_OSWRCH;
-            if (*cfg->screen.filename) {
-                (*ptr)->object = fopen(cfg->screen.filename, "w");
-                if (!(*ptr)->object) {
-                    LOG_ERROR("Can't open output stream");
-                    result = false;
-                }
+    if (cfg->screen.filename) {
+        *ptr = malloc(sizeof(**ptr));
+        assert (*ptr);
+        (*ptr)->action = HK_STREAM_OSWRCH;
+        if (*cfg->screen.filename) {
+            (*ptr)->object = fopen(cfg->screen.filename, "w");
+            if (!(*ptr)->object) {
+                LOG_ERROR("Can't open output stream");
+                result = false;
             }
-            else
-                (*ptr)->object = stdout;
-            (*ptr)->next = 0;
-            ptr = &((*ptr)->next);
         }
-    if (cfg->keyboard.filename)
-        {
-            *ptr = malloc(sizeof(**ptr));
-            assert (*ptr);
-            (*ptr)->action = HK_STREAM_OSRDCH;
-            if (*cfg->keyboard.filename) {
-                (*ptr)->object = fopen(cfg->keyboard.filename, "r");
-                if (!(*ptr)->object) {
-                    LOG_ERROR("Can't open input stream");
-                    result = false;
-                }
-                (*ptr)->size = cfg->keyboard.viewscreen;
+        else
+            (*ptr)->object = stdout;
+        (*ptr)->next = 0;
+        ptr = &((*ptr)->next);
+    }
+    if (cfg->keyboard.filename) {
+        *ptr = malloc(sizeof(**ptr));
+        assert (*ptr);
+        (*ptr)->action = HK_STREAM_OSRDCH;
+        if (*cfg->keyboard.filename) {
+            (*ptr)->object = fopen(cfg->keyboard.filename, "r");
+            if (!(*ptr)->object) {
+                LOG_ERROR("Can't open input stream");
+                result = false;
             }
-            else
-                (*ptr)->object = stdin;
-            (*ptr)->next = 0;
-            ptr = &((*ptr)->next);
+            (*ptr)->size = cfg->keyboard.viewscreen;
         }
+        else
+            (*ptr)->object = stdin;
+        (*ptr)->next = 0;
+        ptr = &((*ptr)->next);
+    }
     const int err = atom_config_error(&cfg->atom);
-    if (err)
-        {
-            LOG_ERROR("Invalid configuration %d", err);
-            atom_config_dump(ctracelog, &cfg->atom);
-            result = false;
-        }
+    if (err) {
+        LOG_ERROR("Invalid configuration %d", err);
+        atom_config_dump(ctracelog, &cfg->atom);
+        result = false;
+    }
     cfg_dump(ctracelog, cfg);
+#endif
     return result;
 }
 
-/******************************************************************************/
-void cfg_init(void)
-/******************************************************************************/
+Configurator::Configurator(int argc, char *argv[])
+    : m_XMLfilename(CFG_FNAME)
 {
-    ctracelog = log4c_category_get(LOGNAME_CTRACE("config"));
-    CFG_CTRACE_LOG("cfg_init()");
+    LOG4CXX_INFO(cpptrace_log(), "Configurator::Configurator(" << argc << ", " << argv << ")");
     xmlInitParser();
+    process_command_line(argc, argv);
+    process_XML();
+    if (!check_and_complete_params())
+        exit(1);
 }
 
 
-/******************************************************************************/
-Cfg cfg_new ( int argc, char *argv[] )
-/******************************************************************************/
-/*
- * Returns NULL if there is a problem with the requested configuration.
- * In which case it should log some appropriate message.
- * It does not do the actual build!
- */
+Configurator::~Configurator()
 {
-    CFG_CTRACE_LOG("cfg_new(%d, ...)", argc);
-    Cfg result = 0;
-    result = malloc(sizeof(*result));
-    if (result) {
-        init_params(result);
-        process_command_line(result, argc, argv);
-        process_XML(result);
-        if (!check_and_complete_params(result))
-            result = 0;
-    }
-    CFG_CTRACE_LOG("cfg_new => %p", result);
-    return result;
+    xmlCleanupParser();
 }
 
-
-/******************************************************************************/
-bool cfg_del ( Cfg cfg )
-/******************************************************************************/
-/*
- * This can be called straight after the accessors to free up used memory.
- * In particular, it has no responsibility for freeing the built system.
- */
+std::ostream &operator<<(std::ostream &p_s, const AtomConfigurator &p_cfg)
 {
-    CFG_CTRACE_LOG("cfg_del()");
-    bool result = false;
-    if (cfg) {
-        struct HookNode *head = cfg->atom.hooks;
-        while (head)
-            {
-                struct HookNode *tmp = head;
-                head = head->next;
-                free (tmp);
-            }
-        xmlCleanupParser();
-        result = true;
-    }
-    return result;
+    p_s << static_cast<const Named::Configurator &>(p_cfg)
+        // :TODO: << p_cfg.m_devices
+        << p_cfg.m_memory
+            << p_cfg.m_mcs6502;
+    return p_s;
 }
 
-
-/******************************************************************************/
-void cfg_deinit(void)
-/******************************************************************************/
+std::ostream &operator<<(std::ostream &p_s, const KeyboardControllerConfigurator &p_cfg)
 {
-    CFG_CTRACE_LOG("config_deinit()");
+    p_s << static_cast<const Named::Configurator &>(p_cfg);
+    return p_s;
 }
 
-
-/******************************************************************************/
-void cfg_dump ( log4c_category_t *log, Cfg cfg )
-/******************************************************************************/
+std::ostream &operator<<(std::ostream &p_s, const ScreenGraphicsViewConfigurator &p_cfg)
 {
-    CFG_CTRACE_LOG("cfg_dump()");
-    if (!log)
-        log = log4c_category_get(LOGNAME_DUMP("Cfg"));
-    if (cfg) {
-        log4c_category_info(log, "Program Name:        \"%s\"", cfg->progname);
-        log4c_category_info(log, "Config File:         \"%s\"", cfg->XMLname);
-        log4c_category_info(log, "Screen Scale:        %f",     cfg->screen.scale);
-        log4c_category_info(log, "Screen Stream:       \"%s\"", cfg->screen.filename);
-        log4c_category_info(log, "Keyboard Stream:     \"%s\"", cfg->keyboard.filename);
-        log4c_category_info(log, "Keyboard viewscreen: %d",     cfg->keyboard.viewscreen);
-        atom_config_dump(log, &cfg->atom);
-        if (cfg->build.scr)  scr_dump(log, cfg->build.scr);
-        if (cfg->build.kbd)  kbd_dump(log, cfg->build.kbd);
-        if (cfg->build.atom) atom_dump(log, cfg->build.atom);
-    }
-    else
-        log4c_category_info(log, "NULL Cfg");
+    p_s << static_cast<const Named::Configurator &>(p_cfg)
+        << ", scale=" << p_cfg.m_scale
+        << ", fontfilename=" << p_cfg.m_fontfilename
+        << ", window_title=" << p_cfg.m_window_title
+        << ". icon_title=" << p_cfg.m_icon_title;
+        return p_s;
 }
 
-
-/******************************************************************************/
-bool cfg_build ( Cfg cfg )
-/******************************************************************************/
-/*
- * Builds the execution system according to the configuration.
- * Returns false if it fails to build for some reason.
- * In which case it should log some appropriate message.
- */
+std::ostream &operator<<(std::ostream &p_s, const ScreenGraphicsControllerConfigurator &p_cfg)
 {
-    CFG_CTRACE_LOG("cfg_build()");
-    cfg->build.scr = scr_new(cfg->screen.scale);
-    if (!cfg->build.scr) {
-        LOG_ERROR("Failed to build screen object");
-        return false;
-    }
-    cfg->build.kbd = kbd_new();
-    if (!cfg->build.kbd) {
-        LOG_ERROR("Failed to build keyboard object");
-        return false;
-    }
-    cfg->build.atom = atom_new(cfg->build.kbd, cfg->build.scr, &cfg->atom);
-    if (!cfg->build.atom) {
-        LOG_ERROR("Failed to build atom object");
-        return false;
-    }
-    return true;
+    p_s << static_cast<const Named::Configurator &>(p_cfg)
+        << p_cfg.m_view
+        << ", RefreshRate_ms=" << p_cfg.m_RefreshRate_ms;
+    return p_s;
 }
 
-
-/******************************************************************************/
-Scr cfg_get_scr ( Cfg cfg )
-/******************************************************************************/
+std::ostream &operator<<(std::ostream &p_s, const Configurator &p_cfg)
 {
-    CFG_CTRACE_LOG("cfg_get_scr()");
-    return cfg->build.scr;
-}
-
-
-/******************************************************************************/
-Kbd cfg_get_kbd ( Cfg cfg )
-/******************************************************************************/
-{
-    CFG_CTRACE_LOG("cfg_get_kbd()");
-    return cfg->build.kbd;
-}
-
-
-/******************************************************************************/
-Atom *cfg_get_atom ( Cfg cfg )
-/******************************************************************************/
-{
-    CFG_CTRACE_LOG("cfg_get_atom()");
-    return cfg->build.atom;
-}
-
-
-/******************************************************************************/
-bool cfg_get_viewscreen ( Cfg cfg )
-/******************************************************************************/
-{
-    CFG_CTRACE_LOG("cfg_get_viewscreen()");
-    return cfg->keyboard.viewscreen;
+    p_s << p_cfg.m_atom << p_cfg.m_keyboard << p_cfg.m_screen;
+    return p_s;
 }

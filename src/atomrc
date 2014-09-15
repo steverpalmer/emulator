@@ -1,36 +1,40 @@
 <?xml version="1.0" ?>
-<atom name="My Atom" version="0.02">
+<atom name="My Atom" version="0.03">
 
   <!-- Nominal 12K Atom -->
-  <memory>
+  <memorymap>
     <ram name="block0"><base>0000</base><size>0400</size></ram>
+    <!-- 0800: VDU CRT Controller -->
+    <!-- 0A00: Optional FDC -->
+    <!-- Peripherals space -->
     <ram name="lower" ><base>2800</base><size>1400</size></ram>
     <ram name="video" ><base>8000</base><size>1800</size></ram>
     <ppia>             <base>B000</base><size>0400</size></ppia>
+    <!-- B800: Optional VIA I/O Device for Printer Interface -->
     <rom name="basic" ><base>C000</base><size>1000</size><filename>basic.rom</filename></rom>
+    <rom name="float"> <base>D000</base><size>1000</size><filename>float.rom</filename></rom>
+    <!-- E000: Optional Disk Operating System -->
     <rom name="kernel"><base>F000</base><size>1000</size><filename>kernel.rom</filename></rom>
-  </memory>
+  </memorymap>
 
-  <cpu>
-    <device>MSC6502</device>
-  </cpu>
+  <!-- cpus>
+    <cpu>MSC6502</cpu>
+  </cpus -->
 
-  <hooks>
-    <OSRDCH/>
-    <OSWRCH/>
-    <OSLOAD_OSSAVE><dirname>.</dirname></OSLOAD_OSSAVE>
-  </hooks>
+  <!-- hooks>
+    <OSRDCH><filename>stdin</filename></OSRDCH>
+    <OSWRCH><filename>stdout</filename></OSWRCH>
+    <OSLOAD><dirname>.</dirname></OSLOAD>
+    <OSSAVE><dirname>.</dirname></OSSAVE>
+  </hooks -->
 
-  <screen_graphics_view>
-    <memory>8000</memory>
+  <io>
+    <screenmemory>video</screenmemory>
     <scale>2.0</scale>
-    <filename>mc6847.bmp</filename>
-  </screen_graphics_view>
-
-  <screen_graphics_controller>
+    <fontfilename>mc6847.bmp</fontfilename>
     <refresh>100</refresh>
-  </screen_graphics_controller>
-
-  <keyboard_controller/>
+    <!-- key_copy>F1</key_copy -->
+    <!-- key_reset>F12</key_reset -->
+  </io>
 
 </atom>

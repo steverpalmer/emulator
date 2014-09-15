@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" ?>
+<?xml version="1.0" ?>
 <rng:grammar xmlns:rng="http://relaxng.org/ns/structure/1.0" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
 
   <rng:start>
@@ -14,14 +14,68 @@
       <rng:interleave>
         <rng:zeroOrMore>
           <rng:choice>
+            <rng:ref name="memorymap_elm"/>
+            <!-- rng:ref name="cpu_elm"/ -->
+            <!-- rng:ref name="hooks_elm"/ -->
+            <rng:ref name="io_elm"/>
+          </rng:choice>
+        </rng:zeroOrMore>
+      </rng:interleave>
+    </rng:element>
+  </rng:define>
+
+  <rng:define name="memorymap_elm">
+    <rng:element name="memorymap">
+      <rng:interleave>
+        <rng:zeroOrMore>
+          <rng:choice>
             <rng:ref name="ram_elm"/>
             <rng:ref name="rom_elm"/>
             <rng:ref name="ppia_elm"/>
-            <rng:ref name="screen_elm"/>
-            <rng:ref name="keyboard_elm"/>
+            <!-- rng:ref name="via_elm"/ -->
+          </rng:choice>
+        </rng:zeroOrMore>
+      </rng:interleave>
+    </rng:element>
+  </rng:define>
+
+  <!-- rng:define name="cpu_elm">
+    <rng:element name="cpu">
+      <rng:interleave>
+        <rng:zeroOrMore>
+          <rng:choice>
             <rng:ref name="traceOn_elm"/>
             <rng:ref name="traceOff_elm" />
-            <rng:ref name="watch_elm"/>
+          </rng:choice>
+        </rng:zeroOrMore>
+      </rng:interleave>
+    </rng:element>
+  </rng:define -->
+
+  <!-- rng:define name="hooks_elm">
+    <rng:element name="hooks">
+      <rng:interleave>
+        <rng:zeroOrMore>
+          <rng:choice>
+            <rng:ref name="osrdch_elm"/>
+            <rng:ref name="oswrch_elm" />
+            <rng:ref name="osload_elm" />
+            <rng:ref name="ossave_elm" />
+          </rng:choice>
+        </rng:zeroOrMore>
+      </rng:interleave>
+    </rng:element>
+  </rng:define -->
+
+  <rng:define name="io_elm">
+    <rng:element name="io">
+      <rng:interleave>
+        <rng:zeroOrMore>
+          <rng:choice>
+            <rng:ref name="screenmemory_elm"/>
+            <rng:ref name="scale_elm"/>
+            <rng:ref name="fontfile_elm"/>
+            <rng:ref name="refresh_elm"/>
           </rng:choice>
         </rng:zeroOrMore>
       </rng:interleave>
@@ -97,16 +151,9 @@
 
   <!-- Emulator Parameters -->
 
-  <rng:define name="screen_elm">
-    <rng:element name="screen">
-      <rng:interleave>
-        <rng:optional>
-          <rng:ref name="scale_elm"/>
-        </rng:optional>
-        <rng:optional>
-          <rng:ref name="filename_elm"/>
-        </rng:optional>
-     </rng:interleave>
+  <rng:define name="screenmemory_elm">
+    <rng:element name="screenmemory">
+      <rng:text/>
     </rng:element>
   </rng:define>
 
@@ -116,40 +163,33 @@
     </rng:element>
   </rng:define>
 
-  <rng:define name="keyboard_elm">
-    <rng:element name="keyboard">
-      <rng:interleave>
-        <rng:optional>
-          <rng:ref name="filename_elm"/>
-        </rng:optional>
-        <rng:optional>
-          <rng:ref name="viewscreen_elm"/>
-        </rng:optional>
-      </rng:interleave>
+  <rng:define name="fontfile_elm">
+    <rng:element name="fontfilename">
+      <rng:text/>
     </rng:element>
   </rng:define>
 
-  <rng:define name="viewscreen_elm">
-    <rng:element name="viewscreen">
-      <rng:text/>
+  <rng:define name="refresh_elm">
+    <rng:element name="refresh">
+      <rng:data type="int"/>
     </rng:element>
   </rng:define>
 
   <!-- Hooks -->
 
-  <rng:define name="traceOn_elm">
+  <!-- rng:define name="traceOn_elm">
     <rng:element name="traceOn">
       <rng:ref name="hex16_type"/>
     </rng:element>
-  </rng:define>
+  </rng:define -->
 
-  <rng:define name="traceOff_elm">
+  <!-- rng:define name="traceOff_elm">
     <rng:element name="traceOff">
       <rng:ref name="hex16_type"/>
     </rng:element>
-  </rng:define>
+  </rng:define -->
 
-  <rng:define name="watch_elm">
+  <!-- rng:define name="watch_elm">
     <rng:element name="watch">
       <rng:interleave>
         <rng:ref name="log_elm"/>
@@ -159,13 +199,13 @@
         </rng:optional>
       </rng:interleave>
     </rng:element>
-  </rng:define>
+  </rng:define -->
 
-  <rng:define name="log_elm">
+  <!-- rng:define name="log_elm">
     <rng:element name="log">
       <rng:text/>
     </rng:element>
-  </rng:define>
+  </rng:define -->
 
   <!-- Utilities -->
 
