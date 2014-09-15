@@ -43,14 +43,20 @@ public:
 Main::Main(int argc, char *argv[])
 : m_cfg(argc, argv)
 {
-    LOG4CXX_INFO(cpptrace_log(), "Main::Main(" << argc << ", ...)");
+    LOG4CXX_INFO(cpptrace_log(), "Main::Main(" << argc << ", " << argv << ")");
     int rv;
+    LOG4CXX_INFO(cpptrace_log(), "SDL_Init");
     rv = SDL_Init( SDL_INIT_VIDEO | SDL_INIT_TIMER );
     assert (!rv);
-    m_atom = new Atom(m_cfg.atom());
+    LOG4CXX_INFO(cpptrace_log(), "Atom::Configurator");
+    const Atom::Configurator &atom_cfg(m_cfg.atom());
+    LOG4CXX_INFO(cpptrace_log(), "Atom");
+    m_atom = new Atom(atom_cfg);
     assert (m_atom);
+    LOG4CXX_INFO(cpptrace_log(), "Keyboard");
     m_kc = new KeyboardController(*m_atom, m_cfg.keyboard());
     assert (m_kc);
+    LOG4CXX_INFO(cpptrace_log(), "Sscreen");
     m_sgc = new ScreenGraphicsController(*m_atom, m_cfg.screen());
     assert (m_sgc);
 
@@ -90,7 +96,7 @@ int main (int argc, char *argv[])
 /******************************************************************************/
 {
     log4cxx::PropertyConfigurator::configure("log4cxxrc");
-    LOG4CXX_INFO(cpptrace_log(), "main(" << argc << ", ...)");
+    LOG4CXX_INFO(cpptrace_log(), "main(" << argc << ", " << argv << ")");
     Main(argc, argv);
     return EXIT_SUCCESS;
 }
