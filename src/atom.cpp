@@ -24,8 +24,8 @@ static log4cxx::LoggerPtr cpptrace_log()
 Atom::Atom(const Configurator &p_cfg)
     : Named    ("atom")
     , m_devices(p_cfg.devices().size())
-    , m_memory ( p_cfg.memory() )
-    , m_6502   ( m_memory, p_cfg.mcs6502() )
+    , m_memory (p_cfg.memory() )
+    , m_6502   (m_memory, p_cfg.mcs6502() )
 {
     LOG4CXX_INFO(cpptrace_log(), "Atom::Atom(" << p_cfg << ")");
     const std::vector<const Device::Configurator *> &d_cfg(p_cfg.devices());
