@@ -413,7 +413,7 @@ Configurator::Configurator(int argc, char *argv[])
     process_XML();
     if (!check_and_complete_params())
         exit(1);
-    LOG4CXX_INFO(cpptrace_log(), "Configurator::Configurator(...) => " << static_cast<const Atom::Configurator &>(m_atom));
+    LOG4CXX_INFO(cpptrace_log(), "Position 1 => " << static_cast<const Atom::Configurator &>(m_atom));
 }
 
 

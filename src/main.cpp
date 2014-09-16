@@ -43,9 +43,10 @@ public:
 Main::Main(int argc, char *argv[])
 : m_cfg(argc, argv)
 {
+    LOG4CXX_INFO(cpptrace_log(), "Position 2 => " << static_cast<const Atom::Configurator &>(m_cfg.atom()));
     LOG4CXX_INFO(cpptrace_log(), "Main::Main(" << argc << ", " << argv << ")");
     int rv;
-    LOG4CXX_INFO(cpptrace_log(), "Atom::Configurator(" << m_cfg.atom() << ")");
+    //    LOG4CXX_INFO(cpptrace_log(), "Atom::Configurator(" << m_cfg.atom() << ")");
     LOG4CXX_INFO(cpptrace_log(), "SDL_Init");
     rv = SDL_Init( SDL_INIT_VIDEO | SDL_INIT_TIMER );
     assert (!rv);
