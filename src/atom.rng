@@ -18,6 +18,7 @@
             <!-- rng:ref name="cpu_elm"/ -->
             <!-- rng:ref name="hooks_elm"/ -->
             <rng:ref name="io_elm"/>
+            <!-- rng:ref name="anything"/ -->
           </rng:choice>
         </rng:zeroOrMore>
       </rng:interleave>
@@ -85,9 +86,9 @@
   <rng:define name="version_att">
     <rng:attribute name="version">
       <!-- data type="decimal">
-           <param name="minExclusive">0</param>
-           <param name="fractionDigits">2</param>
-           </data -->
+        <param name="minExclusive">0</param>
+        <param name="fractionDigits">2</param>
+      </data -->
     </rng:attribute>
   </rng:define>
 
@@ -99,9 +100,9 @@
       <rng:interleave>
         <rng:ref name="base_elm"/>
         <rng:ref name="size_elm"/>
-        <!-- rng:optional>
-          <rng:ref name="filename"/>
-        </rng:optional -->
+        <rng:optional>
+          <rng:ref name="filename_elm"/>
+        </rng:optional>
       </rng:interleave>
     </rng:element>
   </rng:define>
@@ -153,7 +154,7 @@
 
   <rng:define name="screenmemory_elm">
     <rng:element name="screenmemory">
-      <rng:text/>
+      <rng:data type="string"/>
     </rng:element>
   </rng:define>
 
@@ -165,7 +166,7 @@
 
   <rng:define name="fontfile_elm">
     <rng:element name="fontfilename">
-      <rng:text/>
+      <rng:data type="string"/>
     </rng:element>
   </rng:define>
 
@@ -230,12 +231,29 @@
 
   <rng:define name="filename_elm">
     <rng:element name="filename">
-      <rng:text/>
+      <rng:data type="string"/>
     </rng:element>
   </rng:define>
 
   <rng:define name="name_att">
-    <rng:attribute name="name"/>
+    <rng:attribute name="name">
+      <rng:data type="string"/>
+    </rng:attribute>
+  </rng:define>
+
+  <rng:define name="anything">
+    <rng:zeroOrMore>
+      <rng:choice>
+        <rng:element>
+          <rng:anyName/>
+          <rng:ref name="anything"/>
+        </rng:element>
+        <rng:attribute>
+          <rng:anyName/>
+        </rng:attribute>
+        <rng:text/>
+      </rng:choice>
+    </rng:zeroOrMore>
   </rng:define>
 
 </rng:grammar>
