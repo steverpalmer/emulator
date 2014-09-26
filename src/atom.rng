@@ -1,5 +1,7 @@
 <?xml version="1.0" ?>
-<rng:grammar xmlns:rng="http://relaxng.org/ns/structure/1.0" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
+<rng:grammar xmlns:rng="http://relaxng.org/ns/structure/1.0"
+             datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes"
+             ns="http://www.srpalmer.me.uk/ns/atom">
 
   <rng:start>
     <rng:ref name="atom_elm"/>
@@ -12,31 +14,26 @@
         <rng:ref name="name_att"/>
       </rng:optional>
       <rng:interleave>
-        <rng:zeroOrMore>
-          <rng:choice>
-            <rng:ref name="memorymap_elm"/>
-            <!-- rng:ref name="cpu_elm"/ -->
-            <!-- rng:ref name="hooks_elm"/ -->
-            <rng:ref name="io_elm"/>
-            <!-- rng:ref name="anything"/ -->
-          </rng:choice>
-        </rng:zeroOrMore>
+        <rng:ref name="memorymap_elm"/>
+        <rng:ref name="io_elm"/>
+        <!-- rng:ref name="cpu_elm"/ -->
+        <!-- rng:ref name="hooks_elm"/ -->
+        <rng:ref name="foreign-elements"/>
       </rng:interleave>
     </rng:element>
   </rng:define>
 
   <rng:define name="memorymap_elm">
     <rng:element name="memorymap">
-      <rng:interleave>
-        <rng:zeroOrMore>
-          <rng:choice>
-            <rng:ref name="ram_elm"/>
-            <rng:ref name="rom_elm"/>
-            <rng:ref name="ppia_elm"/>
-            <!-- rng:ref name="via_elm"/ -->
-          </rng:choice>
-        </rng:zeroOrMore>
-      </rng:interleave>
+      <rng:zeroOrMore>
+        <rng:choice>
+          <rng:ref name="ram_elm"/>
+          <rng:ref name="rom_elm"/>
+          <rng:ref name="ppia_elm"/>
+          <!-- rng:ref name="via_elm"/ -->
+          <rng:ref name="foreign-elements"/>
+        </rng:choice>
+      </rng:zeroOrMore>
     </rng:element>
   </rng:define>
 
@@ -71,24 +68,15 @@
   <rng:define name="io_elm">
     <rng:element name="io">
       <rng:interleave>
+        <rng:ref name="screenmemory_elm"/>
+        <rng:ref name="scale_elm"/>
+        <rng:ref name="fontfile_elm"/>
+        <rng:ref name="refresh_elm"/>
         <rng:zeroOrMore>
-          <rng:choice>
-            <rng:ref name="screenmemory_elm"/>
-            <rng:ref name="scale_elm"/>
-            <rng:ref name="fontfile_elm"/>
-            <rng:ref name="refresh_elm"/>
-          </rng:choice>
+          <rng:ref name="foreign-elements"/>
         </rng:zeroOrMore>
       </rng:interleave>
     </rng:element>
-  </rng:define>
-
-  <rng:define name="version_att">
-    <rng:attribute name="version">
-      <rng:data type="token">
-        <rng:param name="pattern">\d+(\.\d{1,2})?</rng:param>
-      </rng:data>
-    </rng:attribute>
   </rng:define>
 
   <!-- Atom Computer Configuration -->
@@ -108,11 +96,12 @@
 
   <rng:define name="ram_name_att">
     <rng:attribute name="name">
-      <rng:choice>
+      <rng:data type="ID"/>
+      <!-- rng:choice>
         <rng:value>block0</rng:value>
         <rng:value>lower</rng:value>
         <rng:value>video</rng:value>
-      </rng:choice>
+      </rng:choice -->
     </rng:attribute>
   </rng:define>
 
@@ -131,11 +120,12 @@
 
   <rng:define name="rom_name_att">
     <rng:attribute name="name">
-      <rng:choice>
+      <rng:data type="ID"/>
+      <!-- rng:choice>
         <rng:value>basic</rng:value>
         <rng:value>float</rng:value>
         <rng:value>kernel</rng:value>
-      </rng:choice>
+      </rng:choice -->
     </rng:attribute>
   </rng:define>
 
@@ -153,7 +143,7 @@
 
   <rng:define name="screenmemory_elm">
     <rng:element name="screenmemory">
-      <rng:data type="token"/>
+      <rng:data type="IDREF"/>
     </rng:element>
   </rng:define>
 
@@ -209,6 +199,14 @@
 
   <!-- Utilities -->
 
+  <rng:define name="version_att">
+    <rng:attribute name="version">
+      <rng:data type="token">
+        <rng:param name="pattern">\d+(\.\d{1,2})?</rng:param>
+      </rng:data>
+    </rng:attribute>
+  </rng:define>
+
   <rng:define name="base_elm">
     <rng:element name="base">
       <rng:ref name="hex16_type"/>
@@ -251,6 +249,19 @@
         </rng:attribute>
         <rng:text/>
       </rng:choice>
+    </rng:zeroOrMore>
+  </rng:define>
+
+  <rng:define name="foreign-elements">
+    <rng:zeroOrMore>
+      <rng:element>
+        <rng:anyName>
+          <rng:except>
+            <rng:nsName ns=""/>
+          </rng:except>
+        </rng:anyName>
+        <rng:ref name="anything"/>
+      </rng:element>
     </rng:zeroOrMore>
   </rng:define>
 

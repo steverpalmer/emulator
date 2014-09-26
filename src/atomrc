@@ -1,5 +1,5 @@
 <?xml version="1.0" ?>
-<atom name="My Atom" version="0.03">
+<atom xmlns="http://www.srpalmer.me.uk/ns/atom" version="0.04">
 
   <!-- Nominal 12K Atom -->
   <memorymap>
@@ -17,24 +17,24 @@
     <rom name="kernel"><base>F000</base><size>1000</size><filename>kernel.rom</filename></rom>
   </memorymap>
 
-  <!-- cpus>
+  <cpus>
     <cpu>MSC6502</cpu>
-  </cpus -->
+  </cpus>
 
-  <!-- hooks>
+  <hooks>
     <OSRDCH><filename>stdin</filename></OSRDCH>
     <OSWRCH><filename>stdout</filename></OSWRCH>
     <OSLOAD><dirname>.</dirname></OSLOAD>
     <OSSAVE><dirname>.</dirname></OSSAVE>
-  </hooks -->
+  </hooks>
 
   <io>
     <screenmemory>video</screenmemory>
     <scale>2.0</scale>
     <fontfilename>mc6847.bmp</fontfilename>
     <refresh>100</refresh>
-    <!-- key_copy>F1</key_copy -->
-    <!-- key_reset>F12</key_reset -->
+    <key_copy>F1</key_copy>
+    <key_reset>F12</key_reset>
   </io>
 
 </atom>
