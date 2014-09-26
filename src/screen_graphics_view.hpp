@@ -19,16 +19,16 @@
 class ScreenGraphicsView : public Named {
     // Types
 public:
-	class Configurator : public Named::Configurator
-	{
-	public:
-		virtual float scale() const = 0;
-		virtual const std::string &fontfilename() const = 0;
-		virtual const std::string &window_title() const = 0;
-		virtual const std::string &icon_title() const = 0;
+    class Configurator : public Named::Configurator
+    {
+    public:
+        virtual float scale() const = 0;
+        virtual const std::string &fontfilename() const = 0;
+        virtual const std::string &window_title() const = 0;
+        virtual const std::string &icon_title() const = 0;
 
-		friend std::ostream &::operator <<(std::ostream &, const Configurator &);
-	};
+        friend std::ostream &::operator <<(std::ostream &, const Configurator &);
+    };
 private:
     const Atom                    &m_atom;
     SDL_Surface                   *m_screen;

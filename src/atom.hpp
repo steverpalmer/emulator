@@ -18,21 +18,21 @@
 #include "cpu.hpp"
 
 class Atom : public Named {
-	// Types
+    // Types
 public:
-	class Configurator : public Named::Configurator
-	{
-	public:
-		virtual const std::vector<const Device::Configurator *> &devices() const = 0;
-		virtual const Memory::Configurator  &memory()     const = 0;
-		virtual const MCS6502::Configurator &mcs6502()    const = 0;
+    class Configurator : public Named::Configurator
+    {
+    public:
+        virtual const std::vector<const Device::Configurator *> &devices() const = 0;
+        virtual const Memory::Configurator  &memory()     const = 0;
+        virtual const MCS6502::Configurator &mcs6502()    const = 0;
 
-		friend std::ostream &::operator <<(std::ostream &, const Configurator &);
-	};
+        friend std::ostream &::operator <<(std::ostream &, const Configurator &);
+    };
     // Attributes
 private:
-	std::vector<std::shared_ptr<Device> > m_devices;
-	std::vector<byte> *   m_video_storage;
+    std::vector<std::shared_ptr<Device> > m_devices;
+    std::vector<byte> *   m_video_storage;
     std::shared_ptr<Ppia> m_ppia;
     Memory                m_memory;
     MCS6502               m_6502;

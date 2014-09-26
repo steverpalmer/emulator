@@ -40,15 +40,15 @@ enum KBDSpecials {
 
 class Ppia : public Device {
 public:
-	class Configurator : public Device::Configurator
-	{
-	public:
-		virtual Device *factory() const { return new Ppia(*this); }
-		virtual word size() const;
-		virtual word base() const = 0;
-		virtual word memory_size() const = 0;
-		friend std::ostream &::operator <<(std::ostream &, const Configurator &);
-	};
+    class Configurator : public Device::Configurator
+    {
+    public:
+        virtual Device *factory() const { return new Ppia(*this); }
+        virtual word size() const;
+        virtual word base() const = 0;
+        virtual word memory_size() const = 0;
+        friend std::ostream &::operator <<(std::ostream &, const Configurator &);
+    };
     // Attributes
 private:
     std::array<byte, 4> m_byte;

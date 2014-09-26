@@ -13,7 +13,7 @@
 #include <log4cxx/logger.h>
 #include "log4cxx/propertyconfigurator.h"
 
-#include "config.hpp"
+#include "config_fixed.hpp"
 #include "atom.hpp"
 #include "keyboard_controller.hpp"
 #include "screen_graphics_controller.hpp"
@@ -25,7 +25,7 @@ static log4cxx::LoggerPtr cpptrace_log()
 }
 
 class Main {
-	Configurator              m_cfg;
+    Configurator              m_cfg;
     Atom                     *m_atom;
     KeyboardController       *m_kc;
     ScreenGraphicsController *m_sgc;
@@ -43,14 +43,19 @@ public:
 Main::Main(int argc, char *argv[])
 : m_cfg(argc, argv)
 {
-    LOG4CXX_INFO(cpptrace_log(), "Main::Main(" << argc << ", ...)");
+    LOG4CXX_INFO(cpptrace_log(), "Position 2 => " << static_cast<const Atom::Configurator &>(m_cfg.atom()));
+    LOG4CXX_INFO(cpptrace_log(), "Main::Main(" << argc << ", " << argv << ")");
     int rv;
+    LOG4CXX_INFO(cpptrace_log(), "SDL_Init");
     rv = SDL_Init( SDL_INIT_VIDEO | SDL_INIT_TIMER );
     assert (!rv);
+    LOG4CXX_INFO(cpptrace_log(), "Atom");
     m_atom = new Atom(m_cfg.atom());
     assert (m_atom);
+    LOG4CXX_INFO(cpptrace_log(), "Keyboard");
     m_kc = new KeyboardController(*m_atom, m_cfg.keyboard());
     assert (m_kc);
+    LOG4CXX_INFO(cpptrace_log(), "Sscreen");
     m_sgc = new ScreenGraphicsController(*m_atom, m_cfg.screen());
     assert (m_sgc);
 
@@ -62,10 +67,10 @@ Main::Main(int argc, char *argv[])
         switch( event.type ){
         case SDL_KEYDOWN:
         case SDL_KEYUP:
-        	m_kc->update(&event.key);
+            m_kc->update(&event.key);
             break;
         case SDL_USEREVENT:
-        	m_sgc->update();
+            m_sgc->update();
             break;
         case SDL_QUIT:
             m_more = false;
@@ -90,7 +95,7 @@ int main (int argc, char *argv[])
 /******************************************************************************/
 {
     log4cxx::PropertyConfigurator::configure("log4cxxrc");
-    LOG4CXX_INFO(cpptrace_log(), "main(" << argc << ", ...)");
+    LOG4CXX_INFO(cpptrace_log(), "main(" << argc << ", " << argv << ")");
     Main(argc, argv);
     return EXIT_SUCCESS;
 }

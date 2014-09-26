@@ -39,14 +39,14 @@ extern std::ostream &operator<<(std::ostream&, const InterruptSource&);
 class Core : public Named {
     // Types
 public:
-	class Configurator : public Named::Configurator
-	{
-	public:
-		friend std::ostream &::operator <<(std::ostream &, const Configurator &);
-	};
-	// Attributes
+    class Configurator : public Named::Configurator
+    {
+    public:
+        friend std::ostream &::operator <<(std::ostream &, const Configurator &);
+    };
+    // Attributes
 private:
-	pthread_t        m_thread;
+    pthread_t        m_thread;
 public:
     friend void      *loop(void *);
     Memory           &m_memory;
@@ -75,12 +75,12 @@ public:
 
 class MCS6502 : public Core {
 public:
-	class Configurator : public Core::Configurator
-	{
-	public:
-		friend std::ostream &::operator <<(std::ostream &, const Configurator &);
-	};
-	class Instruction; // Forward declaration
+    class Configurator : public Core::Configurator
+    {
+    public:
+        friend std::ostream &::operator <<(std::ostream &, const Configurator &);
+    };
+    class Instruction; // Forward declaration
     // Attributes
 private:
     std::array<std::shared_ptr<Instruction>, 256> m_opcode_mapping;

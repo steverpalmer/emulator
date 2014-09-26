@@ -31,7 +31,7 @@ public:
 
 		friend std::ostream &::operator <<(std::ostream &p_s, const Configurator &p_cfg)
 		{
-			p_s << "name=[" << p_cfg.name() << "]";
+			p_s << "name=\"" << p_cfg.name() << "\"";
 			return p_s;
 		}
 	};
@@ -44,7 +44,7 @@ protected:
 
 	friend std::ostream &operator<<(std::ostream &p_s, const Named& p_n)
 	{
-		p_s << "name:[" << p_n.m_name << "]";
+		p_s << "name:\"" << p_n.m_name << "\"";
 		return p_s;
 	}
 };

@@ -56,11 +56,11 @@
 class KeyboardController : public Named {
     // Types
 public:
-	class Configurator : public Named::Configurator
-	{
-	public:
-		friend std::ostream &::operator <<(std::ostream &, const Configurator &);
-	};
+    class Configurator : public Named::Configurator
+    {
+    public:
+        friend std::ostream &::operator <<(std::ostream &, const Configurator &);
+    };
 private:
     Atom &m_atom;
 private:

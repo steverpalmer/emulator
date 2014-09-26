@@ -194,8 +194,8 @@ void KeyboardController::update(SDL_KeyboardEvent *p_key_event)
 
 std::ostream &operator<<(std::ostream &p_s, const KeyboardController::Configurator &p_cfg)
 {
-	p_s << static_cast<const Named::Configurator &>(p_cfg);
-	return p_s;
+    p_s << static_cast<const Named::Configurator &>(p_cfg);
+    return p_s;
 }
 
 std::ostream &operator<<(std::ostream &p_s, const KeyboardController &p_kc)

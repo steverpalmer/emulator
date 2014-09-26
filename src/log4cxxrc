@@ -14,7 +14,7 @@ log4j.appender.R.MaxBackupIndex=1
 log4j.appender.R.layout=org.apache.log4j.PatternLayout
 log4j.appender.R.layout.ConversionPattern=%d [%t] %-5p %c - %m%n
 
-log4j.logger.ctrace=WARN
+log4j.logger.ctrace=INFO
 #log4j.logger.ctrace.keyboard_controller.cpp=INFO
 #log4j.logger.ctrace.ppia.cpp=INFO
 #log4j.logger.ctrace.atom.cpp=INFO
