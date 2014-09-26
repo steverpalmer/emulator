@@ -85,10 +85,9 @@
 
   <rng:define name="version_att">
     <rng:attribute name="version">
-      <!-- data type="decimal">
-        <param name="minExclusive">0</param>
-        <param name="fractionDigits">2</param>
-      </data -->
+      <rng:data type="token">
+        <rng:param name="pattern">\d+(\.\d{1,2})?</rng:param>
+      </rng:data>
     </rng:attribute>
   </rng:define>
 
@@ -110,9 +109,9 @@
   <rng:define name="ram_name_att">
     <rng:attribute name="name">
       <rng:choice>
-        <rng:value type="string">block0</rng:value>
-        <rng:value type="string">lower</rng:value>
-        <rng:value type="string">video</rng:value>
+        <rng:value>block0</rng:value>
+        <rng:value>lower</rng:value>
+        <rng:value>video</rng:value>
       </rng:choice>
     </rng:attribute>
   </rng:define>
@@ -133,9 +132,9 @@
   <rng:define name="rom_name_att">
     <rng:attribute name="name">
       <rng:choice>
-        <rng:value type="string">basic</rng:value>
-        <rng:value type="string">float</rng:value>
-        <rng:value type="string">kernel</rng:value>
+        <rng:value>basic</rng:value>
+        <rng:value>float</rng:value>
+        <rng:value>kernel</rng:value>
       </rng:choice>
     </rng:attribute>
   </rng:define>
@@ -154,7 +153,7 @@
 
   <rng:define name="screenmemory_elm">
     <rng:element name="screenmemory">
-      <rng:data type="string"/>
+      <rng:data type="token"/>
     </rng:element>
   </rng:define>
 
@@ -166,13 +165,13 @@
 
   <rng:define name="fontfile_elm">
     <rng:element name="fontfilename">
-      <rng:data type="string"/>
+      <rng:data type="token"/>
     </rng:element>
   </rng:define>
 
   <rng:define name="refresh_elm">
     <rng:element name="refresh">
-      <rng:data type="int"/>
+      <rng:data type="positiveInteger"/>
     </rng:element>
   </rng:define>
 
@@ -223,21 +222,20 @@
   </rng:define>
 
   <rng:define name="hex16_type">
-    <rng:text/>
-    <!-- rng:data type="hexBinary">
-         <rng:param name="maxLength">4</rng:param>
-         </rng:data -->
+    <rng:data type="token">
+      <rng:param name="pattern">[a-fA-f0-9]{4}</rng:param>
+    </rng:data>
   </rng:define>
 
   <rng:define name="filename_elm">
     <rng:element name="filename">
-      <rng:data type="string"/>
+      <rng:data type="token"/>
     </rng:element>
   </rng:define>
 
   <rng:define name="name_att">
     <rng:attribute name="name">
-      <rng:data type="string"/>
+      <rng:data type="token"/>
     </rng:attribute>
   </rng:define>
 
