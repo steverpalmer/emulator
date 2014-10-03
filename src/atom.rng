@@ -97,11 +97,6 @@
   <rng:define name="ram_name_att">
     <rng:attribute name="name">
       <rng:data type="ID"/>
-      <!-- rng:choice>
-        <rng:value>block0</rng:value>
-        <rng:value>lower</rng:value>
-        <rng:value>video</rng:value>
-      </rng:choice -->
     </rng:attribute>
   </rng:define>
 
@@ -121,11 +116,6 @@
   <rng:define name="rom_name_att">
     <rng:attribute name="name">
       <rng:data type="ID"/>
-      <!-- rng:choice>
-        <rng:value>basic</rng:value>
-        <rng:value>float</rng:value>
-        <rng:value>kernel</rng:value>
-      </rng:choice -->
     </rng:attribute>
   </rng:define>
 

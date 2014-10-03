@@ -3,18 +3,19 @@
 
   <!-- Nominal 12K Atom -->
   <memorymap>
-    <ram name="block0"><base>0000</base><size>0400</size></ram>
+    <ram name="block0" ><base>0000</base><size>0400</size></ram>
     <!-- 0800: VDU CRT Controller -->
     <!-- 0A00: Optional FDC -->
     <!-- Peripherals space -->
-    <ram name="lower" ><base>2800</base><size>1400</size></ram>
-    <ram name="video" ><base>8000</base><size>1800</size></ram>
-    <ppia>             <base>B000</base><size>0400</size></ppia>
+    <ram name="lower"  ><base>2800</base><size>1400</size></ram>
+    <ram name="video"  ><base>8000</base><size>1800</size></ram>
+    <rom name="toolkit"><base>A000</base><size>1000</size><filename>toolkit.rom</filename></rom>
+    <ppia>              <base>B000</base><size>0400</size></ppia>
     <!-- B800: Optional VIA I/O Device for Printer Interface -->
-    <rom name="basic" ><base>C000</base><size>1000</size><filename>basic.rom</filename></rom>
-    <rom name="float"> <base>D000</base><size>1000</size><filename>float.rom</filename></rom>
+    <rom name="basic"  ><base>C000</base><size>1000</size><filename>basic.rom</filename></rom>
+    <rom name="float"  ><base>D000</base><size>1000</size><filename>float.rom</filename></rom>
     <!-- E000: Optional Disk Operating System -->
-    <rom name="kernel"><base>F000</base><size>1000</size><filename>kernel.rom</filename></rom>
+    <rom name="kernel" ><base>F000</base><size>1000</size><filename>kernel.rom</filename></rom>
   </memorymap>
 
   <cpus>
