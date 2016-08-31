@@ -188,9 +188,8 @@ void ScreenGraphicsView::render_mode0()
 {
     LOG4CXX_INFO(cpptrace_log(), "[" << name() << "].render_mode0()");
     SurfaceArray si(m_screen, "render_mode0", 32, 16);
-    const std::vector<byte> &ram(m_atom.vdg_storage());
     for (int addr = 0; addr < 512; addr++, ++si) {
-        const byte ch = ram[addr];
+        const byte ch = m_video_memory->get_byte(addr);
         if (ch != m_rendered[addr]) {
             si.set(m_glyph[ch]);
             m_rendered[addr] = ch;
@@ -201,7 +200,8 @@ void ScreenGraphicsView::render_mode0()
 ScreenGraphicsView::ScreenGraphicsView(Atom &p_atom, const Configurator &p_cfg)
   : Named(p_cfg)
   , m_atom(p_atom)
-  , m_rendered(std::min(int(p_atom.vdg_storage().size()), 0x1800))
+  , m_video_memory(p_atom.vdg_memory())
+  , m_rendered(0x1800)
 {
     LOG4CXX_INFO(cpptrace_log(), "ScreenGraphicsView::ScreenGraphicsView([" << p_atom.name() << "], " << p_cfg << ")");
     assert (p_cfg.scale() >= 1.0);

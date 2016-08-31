@@ -9,6 +9,7 @@
 #define CONFIG_FIXED_HPP_
 
 #include <ostream>
+#include <vector>
 
 #include "common.hpp"
 
@@ -28,7 +29,7 @@ public:
     , m_size(p_size)
     {}
     virtual const std::string &name() const { return m_name; }
-    virtual word base() const  { return m_base; }
+    virtual word base() const { return m_base; }
     virtual word size() const  { return m_size; }
 };
 
@@ -62,9 +63,9 @@ public:
     , m_base(p_base)
     , m_memory_size(p_memory_size)
     {}
-    virtual const std::string &name()       const { return m_name; }
-    virtual word              base()        const { return m_base; }
-    virtual word              memory_size() const { return m_memory_size; }
+    virtual const std::string &name() const { return m_name; }
+    word base()                       const { return m_base; }
+    word memory_size()                const { return m_memory_size; }
 };
 
 class MemoryConfigurator : public Memory::Configurator {
@@ -104,10 +105,10 @@ public:
         m_devices.push_back(new RomConfigurator( "float",  0xD000, 0x1000, "float.rom"));
         m_devices.push_back(new RomConfigurator( "kernel", 0xF000, 0x1000, "kernel.rom"));
     }
-    virtual const std::string &name() const { return m_name; }
-    virtual const std::vector<const Device::Configurator *> &devices() const { return m_devices; }
-    virtual const Memory::Configurator  &memory()     const { return m_memory;     }
-    virtual const MCS6502::Configurator &mcs6502()    const { return m_mcs6502;    }
+    virtual const std::string           &name()        const { return m_name; }
+    virtual const Device::Configurator  *device(int i) const { return i < int(m_devices.size()) ? m_devices[i] : 0; }
+    virtual const Memory::Configurator  &memory()      const { return m_memory; }
+    virtual const MCS6502::Configurator &mcs6502()     const { return m_mcs6502; }
 };
 
 class KeyboardControllerConfigurator : public KeyboardController::Configurator {

@@ -23,19 +23,20 @@ static log4cxx::LoggerPtr cpptrace_log()
 
 Atom::Atom(const Configurator &p_cfg)
     : Named    (p_cfg)
-    , m_devices(p_cfg.devices().size())
     , m_memory (p_cfg.memory())
     , m_6502   (m_memory, p_cfg.mcs6502())
 {
     LOG4CXX_INFO(cpptrace_log(), "Atom::Atom(" << p_cfg << ")");
-    const std::vector<const Device::Configurator *> &d_cfg(p_cfg.devices());
-    for (unsigned int i(0); i < d_cfg.size(); i++) {
-        m_devices[i] = std::shared_ptr<Device>(d_cfg[i]->factory());
-        m_memory.add_device(d_cfg[i]->base(), m_devices[i], d_cfg[i]->memory_size());
-        if (m_devices[i]->name() == "video")
-            m_video_storage = &dynamic_cast<Ram * >(m_devices[i].operator->())->m_storage;
-        else if (m_devices[i]->name() == "ppia")
-            m_ppia  = std::shared_ptr<Ppia>(dynamic_cast<Ppia *>(m_devices[i].operator->()));
+    const Device::Configurator *d_cfg;
+    for (int i(0); (d_cfg = p_cfg.device(i)); i++)
+    {
+    	std::shared_ptr<Device> device(d_cfg->factory());
+    	m_devices.push_back(device);
+    	m_memory.add_device(d_cfg->base(), device, d_cfg->memory_size());
+        if (device->name() == "video")
+        	m_video_ram = std::shared_ptr<Ram>(dynamic_cast<Ram *>(device.operator->()));
+        else if (device->name() == "ppia")
+            m_ppia  = std::shared_ptr<Ppia>(dynamic_cast<Ppia *>(device.operator->()));
     }
     reset();
 }
@@ -43,6 +44,7 @@ Atom::Atom(const Configurator &p_cfg)
 Atom::~Atom()
 {
     LOG4CXX_INFO(cpptrace_log(), "[" << name() << "].~Atom()");
+    m_memory.drop_devices();
 }
 
 int Atom::cycles() const
@@ -96,10 +98,10 @@ VDGMode Atom::vdg_mode() const
     return m_ppia->m_io.m_vdg_mode;
 }
 
-const std::vector<byte> &Atom::vdg_storage() const
+const std::shared_ptr<Ram> &Atom::vdg_memory() const
 {
-    LOG4CXX_INFO(cpptrace_log(), "[" << name() << "].vdg_storage()");
-    return *m_video_storage;
+    LOG4CXX_INFO(cpptrace_log(), "[" << name() << "].vdg_ram()");
+    return m_video_ram;
 }
 
 void Atom::set_vdg_refresh(bool p_is_refresh)
@@ -135,8 +137,9 @@ void Atom::set_is_rept_pressed(bool p_is_rept_pressed)
 std::ostream &operator<<(std::ostream &p_s, const Atom::Configurator &p_cfg)
 {
     p_s << "Atom::Configurator([";
-    for (const Device::Configurator * d : p_cfg.devices())
-        p_s << "(" << *d << "), ";
+    const Device::Configurator *d_cfg;
+    for (int i(0); (d_cfg = p_cfg.device(i)); i++)
+    	p_s << "(" << i << ":" << *d_cfg << "), ";
     p_s << "], (" << p_cfg.memory() << "), ";
     p_s << "(" << p_cfg.mcs6502() << ")";
     p_s << ")";

@@ -370,14 +370,24 @@ private:
     Instruction(const Instruction &);
     Instruction & operator= (const Instruction &);
 protected:
-    Instruction(MCS6502 &p_6502, int p_opcode, int p_cycles, const std::string p_prefix, int p_args = 0, const std::string p_suffix = "");
+    Instruction( MCS6502 &p_6502
+    		   , int p_opcode
+			   , int p_cycles
+			   , const std::string p_prefix
+			   , int p_args = 0
+			   , const std::string p_suffix = "");
 public:
     virtual void execute() = 0;
 
     friend std::ostream &::operator<<(std::ostream&, const Instruction&);
 };
 
-MCS6502::Instruction::Instruction(MCS6502 &p_6502, int p_opcode, int p_cycles, const std::string p_prefix, int p_args, const std::string p_suffix)
+MCS6502::Instruction::Instruction( MCS6502 &p_6502
+		                         , int p_opcode
+								 , int p_cycles
+								 , const std::string p_prefix
+								 , int p_args
+								 , const std::string p_suffix)
   : Named(p_prefix + std::string(p_args < 0 ? 4 : p_args * 2, '_') + p_suffix)
   , m_prefix(p_prefix)
   , m_args(p_args)
@@ -385,7 +395,17 @@ MCS6502::Instruction::Instruction(MCS6502 &p_6502, int p_opcode, int p_cycles, c
   , m_6502(p_6502)
   , m_cycles(p_cycles)
 {
-    LOG4CXX_INFO(cpptrace_log(), "Cpu::Instruction::Instruction(" << p_opcode << ", " << p_cycles << ", \"" << p_prefix << "\", " << p_args << ", \"" << p_suffix << "\")");
+    LOG4CXX_INFO(cpptrace_log(), "Cpu::Instruction::Instruction("
+    		<< p_opcode
+			<< ", "
+			<< p_cycles
+			<< ", \""
+			<< p_prefix
+			<< "\", "
+			<< p_args
+			<< ", \""
+			<< p_suffix
+			<< "\")");
     if (p_opcode >= 0)
         p_6502.m_opcode_mapping[p_opcode] = std::shared_ptr<MCS6502::Instruction>(this);
 }

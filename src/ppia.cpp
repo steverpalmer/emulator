@@ -80,12 +80,6 @@ Ppia::Ppia(const Configurator &p_cfg)
   : Device(p_cfg)
 {
     LOG4CXX_INFO(cpptrace_log(), "Ppia::Ppia(" << p_cfg << ")");
-    assert (p_cfg.size() == 4);
-}
-
-word Ppia::Configurator::size() const
-{
-    return word(4);
 }
 
 Ppia::~Ppia()
@@ -296,11 +290,11 @@ byte Ppia::get_PortC(byte p_previous)
 byte Ppia::get_byte(word p_addr, AccessType p_at)
 {
     LOG4CXX_INFO(cpptrace_log(), "[" << name() << "].get_byte(" << Hex(p_addr) << ", " << p_at << ")");
-    p_addr &= 3;                  // Only interested in least significant 2 bits
-    byte result(m_byte[p_addr]);           // By default, set it to last value
+    assert (p_addr < 4);
+    byte result(m_byte[p_addr]);             // By default, set it to last value
     switch (p_addr)
         {
-        case PortA :                                           // Nothing more to do
+        case PortA :                                       // Nothing more to do
             break;
         case PortB :
             result = get_PortB(m_byte[PortA] & 0x0F);
@@ -308,7 +302,7 @@ byte Ppia::get_byte(word p_addr, AccessType p_at)
         case PortC :
             result = get_PortC(result);
             break;
-        case ControlPort :                                     // Nothing more to do
+        case ControlPort :                                 // Nothing more to do
             break;
         }
     m_byte[p_addr] = result;
@@ -343,7 +337,7 @@ void Ppia::set_PortA(byte p_byte)
 void Ppia::set_byte(word p_addr, byte p_byte, AccessType p_at)
 {
     LOG4CXX_INFO(cpptrace_log(), "[" << name() << "].set_byte(" << Hex(p_addr) << ", " << Hex(p_byte) << ", " << p_at << ")");
-    p_addr &= 3;                  // Only interested in least significant 2 bits
+    assert (p_addr < 4);
     switch (p_addr)
         {
         case PortA :

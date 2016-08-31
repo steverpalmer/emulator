@@ -31,16 +31,22 @@ public:
 
 		friend std::ostream &::operator <<(std::ostream &p_s, const Configurator &p_cfg)
 		{
-			p_s << "name=\"" << p_cfg.name() << "\"";
+			p_s << "name=\"";
+			p_s << p_cfg.name();
+			p_s << "\"";
 			return p_s;
 		}
 	};
+private:
 	const std::string m_name;
 public:
 	const std::string &name() const { return m_name; }
 protected:
 	Named(const std::string &p_name = "") : m_name(p_name) {}
 	Named(const Configurator &p_cfg) : m_name(p_cfg.name()) {}
+private:
+	Named(const Named &);
+	void operator=(const Named &);
 
 	friend std::ostream &operator<<(std::ostream &p_s, const Named& p_n)
 	{

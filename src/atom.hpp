@@ -11,6 +11,7 @@
 #include <memory>
 #include <ostream>
 #include <vector>
+#include <list>
 
 #include "common.hpp"
 #include "memory.hpp"
@@ -23,16 +24,16 @@ public:
     class Configurator : public Named::Configurator
     {
     public:
-        virtual const std::vector<const Device::Configurator *> &devices() const = 0;
-        virtual const Memory::Configurator  &memory()     const = 0;
-        virtual const MCS6502::Configurator &mcs6502()    const = 0;
+        virtual const Device::Configurator  *device(int i)     const = 0;
+        virtual const Memory::Configurator  &memory()          const = 0;
+        virtual const MCS6502::Configurator &mcs6502()         const = 0;
 
         friend std::ostream &::operator <<(std::ostream &, const Configurator &);
     };
     // Attributes
 private:
-    std::vector<std::shared_ptr<Device> > m_devices;
-    std::vector<byte> *   m_video_storage;
+    std::list<std::shared_ptr<Device>> m_devices;
+    std::shared_ptr<Ram>  m_video_ram;
     std::shared_ptr<Ppia> m_ppia;
     Memory                m_memory;
     MCS6502               m_6502;
@@ -55,7 +56,7 @@ public:
     void    pause();
 
     VDGMode                 vdg_mode() const;
-    const std::vector<byte> &vdg_storage() const;
+    const std::shared_ptr<Ram> &vdg_memory() const;
     void                    set_vdg_refresh(bool);
     void                    set_keypress(int key);
     void                    set_is_shift_pressed(bool);

@@ -43,10 +43,9 @@ public:
     class Configurator : public Device::Configurator
     {
     public:
-        virtual Device *factory() const { return new Ppia(*this); }
-        virtual word size() const;
-        virtual word base() const = 0;
-        virtual word memory_size() const = 0;
+        virtual std::unique_ptr<Device> factory() const
+		{ return std::unique_ptr<Device>(new Ppia(*this)); }
+
         friend std::ostream &::operator <<(std::ostream &, const Configurator &);
     };
     // Attributes
@@ -68,10 +67,10 @@ private:
     byte get_PortB(int p_row);
     byte get_PortC(byte p_previous);
     void set_PortA(byte p_byte);
-    const Configurator &Device_Configurator(const Configurator *);
 public:
     explicit Ppia(const Configurator &);
     virtual ~Ppia();
+    virtual word size() const { return 4; }
     virtual void reset();
     virtual byte get_byte(word p_addr, AccessType p_at = AT_UNKNOWN);
     virtual void set_byte(word p_addr, byte p_byte, AccessType p_at = AT_UNKNOWN);

@@ -31,6 +31,7 @@ public:
     };
 private:
     const Atom                    &m_atom;
+    const std::shared_ptr<Ram>    &m_video_memory;
     SDL_Surface                   *m_screen;
     std::vector<int>               m_rendered;
     // Mode 0 Stuff
