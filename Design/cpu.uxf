@@ -1,47 +1,53 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<diagram program="umlet" version="11.5">
+<?xml version="1.0" encoding="UTF-8"?><diagram program="umlet" version="13.3">
   <zoom_level>10</zoom_level>
   <element>
-    <type>com.umlet.element.Class</type>
+    <type>com.baselet.element.old.element.Class</type>
     <coordinates>
-      <x>290</x>
-      <y>50</y>
-      <w>220</w>
-      <h>230</h>
+      <x>410</x>
+      <y>90</y>
+      <w>280</w>
+      <h>240</h>
     </coordinates>
-    <panel_attributes>bt=*
+    <panel_attributes>&lt;&lt;configurable&gt;&gt;
 Core
 --
-Memory memory
-int cycles
++ m_memory: Memory
++ m_cycles: int
++ n_steps_to_go: std::atomic_unit
 --
-void resume()
-void pause()
-bool is_paused()
-void step(int cnt);
-/void step()/
+# Core(Memory, Core::Configurator)
++ resume()
++ pause()
++ step(int);
+/void single_step()/
 /void reset()/
 /void NMI()/
 /void IRQ()/</panel_attributes>
     <additional_attributes/>
   </element>
   <element>
-    <type>com.umlet.element.Class</type>
+    <type>com.baselet.element.old.element.Class</type>
     <coordinates>
-      <x>300</x>
-      <y>310</y>
-      <w>190</w>
-      <h>220</h>
+      <x>380</x>
+      <y>400</y>
+      <w>340</w>
+      <h>240</h>
     </coordinates>
-    <panel_attributes>MSC6502
+    <panel_attributes>&lt;&lt;configurable&gt;&gt;
+MSC6502
 --
-byte Acc
-byte X
-byte Y
-byte S
-byte P
-word PC
++ m_register
+{innerclass
 --
++ Acc: byte
++ X: byte
++ Y: byte
++ S: byte
++ P: byte
++ PC: word
+innerclass}
+--
+MSC6502(Memory, MSC6502::Configurator)
 void step()
 void reset()
 void NMI()
@@ -50,50 +56,51 @@ void IRQ()
     <additional_attributes/>
   </element>
   <element>
-    <type>com.umlet.element.Relation</type>
+    <type>com.baselet.element.old.element.Relation</type>
     <coordinates>
-      <x>370</x>
-      <y>250</y>
+      <x>530</x>
+      <y>300</y>
       <w>50</w>
-      <h>80</h>
+      <h>120</h>
     </coordinates>
     <panel_attributes>lt=&lt;&lt;-</panel_attributes>
-    <additional_attributes>30;30;30;60</additional_attributes>
+    <additional_attributes>30;30;30;100</additional_attributes>
   </element>
   <element>
-    <type>com.umlet.element.Class</type>
+    <type>com.baselet.element.old.element.Class</type>
     <coordinates>
       <x>40</x>
-      <y>330</y>
+      <y>420</y>
       <w>170</w>
-      <h>90</h>
+      <h>80</h>
     </coordinates>
     <panel_attributes>&lt;&lt;Command&gt;&gt;
 MSC6502::Instruction
 --
-int cycles
++ cycles: int
 --
-void execute()</panel_attributes>
+/+ execute()/</panel_attributes>
     <additional_attributes/>
   </element>
   <element>
-    <type>com.umlet.element.Relation</type>
+    <type>com.baselet.element.old.element.Relation</type>
     <coordinates>
       <x>180</x>
-      <y>330</y>
-      <w>140</w>
-      <h>50</h>
+      <y>400</y>
+      <w>220</w>
+      <h>70</h>
     </coordinates>
     <panel_attributes>lt=&lt;&lt;&lt;&lt;-
+m_opcode_mapping
 m1=1
 m2=256</panel_attributes>
-    <additional_attributes>120;30;30;30</additional_attributes>
+    <additional_attributes>200;50;30;50</additional_attributes>
   </element>
   <element>
-    <type>com.umlet.element.custom.State</type>
+    <type>com.baselet.element.old.element.State</type>
     <coordinates>
-      <x>580</x>
-      <y>360</y>
+      <x>1080</x>
+      <y>430</y>
       <w>90</w>
       <h>40</h>
     </coordinates>
@@ -101,10 +108,10 @@ m2=256</panel_attributes>
     <additional_attributes/>
   </element>
   <element>
-    <type>com.umlet.element.custom.State</type>
+    <type>com.baselet.element.old.element.State</type>
     <coordinates>
-      <x>580</x>
-      <y>430</y>
+      <x>1080</x>
+      <y>500</y>
       <w>90</w>
       <h>40</h>
     </coordinates>
@@ -112,10 +119,10 @@ m2=256</panel_attributes>
     <additional_attributes/>
   </element>
   <element>
-    <type>com.umlet.element.custom.InitialState</type>
+    <type>com.baselet.element.old.element.InitialState</type>
     <coordinates>
-      <x>620</x>
-      <y>70</y>
+      <x>1120</x>
+      <y>140</y>
       <w>20</w>
       <h>20</h>
     </coordinates>
@@ -123,10 +130,10 @@ m2=256</panel_attributes>
     <additional_attributes/>
   </element>
   <element>
-    <type>com.umlet.element.custom.FinalState</type>
+    <type>com.baselet.element.old.element.FinalState</type>
     <coordinates>
-      <x>620</x>
-      <y>510</y>
+      <x>1120</x>
+      <y>580</y>
       <w>20</w>
       <h>20</h>
     </coordinates>
@@ -134,10 +141,10 @@ m2=256</panel_attributes>
     <additional_attributes/>
   </element>
   <element>
-    <type>com.umlet.element.Relation</type>
+    <type>com.baselet.element.old.element.Relation</type>
     <coordinates>
-      <x>600</x>
-      <y>60</y>
+      <x>1100</x>
+      <y>130</y>
       <w>50</w>
       <h>100</h>
     </coordinates>
@@ -145,10 +152,10 @@ m2=256</panel_attributes>
     <additional_attributes>30;80;30;30</additional_attributes>
   </element>
   <element>
-    <type>com.umlet.element.Relation</type>
+    <type>com.baselet.element.old.element.Relation</type>
     <coordinates>
-      <x>600</x>
-      <y>440</y>
+      <x>1100</x>
+      <y>510</y>
       <w>50</w>
       <h>90</h>
     </coordinates>
@@ -156,10 +163,10 @@ m2=256</panel_attributes>
     <additional_attributes>30;70;30;30</additional_attributes>
   </element>
   <element>
-    <type>com.umlet.element.Relation</type>
+    <type>com.baselet.element.old.element.Relation</type>
     <coordinates>
-      <x>600</x>
-      <y>370</y>
+      <x>1100</x>
+      <y>440</y>
       <w>50</w>
       <h>80</h>
     </coordinates>
@@ -167,10 +174,10 @@ m2=256</panel_attributes>
     <additional_attributes>30;60;30;30</additional_attributes>
   </element>
   <element>
-    <type>com.umlet.element.custom.State</type>
+    <type>com.baselet.element.old.element.State</type>
     <coordinates>
-      <x>570</x>
-      <y>140</y>
+      <x>1070</x>
+      <y>210</y>
       <w>120</w>
       <h>160</h>
     </coordinates>
@@ -178,10 +185,10 @@ m2=256</panel_attributes>
     <additional_attributes/>
   </element>
   <element>
-    <type>com.umlet.element.custom.State</type>
+    <type>com.baselet.element.old.element.State</type>
     <coordinates>
-      <x>810</x>
-      <y>140</y>
+      <x>1310</x>
+      <y>210</y>
       <w>120</w>
       <h>160</h>
     </coordinates>
@@ -189,10 +196,10 @@ m2=256</panel_attributes>
     <additional_attributes/>
   </element>
   <element>
-    <type>com.umlet.element.Relation</type>
+    <type>com.baselet.element.old.element.Relation</type>
     <coordinates>
-      <x>660</x>
-      <y>120</y>
+      <x>1160</x>
+      <y>190</y>
       <w>170</w>
       <h>70</h>
     </coordinates>
@@ -201,10 +208,10 @@ steps_to_go</panel_attributes>
     <additional_attributes>150;50;30;50</additional_attributes>
   </element>
   <element>
-    <type>com.umlet.element.Relation</type>
+    <type>com.baselet.element.old.element.Relation</type>
     <coordinates>
-      <x>660</x>
-      <y>210</y>
+      <x>1160</x>
+      <y>280</y>
       <w>170</w>
       <h>70</h>
     </coordinates>
@@ -213,10 +220,10 @@ steps_to_go</panel_attributes>
     <additional_attributes>30;50;150;50</additional_attributes>
   </element>
   <element>
-    <type>com.umlet.element.Relation</type>
+    <type>com.baselet.element.old.element.Relation</type>
     <coordinates>
-      <x>600</x>
-      <y>270</y>
+      <x>1100</x>
+      <y>340</y>
       <w>50</w>
       <h>110</h>
     </coordinates>

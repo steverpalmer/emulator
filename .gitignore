@@ -5,3 +5,7 @@
 /src/atom.rnc
 /src/relaxng.rnc
 /src/html
+/src/.cproject
+/src/.project
+/src/.pydevproject
+/src/.settings
