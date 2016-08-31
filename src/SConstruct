@@ -3,7 +3,7 @@ Builder for my Acorn Atom Emulation
 """)
 
 common_env = Environment()
-common_env['CCFLAGS']   = r'-Wall -g -pipe -std=c++0x -pthread'
+common_env['CCFLAGS']   = r'-Wall -g -pipe -std=c++0x -pthread -O0'
 common_env['CPPPATH']   = [r'.']
 common_env['LIBS']      = [r'log4cxx']
 common_env['LINKFLAGS'] = r'-pthread'
@@ -29,6 +29,6 @@ atom_gui_sdl_env.Program('atom', [ r'memory.cpp',
                                  [ r'screen_graphics_controller.cpp',
                                    r'screen_graphics_view.cpp',
                                    r'keyboard_controller.cpp',
-                                   r'config_xml.cpp',
+                                   r'config_fixed.cpp',
                                    r'main.cpp'
                                  ])
