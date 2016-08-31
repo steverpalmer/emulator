@@ -19,7 +19,7 @@
 
 #include "config_xml.hpp"
 
-#define CFG_FNAME "atomrc"
+#define CFG_FNAME "atomrc.xml"
 
 static log4cxx::LoggerPtr cpptrace_log()
 {
@@ -408,7 +408,9 @@ Configurator::Configurator(int argc, char *argv[])
     : m_XMLfilename(CFG_FNAME)
 {
     LOG4CXX_INFO(cpptrace_log(), "Configurator::Configurator(" << argc << ", " << argv << ")");
+#if 0
     xmlInitParser();
+#endif
     process_command_line(argc, argv);
     process_XML();
     if (!check_and_complete_params())

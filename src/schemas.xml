@@ -1,5 +1,6 @@
 <?xml version="1.0"?>
 <locatingRules xmlns="http://thaiopensource.com/ns/locating-rules/1.0">
+  <uri resource="atomrc.xml" uri="atom.rnc"/>
   <uri resource="atom.rng" uri="relaxng.rnc"/>
   <uri resource="relaxng.rng" uri="relaxng.rnc"/>
   <uri resource="minimalrc" uri="atom.rnc"/>

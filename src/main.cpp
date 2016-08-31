@@ -55,7 +55,7 @@ Main::Main(int argc, char *argv[])
     LOG4CXX_INFO(cpptrace_log(), "Keyboard");
     m_kc = new KeyboardController(*m_atom, m_cfg.keyboard());
     assert (m_kc);
-    LOG4CXX_INFO(cpptrace_log(), "Sscreen");
+    LOG4CXX_INFO(cpptrace_log(), "Screen");
     m_sgc = new ScreenGraphicsController(*m_atom, m_cfg.screen());
     assert (m_sgc);
 
@@ -94,7 +94,7 @@ Main::~Main()
 int main (int argc, char *argv[])
 /******************************************************************************/
 {
-    log4cxx::PropertyConfigurator::configure("log4cxxrc");
+    log4cxx::PropertyConfigurator::configure("log4cxx.properties");
     LOG4CXX_INFO(cpptrace_log(), "main(" << argc << ", " << argv << ")");
     Main(argc, argv);
     return EXIT_SUCCESS;
