@@ -2,6 +2,8 @@ Help("""
 Builder for my Acorn Atom Emulation
 """)
 
+USE_XML = True
+
 common_env = Environment()
 common_env['CCFLAGS']   = r'-Wall -g -pipe -std=c++0x -pthread -O0'
 common_env['CPPPATH']   = [r'.']
@@ -12,23 +14,49 @@ common_env['BUILDERS']['rng2rnc'] = Builder(action='trang -I rng -O rnc $SOURCE 
 common_env.rng2rnc('relaxng.rnc', 'relaxng.rng')
 common_env.rng2rnc('atom.rnc', 'atom.rng')
 
+common_env['BUILDERS']['rng2xsd'] = Builder(action='trang -I rng -O xsd $SOURCE $TARGET', suffix='xsd')
+common_env.rng2xsd('relaxng.xsd', 'relaxng.rng')
+common_env.rng2xsd('atom.xsd', 'atom.rng')
+
 #TODO: Building as a library screws up the order on the gcc link command:-(
 #libatom_env = common_env.Clone()
-#atomlib = libatom_env.Library(r'atom', [ r'memory.cpp',
-#                                         r'ppia.cpp',
-#                                         r'cpu.cpp',
-#                                         r'atom.cpp'])
+#atomlib = libatom_env.Library(r'atom', [ r'memory.cpp'
+#                                       ' r'ppia.cpp'
+#                                       ' r'cpu.cpp'
+#                                       ' r'atom.cpp'
+#                                       ])
 
 atom_gui_sdl_env = common_env.Clone()
-atom_gui_sdl_env.AppendUnique(CPPPATH = [r'/usr/include/SDL', r'/usr/include/libxml2'])
-atom_gui_sdl_env.AppendUnique(LIBS = [r'SDL', r'xml2'])
-atom_gui_sdl_env.Program('atom', [ r'memory.cpp',
-                                   r'ppia.cpp',
-                                   r'cpu.cpp',
-                                   r'atom.cpp'] +
-                                 [ r'screen_graphics_controller.cpp',
-                                   r'screen_graphics_view.cpp',
-                                   r'keyboard_controller.cpp',
-                                   r'config_fixed.cpp',
-                                   r'main.cpp'
+atom_gui_sdl_env.AppendUnique(CPPPATH = [ r'/usr/include/SDL'])
+atom_gui_sdl_env.AppendUnique(LIBS = [ r'SDL' ])
+
+if USE_XML:
+    atom_gui_sdl_env.AppendUnique(CPPPATH = [ r'/usr/include/libxml++-2.6'
+                                            , r'/usr/lib/x86_64-linux-gnu/libxml++-2.6/include'
+                                            , r'/usr/include/libxml2'
+                                            , r'/usr/include/glibmm-2.4'
+                                            , r'/usr/lib/x86_64-linux-gnu/glibmm-2.4/include'
+                                            , r'/usr/include/glib-2.0'
+                                            , r'/usr/lib/x86_64-linux-gnu/glib-2.0/include'
+                                            , r'/usr/include/sigc++-2.0'
+                                            , r'/usr/lib/x86_64-linux-gnu/sigc++-2.0/include'
+                                            ])
+    atom_gui_sdl_env.AppendUnique(LIBS = [ r'xml++-2.6'
+                                         , r'xml2'
+                                         , r'glibmm-2.4'
+                                         , r'gobject-2.0'
+                                         , r'glib-2.0'
+                                         , r'sigc-2.0'
+                                         ])
+
+atom_gui_sdl_env.Program('atom', [ r'memory.cpp'
+                                 , r'ppia.cpp'
+                                 , r'cpu.cpp'
+                                 , r'atom.cpp'
+                                 ] +
+                                 [ r'screen_graphics_controller.cpp'
+                                 , r'screen_graphics_view.cpp'
+                                 , r'keyboard_controller.cpp'
+                                 , (r'config_xml.cpp' if USE_XML else r'config_fixed.cpp')
+                                 , r'main.cpp'
                                  ])

@@ -86,7 +86,7 @@ public:
     MCS6502Configurator m_mcs6502;
     explicit AtomConfigurator(const std::string &p_name = "atom");
     virtual const std::string &name() const { return m_name; }
-    virtual const std::vector<const Device::Configurator *> &devices() const { return m_devices; }
+    virtual const Device::Configurator  *device(int i) const { return i < int(m_devices.size()) ? m_devices[i] : 0; }
     virtual const Memory::Configurator  &memory()     const { return m_memory;     }
     virtual const MCS6502::Configurator &mcs6502()    const { return m_mcs6502;    }
 

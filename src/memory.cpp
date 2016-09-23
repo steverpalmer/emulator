@@ -36,6 +36,8 @@ Ram::Ram(const Configurator &p_cfg)
   , m_storage(p_cfg.size())
 {
     LOG4CXX_INFO(cpptrace_log(), "Ram::Ram(" << p_cfg << ")");
+    for (int i(0); i < p_cfg.size(); i++)
+      m_storage[i] = 0;
 }
 
 void Ram::load(const std::string &p_filename)
@@ -63,12 +65,14 @@ void Ram::save(const std::string &p_filename) const
 byte Ram::get_byte(word p_addr, AccessType p_at)
 {
     LOG4CXX_INFO(cpptrace_log(), "[" << name() << "].get_byte(" << Hex(p_addr) << ", " << p_at << ")");
+    assert (p_addr < m_storage.size());
     return m_storage[p_addr];
 }
 
 void Ram::set_byte(word p_addr, byte p_byte, AccessType p_at)
 {
     LOG4CXX_INFO(cpptrace_log(), "[" << name() << "].set_byte(" << Hex(p_addr) << ", " << Hex(p_byte) << ", " << p_at << ")");
+    assert (p_addr < m_storage.size());
     m_storage[p_addr] = p_byte;
 }
 
@@ -128,6 +132,8 @@ void Hook::set_byte(word p_addr, byte p_byte, AccessType p_at)
 
 Memory::Memory(const Configurator &p_cfg)
   : Device(p_cfg)
+  , m_base(65536, 0)
+  , m_map(65536, 0)
 {
     LOG4CXX_INFO(cpptrace_log(), "Memory::Memory(" << p_cfg << ")");
 }
@@ -188,7 +194,7 @@ void Memory::drop_devices()
     LOG4CXX_INFO(cpptrace_log(), "[" << name() << "].drop_devices(" << ")");
     for (int i(0); i < 65536; i++)
     {
-    	m_map[i].reset();
+    	m_map[i] = 0;
     	m_base[i] = 0;
     }
 }

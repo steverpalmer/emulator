@@ -83,7 +83,7 @@ public:
     class Instruction; // Forward declaration
     // Attributes
 private:
-    std::array<std::shared_ptr<Instruction>, 256> m_opcode_mapping;
+    std::vector<std::shared_ptr<Instruction>> m_opcode_mapping;
 public:
 #if EXEC_TRACE
     log4c_category_t *m_6502tracelog;

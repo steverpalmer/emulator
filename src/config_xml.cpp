@@ -5,17 +5,17 @@
  *      Author: steve
  */
 
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+
 #include <stdio.h>
 #include <stdarg.h>
 #include <unistd.h>
 
 #include <cassert>
 #include <log4cxx/logger.h>
-
-#include <libxml/tree.h>
-#include <libxml/parser.h>
-#include <libxml/relaxng.h>
-#include <libxml/xpath.h>
+#if 0
+#include <libxml++/libxml++.h>
+#endif
 
 #include "config_xml.hpp"
 
@@ -127,6 +127,7 @@ ScreenGraphicsControllerConfigurator::ScreenGraphicsControllerConfigurator()
 void Configurator::process_command_line(int argc, char *argv[])
 {
     LOG4CXX_INFO(cpptrace_log(), "Configurator::process_command_line(" << argc << ", " << argv << ")");
+#if 1
     opterr = 0;
     int c;
     while ((c = getopt(argc, argv, "f:")) != -1)
@@ -148,9 +149,10 @@ void Configurator::process_command_line(int argc, char *argv[])
             LOG4CXX_WARN(cpptrace_log(), "Unknown Option '" << optopt << "'");
             break;
         default: /* Unexpected response from getopt() */
-            LOG4CXX_WARN(cpptrace_log(), "Unexpected responce from getopt() " << c);
+            LOG4CXX_WARN(cpptrace_log(), "Unexpected response from getopt() " << c);
             break;
         }
+#endif
 }
 
 #if 0
@@ -170,7 +172,6 @@ static int xpath_count(xmlXPathContextPtr ctx, const char *path)
     }
     return result;
 }
-#endif
 
 static void xpath_rd_txt(xmlXPathContextPtr ctx, const char *path, char **valptr)
 {
@@ -207,7 +208,6 @@ static void xpath_rd_guint16(xmlXPathContextPtr ctx, const char *path, word *val
     }
 }
 
-#if 0
 static void xpath_rd_float(xmlXPathContextPtr ctx, const char *path, float *valptr)
 {
     LOG4CXX_INFO(cpptrace_log(), "xpath_rd_float(_, " << path << ", _)");
@@ -219,7 +219,6 @@ static void xpath_rd_float(xmlXPathContextPtr ctx, const char *path, float *valp
         xmlFree(txt);
     }
 }
-#endif
 
 static void xml_callback_error(void *ctx, const char *msg, ...)
 {
@@ -236,10 +235,31 @@ static void xml_callback_warn(void *ctx, const char *msg, ...)
     LOG4CXX_WARN(cpptrace_log(), msg);
     va_end(ap);
 }
+#endif
 
 void Configurator::process_XML()
 {
     LOG4CXX_INFO(cpptrace_log(), "Configurator::process_XML()");
+#if 0
+    try
+    {
+    	xmlpp::DomParser parser;
+    	parser.parse_file(m_XMLfilename);
+    	if (!parser)
+    	{
+    		LOG4CXX_WARN(cpptrace_log(), "Parse Failure");
+    	    exit(1);
+    	}
+
+    	const xmlpp::Node *pNode = parser.get_document()->get_root_node();
+    	m_atom.m_block0.m_base = strtol(pNode->eval_to_string("/atom/memorymap/ram[@name='block0']/base/text()").data(), 0, 0);
+    }
+    catch (const std::exception& ex)
+    {
+    	LOG4CXX_ERROR(cpptrace_log(), ex.what());
+    	exit(1);
+    }
+
     FILE *dummy = fopen(m_XMLfilename, "r");
     if (dummy && (getc(dummy) != EOF)) {
         fclose(dummy);
@@ -348,6 +368,7 @@ void Configurator::process_XML()
         xmlXPathFreeContext(ctx);
         xmlFreeDoc(doc);
     }
+#endif
 }
 
 bool Configurator::check_and_complete_params()
@@ -408,9 +429,6 @@ Configurator::Configurator(int argc, char *argv[])
     : m_XMLfilename(CFG_FNAME)
 {
     LOG4CXX_INFO(cpptrace_log(), "Configurator::Configurator(" << argc << ", " << argv << ")");
-#if 0
-    xmlInitParser();
-#endif
     process_command_line(argc, argv);
     process_XML();
     if (!check_and_complete_params())
@@ -418,10 +436,8 @@ Configurator::Configurator(int argc, char *argv[])
     LOG4CXX_INFO(cpptrace_log(), "Position 1 => " << static_cast<const Atom::Configurator &>(m_atom));
 }
 
-
 Configurator::~Configurator()
 {
-    xmlCleanupParser();
 }
 
 #if 0

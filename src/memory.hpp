@@ -180,8 +180,8 @@ public:
     };
     // Attributes
 private:
-    std::array<word, 65536>                    m_base;
-    std::array<std::shared_ptr<Device>, 65536> m_map;
+    std::vector<word>                    m_base;
+    std::vector<std::shared_ptr<Device>> m_map;
     // Methods
 private:
     void operator=(const Memory &);

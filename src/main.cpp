@@ -45,9 +45,8 @@ Main::Main(int argc, char *argv[])
 {
     LOG4CXX_INFO(cpptrace_log(), "Position 2 => " << static_cast<const Atom::Configurator &>(m_cfg.atom()));
     LOG4CXX_INFO(cpptrace_log(), "Main::Main(" << argc << ", " << argv << ")");
-    int rv;
     LOG4CXX_INFO(cpptrace_log(), "SDL_Init");
-    rv = SDL_Init( SDL_INIT_VIDEO | SDL_INIT_TIMER );
+    const int rv = SDL_Init( SDL_INIT_VIDEO | SDL_INIT_TIMER );
     assert (!rv);
     LOG4CXX_INFO(cpptrace_log(), "Atom");
     m_atom = new Atom(m_cfg.atom());
@@ -84,9 +83,6 @@ Main::Main(int argc, char *argv[])
 Main::~Main()
 {
     LOG4CXX_INFO(cpptrace_log(), "Main::~Main()");
-    delete m_sgc;
-    delete m_kc;
-    delete m_atom;
     SDL_Quit();
 }
 

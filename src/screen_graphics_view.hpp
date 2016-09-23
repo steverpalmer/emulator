@@ -30,14 +30,14 @@ public:
         friend std::ostream &::operator <<(std::ostream &, const Configurator &);
     };
 private:
-    const Atom                    &m_atom;
-    const std::shared_ptr<Ram>    &m_video_memory;
-    SDL_Surface                   *m_screen;
-    std::vector<int>               m_rendered;
+    const Atom                 &m_atom;
+    const std::shared_ptr<Ram> &m_video_memory;
+    SDL_Surface                *m_screen;
+    std::vector<int>            m_rendered;
     // Mode 0 Stuff
-    int                            m_character_w;
-    int                            m_character_h;
-    std::array<SDL_Surface *, 256> m_glyph;
+    int                         m_character_w;
+    int                         m_character_h;
+    std::vector<SDL_Surface *>  m_glyph;
 private:
     ScreenGraphicsView(const ScreenGraphicsView &);
     void operator=(const ScreenGraphicsView&);

@@ -6,6 +6,7 @@
  */
 
 #include <cassert>
+#include <unistd.h>
 
 #include <iostream>
 #include <iomanip>
@@ -2358,10 +2359,10 @@ public:
 ///*****************************************************************************
 MCS6502::MCS6502(Memory &p_memory, const Configurator &p_cfg)
   : Core(p_memory, p_cfg)
+  , m_opcode_mapping(256, std::shared_ptr<MCS6502::Instruction>(new Instr_Undefined(*this)))
+  , m_InterruptSource(NO_INTERRUPT)
 {
     LOG4CXX_INFO(cpptrace_log(), "MCS6502::MCS6502([" << p_memory.name() << "], " << p_cfg << ")");
-    m_InterruptSource = NO_INTERRUPT;
-    m_opcode_mapping.fill(std::shared_ptr<MCS6502::Instruction>(new Instr_Undefined(*this)));
     new Instr_BRK(*this);
     new Instr_ORA_PRE_INDEXED_INDIRECT(*this);
     new Instr_ORA_ZERO(*this);
@@ -2534,10 +2535,13 @@ void MCS6502::single_step()
         if (m_InterruptSource & RESET_INTERRUPT_ON) { // Process RESET
             if (m_InterruptSource & RESET_INTERRUPT_PULSE)
                 m_InterruptSource &= ~(RESET_INTERRUPT_ON | RESET_INTERRUPT_PULSE);
+#if 0
             // Datasheet says Reset prefixed by useless stack reads
+            // though this causes a read of the uninitialised register S
             (void)m_memory.get_byte(STACK_ADDRESS + m_register.S--);
             (void)m_memory.get_byte(STACK_ADDRESS + m_register.S--);
             (void)m_memory.get_byte(STACK_ADDRESS + m_register.S--);
+#endif
             m_register.P |= IRQB;
             m_register.PC = m_memory.get_word(VECTOR_RESET, AT_DATA);
             m_cycles += 7;
@@ -2577,13 +2581,12 @@ void MCS6502::single_step()
     }
     const byte opcode(m_memory.get_byte(m_register.PC++, AT_INSTRUCTION));
     std::shared_ptr<MCS6502::Instruction> instr(m_opcode_mapping[opcode]);
-    if (instr) {
+    assert (instr);
 #if EXEC_TRACE
-        instr->dump(m_6502tracelog);
+    instr->dump(m_6502tracelog);
 #endif
-        instr->execute();
-        m_cycles += instr->m_cycles;
-    }
+    instr->execute();
+    m_cycles += instr->m_cycles;
 }
 
 void MCS6502::reset(InterruptState p_is)

@@ -30,7 +30,7 @@ public:
     {}
     virtual const std::string &name() const { return m_name; }
     virtual word base() const { return m_base; }
-    virtual word size() const  { return m_size; }
+    virtual word size() const { return m_size; }
 };
 
 class RomConfigurator : public Rom::Configurator {
@@ -164,9 +164,9 @@ private:
     ScreenGraphicsControllerConfigurator m_screen;
 public:
     Configurator(int argc, char *argv[]);
-    const Atom::Configurator                     &atom()     { return m_atom;     }
-    const KeyboardController::Configurator       &keyboard() { return m_keyboard; }
-    const ScreenGraphicsController::Configurator &screen()   { return m_screen;   }
+    const Atom::Configurator                     &atom()     const { return m_atom;     }
+    const KeyboardController::Configurator       &keyboard() const { return m_keyboard; }
+    const ScreenGraphicsController::Configurator &screen()   const { return m_screen;   }
 
     friend std::ostream &::operator<<(std::ostream&, const Atom&);
 };

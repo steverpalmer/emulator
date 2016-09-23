@@ -50,7 +50,7 @@ public:
     };
     // Attributes
 private:
-    std::array<byte, 4> m_byte;
+    std::vector<byte> m_byte;
 public:
     struct IO {
         VDGMode m_vdg_mode;

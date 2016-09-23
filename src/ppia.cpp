@@ -78,6 +78,7 @@ enum Ports {
 
 Ppia::Ppia(const Configurator &p_cfg)
   : Device(p_cfg)
+  , m_byte(4, 0)
 {
     LOG4CXX_INFO(cpptrace_log(), "Ppia::Ppia(" << p_cfg << ")");
 }

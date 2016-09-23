@@ -202,6 +202,7 @@ ScreenGraphicsView::ScreenGraphicsView(Atom &p_atom, const Configurator &p_cfg)
   , m_atom(p_atom)
   , m_video_memory(p_atom.vdg_memory())
   , m_rendered(0x1800)
+  , m_glyph(256, 0)
 {
     LOG4CXX_INFO(cpptrace_log(), "ScreenGraphicsView::ScreenGraphicsView([" << p_atom.name() << "], " << p_cfg << ")");
     assert (p_cfg.scale() >= 1.0);
