@@ -68,7 +68,6 @@
   <rng:define name="io_elm">
     <rng:element name="io">
       <rng:interleave>
-        <rng:ref name="screenmemory_elm"/>
         <rng:ref name="scale_elm"/>
         <rng:ref name="fontfile_elm"/>
         <rng:ref name="refresh_elm"/>
