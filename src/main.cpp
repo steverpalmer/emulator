@@ -13,7 +13,7 @@
 #include <log4cxx/logger.h>
 #include "log4cxx/propertyconfigurator.h"
 
-#include "config_fixed.hpp"
+#include "config_xml.hpp"
 #include "atom.hpp"
 #include "keyboard_controller.hpp"
 #include "screen_graphics_controller.hpp"
