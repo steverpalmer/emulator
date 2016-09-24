@@ -3,7 +3,9 @@
 /src/*.o
 /src/atom
 /src/atom.rnc
+/src/atom.xsd
 /src/relaxng.rnc
+/src/relaxng.xsd
 /src/html
 /src/.cproject
 /src/.project
