@@ -11,3 +11,5 @@
 /src/.project
 /src/.pydevproject
 /src/.settings
+/src/.externalToolBuilders
+/Design/*.png
