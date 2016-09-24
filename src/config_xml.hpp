@@ -87,8 +87,8 @@ public:
     explicit AtomConfigurator(const std::string &p_name = "atom");
     virtual const std::string &name() const { return m_name; }
     virtual const Device::Configurator  *device(int i) const { return i < int(m_devices.size()) ? m_devices[i] : 0; }
-    virtual const Memory::Configurator  &memory()     const { return m_memory;     }
-    virtual const MCS6502::Configurator &mcs6502()    const { return m_mcs6502;    }
+    virtual const Memory::Configurator  &memory()      const { return m_memory;     }
+    virtual const MCS6502::Configurator &mcs6502()     const { return m_mcs6502;    }
 
     friend std::ostream &::operator<<(std::ostream&, const AtomConfigurator&);
 };
@@ -150,9 +150,9 @@ private:
 public:
     Configurator(int argc, char *argv[]);
     virtual ~Configurator();
-    const Atom::Configurator                     &atom()     { return m_atom;     }
-    const KeyboardController::Configurator       &keyboard() { return m_keyboard; }
-    const ScreenGraphicsController::Configurator &screen()   { return m_screen;   }
+    const Atom::Configurator                     &atom()     const { return m_atom;     }
+    const KeyboardController::Configurator       &keyboard() const { return m_keyboard; }
+    const ScreenGraphicsController::Configurator &screen()   const { return m_screen;   }
 
     friend std::ostream &::operator<<(std::ostream&, const Configurator&);
 };
