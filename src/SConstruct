@@ -1,62 +1,48 @@
+import subprocess
+
 Help("""
 Builder for my Acorn Atom Emulation
 """)
 
 USE_XML = True
 
+def add_library(env, lib):
+    env.AppendUnique( CPPPATH = subprocess.check_output(['pkg-config', '--cflags', lib]).split()
+                    , LIBS    = subprocess.check_output(['pkg-config', '--libs', lib]).split()
+                    )
+
 common_env = Environment()
-common_env['CCFLAGS']   = r'-Wall -g -pipe -std=c++0x -pthread -O0'
+common_env['CCFLAGS']   = r'-Wall -g -pipe -std=c++11 -pthread -O0'
 common_env['CPPPATH']   = [r'.']
-common_env['LIBS']      = [r'log4cxx']
 common_env['LINKFLAGS'] = r'-pthread'
 
-common_env['BUILDERS']['rng2rnc'] = Builder(action='trang -I rng -O rnc $SOURCE $TARGET', suffix='rnc')
+add_library(common_env, 'liblog4cxx')
+
+common_env['BUILDERS']['rng2rnc'] = Builder(action='trang -I rng -O rnc $SOURCE $TARGET 2>/dev/null', suffix='rnc')
 common_env.rng2rnc('relaxng.rnc', 'relaxng.rng')
 common_env.rng2rnc('atom.rnc', 'atom.rng')
 
-common_env['BUILDERS']['rng2xsd'] = Builder(action='trang -I rng -O xsd $SOURCE $TARGET', suffix='xsd')
+common_env['BUILDERS']['rng2xsd'] = Builder(action='trang -I rng -O xsd $SOURCE $TARGET 2>/dev/null', suffix='xsd')
 common_env.rng2xsd('relaxng.xsd', 'relaxng.rng')
 common_env.rng2xsd('atom.xsd', 'atom.rng')
 
-#TODO: Building as a library screws up the order on the gcc link command:-(
-#libatom_env = common_env.Clone()
-#atomlib = libatom_env.Library(r'atom', [ r'memory.cpp'
-#                                       ' r'ppia.cpp'
-#                                       ' r'cpu.cpp'
-#                                       ' r'atom.cpp'
-#                                       ])
+libatom_env = common_env.Clone()
+atomlib = libatom_env.StaticLibrary(r'atom', [ r'memory.cpp'
+                                             , r'ppia.cpp'
+                                             , r'cpu.cpp'
+                                             , r'atom.cpp'
+                                             ])
 
 atom_gui_sdl_env = common_env.Clone()
-atom_gui_sdl_env.AppendUnique(CPPPATH = [ r'/usr/include/SDL'])
-atom_gui_sdl_env.AppendUnique(LIBS = [ r'SDL' ])
+add_library(atom_gui_sdl_env, 'sdl')
 
 if USE_XML:
-    atom_gui_sdl_env.AppendUnique(CPPPATH = [ r'/usr/include/libxml++-2.6'
-                                            , r'/usr/lib/x86_64-linux-gnu/libxml++-2.6/include'
-                                            , r'/usr/include/libxml2'
-                                            , r'/usr/include/glibmm-2.4'
-                                            , r'/usr/lib/x86_64-linux-gnu/glibmm-2.4/include'
-                                            , r'/usr/include/glib-2.0'
-                                            , r'/usr/lib/x86_64-linux-gnu/glib-2.0/include'
-                                            , r'/usr/include/sigc++-2.0'
-                                            , r'/usr/lib/x86_64-linux-gnu/sigc++-2.0/include'
-                                            ])
-    atom_gui_sdl_env.AppendUnique(LIBS = [ r'xml++-2.6'
-                                         , r'xml2'
-                                         , r'glibmm-2.4'
-                                         , r'gobject-2.0'
-                                         , r'glib-2.0'
-                                         , r'sigc-2.0'
-                                         ])
+    add_library(atom_gui_sdl_env, 'libxml++-2.6')
 
-atom_gui_sdl_env.Program('atom', [ r'memory.cpp'
-                                 , r'ppia.cpp'
-                                 , r'cpu.cpp'
-                                 , r'atom.cpp'
-                                 ] +
-                                 [ r'screen_graphics_controller.cpp'
+atom_gui_sdl_env.Program('atom', [ r'screen_graphics_controller.cpp'
                                  , r'screen_graphics_view.cpp'
                                  , r'keyboard_controller.cpp'
                                  , (r'config_xml.cpp' if USE_XML else r'config_fixed.cpp')
                                  , r'main.cpp'
+                                 , atomlib
                                  ])
