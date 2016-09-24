@@ -9,6 +9,7 @@
 #define CONFIG_XML_HPP_
 
 #include <ostream>
+#include <string>
 
 #include "common.hpp"
 
@@ -138,7 +139,7 @@ public:
 class Configurator
 {
 private:
-    const char                           *m_XMLfilename;
+    std::string                          m_XMLfilename;
 public:
     AtomConfigurator                     m_atom;
     KeyboardControllerConfigurator       m_keyboard;

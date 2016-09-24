@@ -13,9 +13,7 @@
 
 #include <cassert>
 #include <log4cxx/logger.h>
-#if 0
 #include <libxml++/libxml++.h>
-#endif
 
 #include "config_xml.hpp"
 
@@ -127,7 +125,6 @@ ScreenGraphicsControllerConfigurator::ScreenGraphicsControllerConfigurator()
 void Configurator::process_command_line(int argc, char *argv[])
 {
     LOG4CXX_INFO(cpptrace_log(), "Configurator::process_command_line(" << argc << ", " << argv << ")");
-#if 1
     opterr = 0;
     int c;
     while ((c = getopt(argc, argv, "f:")) != -1)
@@ -152,74 +149,51 @@ void Configurator::process_command_line(int argc, char *argv[])
             LOG4CXX_WARN(cpptrace_log(), "Unexpected response from getopt() " << c);
             break;
         }
-#endif
 }
-
-#if 0
-static int xpath_count(xmlXPathContextPtr ctx, const char *path)
+ 
+static int xpath_count(xmlpp::Node &ctx, const std::string &path)
 {
     LOG4CXX_INFO(cpptrace_log(), "xpath_count(_, " << path << ")");
-    int result = -1;
-    /* FIXME: Dodgy Cast */
-    xmlXPathObjectPtr n = xmlXPathEvalExpression((const xmlChar *)path, ctx);
-    if (!n) {
-        LOG4CXX_ERROR(cpptrace_log(), "Failed to read \"" << path << "\"");
-    }
-    else {
-        assert (n->type == XPATH_NODESET);
-        result = xmlXPathNodeSetGetLength(n->nodesetval);
-        xmlXPathFreeObject(n);
-    }
+    const int result = ctx.find(path).size();
     return result;
 }
 
-static void xpath_rd_txt(xmlXPathContextPtr ctx, const char *path, char **valptr)
+static void xpath_rd_txt(xmlpp::Node &ctx, const std::string &path, std::string &val)
 {
     LOG4CXX_INFO(cpptrace_log(), "xpath_rd_txt(_, " << path << ", _)");
-    assert (valptr);
-    /* FIXME: Dodgy Cast */
-    xmlXPathObjectPtr n = xmlXPathEvalExpression((const xmlChar *)path, ctx);
-    if (!n) {
-        LOG4CXX_ERROR(cpptrace_log(), "Failed to read \"" << path << "\"");
-        *valptr = 0;
-    }
-    else {
-        assert (n->type == XPATH_NODESET);
-        if (xmlXPathNodeSetGetLength(n->nodesetval) == 1) {
-            assert (xmlNodeIsText(xmlXPathNodeSetItem(n->nodesetval, 0)));
-            /* FIXME: Second Dodgy Cast */
-            *valptr = (char *)xmlNodeGetContent(xmlXPathNodeSetItem(n->nodesetval, 0));
-            assert (*valptr);
-        }
-        xmlXPathFreeObject(n);
+    xmlpp::NodeSet ns = ctx.find(path);
+    if (ns.size() > 0)
+    {
+        assert (ns.size() == 1);
+        const xmlpp::TextNode * n = dynamic_cast<xmlpp::TextNode *>(ns[0]);
+        assert (n);
+        val = n->get_content();
     }
 }
 
-
-static void xpath_rd_guint16(xmlXPathContextPtr ctx, const char *path, word *valptr)
+static void xpath_rd_guint16(xmlpp::Node &ctx, const std::string &path, word &val)
 {
     LOG4CXX_INFO(cpptrace_log(), "xpath_rd_guint16(_, " << path << ", _)");
-    char * txt = 0;
-    xpath_rd_txt(ctx, path, &txt);
-    if (txt) {
-        const int rv = sscanf(txt, "%hx", valptr);
-        assert(rv != EOF);
-        xmlFree(txt);
-    }
+    std::string txt;
+    xpath_rd_txt(ctx, path, txt);
+    std::stringstream convertor(txt);
+    word result;
+    if (convertor >> result)
+        val = result;
 }
 
-static void xpath_rd_float(xmlXPathContextPtr ctx, const char *path, float *valptr)
+static void xpath_rd_float(xmlpp::Node &ctx, const std::string &path, float &val)
 {
     LOG4CXX_INFO(cpptrace_log(), "xpath_rd_float(_, " << path << ", _)");
-    char * txt = 0;
-    xpath_rd_txt(ctx, path, &txt);
-    if (txt) {
-        const int rv = sscanf(txt, "%f", valptr);
-        assert(rv != EOF);
-        xmlFree(txt);
-    }
+    std::string txt;
+    xpath_rd_txt(ctx, path, txt);
+    std::stringstream convertor(txt);
+    float result;
+    if (convertor >> result)
+        val = result;
 }
 
+#if 0
 static void xml_callback_error(void *ctx, const char *msg, ...)
 {
     va_list ap;
@@ -240,26 +214,20 @@ static void xml_callback_warn(void *ctx, const char *msg, ...)
 void Configurator::process_XML()
 {
     LOG4CXX_INFO(cpptrace_log(), "Configurator::process_XML()");
-#if 0
     try
     {
-    	xmlpp::DomParser parser;
-    	parser.parse_file(m_XMLfilename);
-    	if (!parser)
-    	{
-    		LOG4CXX_WARN(cpptrace_log(), "Parse Failure");
-    	    exit(1);
-    	}
+        xmlpp::DomParser parser;
+        parser.parse_file(m_XMLfilename);
+        if (!parser)
+        {
+            LOG4CXX_FATAL(cpptrace_log(), "Parse Failure");
+            exit(1);
+        }
 
-    	const xmlpp::Node *pNode = parser.get_document()->get_root_node();
-    	m_atom.m_block0.m_base = strtol(pNode->eval_to_string("/atom/memorymap/ram[@name='block0']/base/text()").data(), 0, 0);
-    }
-    catch (const std::exception& ex)
-    {
-    	LOG4CXX_ERROR(cpptrace_log(), ex.what());
-    	exit(1);
-    }
+        const xmlpp::Node *pNode = parser.get_document()->get_root_node();
+        m_atom.m_block0.m_base = strtol(pNode->eval_to_string("/atom/memorymap/ram[@name='block0']/base/text()").data(), 0, 0);
 
+#if 0
     FILE *dummy = fopen(m_XMLfilename, "r");
     if (dummy && (getc(dummy) != EOF)) {
         fclose(dummy);
@@ -319,32 +287,17 @@ void Configurator::process_XML()
         xpath_rd_guint16(ctx, "/atom/memorymap/ppia/size/text()",                    &m_atom.m_ppia.m_memory_size);
         xpath_rd_guint16(ctx, "/atom/memorymap/rom[@name='basic']/base/text()",      &m_atom.m_basic.m_base);
         xpath_rd_guint16(ctx, "/atom/memorymap/rom[@name='basic']/size/text()",      &m_atom.m_basic.m_size);
-        {
-            char *tmp;
-            xpath_rd_txt(ctx, "/atom/memorymap/rom[@name='basic']/filename/text()",  &tmp);
-            //FIXME: Dodgy cast
-            m_atom.m_basic.m_filename = tmp;
-        }
+        xpath_rd_txt(ctx, "/atom/memorymap/rom[@name='basic']/filename/text()",      m_atom.m_basic.m_filename);
         xpath_rd_guint16(ctx, "/atom/memorymap/rom[@name='float']/base/text()",      &m_atom.m_float.m_base);
         xpath_rd_guint16(ctx, "/atom/memorymap/rom[@name='float']/size/text()",      &m_atom.m_float.m_size);
-        {
-            char *tmp;
-            xpath_rd_txt(ctx, "/atom/memorymap/rom[@name='float']/filename/text()",  &tmp);
-            m_atom.m_float.m_filename = tmp;
-        }
+        xpath_rd_txt(ctx, "/atom/memorymap/rom[@name='float']/filename/text()",      m_atom.m_float.m_filename);
         xpath_rd_guint16(ctx, "/atom/memorymap/rom[@name='kernel']/base/text()",     &m_atom.m_kernel.m_base);
         xpath_rd_guint16(ctx, "/atom/memorymap/rom[@name='kernel']/size/text()",     &m_atom.m_kernel.m_size);
-        {
-            char *tmp;
-            xpath_rd_txt(ctx, "/atom/memorymap/rom[@name='kernel']/filename/text()", &tmp);
-            m_atom.m_kernel.m_filename = tmp;
-        }
+        xpath_rd_txt(ctx, "/atom/memorymap/rom[@name='kernel']/filename/text()",   m_atom.m_kernel.m_filename);
 
-#if 0
         // Screen Stuff
         float screen_scale;
         xpath_rd_float  (ctx, "/atom/io/scale/text()", &screen_scale);
-#endif
 
 #if 0
         // Keyboard Stuff
@@ -353,7 +306,7 @@ void Configurator::process_XML()
             case 0: /* No keyboard stream element */
                 break;
             case 1: /* keyboard streaming requested */
-                xpath_rd_txt    (ctx, "/atom/keyboard/filename/text()", &cfg->keyboard.filename);
+                xpath_rd_txt(ctx, "/atom/keyboard/filename/text()", cfg->keyboard.filename);
                 if (!cfg->keyboard.filename)
                     cfg->keyboard.filename = "";
                 cfg->keyboard.viewscreen = ( xpath_count(ctx, "/atom/keyboard/viewscreen") > 0 );
@@ -367,20 +320,25 @@ void Configurator::process_XML()
 
         xmlXPathFreeContext(ctx);
         xmlFreeDoc(doc);
-    }
 #endif
+    }
+    catch (const std::exception& ex)
+    {
+        LOG4CXX_ERROR(cpptrace_log(), ex.what());
+        exit(1);
+    }
 }
 
 bool Configurator::check_and_complete_params()
 {
     LOG4CXX_INFO(cpptrace_log(), "Configurator::check_and_complete_params()");
     bool result = true;
-#if 0
-    struct HookNode **ptr = &cfg->atom.hooks;
-    if (cfg->screen.scale && (cfg->screen.scale < 1.0)) {
-        LOG_ERROR("Bad Scale Factor %f", cfg->screen.scale);
+    if (m_screen.m_view.m_scale && (m_screen.m_view.m_scale < 1.0)) {
+        LOG4CXX_ERROR(cpptrace_log(), "Bad Scale Factor " << m_screen.m_view.m_scale);
         result = false;
     }
+#if 0
+    struct HookNode **ptr = &cfg->atom.hooks;
     if (cfg->screen.filename) {
         *ptr = malloc(sizeof(**ptr));
         assert (*ptr);
@@ -414,14 +372,16 @@ bool Configurator::check_and_complete_params()
         (*ptr)->next = 0;
         ptr = &((*ptr)->next);
     }
-    const int err = atom_config_error(&cfg->atom);
+#endif
+#if 0
+    const int err = atom_config_error(m_atom);
     if (err) {
-        LOG_ERROR("Invalid configuration %d", err);
-        atom_config_dump(ctracelog, &cfg->atom);
+        LOG4CXX_ERROR(cpptrace_log(), "Invalid configuration" << err);
+        atom_config_dump(cpptrace_log(), &atom);
         result = false;
     }
-    cfg_dump(ctracelog, cfg);
 #endif
+    LOG4CXX_DEBUG(cpptrace_log(), this);
     return result;
 }
 
@@ -440,16 +400,14 @@ Configurator::~Configurator()
 {
 }
 
-#if 0
 std::ostream &operator<<(std::ostream &p_s, const AtomConfigurator &p_cfg)
 {
     p_s << static_cast<const Named::Configurator &>(p_cfg)
         // :TODO: << p_cfg.m_devices
         << p_cfg.m_memory
-            << p_cfg.m_mcs6502;
+        << p_cfg.m_mcs6502;
     return p_s;
 }
-#endif
 
 std::ostream &operator<<(std::ostream &p_s, const KeyboardControllerConfigurator &p_cfg)
 {
@@ -464,7 +422,7 @@ std::ostream &operator<<(std::ostream &p_s, const ScreenGraphicsViewConfigurator
         << ", fontfilename=" << p_cfg.m_fontfilename
         << ", window_title=" << p_cfg.m_window_title
         << ". icon_title=" << p_cfg.m_icon_title;
-        return p_s;
+    return p_s;
 }
 
 std::ostream &operator<<(std::ostream &p_s, const ScreenGraphicsControllerConfigurator &p_cfg)
