@@ -1,17 +1,3 @@
 /.cproject
 /.project
-/src/*.o
-/src/atom
-/src/libatom.a
-/src/atom.rnc
-/src/atom.xsd
-/src/relaxng.rnc
-/src/relaxng.xsd
-/src/local.xsd
-/src/html
-/src/.cproject
-/src/.project
-/src/.pydevproject
-/src/.settings
-/src/.externalToolBuilders
 /Design/*.png
