@@ -18,7 +18,7 @@
         <rng:ref name="io_elm"/>
         <!-- rng:ref name="cpu_elm"/ -->
         <!-- rng:ref name="hooks_elm"/ -->
-        <rng:ref name="foreign-elements"/>
+        <!-- rng:ref name="foreign-elements"/ -->
       </rng:interleave>
     </rng:element>
   </rng:define>
@@ -71,9 +71,7 @@
         <rng:ref name="scale_elm"/>
         <rng:ref name="fontfile_elm"/>
         <rng:ref name="refresh_elm"/>
-        <rng:zeroOrMore>
-          <rng:ref name="foreign-elements"/>
-        </rng:zeroOrMore>
+        <!-- rng:ref name="foreign-elements"/ -->
       </rng:interleave>
     </rng:element>
   </rng:define>
