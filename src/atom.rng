@@ -68,9 +68,15 @@
   <rng:define name="io_elm">
     <rng:element name="io">
       <rng:interleave>
-        <rng:ref name="scale_elm"/>
-        <rng:ref name="fontfile_elm"/>
-        <rng:ref name="refresh_elm"/>
+        <rng:optional>
+          <rng:ref name="scale_elm"/>
+        </rng:optional>
+        <rng:optional>
+          <rng:ref name="fontfile_elm"/>
+        </rng:optional>
+        <rng:optional>
+          <rng:ref name="refreshrate_elm"/>
+        </rng:optional>
         <!-- rng:ref name="foreign-elements"/ -->
       </rng:interleave>
     </rng:element>
@@ -146,9 +152,9 @@
     </rng:element>
   </rng:define>
 
-  <rng:define name="refresh_elm">
-    <rng:element name="refresh">
-      <rng:data type="positiveInteger"/>
+  <rng:define name="refreshrate_elm">
+    <rng:element name="refreshrate">
+      <rng:data type="float"/>
     </rng:element>
   </rng:define>
 

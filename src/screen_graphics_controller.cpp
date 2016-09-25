@@ -6,6 +6,7 @@
  */
 
 #include <cassert>
+#include <cmath>
 
 #include <iostream>
 #include <iomanip>
@@ -32,7 +33,7 @@ ScreenGraphicsController::ScreenGraphicsController(Atom &p_atom, const Configura
 : Named(p_cfg)
 , m_atom(p_atom)
 , m_view(new ScreenGraphicsView(p_atom, p_cfg.view()))
-, m_timer(SDL_AddTimer(p_cfg.RefreshRate_ms(), callback, 0))
+, m_timer(SDL_AddTimer(std::ceil(1000.0 / p_cfg.RefreshRate_Hz()), callback, 0))
 {
     LOG4CXX_INFO(cpptrace_log(), "ScreenGraphicsController::ScreenGraphicsController([" << p_atom.name() << "], " << p_cfg << ")");
     assert (m_view);
@@ -59,7 +60,7 @@ std::ostream &operator<<(std::ostream &p_s, const ScreenGraphicsController::Conf
 {
     p_s << static_cast<const Named::Configurator &>(p_cfg)
         << ", view=(" << p_cfg.view() << ")"
-        << ", RefreshRate_ms=" << p_cfg.RefreshRate_ms();
+        << ", RefreshRate_Hz=" << p_cfg.RefreshRate_Hz();
     return p_s;
 }
 

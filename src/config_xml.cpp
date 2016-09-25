@@ -117,7 +117,7 @@ ScreenGraphicsViewConfigurator::ScreenGraphicsViewConfigurator()
 
 ScreenGraphicsControllerConfigurator::ScreenGraphicsControllerConfigurator()
     : m_name("ScreenGraphicsController")
-    , m_RefreshRate_ms(100)
+    , m_RefreshRate_Hz(10)
 {
     LOG4CXX_INFO(cpptrace_log(), "ScreenGraphicsControllerConfigurator::ScreenGraphicsControllerConfigurator()");
 }
@@ -429,7 +429,7 @@ std::ostream &operator<<(std::ostream &p_s, const ScreenGraphicsControllerConfig
 {
     p_s << static_cast<const Named::Configurator &>(p_cfg)
         << p_cfg.m_view
-        << ", RefreshRate_ms=" << p_cfg.m_RefreshRate_ms;
+        << ", RefreshRate_Hz=" << p_cfg.m_RefreshRate_Hz;
     return p_s;
 }
 

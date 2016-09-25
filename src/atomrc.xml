@@ -46,6 +46,14 @@
     </rom>
   </memorymap>
 
+  <io>
+    <scale>2.0</scale>
+    <fontfilename>mc6847.bmp</fontfilename>
+    <refreshrate>10</refreshrate>
+    <!-- key_copy>F1</key_copy -->
+    <!-- key_reset>F12</key_reset -->
+  </io>
+
   <!-- cpus>
     <cpu>MSC6502</cpu>
   </cpus -->
@@ -64,13 +72,5 @@
       <dirname>.</dirname>
     </OSSAVE>
   </hooks -->
-
-  <io>
-    <scale>2.0</scale>
-    <fontfilename>mc6847.bmp</fontfilename>
-    <refresh>100</refresh>
-    <!-- key_copy>F1</key_copy -->
-    <!-- key_reset>F12</key_reset -->
-  </io>
 
 </atom>

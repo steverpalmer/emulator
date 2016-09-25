@@ -127,11 +127,11 @@ private:
     const std::string m_name;
 public:
     ScreenGraphicsViewConfigurator m_view;
-    int m_RefreshRate_ms;
+    float m_RefreshRate_Hz;
     ScreenGraphicsControllerConfigurator();
     virtual const std::string                    &name()           const { return m_name; }
     virtual const ScreenGraphicsViewConfigurator &view()           const { return m_view; }
-    virtual int                                   RefreshRate_ms() const { return m_RefreshRate_ms; }
+    virtual float                                   RefreshRate_Hz() const { return m_RefreshRate_Hz; }
 
     friend std::ostream &::operator<<(std::ostream&, const ScreenGraphicsControllerConfigurator&);
 };

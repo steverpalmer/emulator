@@ -23,7 +23,7 @@ public:
     {
     public:
         virtual const ScreenGraphicsView::Configurator &view() const = 0;
-        virtual int RefreshRate_ms() const = 0;
+        virtual float RefreshRate_Hz() const = 0;
 
         friend std::ostream &::operator <<(std::ostream &, const Configurator &);
     };

@@ -46,13 +46,22 @@ def check(filename):
         return False
 
     LOG.debug("... reading RelaxNG schema")
+    RNGparser = etree.XMLParser()
     try:
-        RNGparser = etree.XMLParser()
         RNG_DOM = etree.parse('atom.rng', RNGparser)
-        RNGschema = etree.RelaxNG(RNG_DOM)
     except:
+        LOG.debug("\n".join(RNGparser.error_log))
+        RNG_DOM = None
+
+    if RNG_DOM:
+        try:
+            RNGschema = etree.RelaxNG(RNG_DOM)
+        except etree.RelaxNGParseError as exc:
+            LOG.debug(repr(exc))
+            RNGschema = None
+
+    if not RNGschema:
         LOG.warning("Can't validate file %s", repr(filename))
-        RNGschema = None
 
     LOG.debug("... reading DOM file")
     XMLparser = etree.XMLParser()
@@ -109,35 +118,78 @@ def check(filename):
                 else:
                     memorymap[addr] = device_index
 
-    LOG.info('Checking Block0 RAM')
+    LOG.info("Checking Block0 RAM")
     for addr in range(0, 0x0400):
         if memorymap[addr] == 0 or devices[memorymap[addr]].tag != ram_tag:
             LOG.error("Missing RAM in block 0 space at address %04X", addr)
             break
 
-    LOG.info('Checking Video RAM')
+    LOG.info("Checking Video RAM")
     for addr in range(0x8000, 0x8400):
         if memorymap[addr] == 0 or devices[memorymap[addr]].tag != ram_tag:
             LOG.error("Missing RAM in video space at address %04X", addr)
             break
 
-    LOG.info('Checking PPIA')
+    LOG.info("Checking PPIA")
     for addr in range(0xB000, 0xB004):
         if memorymap[addr] == 0 or devices[memorymap[addr]].tag != ppia_tag:
             LOG.error("Missing PPIA at address %04X", addr)
             break
 
-    LOG.info('Checking Kernel ROM')
+    LOG.info("Checking Kernel ROM")
     for addr in range(0xF000, 0x10000):
         if memorymap[addr] == 0 or devices[memorymap[addr]].tag != rom_tag:
             LOG.error("Missing kernel ROM at address %04X", addr)
             break
 
-    LOG.info('Checking Interpreter ROM')
+    LOG.info("Checking Interpreter ROM")
     for addr in range(0xC000, 0xD000):
         if memorymap[addr] == 0 or devices[memorymap[addr]].tag != rom_tag:
             LOG.error("Missing Interpreter ROM at address %04X", addr)
             break
+
+    LOG.info("Checking Emulator Paramters")
+    # The semantics for the emulator parameters are "overwrite"
+    # That is, each parameter will default to something that is OK
+    # but may be overwritten in the XML file.
+
+    LOG.debug("... scale")
+    scale = atomrc.xpath("/a:atom/a:io/a:scale", namespaces=namespaces)
+    if (scale):
+        if len(scale) != 1:
+            LOG.error("scale parameter should only occur once")
+        else:
+            scale = float(scale[0])
+            if scale < 1.0:
+                LOG.error("scale must be at least 1.0 or larger")
+            elif scale > 4.0:
+                LOG.warning("scale value unexpectedlu large: %f", scale)
+
+    LOG.debug("...fontfilename")
+    fontfilename = atomrc.xpath("/a:atom/a:io/a:fontfilename", namespaces=namespaces)
+    if (fontfilename):
+        if len(fontfilename) != 1:
+            LOG.error("fontfilename parameter should only occur once")
+        else:
+            fontfilename = pathlib.Path(fontfilename[0])
+            if not fontfilename.exists():
+                LOG.error("fontfilename %s does not exist", fontfilename)
+            elif not fontfilename.is_file():
+                LOG.error("fontfilename %s is not a file", fontfilename)
+            elif not fontfilename.suffix == '.bmp':
+                LOG.error("fontfilename %s does not end '.bmp'", fontfilename)
+
+    LOG.debug("...refreshrate")
+    refreshrate = atomrc.xpath("/a:atom/a:io/a:refreshrate", namespaces=namespaces)
+    if (refreshrate):
+        if len(refreshrate) != 1:
+            LOG.error("refreshrate parameter should only occur once")
+        else:
+            refreshrate = float(refreshrate[0])
+            if refreshrate > 100:
+                LOG.error("refreshrate above 100Hz is excessive")
+            elif refreshrate < 2:
+                LOG.warning("refreshrate below 2Hz is a bit slow")
 
     return True
 
