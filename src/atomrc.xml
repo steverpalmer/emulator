@@ -1,6 +1,5 @@
 <?xml version="1.0" ?>
-<atom version="0.04">
-<!-- atom xmlns="http://www.srpalmer.me.uk/ns/atom" version="0.04" -->
+<atom xmlns="http://www.srpalmer.me.uk/ns/atom" version="0.04">
 
   <!-- Nominal 12K Atom -->
   <memorymap>
