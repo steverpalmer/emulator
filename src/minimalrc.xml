@@ -1,0 +1,45 @@
+<?xml version="1.0" ?>
+<computer name="minimal_atom" xmlns="http://www.srpalmer.me.uk/ns/emulator" version="0.05">
+  <ram name="video">
+    <size>0400</size>
+  </ram>
+  <memory>
+    <map>
+      <base>0000</base>
+      <ram name="block0">
+        <size>0400</size>
+      </ram>
+    </map>
+    <map>
+      <base>8000</base>
+      <device name="video"/>
+    </map>
+    <map>
+      <base>B000</base>
+      <ppia/>
+      <size>0400</size>
+    </map>
+    <map>
+      <base>C000</base>
+      <rom name="interpreter">
+        <filename>basic.rom</filename>
+      </rom>
+    </map>
+    <map>
+      <base>F000</base>
+      <rom name="kernel">
+        <filename>kernel.rom</filename>
+      </rom>
+    </map>
+  </memory>
+  <cpu/>
+  <terminal>
+    <device name="video"/>
+    <controller name="ppia"/>
+    <scale>2.0</scale>
+    <fontfilename>mc6847.bmp</fontfilename>
+    <refreshrate>10</refreshrate>
+    <!-- key_copy>F1</key_copy -->
+    <!-- key_reset>F12</key_reset -->
+  </terminal>
+</computer>
