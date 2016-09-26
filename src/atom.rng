@@ -25,6 +25,9 @@
 
   <rng:define name="memorymap_elm">
     <rng:element name="memorymap">
+      <rng:optional>
+        <rng:ref name="name_att"/>
+      </rng:optional>
       <rng:zeroOrMore>
         <rng:choice>
           <rng:ref name="ram_elm"/>
@@ -86,7 +89,9 @@
 
   <rng:define name="ram_elm">
     <rng:element name="ram">
-      <rng:ref name="ram_name_att"/>
+      <rng:optional>
+        <rng:ref name="name_att"/>
+      </rng:optional>
       <rng:interleave>
         <rng:ref name="base_elm"/>
         <rng:ref name="size_elm"/>
@@ -97,16 +102,12 @@
     </rng:element>
   </rng:define>
 
-  <rng:define name="ram_name_att">
-    <rng:attribute name="name">
-      <rng:data type="ID"/>
-    </rng:attribute>
-  </rng:define>
-
   <rng:define name="rom_elm">
     <rng:element name="rom">
+      <rng:optional>
+        <rng:ref name="name_att"/>
+      </rng:optional>
       <rng:interleave>
-        <rng:ref name="rom_name_att"/>
         <rng:ref name="base_elm"/>
         <rng:optional>
           <rng:ref name="size_elm"/>
@@ -116,15 +117,12 @@
     </rng:element>
   </rng:define>
 
-  <rng:define name="rom_name_att">
-    <rng:attribute name="name">
-      <rng:data type="ID"/>
-    </rng:attribute>
-  </rng:define>
-
   <!-- For completeness -->
   <rng:define name="ppia_elm">
     <rng:element name="ppia">
+      <rng:optional>
+        <rng:ref name="name_att"/>
+      </rng:optional>
       <rng:interleave>
         <rng:ref name="base_elm"/>
         <rng:ref name="size_elm"/>
