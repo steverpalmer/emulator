@@ -8,6 +8,8 @@ atom.rnc
 atom.xsd
 relaxng.rnc
 relaxng.xsd
+emulator.rnc
+emulator.xsd
 local.xsd
 html
 .project
