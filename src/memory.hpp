@@ -71,7 +71,7 @@ public:
     	virtual word                    size() const = 0;
     	/// 2. Factory Method
         virtual std::unique_ptr<Device> factory() const
-        { return std::unique_ptr<Device>(new Ram(*this)); }
+            { return std::unique_ptr<Device>(new Ram(*this)); }
         /// 3. Device Location
         virtual word                    memory_size() const { return size(); }
 
@@ -113,7 +113,7 @@ public:
         virtual const std::string       &filename() const = 0;
         /// 2. Factory Method
         virtual std::unique_ptr<Device> factory() const
-        { return std::unique_ptr<Device>(new Rom(*this)); }
+            { return std::unique_ptr<Device>(new Rom(*this)); }
 
         friend std::ostream &::operator <<(std::ostream &, const Configurator &);
     };
@@ -171,7 +171,7 @@ public:
     public:
     	/// 2. Constructor Information
         virtual std::unique_ptr<Device> factory() const
-		{ return std::unique_ptr<Device>(new Memory(*this)); }
+            { return std::unique_ptr<Device>(new Memory(*this)); }
         /// 3. Location Information
         virtual word                    base()        const { return 0; }
         virtual word                    memory_size() const { return 0; }

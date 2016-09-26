@@ -44,7 +44,7 @@ public:
     {
     public:
         virtual std::unique_ptr<Device> factory() const
-		{ return std::unique_ptr<Device>(new Ppia(*this)); }
+            { return std::unique_ptr<Device>(new Ppia(*this)); }
 
         friend std::ostream &::operator <<(std::ostream &, const Configurator &);
     };

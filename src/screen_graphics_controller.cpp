@@ -30,10 +30,10 @@ static Uint32 callback(Uint32 interval, void *param)
 }
 
 ScreenGraphicsController::ScreenGraphicsController(Atom &p_atom, const Configurator &p_cfg)
-: Named(p_cfg)
-, m_atom(p_atom)
-, m_view(new ScreenGraphicsView(p_atom, p_cfg.view()))
-, m_timer(SDL_AddTimer(std::ceil(1000.0 / p_cfg.RefreshRate_Hz()), callback, 0))
+    : Named(p_cfg)
+    , m_atom(p_atom)
+    , m_view(new ScreenGraphicsView(p_atom, p_cfg.view()))
+    , m_timer(SDL_AddTimer(std::ceil(1000.0 / p_cfg.RefreshRate_Hz()), callback, 0))
 {
     LOG4CXX_INFO(cpptrace_log(), "ScreenGraphicsController::ScreenGraphicsController([" << p_atom.name() << "], " << p_cfg << ")");
     assert (m_view);

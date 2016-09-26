@@ -4,6 +4,8 @@
  * $Id: main.c,v 1.2 2004/04/11 09:59:52 steve Exp $
  ******************************************************************************/
 
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+
 #include <assert.h>
 #include <stdio.h>
 #include <pthread.h>
@@ -41,7 +43,7 @@ public:
 
 
 Main::Main(int argc, char *argv[])
-: m_cfg(argc, argv)
+    : m_cfg(argc, argv)
 {
     LOG4CXX_INFO(cpptrace_log(), "Position 2 => " << static_cast<const Atom::Configurator &>(m_cfg.atom()));
     LOG4CXX_INFO(cpptrace_log(), "Main::Main(" << argc << ", " << argv << ")");

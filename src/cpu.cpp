@@ -34,11 +34,11 @@ static log4cxx::LoggerPtr cpptrace_log()
 #define INFINITE_STEPS_TO_GO static_cast<unsigned int>(-1)
 
 Core::Core(Memory &p_memory, const Configurator &p_cfg)
-: Named(p_cfg)
-, m_thread(pthread_self())
-, m_memory(p_memory)
-, m_steps_to_go(0)
-, m_cycles(0)
+    : Named(p_cfg)
+    , m_thread(pthread_self())
+    , m_memory(p_memory)
+    , m_steps_to_go(0)
+    , m_cycles(0)
 {
     LOG4CXX_INFO(cpptrace_log(), "Core::Core([" << p_memory.name() << "], " << p_cfg << ")");
 }
@@ -120,78 +120,78 @@ const byte OVERFLOW(1 << 6);
 const byte NEGATIVE(1 << 7);
 
 static const byte BCD_to_BIN[256] =
-    {
-        // 0x0/8  0x1/9     0x2/A     0x3/B     0x4/C     0x5/D     0x6/E     0x7/F
-        byte( 0), byte( 1), byte( 2), byte( 3), byte( 4), byte( 5), byte( 6), byte( 7), // 0x00
-        byte( 8), byte( 9), byte(-1), byte(-1), byte(-1), byte(-1), byte(-1), byte(-1), // 0x08
-        byte(10), byte(11), byte(12), byte(13), byte(14), byte(15), byte(16), byte(17), // 0x10
-        byte(18), byte(19), byte(-1), byte(-1), byte(-1), byte(-1), byte(-1), byte(-1), // 0x18
-        byte(20), byte(21), byte(22), byte(23), byte(24), byte(25), byte(26), byte(27), // 0x20
-        byte(28), byte(29), byte(-1), byte(-1), byte(-1), byte(-1), byte(-1), byte(-1), // 0x28
-        byte(30), byte(31), byte(32), byte(33), byte(34), byte(35), byte(36), byte(37), // 0x30
-        byte(38), byte(39), byte(-1), byte(-1), byte(-1), byte(-1), byte(-1), byte(-1), // 0x38
-        byte(40), byte(41), byte(42), byte(43), byte(44), byte(45), byte(46), byte(47), // 0x40
-        byte(48), byte(49), byte(-1), byte(-1), byte(-1), byte(-1), byte(-1), byte(-1), // 0x48
-        byte(50), byte(51), byte(52), byte(53), byte(54), byte(55), byte(56), byte(57), // 0x50
-        byte(58), byte(59), byte(-1), byte(-1), byte(-1), byte(-1), byte(-1), byte(-1), // 0x58
-        byte(60), byte(61), byte(62), byte(63), byte(64), byte(65), byte(66), byte(67), // 0x60
-        byte(68), byte(69), byte(-1), byte(-1), byte(-1), byte(-1), byte(-1), byte(-1), // 0x68
-        byte(70), byte(71), byte(72), byte(73), byte(74), byte(75), byte(76), byte(77), // 0x70
-        byte(78), byte(79), byte(-1), byte(-1), byte(-1), byte(-1), byte(-1), byte(-1), // 0x78
-        byte(80), byte(81), byte(82), byte(83), byte(84), byte(85), byte(86), byte(87), // 0x80
-        byte(88), byte(89), byte(-1), byte(-1), byte(-1), byte(-1), byte(-1), byte(-1), // 0x88
-        byte(90), byte(91), byte(92), byte(93), byte(94), byte(95), byte(96), byte(97), // 0x90
-        byte(98), byte(99), byte(-1), byte(-1), byte(-1), byte(-1), byte(-1), byte(-1), // 0x98
-        byte(-1), byte(-1), byte(-1), byte(-1), byte(-1), byte(-1), byte(-1), byte(-1), // 0xA0
-        byte(-1), byte(-1), byte(-1), byte(-1), byte(-1), byte(-1), byte(-1), byte(-1), // 0xA8
-        byte(-1), byte(-1), byte(-1), byte(-1), byte(-1), byte(-1), byte(-1), byte(-1), // 0xB0
-        byte(-1), byte(-1), byte(-1), byte(-1), byte(-1), byte(-1), byte(-1), byte(-1), // 0xB8
-        byte(-1), byte(-1), byte(-1), byte(-1), byte(-1), byte(-1), byte(-1), byte(-1), // 0xC0
-        byte(-1), byte(-1), byte(-1), byte(-1), byte(-1), byte(-1), byte(-1), byte(-1), // 0xC8
-        byte(-1), byte(-1), byte(-1), byte(-1), byte(-1), byte(-1), byte(-1), byte(-1), // 0xD0
-        byte(-1), byte(-1), byte(-1), byte(-1), byte(-1), byte(-1), byte(-1), byte(-1), // 0xD8
-        byte(-1), byte(-1), byte(-1), byte(-1), byte(-1), byte(-1), byte(-1), byte(-1), // 0xE0
-        byte(-1), byte(-1), byte(-1), byte(-1), byte(-1), byte(-1), byte(-1), byte(-1), // 0xE8
-        byte(-1), byte(-1), byte(-1), byte(-1), byte(-1), byte(-1), byte(-1), byte(-1), // 0xF0
-        byte(-1), byte(-1), byte(-1), byte(-1), byte(-1), byte(-1), byte(-1), byte(-1), // 0xF8
-    };
+{
+    // 0x0/8  0x1/9     0x2/A     0x3/B     0x4/C     0x5/D     0x6/E     0x7/F
+    byte( 0), byte( 1), byte( 2), byte( 3), byte( 4), byte( 5), byte( 6), byte( 7), // 0x00
+    byte( 8), byte( 9), byte(-1), byte(-1), byte(-1), byte(-1), byte(-1), byte(-1), // 0x08
+    byte(10), byte(11), byte(12), byte(13), byte(14), byte(15), byte(16), byte(17), // 0x10
+    byte(18), byte(19), byte(-1), byte(-1), byte(-1), byte(-1), byte(-1), byte(-1), // 0x18
+    byte(20), byte(21), byte(22), byte(23), byte(24), byte(25), byte(26), byte(27), // 0x20
+    byte(28), byte(29), byte(-1), byte(-1), byte(-1), byte(-1), byte(-1), byte(-1), // 0x28
+    byte(30), byte(31), byte(32), byte(33), byte(34), byte(35), byte(36), byte(37), // 0x30
+    byte(38), byte(39), byte(-1), byte(-1), byte(-1), byte(-1), byte(-1), byte(-1), // 0x38
+    byte(40), byte(41), byte(42), byte(43), byte(44), byte(45), byte(46), byte(47), // 0x40
+    byte(48), byte(49), byte(-1), byte(-1), byte(-1), byte(-1), byte(-1), byte(-1), // 0x48
+    byte(50), byte(51), byte(52), byte(53), byte(54), byte(55), byte(56), byte(57), // 0x50
+    byte(58), byte(59), byte(-1), byte(-1), byte(-1), byte(-1), byte(-1), byte(-1), // 0x58
+    byte(60), byte(61), byte(62), byte(63), byte(64), byte(65), byte(66), byte(67), // 0x60
+    byte(68), byte(69), byte(-1), byte(-1), byte(-1), byte(-1), byte(-1), byte(-1), // 0x68
+    byte(70), byte(71), byte(72), byte(73), byte(74), byte(75), byte(76), byte(77), // 0x70
+    byte(78), byte(79), byte(-1), byte(-1), byte(-1), byte(-1), byte(-1), byte(-1), // 0x78
+    byte(80), byte(81), byte(82), byte(83), byte(84), byte(85), byte(86), byte(87), // 0x80
+    byte(88), byte(89), byte(-1), byte(-1), byte(-1), byte(-1), byte(-1), byte(-1), // 0x88
+    byte(90), byte(91), byte(92), byte(93), byte(94), byte(95), byte(96), byte(97), // 0x90
+    byte(98), byte(99), byte(-1), byte(-1), byte(-1), byte(-1), byte(-1), byte(-1), // 0x98
+    byte(-1), byte(-1), byte(-1), byte(-1), byte(-1), byte(-1), byte(-1), byte(-1), // 0xA0
+    byte(-1), byte(-1), byte(-1), byte(-1), byte(-1), byte(-1), byte(-1), byte(-1), // 0xA8
+    byte(-1), byte(-1), byte(-1), byte(-1), byte(-1), byte(-1), byte(-1), byte(-1), // 0xB0
+    byte(-1), byte(-1), byte(-1), byte(-1), byte(-1), byte(-1), byte(-1), byte(-1), // 0xB8
+    byte(-1), byte(-1), byte(-1), byte(-1), byte(-1), byte(-1), byte(-1), byte(-1), // 0xC0
+    byte(-1), byte(-1), byte(-1), byte(-1), byte(-1), byte(-1), byte(-1), byte(-1), // 0xC8
+    byte(-1), byte(-1), byte(-1), byte(-1), byte(-1), byte(-1), byte(-1), byte(-1), // 0xD0
+    byte(-1), byte(-1), byte(-1), byte(-1), byte(-1), byte(-1), byte(-1), byte(-1), // 0xD8
+    byte(-1), byte(-1), byte(-1), byte(-1), byte(-1), byte(-1), byte(-1), byte(-1), // 0xE0
+    byte(-1), byte(-1), byte(-1), byte(-1), byte(-1), byte(-1), byte(-1), byte(-1), // 0xE8
+    byte(-1), byte(-1), byte(-1), byte(-1), byte(-1), byte(-1), byte(-1), byte(-1), // 0xF0
+    byte(-1), byte(-1), byte(-1), byte(-1), byte(-1), byte(-1), byte(-1), byte(-1), // 0xF8
+};
 
 static const byte BIN_to_BCD[256] =
-    {
-        // 0x0/8    0x1/9       0x2/A       0x3/B       0x4/C       0x5/D       0x6/E       0x7/F
-        byte(0x00), byte(0x01), byte(0x02), byte(0x03), byte(0x04), byte(0x05), byte(0x06), byte(0x07), // 0x00
-        byte(0x08), byte(0x09), byte(0x10), byte(0x11), byte(0x12), byte(0x13), byte(0x14), byte(0x15), // 0x08
-        byte(0x16), byte(0x17), byte(0x18), byte(0x19), byte(0x20), byte(0x21), byte(0x22), byte(0x23), // 0x10
-        byte(0x24), byte(0x25), byte(0x26), byte(0x27), byte(0x28), byte(0x29), byte(0x30), byte(0x31), // 0x18
-        byte(0x32), byte(0x33), byte(0x34), byte(0x35), byte(0x36), byte(0x37), byte(0x38), byte(0x39), // 0x20
-        byte(0x40), byte(0x41), byte(0x42), byte(0x43), byte(0x44), byte(0x45), byte(0x46), byte(0x47), // 0x28
-        byte(0x48), byte(0x49), byte(0x50), byte(0x51), byte(0x52), byte(0x53), byte(0x54), byte(0x55), // 0x30
-        byte(0x56), byte(0x57), byte(0x58), byte(0x59), byte(0x60), byte(0x61), byte(0x62), byte(0x63), // 0x38
-        byte(0x64), byte(0x65), byte(0x66), byte(0x67), byte(0x68), byte(0x69), byte(0x70), byte(0x71), // 0x40
-        byte(0x72), byte(0x73), byte(0x74), byte(0x75), byte(0x76), byte(0x77), byte(0x78), byte(0x79), // 0x48
-        byte(0x80), byte(0x81), byte(0x82), byte(0x83), byte(0x84), byte(0x85), byte(0x86), byte(0x87), // 0x50
-        byte(0x88), byte(0x89), byte(0x90), byte(0x91), byte(0x92), byte(0x93), byte(0x94), byte(0x95), // 0x58
-        byte(0x96), byte(0x97), byte(0x98), byte(0x99), byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), // 0x60
-        byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), // 0x68
-        byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), // 0x70
-        byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), // 0x78
-        byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), // 0x80
-        byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), // 0x88
-        byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), // 0x90
-        byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), // 0x98
-        byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), // 0xA0
-        byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), // 0xA8
-        byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), // 0xB0
-        byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), // 0xB8
-        byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), // 0xC0
-        byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), // 0xC8
-        byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), // 0xD0
-        byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), // 0xD8
-        byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), // 0xE0
-        byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), // 0xE8
-        byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), // 0xF0
-        byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), // 0xF8
-    };
+{
+    // 0x0/8    0x1/9       0x2/A       0x3/B       0x4/C       0x5/D       0x6/E       0x7/F
+    byte(0x00), byte(0x01), byte(0x02), byte(0x03), byte(0x04), byte(0x05), byte(0x06), byte(0x07), // 0x00
+    byte(0x08), byte(0x09), byte(0x10), byte(0x11), byte(0x12), byte(0x13), byte(0x14), byte(0x15), // 0x08
+    byte(0x16), byte(0x17), byte(0x18), byte(0x19), byte(0x20), byte(0x21), byte(0x22), byte(0x23), // 0x10
+    byte(0x24), byte(0x25), byte(0x26), byte(0x27), byte(0x28), byte(0x29), byte(0x30), byte(0x31), // 0x18
+    byte(0x32), byte(0x33), byte(0x34), byte(0x35), byte(0x36), byte(0x37), byte(0x38), byte(0x39), // 0x20
+    byte(0x40), byte(0x41), byte(0x42), byte(0x43), byte(0x44), byte(0x45), byte(0x46), byte(0x47), // 0x28
+    byte(0x48), byte(0x49), byte(0x50), byte(0x51), byte(0x52), byte(0x53), byte(0x54), byte(0x55), // 0x30
+    byte(0x56), byte(0x57), byte(0x58), byte(0x59), byte(0x60), byte(0x61), byte(0x62), byte(0x63), // 0x38
+    byte(0x64), byte(0x65), byte(0x66), byte(0x67), byte(0x68), byte(0x69), byte(0x70), byte(0x71), // 0x40
+    byte(0x72), byte(0x73), byte(0x74), byte(0x75), byte(0x76), byte(0x77), byte(0x78), byte(0x79), // 0x48
+    byte(0x80), byte(0x81), byte(0x82), byte(0x83), byte(0x84), byte(0x85), byte(0x86), byte(0x87), // 0x50
+    byte(0x88), byte(0x89), byte(0x90), byte(0x91), byte(0x92), byte(0x93), byte(0x94), byte(0x95), // 0x58
+    byte(0x96), byte(0x97), byte(0x98), byte(0x99), byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), // 0x60
+    byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), // 0x68
+    byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), // 0x70
+    byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), // 0x78
+    byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), // 0x80
+    byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), // 0x88
+    byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), // 0x90
+    byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), // 0x98
+    byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), // 0xA0
+    byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), // 0xA8
+    byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), // 0xB0
+    byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), // 0xB8
+    byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), // 0xC0
+    byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), // 0xC8
+    byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), // 0xD0
+    byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), // 0xD8
+    byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), // 0xE0
+    byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), // 0xE8
+    byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), // 0xF0
+    byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), byte(0xFF), // 0xF8
+};
 
 /// Cpu::Instruction Addressing Modes
 
@@ -372,11 +372,11 @@ private:
     Instruction & operator= (const Instruction &);
 protected:
     Instruction( MCS6502 &p_6502
-    		   , int p_opcode
-			   , int p_cycles
-			   , const std::string p_prefix
-			   , int p_args = 0
-			   , const std::string p_suffix = "");
+                 , int p_opcode
+                 , int p_cycles
+                 , const std::string p_prefix
+                 , int p_args = 0
+                 , const std::string p_suffix = "");
 public:
     virtual void execute() = 0;
 
@@ -384,29 +384,29 @@ public:
 };
 
 MCS6502::Instruction::Instruction( MCS6502 &p_6502
-		                         , int p_opcode
-								 , int p_cycles
-								 , const std::string p_prefix
-								 , int p_args
-								 , const std::string p_suffix)
-  : Named(p_prefix + std::string(p_args < 0 ? 4 : p_args * 2, '_') + p_suffix)
-  , m_prefix(p_prefix)
-  , m_args(p_args)
-  , m_suffix(p_suffix)
-  , m_6502(p_6502)
-  , m_cycles(p_cycles)
+                                   , int p_opcode
+                                   , int p_cycles
+                                   , const std::string p_prefix
+                                   , int p_args
+                                   , const std::string p_suffix)
+    : Named(p_prefix + std::string(p_args < 0 ? 4 : p_args * 2, '_') + p_suffix)
+    , m_prefix(p_prefix)
+    , m_args(p_args)
+    , m_suffix(p_suffix)
+    , m_6502(p_6502)
+    , m_cycles(p_cycles)
 {
     LOG4CXX_INFO(cpptrace_log(), "Cpu::Instruction::Instruction("
-    		<< p_opcode
-			<< ", "
-			<< p_cycles
-			<< ", \""
-			<< p_prefix
-			<< "\", "
-			<< p_args
-			<< ", \""
-			<< p_suffix
-			<< "\")");
+                 << p_opcode
+                 << ", "
+                 << p_cycles
+                 << ", \""
+                 << p_prefix
+                 << "\", "
+                 << p_args
+                 << ", \""
+                 << p_suffix
+                 << "\")");
     if (p_opcode >= 0)
         p_6502.m_opcode_mapping[p_opcode] = std::shared_ptr<MCS6502::Instruction>(this);
 }
@@ -452,80 +452,80 @@ class Instr_ADC_IMM : public MCS6502::Instruction {
 public:
     explicit Instr_ADC_IMM(MCS6502 &p_6502) : MCS6502::Instruction(p_6502, 0x69, 2, "ADC @", 1) {};
     virtual void execute()
-    {
-        INST_CTRACE_LOG("Instr_ADC_IMM::execute");
-        ADC(m_6502, IMMEDIATE_BYTE(m_6502));
-    };
+        {
+            INST_CTRACE_LOG("Instr_ADC_IMM::execute");
+            ADC(m_6502, IMMEDIATE_BYTE(m_6502));
+        };
 };
 
 class Instr_ADC_ZERO : public MCS6502::Instruction {
 public:
     explicit Instr_ADC_ZERO(MCS6502 &p_6502) : MCS6502::Instruction(p_6502, 0x65, 3, "ADC ", 1) {};
     virtual void execute()
-    {
-        INST_CTRACE_LOG("Instr_ADC_ZERO::execute");
-        ADC(m_6502, ZPAGE_BYTE(m_6502));
-    };
+        {
+            INST_CTRACE_LOG("Instr_ADC_ZERO::execute");
+            ADC(m_6502, ZPAGE_BYTE(m_6502));
+        };
 };
 
 class Instr_ADC_ZERO_X : public MCS6502::Instruction {
 public:
     explicit Instr_ADC_ZERO_X(MCS6502 &p_6502) : MCS6502::Instruction(p_6502, 0x75, 4, "ADC ", 1, ",X") {};
     virtual void execute()
-    {
-        INST_CTRACE_LOG("Instr_ADC_ZERO_X::execute");
-        ADC(m_6502, ZPAGE_X_BYTE(m_6502));
-    };
+        {
+            INST_CTRACE_LOG("Instr_ADC_ZERO_X::execute");
+            ADC(m_6502, ZPAGE_X_BYTE(m_6502));
+        };
 };
 
 class Instr_ADC_ABS : public MCS6502::Instruction {
 public:
     explicit Instr_ADC_ABS(MCS6502 &p_6502) : MCS6502::Instruction(p_6502, 0x6D, 4, "ADC ", 2) {};
     virtual void execute()
-    {
-        INST_CTRACE_LOG("Instr_ADC_ABS::execute");
-        ADC(m_6502, ABSOLUTE_BYTE(m_6502));
-    };
+        {
+            INST_CTRACE_LOG("Instr_ADC_ABS::execute");
+            ADC(m_6502, ABSOLUTE_BYTE(m_6502));
+        };
 };
 
 class Instr_ADC_ABS_X : public MCS6502::Instruction {
 public:
     explicit Instr_ADC_ABS_X(MCS6502 &p_6502) : MCS6502::Instruction(p_6502, 0x7D, 4, "ADC ", 2, ",X") {};
     virtual void execute()
-    {
-        INST_CTRACE_LOG("Instr_ADC_ABS_X::execute");
-        ADC(m_6502, ABSOLUTE_X_BYTE(m_6502));
-    };
+        {
+            INST_CTRACE_LOG("Instr_ADC_ABS_X::execute");
+            ADC(m_6502, ABSOLUTE_X_BYTE(m_6502));
+        };
 };
 
 class Instr_ADC_ABS_Y : public MCS6502::Instruction {
 public:
     explicit Instr_ADC_ABS_Y(MCS6502 &p_6502) : MCS6502::Instruction(p_6502, 0x79, 4, "ADC ", 2, ",Y") {};
     virtual void execute()
-    {
-        INST_CTRACE_LOG("Instr_ADC_ABS_Y::execute");
-        ADC(m_6502, ABSOLUTE_Y_BYTE(m_6502));
-    };
+        {
+            INST_CTRACE_LOG("Instr_ADC_ABS_Y::execute");
+            ADC(m_6502, ABSOLUTE_Y_BYTE(m_6502));
+        };
 };
 
 class Instr_ADC_PRE_INDEXED_INDIRECT : public MCS6502::Instruction {
 public:
     explicit Instr_ADC_PRE_INDEXED_INDIRECT(MCS6502 &p_6502) : MCS6502::Instruction(p_6502, 0x61, 6, "ADC (", 1, ",X)") {};
     virtual void execute()
-    {
-        INST_CTRACE_LOG("Instr_ADC_PRE_INDEXED_INDIRECT::execute");
-        ADC(m_6502, INDIRECT_ZPAGE_X_BYTE(m_6502));
-    };
+        {
+            INST_CTRACE_LOG("Instr_ADC_PRE_INDEXED_INDIRECT::execute");
+            ADC(m_6502, INDIRECT_ZPAGE_X_BYTE(m_6502));
+        };
 };
 
 class Instr_ADC_POST_INDEXED_INDIRECT : public MCS6502::Instruction {
 public:
     explicit Instr_ADC_POST_INDEXED_INDIRECT(MCS6502 &p_6502) : MCS6502::Instruction(p_6502, 0x71, 5, "ADC (", 1, "),Y") {};
     virtual void execute()
-    {
-        INST_CTRACE_LOG("Instr_ADC_POST_INDEXED_INDIRECT::execute");
-        ADC(m_6502, INDIRECT_ZPAGE_Y_BYTE(m_6502));
-    };
+        {
+            INST_CTRACE_LOG("Instr_ADC_POST_INDEXED_INDIRECT::execute");
+            ADC(m_6502, INDIRECT_ZPAGE_Y_BYTE(m_6502));
+        };
 };
 
 ///****************************************************************************
@@ -546,80 +546,80 @@ class Instr_AND_IMM : public MCS6502::Instruction {
 public:
     explicit Instr_AND_IMM(MCS6502 &p_6502) : MCS6502::Instruction(p_6502, 0x29, 2, "AND @", 1) {};
     virtual void execute()
-    {
-        INST_CTRACE_LOG("Instr_AND_IMM::execute");
-        AND(m_6502, IMMEDIATE_BYTE(m_6502));
-    };
+        {
+            INST_CTRACE_LOG("Instr_AND_IMM::execute");
+            AND(m_6502, IMMEDIATE_BYTE(m_6502));
+        };
 };
 
 class Instr_AND_ZERO : public MCS6502::Instruction {
 public:
     explicit Instr_AND_ZERO(MCS6502 &p_6502) : MCS6502::Instruction(p_6502, 0x25, 3, "AND ", 1) {};
     virtual void execute()
-    {
-        INST_CTRACE_LOG("Instr_AND_ZERO::execute");
-        AND(m_6502, ZPAGE_BYTE(m_6502));
-    };
+        {
+            INST_CTRACE_LOG("Instr_AND_ZERO::execute");
+            AND(m_6502, ZPAGE_BYTE(m_6502));
+        };
 };
 
 class Instr_AND_ZERO_X : public MCS6502::Instruction {
 public:
     explicit Instr_AND_ZERO_X(MCS6502 &p_6502) : MCS6502::Instruction(p_6502, 0x35, 4, "AND ", 1, ",X") {};
     virtual void execute()
-    {
-        INST_CTRACE_LOG("Instr_AND_ZERO_X::execute");
-        AND(m_6502, ZPAGE_X_BYTE(m_6502));
-    };
+        {
+            INST_CTRACE_LOG("Instr_AND_ZERO_X::execute");
+            AND(m_6502, ZPAGE_X_BYTE(m_6502));
+        };
 };
 
 class Instr_AND_ABS : public MCS6502::Instruction {
 public:
     explicit Instr_AND_ABS(MCS6502 &p_6502) : MCS6502::Instruction(p_6502, 0x2D, 4, "AND ", 2) {};
     virtual void execute()
-    {
-        INST_CTRACE_LOG("Instr_AND_ABS::execute");
-        AND(m_6502, ABSOLUTE_BYTE(m_6502));
-    };
+        {
+            INST_CTRACE_LOG("Instr_AND_ABS::execute");
+            AND(m_6502, ABSOLUTE_BYTE(m_6502));
+        };
 };
 
 class Instr_AND_ABS_X : public MCS6502::Instruction {
 public:
     explicit Instr_AND_ABS_X(MCS6502 &p_6502) : MCS6502::Instruction(p_6502, 0x3D, 4, "AND ", 2, ",X") {};
     virtual void execute()
-    {
-        INST_CTRACE_LOG("Instr_AND_ABS_X::execute");
-        AND(m_6502, ABSOLUTE_X_BYTE(m_6502));
-    };
+        {
+            INST_CTRACE_LOG("Instr_AND_ABS_X::execute");
+            AND(m_6502, ABSOLUTE_X_BYTE(m_6502));
+        };
 };
 
 class Instr_AND_ABS_Y : public MCS6502::Instruction {
 public:
     explicit Instr_AND_ABS_Y(MCS6502 &p_6502) : MCS6502::Instruction(p_6502, 0x39, 4, "AND ", 2, ",Y") {};
     virtual void execute()
-    {
-        INST_CTRACE_LOG("Instr_AND_ABS_Y::execute");
-        AND(m_6502, ABSOLUTE_Y_BYTE(m_6502));
-    };
+        {
+            INST_CTRACE_LOG("Instr_AND_ABS_Y::execute");
+            AND(m_6502, ABSOLUTE_Y_BYTE(m_6502));
+        };
 };
 
 class Instr_AND_PRE_INDEXED_INDIRECT : public MCS6502::Instruction {
 public:
     explicit Instr_AND_PRE_INDEXED_INDIRECT(MCS6502 &p_6502) : MCS6502::Instruction(p_6502, 0x21, 6, "AND (", 1, ",X)") {};
     virtual void execute()
-    {
-        INST_CTRACE_LOG("Instr_AND_PRE_INDEXED_INDIRECT::execute");
-        AND(m_6502, INDIRECT_ZPAGE_X_BYTE(m_6502));
-    };
+        {
+            INST_CTRACE_LOG("Instr_AND_PRE_INDEXED_INDIRECT::execute");
+            AND(m_6502, INDIRECT_ZPAGE_X_BYTE(m_6502));
+        };
 };
 
 class Instr_AND_POST_INDEXED_INDIRECT : public MCS6502::Instruction {
 public:
     explicit Instr_AND_POST_INDEXED_INDIRECT(MCS6502 &p_6502) : MCS6502::Instruction(p_6502, 0x31, 5, "AND (", 1, "),Y") {};
     virtual void execute()
-    {
-        INST_CTRACE_LOG("Instr_AND_POST_INDEXED_INDIRECT::execute");
-        AND(m_6502, INDIRECT_ZPAGE_Y_BYTE(m_6502));
-    };
+        {
+            INST_CTRACE_LOG("Instr_AND_POST_INDEXED_INDIRECT::execute");
+            AND(m_6502, INDIRECT_ZPAGE_Y_BYTE(m_6502));
+        };
 };
 
 ///****************************************************************************
@@ -649,50 +649,50 @@ class Instr_ASL_A : public MCS6502::Instruction {
 public:
     explicit Instr_ASL_A(MCS6502 &p_6502) : MCS6502::Instruction(p_6502, 0x0A, 2, "ASL A") {};
     virtual void execute()
-    {
-        INST_CTRACE_LOG("Instr_ASL_A::execute");
-        ASL(m_6502, m_6502.m_register.A);
-    };
+        {
+            INST_CTRACE_LOG("Instr_ASL_A::execute");
+            ASL(m_6502, m_6502.m_register.A);
+        };
 };
 
 class Instr_ASL_ZERO : public MCS6502::Instruction {
 public:
     explicit Instr_ASL_ZERO(MCS6502 &p_6502) : MCS6502::Instruction(p_6502, 0x06, 5, "ASL ", 1) {};
     virtual void execute()
-    {
-        INST_CTRACE_LOG("Instr_ASL_ZERO::execute");
-        ASL_EA(m_6502, EA_ZPAGE(m_6502));
-    };
+        {
+            INST_CTRACE_LOG("Instr_ASL_ZERO::execute");
+            ASL_EA(m_6502, EA_ZPAGE(m_6502));
+        };
 };
 
 class Instr_ASL_ZERO_X : public MCS6502::Instruction {
 public:
     explicit Instr_ASL_ZERO_X(MCS6502 &p_6502) : MCS6502::Instruction(p_6502, 0x16, 6, "ASL ", 1, ",X") {};
     virtual void execute()
-    {
-        INST_CTRACE_LOG("Instr_ASL_ZERO_X::execute");
-        ASL_EA(m_6502, EA_ZPAGE_X(m_6502));
-    };
+        {
+            INST_CTRACE_LOG("Instr_ASL_ZERO_X::execute");
+            ASL_EA(m_6502, EA_ZPAGE_X(m_6502));
+        };
 };
 
 class Instr_ASL_ABS : public MCS6502::Instruction {
 public:
     explicit Instr_ASL_ABS(MCS6502 &p_6502) : MCS6502::Instruction(p_6502, 0x0E, 6, "ASL ", 2) {};
     virtual void execute()
-    {
-        INST_CTRACE_LOG("Instr_ASL_ABS::execute");
-        ASL_EA(m_6502, EA_ABSOLUTE(m_6502));
-    };
+        {
+            INST_CTRACE_LOG("Instr_ASL_ABS::execute");
+            ASL_EA(m_6502, EA_ABSOLUTE(m_6502));
+        };
 };
 
 class Instr_ASL_ABS_X : public MCS6502::Instruction {
 public:
     explicit Instr_ASL_ABS_X(MCS6502 &p_6502) : MCS6502::Instruction(p_6502, 0x1E, 7, "ASL ", 2, ",X") {};
     virtual void execute()
-    {
-        INST_CTRACE_LOG("Instr_ASL_ABS_X::execute");
-        ASL_EA(m_6502, EA_ABSOLUTE_X(m_6502));
-    };
+        {
+            INST_CTRACE_LOG("Instr_ASL_ABS_X::execute");
+            ASL_EA(m_6502, EA_ABSOLUTE_X(m_6502));
+        };
 };
 
 ///****************************************************************************
@@ -719,80 +719,80 @@ class Instr_BCC : public MCS6502::Instruction {
 public:
     explicit Instr_BCC(MCS6502 &p_6502) : MCS6502::Instruction(p_6502, 0x90, 3, "BCC ", -1) {};
     virtual void execute()
-    {
-        INST_CTRACE_LOG("Instr_BCC::execute");
-        BRANCH(m_6502, CC_COND(m_6502));
-    };
+        {
+            INST_CTRACE_LOG("Instr_BCC::execute");
+            BRANCH(m_6502, CC_COND(m_6502));
+        };
 };
 
 class Instr_BCS : public MCS6502::Instruction {
 public:
     explicit Instr_BCS(MCS6502 &p_6502) : MCS6502::Instruction(p_6502, 0xB0, 3, "BCS ", -1) {};
     virtual void execute()
-    {
-        INST_CTRACE_LOG("Instr_BCS::execute");
-        BRANCH(m_6502, CS_COND(m_6502));
-    };
+        {
+            INST_CTRACE_LOG("Instr_BCS::execute");
+            BRANCH(m_6502, CS_COND(m_6502));
+        };
 };
 
 class Instr_BEQ : public MCS6502::Instruction {
 public:
     explicit Instr_BEQ(MCS6502 &p_6502) : MCS6502::Instruction(p_6502, 0xF0, 3, "BEQ ", -1) {};
     virtual void execute()
-    {
-        INST_CTRACE_LOG("Instr_BEQ::execute");
-        BRANCH(m_6502, EQ_COND(m_6502));
-    };
+        {
+            INST_CTRACE_LOG("Instr_BEQ::execute");
+            BRANCH(m_6502, EQ_COND(m_6502));
+        };
 };
 
 class Instr_BMI : public MCS6502::Instruction {
 public:
     explicit Instr_BMI(MCS6502 &p_6502) : MCS6502::Instruction(p_6502, 0x30, 3, "BMI ", -1) {};
     virtual void execute()
-    {
-        INST_CTRACE_LOG("Instr_BMI::execute");
-        BRANCH(m_6502, MI_COND(m_6502));
-    };
+        {
+            INST_CTRACE_LOG("Instr_BMI::execute");
+            BRANCH(m_6502, MI_COND(m_6502));
+        };
 };
 
 class Instr_BNE : public MCS6502::Instruction {
 public:
     explicit Instr_BNE(MCS6502 &p_6502) : MCS6502::Instruction(p_6502, 0xD0, 3, "BNE ", -1) {};
     virtual void execute()
-    {
-        INST_CTRACE_LOG("Instr_BNE::execute");
-        BRANCH(m_6502, NE_COND(m_6502));
-    };
+        {
+            INST_CTRACE_LOG("Instr_BNE::execute");
+            BRANCH(m_6502, NE_COND(m_6502));
+        };
 };
 
 class Instr_BPL : public MCS6502::Instruction {
 public:
     explicit Instr_BPL(MCS6502 &p_6502) : MCS6502::Instruction(p_6502, 0x10, 3, "BPL ", -1) {};
     virtual void execute()
-    {
-        INST_CTRACE_LOG("Instr_BPL::execute");
-        BRANCH(m_6502, PL_COND(m_6502));
-    };
+        {
+            INST_CTRACE_LOG("Instr_BPL::execute");
+            BRANCH(m_6502, PL_COND(m_6502));
+        };
 };
 
 class Instr_BVC : public MCS6502::Instruction {
 public:
     explicit Instr_BVC(MCS6502 &p_6502) : MCS6502::Instruction(p_6502, 0x50, 3, "BVC ", -1) {};
     virtual void execute()
-    {
-        INST_CTRACE_LOG("Instr_BVC::execute");
-        BRANCH(m_6502, VC_COND(m_6502));
-    };
+        {
+            INST_CTRACE_LOG("Instr_BVC::execute");
+            BRANCH(m_6502, VC_COND(m_6502));
+        };
 };
 
 class Instr_BVS : public MCS6502::Instruction {
 public:
     explicit Instr_BVS(MCS6502 &p_6502) : MCS6502::Instruction(p_6502, 0x70, 3, "BVS ", -1) {};
     virtual void execute()
-    {
-        INST_CTRACE_LOG("Instr_BVS::execute");
-        BRANCH(m_6502, VS_COND(m_6502));
-    };
+        {
+            INST_CTRACE_LOG("Instr_BVS::execute");
+            BRANCH(m_6502, VS_COND(m_6502));
+        };
 };
 
 ///****************************************************************************
@@ -811,20 +811,20 @@ class Instr_BIT_ZERO : public MCS6502::Instruction {
 public:
     explicit Instr_BIT_ZERO(MCS6502 &p_6502) : MCS6502::Instruction(p_6502, 0x24, 3, "BIT ", 1) {};
     virtual void execute()
-    {
-        INST_CTRACE_LOG("Instr_BIT_ZERO::execute");
-        BIT(m_6502, ZPAGE_BYTE(m_6502));
-    };
+        {
+            INST_CTRACE_LOG("Instr_BIT_ZERO::execute");
+            BIT(m_6502, ZPAGE_BYTE(m_6502));
+        };
 };
 
 class Instr_BIT_ABS : public MCS6502::Instruction {
 public:
     explicit Instr_BIT_ABS(MCS6502 &p_6502) : MCS6502::Instruction(p_6502, 0x2C, 4, "BIT ", 2) {};
     virtual void execute()
-    {
-        INST_CTRACE_LOG("Instr_BIT_ABS::execute");
-        BIT(m_6502, ABSOLUTE_BYTE(m_6502));
-    };
+        {
+            INST_CTRACE_LOG("Instr_BIT_ABS::execute");
+            BIT(m_6502, ABSOLUTE_BYTE(m_6502));
+        };
 };
 
 ///****************************************************************************
@@ -835,10 +835,10 @@ class Instr_BRK : public MCS6502::Instruction {
 public:
     explicit Instr_BRK(MCS6502 &p_6502) : MCS6502::Instruction(p_6502, 0x00, 7, "BRK") {};
     virtual void execute()
-    {
-        INST_CTRACE_LOG("Instr_BRK::execute");
-        m_6502.m_InterruptSource |= BRK_INTERRUPT;
-    };
+        {
+            INST_CTRACE_LOG("Instr_BRK::execute");
+            m_6502.m_InterruptSource |= BRK_INTERRUPT;
+        };
 };
 
 ///****************************************************************************
@@ -849,40 +849,40 @@ class Instr_CLC : public MCS6502::Instruction {
 public:
     explicit Instr_CLC(MCS6502 &p_6502) : MCS6502::Instruction(p_6502, 0x18, 2, "CLC") {};
     virtual void execute()
-    {
-        INST_CTRACE_LOG("Instr_CLC::execute");
-        m_6502.m_register.P &= ~CARRY;
-    };
+        {
+            INST_CTRACE_LOG("Instr_CLC::execute");
+            m_6502.m_register.P &= ~CARRY;
+        };
 };
 
 class Instr_CLD : public MCS6502::Instruction {
 public:
     explicit Instr_CLD(MCS6502 &p_6502) : MCS6502::Instruction(p_6502, 0xD8, 2, "CLD") {};
     virtual void execute()
-    {
-        INST_CTRACE_LOG("Instr_CLD::execute");
-        m_6502.m_register.P &= ~DECIMAL;
-    };
+        {
+            INST_CTRACE_LOG("Instr_CLD::execute");
+            m_6502.m_register.P &= ~DECIMAL;
+        };
 };
 
 class Instr_CLI : public MCS6502::Instruction {
 public:
     explicit Instr_CLI(MCS6502 &p_6502) : MCS6502::Instruction(p_6502, 0x58, 2, "CLI") {};
     virtual void execute()
-    {
-        INST_CTRACE_LOG("Instr_CLI::execute");
-        m_6502.m_register.P &= ~IRQB;
-    };
+        {
+            INST_CTRACE_LOG("Instr_CLI::execute");
+            m_6502.m_register.P &= ~IRQB;
+        };
 };
 
 class Instr_CLV : public MCS6502::Instruction {
 public:
     explicit Instr_CLV(MCS6502 &p_6502) : MCS6502::Instruction(p_6502, 0xB8, 2, "CLV") {};
     virtual void execute()
-    {
-        INST_CTRACE_LOG("Instr_CLV::execute");
-        m_6502.m_register.P &= ~OVERFLOW;
-    };
+        {
+            INST_CTRACE_LOG("Instr_CLV::execute");
+            m_6502.m_register.P &= ~OVERFLOW;
+        };
 };
 
 ///****************************************************************************
@@ -907,140 +907,140 @@ class Instr_CMP_IMM : public MCS6502::Instruction {
 public:
     explicit Instr_CMP_IMM(MCS6502 &p_6502) : MCS6502::Instruction(p_6502, 0xC9, 2, "CMP @", 1) {};
     virtual void execute()
-    {
-        INST_CTRACE_LOG("Instr_CMP_IMM::execute");
-        CMP_R(m_6502, m_6502.m_register.A, IMMEDIATE_BYTE(m_6502));
-    };
+        {
+            INST_CTRACE_LOG("Instr_CMP_IMM::execute");
+            CMP_R(m_6502, m_6502.m_register.A, IMMEDIATE_BYTE(m_6502));
+        };
 };
 
 class Instr_CMP_ZERO : public MCS6502::Instruction {
 public:
     explicit Instr_CMP_ZERO(MCS6502 &p_6502) : MCS6502::Instruction(p_6502, 0xC5, 3, "CMP ", 1) {};
     virtual void execute()
-    {
-        INST_CTRACE_LOG("Instr_CMP_ZERO::execute");
-        CMP_R(m_6502, m_6502.m_register.A, ZPAGE_BYTE(m_6502));
-    };
+        {
+            INST_CTRACE_LOG("Instr_CMP_ZERO::execute");
+            CMP_R(m_6502, m_6502.m_register.A, ZPAGE_BYTE(m_6502));
+        };
 };
 
 class Instr_CMP_ZERO_X : public MCS6502::Instruction {
 public:
     explicit Instr_CMP_ZERO_X(MCS6502 &p_6502) : MCS6502::Instruction(p_6502, 0xD5, 4, "CMP ", 1, ",X") {};
     virtual void execute()
-    {
-        INST_CTRACE_LOG("Instr_CMP_ZERO_X::execute");
-        CMP_R(m_6502, m_6502.m_register.A, ZPAGE_X_BYTE(m_6502));
-    };
+        {
+            INST_CTRACE_LOG("Instr_CMP_ZERO_X::execute");
+            CMP_R(m_6502, m_6502.m_register.A, ZPAGE_X_BYTE(m_6502));
+        };
 };
 
 class Instr_CMP_ABS : public MCS6502::Instruction {
 public:
     explicit Instr_CMP_ABS(MCS6502 &p_6502) : MCS6502::Instruction(p_6502, 0xCD, 4, "CMP ", 2) {};
     virtual void execute()
-    {
-        INST_CTRACE_LOG("Instr_CMP_ABS::execute");
-        CMP_R(m_6502, m_6502.m_register.A, ABSOLUTE_BYTE(m_6502));
-    };
+        {
+            INST_CTRACE_LOG("Instr_CMP_ABS::execute");
+            CMP_R(m_6502, m_6502.m_register.A, ABSOLUTE_BYTE(m_6502));
+        };
 };
 
 class Instr_CMP_ABS_X : public MCS6502::Instruction {
 public:
     explicit Instr_CMP_ABS_X(MCS6502 &p_6502) : MCS6502::Instruction(p_6502, 0xDD, 4, "CMP ", 2, ",X") {};
     virtual void execute()
-    {
-        INST_CTRACE_LOG("Instr_CMP_ABS_X::execute");
-        CMP_R(m_6502, m_6502.m_register.A, ABSOLUTE_X_BYTE(m_6502));
-    };
+        {
+            INST_CTRACE_LOG("Instr_CMP_ABS_X::execute");
+            CMP_R(m_6502, m_6502.m_register.A, ABSOLUTE_X_BYTE(m_6502));
+        };
 };
 
 class Instr_CMP_ABS_Y : public MCS6502::Instruction {
 public:
     explicit Instr_CMP_ABS_Y(MCS6502 &p_6502) : MCS6502::Instruction(p_6502, 0xD9, 4, "CMP ", 2, ",Y") {};
     virtual void execute()
-    {
-        INST_CTRACE_LOG("Instr_CMP_ABS_Y::execute");
-        CMP_R(m_6502, m_6502.m_register.A, ABSOLUTE_Y_BYTE(m_6502));
-    };
+        {
+            INST_CTRACE_LOG("Instr_CMP_ABS_Y::execute");
+            CMP_R(m_6502, m_6502.m_register.A, ABSOLUTE_Y_BYTE(m_6502));
+        };
 };
 
 class Instr_CMP_PRE_INDEXED_INDIRECT : public MCS6502::Instruction {
 public:
     explicit Instr_CMP_PRE_INDEXED_INDIRECT(MCS6502 &p_6502) : MCS6502::Instruction(p_6502, 0xC1, 6, "CMP (", 1, ",X)") {};
     virtual void execute()
-    {
-        INST_CTRACE_LOG("Instr_CMP_PRE_INDEXED_INDIRECT::execute");
-        CMP_R(m_6502, m_6502.m_register.A, INDIRECT_ZPAGE_X_BYTE(m_6502));
-    };
+        {
+            INST_CTRACE_LOG("Instr_CMP_PRE_INDEXED_INDIRECT::execute");
+            CMP_R(m_6502, m_6502.m_register.A, INDIRECT_ZPAGE_X_BYTE(m_6502));
+        };
 };
 
 class Instr_CMP_POST_INDEXED_INDIRECT : public MCS6502::Instruction {
 public:
     explicit Instr_CMP_POST_INDEXED_INDIRECT(MCS6502 &p_6502) : MCS6502::Instruction(p_6502, 0xD1, 5, "CMP (", 1, "),Y") {};
     virtual void execute()
-    {
-        INST_CTRACE_LOG("Instr_CMP_POST_INDEXED_INDIRECT::execute");
-        CMP_R(m_6502, m_6502.m_register.A, INDIRECT_ZPAGE_Y_BYTE(m_6502));
-    };
+        {
+            INST_CTRACE_LOG("Instr_CMP_POST_INDEXED_INDIRECT::execute");
+            CMP_R(m_6502, m_6502.m_register.A, INDIRECT_ZPAGE_Y_BYTE(m_6502));
+        };
 };
 
 class Instr_CPX_IMM : public MCS6502::Instruction {
 public:
     explicit Instr_CPX_IMM(MCS6502 &p_6502) : MCS6502::Instruction(p_6502, 0xE0, 2, "CPX @", 1) {};
     virtual void execute()
-    {
-        INST_CTRACE_LOG("Instr_CPX_IMM::execute");
-        CMP_R(m_6502, m_6502.m_register.X, IMMEDIATE_BYTE(m_6502));
-    };
+        {
+            INST_CTRACE_LOG("Instr_CPX_IMM::execute");
+            CMP_R(m_6502, m_6502.m_register.X, IMMEDIATE_BYTE(m_6502));
+        };
 };
 
 class Instr_CPX_ZERO : public MCS6502::Instruction {
 public:
     explicit Instr_CPX_ZERO(MCS6502 &p_6502) : MCS6502::Instruction(p_6502, 0xE4, 3, "CPX ", 1) {};
     virtual void execute()
-    {
-        INST_CTRACE_LOG("Instr_CPX_ZERO::execute");
-        CMP_R(m_6502, m_6502.m_register.X, ZPAGE_BYTE(m_6502));
-    };
+        {
+            INST_CTRACE_LOG("Instr_CPX_ZERO::execute");
+            CMP_R(m_6502, m_6502.m_register.X, ZPAGE_BYTE(m_6502));
+        };
 };
 
 class Instr_CPX_ABS : public MCS6502::Instruction {
 public:
     explicit Instr_CPX_ABS(MCS6502 &p_6502) : MCS6502::Instruction(p_6502, 0xEC, 4, "CPX ", 2) {};
     virtual void execute()
-    {
-        INST_CTRACE_LOG("Instr_CPX_ABS::execute");
-        CMP_R(m_6502, m_6502.m_register.X, ABSOLUTE_BYTE(m_6502));
-    };
+        {
+            INST_CTRACE_LOG("Instr_CPX_ABS::execute");
+            CMP_R(m_6502, m_6502.m_register.X, ABSOLUTE_BYTE(m_6502));
+        };
 };
 
 class Instr_CPY_IMM : public MCS6502::Instruction {
 public:
     explicit Instr_CPY_IMM(MCS6502 &p_6502) : MCS6502::Instruction(p_6502, 0xC0, 2, "CPY @", 1) {};
     virtual void execute()
-    {
-        INST_CTRACE_LOG("Instr_CPY_IMM::execute");
-        CMP_R(m_6502, m_6502.m_register.Y, IMMEDIATE_BYTE(m_6502));
-    };
+        {
+            INST_CTRACE_LOG("Instr_CPY_IMM::execute");
+            CMP_R(m_6502, m_6502.m_register.Y, IMMEDIATE_BYTE(m_6502));
+        };
 };
 
 class Instr_CPY_ZERO : public MCS6502::Instruction {
 public:
     explicit Instr_CPY_ZERO(MCS6502 &p_6502) : MCS6502::Instruction(p_6502, 0xC4, 3, "CPY ", 1) {};
     virtual void execute()
-    {
-        INST_CTRACE_LOG("Instr_CPY_ZERO::execute");
-        CMP_R(m_6502, m_6502.m_register.Y, ZPAGE_BYTE(m_6502));
-    };
+        {
+            INST_CTRACE_LOG("Instr_CPY_ZERO::execute");
+            CMP_R(m_6502, m_6502.m_register.Y, ZPAGE_BYTE(m_6502));
+        };
 };
 
 class Instr_CPY_ABS : public MCS6502::Instruction {
 public:
     explicit Instr_CPY_ABS(MCS6502 &p_6502) : MCS6502::Instruction(p_6502, 0xCC, 4, "CPY ", 2) {};
     virtual void execute()
-    {
-        INST_CTRACE_LOG("Instr_CPY_ABS::execute");
-        CMP_R(m_6502, m_6502.m_register.Y, ABSOLUTE_BYTE(m_6502));
-    };
+        {
+            INST_CTRACE_LOG("Instr_CPY_ABS::execute");
+            CMP_R(m_6502, m_6502.m_register.Y, ABSOLUTE_BYTE(m_6502));
+        };
 };
 
 ///****************************************************************************
@@ -1068,60 +1068,60 @@ class Instr_DEC_ZERO : public MCS6502::Instruction {
 public:
     explicit Instr_DEC_ZERO(MCS6502 &p_6502) : MCS6502::Instruction(p_6502, 0xC6, 5, "DEC ", 1) {};
     virtual void execute()
-    {
-        INST_CTRACE_LOG("Instr_DEC_ZERO::execute");
-        DEC_EA(m_6502, EA_ZPAGE(m_6502));
-    };
+        {
+            INST_CTRACE_LOG("Instr_DEC_ZERO::execute");
+            DEC_EA(m_6502, EA_ZPAGE(m_6502));
+        };
 };
 
 class Instr_DEC_ZERO_X : public MCS6502::Instruction {
 public:
     explicit Instr_DEC_ZERO_X(MCS6502 &p_6502) : MCS6502::Instruction(p_6502, 0xD6, 6, "DEC ", 1, ",X") {};
     virtual void execute()
-    {
-        INST_CTRACE_LOG("Instr_DEC_ZERO_X::execute");
-        DEC_EA(m_6502, EA_ZPAGE_X(m_6502));
-    };
+        {
+            INST_CTRACE_LOG("Instr_DEC_ZERO_X::execute");
+            DEC_EA(m_6502, EA_ZPAGE_X(m_6502));
+        };
 };
 
 class Instr_DEC_ABS : public MCS6502::Instruction {
 public:
     explicit Instr_DEC_ABS(MCS6502 &p_6502) : MCS6502::Instruction(p_6502, 0xCE, 6, "DEC ", 2) {};
     virtual void execute()
-    {
-        INST_CTRACE_LOG("Instr_DEC_ABS::execute");
-        DEC_EA(m_6502, EA_ABSOLUTE(m_6502));
-    };
+        {
+            INST_CTRACE_LOG("Instr_DEC_ABS::execute");
+            DEC_EA(m_6502, EA_ABSOLUTE(m_6502));
+        };
 };
 
 class Instr_DEC_ABS_X : public MCS6502::Instruction {
 public:
     explicit Instr_DEC_ABS_X(MCS6502 &p_6502) : MCS6502::Instruction(p_6502, 0xDE, 7, "DEC ", 2, ",X") {};
     virtual void execute()
-    {
-        INST_CTRACE_LOG("Instr_DEC_ABS_X::execute");
-        DEC_EA(m_6502, EA_ABSOLUTE_X(m_6502));
-    };
+        {
+            INST_CTRACE_LOG("Instr_DEC_ABS_X::execute");
+            DEC_EA(m_6502, EA_ABSOLUTE_X(m_6502));
+        };
 };
 
 class Instr_DEX : public MCS6502::Instruction {
 public:
     explicit Instr_DEX(MCS6502 &p_6502) : MCS6502::Instruction(p_6502, 0xCA, 2, "DEX") {};
     virtual void execute()
-    {
-        INST_CTRACE_LOG("Instr_DEX::execute");
-        DEC(m_6502, m_6502.m_register.X);
-    };
+        {
+            INST_CTRACE_LOG("Instr_DEX::execute");
+            DEC(m_6502, m_6502.m_register.X);
+        };
 };
 
 class Instr_DEY : public MCS6502::Instruction {
 public:
     explicit Instr_DEY(MCS6502 &p_6502) : MCS6502::Instruction(p_6502, 0x88, 2, "DEY") {};
     virtual void execute()
-    {
-        INST_CTRACE_LOG("Instr_DEY::execute");
-        DEC(m_6502, m_6502.m_register.Y);
-    };
+        {
+            INST_CTRACE_LOG("Instr_DEY::execute");
+            DEC(m_6502, m_6502.m_register.Y);
+        };
 };
 
 ///****************************************************************************
@@ -1142,80 +1142,80 @@ class Instr_EOR_IMM : public MCS6502::Instruction {
 public:
     explicit Instr_EOR_IMM(MCS6502 &p_6502) : MCS6502::Instruction(p_6502, 0x49, 2, "EOR @", 1) {};
     virtual void execute()
-    {
-        INST_CTRACE_LOG("Instr_EOR_IMM::execute");
-        EOR(m_6502, IMMEDIATE_BYTE(m_6502));
-    };
+        {
+            INST_CTRACE_LOG("Instr_EOR_IMM::execute");
+            EOR(m_6502, IMMEDIATE_BYTE(m_6502));
+        };
 };
 
 class Instr_EOR_ZERO : public MCS6502::Instruction {
 public:
     explicit Instr_EOR_ZERO(MCS6502 &p_6502) : MCS6502::Instruction(p_6502, 0x45, 3, "EOR ", 1) {};
     virtual void execute()
-    {
-        INST_CTRACE_LOG("Instr_EOR_ZERO::execute");
-        EOR(m_6502, ZPAGE_BYTE(m_6502));
-    };
+        {
+            INST_CTRACE_LOG("Instr_EOR_ZERO::execute");
+            EOR(m_6502, ZPAGE_BYTE(m_6502));
+        };
 };
 
 class Instr_EOR_ZERO_X : public MCS6502::Instruction {
 public:
     explicit Instr_EOR_ZERO_X(MCS6502 &p_6502) : MCS6502::Instruction(p_6502, 0x55, 4, "EOR ", 1, ",X") {};
     virtual void execute()
-    {
-        INST_CTRACE_LOG("Instr_EOR_ZERO_X::execute");
-        EOR(m_6502, ZPAGE_X_BYTE(m_6502));
-    };
+        {
+            INST_CTRACE_LOG("Instr_EOR_ZERO_X::execute");
+            EOR(m_6502, ZPAGE_X_BYTE(m_6502));
+        };
 };
 
 class Instr_EOR_ABS : public MCS6502::Instruction {
 public:
     explicit Instr_EOR_ABS(MCS6502 &p_6502) : MCS6502::Instruction(p_6502, 0x4D, 4, "EOR ", 2) {};
     virtual void execute()
-    {
-        INST_CTRACE_LOG("Instr_EOR_ABS::execute");
-        EOR(m_6502, ABSOLUTE_BYTE(m_6502));
-    };
+        {
+            INST_CTRACE_LOG("Instr_EOR_ABS::execute");
+            EOR(m_6502, ABSOLUTE_BYTE(m_6502));
+        };
 };
 
 class Instr_EOR_ABS_X : public MCS6502::Instruction {
 public:
     explicit Instr_EOR_ABS_X(MCS6502 &p_6502) : MCS6502::Instruction(p_6502, 0x5D, 4, "EOR ", 2, ",X") {};
     virtual void execute()
-    {
-        INST_CTRACE_LOG("Instr_EOR_ABS_X::execute");
-        EOR(m_6502, ABSOLUTE_X_BYTE(m_6502));
-    };
+        {
+            INST_CTRACE_LOG("Instr_EOR_ABS_X::execute");
+            EOR(m_6502, ABSOLUTE_X_BYTE(m_6502));
+        };
 };
 
 class Instr_EOR_ABS_Y : public MCS6502::Instruction {
 public:
     explicit Instr_EOR_ABS_Y(MCS6502 &p_6502) : MCS6502::Instruction(p_6502, 0x59, 4, "EOR ", 2, ",Y") {};
     virtual void execute()
-    {
-        INST_CTRACE_LOG("Instr_EOR_ABS_Y::execute");
-        EOR(m_6502, ABSOLUTE_Y_BYTE(m_6502));
-    };
+        {
+            INST_CTRACE_LOG("Instr_EOR_ABS_Y::execute");
+            EOR(m_6502, ABSOLUTE_Y_BYTE(m_6502));
+        };
 };
 
 class Instr_EOR_PRE_INDEXED_INDIRECT : public MCS6502::Instruction {
 public:
     explicit Instr_EOR_PRE_INDEXED_INDIRECT(MCS6502 &p_6502) : MCS6502::Instruction(p_6502, 0x41, 6, "EOR (", 1, ",X)") {};
     virtual void execute()
-    {
-        INST_CTRACE_LOG("Instr_EOR_PRE_INDEXED_INDIRECT::execute");
-        EOR(m_6502, INDIRECT_ZPAGE_X_BYTE(m_6502));
-    };
+        {
+            INST_CTRACE_LOG("Instr_EOR_PRE_INDEXED_INDIRECT::execute");
+            EOR(m_6502, INDIRECT_ZPAGE_X_BYTE(m_6502));
+        };
 };
 
 class Instr_EOR_POST_INDEXED_INDIRECT : public MCS6502::Instruction {
 public:
     explicit Instr_EOR_POST_INDEXED_INDIRECT(MCS6502 &p_6502) : MCS6502::Instruction(p_6502, 0x51, 5, "EOR (", 1, "),Y") {};
     virtual void execute()
-    {
-        INST_CTRACE_LOG("Instr_EOR_POST_INDEXED_INDIRECT::execute");
-        EOR(m_6502, INDIRECT_ZPAGE_Y_BYTE(m_6502));
-    };
+        {
+            INST_CTRACE_LOG("Instr_EOR_POST_INDEXED_INDIRECT::execute");
+            EOR(m_6502, INDIRECT_ZPAGE_Y_BYTE(m_6502));
+        };
 };
 
 ///****************************************************************************
@@ -1243,60 +1243,60 @@ class Instr_INC_ZERO : public MCS6502::Instruction {
 public:
     explicit Instr_INC_ZERO(MCS6502 &p_6502) : MCS6502::Instruction(p_6502, 0xE6, 5, "INC ", 1) {};
     virtual void execute()
-    {
-        INST_CTRACE_LOG("Instr_INC_ZERO::execute");
-        INC_EA(m_6502, EA_ZPAGE(m_6502));
-    };
+        {
+            INST_CTRACE_LOG("Instr_INC_ZERO::execute");
+            INC_EA(m_6502, EA_ZPAGE(m_6502));
+        };
 };
 
 class Instr_INC_ZERO_X : public MCS6502::Instruction {
 public:
     explicit Instr_INC_ZERO_X(MCS6502 &p_6502) : MCS6502::Instruction(p_6502, 0xF6, 6, "INC ", 1, ",X") {};
     virtual void execute()
-    {
-        INST_CTRACE_LOG("Instr_INC_ZERO_X::execute");
-        INC_EA(m_6502, EA_ZPAGE_X(m_6502));
-    };
+        {
+            INST_CTRACE_LOG("Instr_INC_ZERO_X::execute");
+            INC_EA(m_6502, EA_ZPAGE_X(m_6502));
+        };
 };
 
 class Instr_INC_ABS : public MCS6502::Instruction {
 public:
     explicit Instr_INC_ABS(MCS6502 &p_6502) : MCS6502::Instruction(p_6502, 0xEE, 6, "INC ", 2) {};
     virtual void execute()
-    {
-        INST_CTRACE_LOG("Instr_INC_ABS::execute");
-        INC_EA(m_6502, EA_ABSOLUTE(m_6502));
-    };
+        {
+            INST_CTRACE_LOG("Instr_INC_ABS::execute");
+            INC_EA(m_6502, EA_ABSOLUTE(m_6502));
+        };
 };
 
 class Instr_INC_ABS_X : public MCS6502::Instruction {
 public:
     explicit Instr_INC_ABS_X(MCS6502 &p_6502) : MCS6502::Instruction(p_6502, 0xFE, 7, "INC ", 2, ",X") {};
     virtual void execute()
-    {
-        INST_CTRACE_LOG("Instr_INC_ABS_X::execute");
-        INC_EA(m_6502, EA_ABSOLUTE_X(m_6502));
-    };
+        {
+            INST_CTRACE_LOG("Instr_INC_ABS_X::execute");
+            INC_EA(m_6502, EA_ABSOLUTE_X(m_6502));
+        };
 };
 
 class Instr_INX : public MCS6502::Instruction {
 public:
     explicit Instr_INX(MCS6502 &p_6502) : MCS6502::Instruction(p_6502, 0xE8, 2, "INX") {};
     virtual void execute()
-    {
-        INST_CTRACE_LOG("Instr_INX::execute");
-        INC(m_6502, m_6502.m_register.X);
-    };
+        {
+            INST_CTRACE_LOG("Instr_INX::execute");
+            INC(m_6502, m_6502.m_register.X);
+        };
 };
 
 class Instr_INY : public MCS6502::Instruction {
 public:
     explicit Instr_INY(MCS6502 &p_6502) : MCS6502::Instruction(p_6502, 0xC8, 2, "INY") {};
     virtual void execute()
-    {
-        INST_CTRACE_LOG("Instr_INY::execute");
-        INC(m_6502, m_6502.m_register.Y);
-    };
+        {
+            INST_CTRACE_LOG("Instr_INY::execute");
+            INC(m_6502, m_6502.m_register.Y);
+        };
 };
 
 ///****************************************************************************
@@ -1307,53 +1307,53 @@ class Instr_JMP_DIRECT : public MCS6502::Instruction {
 public:
     explicit Instr_JMP_DIRECT(MCS6502 &p_6502) : MCS6502::Instruction(p_6502, 0x4C, 3, "JMP ", 2) {};
     virtual void execute()
-    {
-        INST_CTRACE_LOG("Instr_JMP_DIRECT::execute");
+        {
+            INST_CTRACE_LOG("Instr_JMP_DIRECT::execute");
 #if JUMP_TRACE
-        const word from(m_6502.m_register.PC-1);
+            const word from(m_6502.m_register.PC-1);
 #endif
-        m_6502.m_register.PC = IMMEDIATE_WORD(m_6502);
+            m_6502.m_register.PC = IMMEDIATE_WORD(m_6502);
 #if JUMP_TRACE
-        log4c_category_info(m_6502.m_jumptracelog, JUMP_TRACE_LOGFORMAT,
-                            "JMP", from, m_6502.m_register.PC);
+            log4c_category_info(m_6502.m_jumptracelog, JUMP_TRACE_LOGFORMAT,
+                                "JMP", from, m_6502.m_register.PC);
 #endif
 
-    };
+        };
 };
 
 class Instr_JMP_INDIRECT : public MCS6502::Instruction {
 public:
     explicit Instr_JMP_INDIRECT(MCS6502 &p_6502) : MCS6502::Instruction(p_6502, 0x6C, 5, "JMP (", 2, ")") {};
     virtual void execute()
-    {
-        INST_CTRACE_LOG("Instr_JMP_INDIRECT::execute");
+        {
+            INST_CTRACE_LOG("Instr_JMP_INDIRECT::execute");
 #if JUMP_TRACE
-        const word from(m_6502.m_register.PC-1);
+            const word from(m_6502.m_register.PC-1);
 #endif
-        m_6502.m_register.PC = ABSOLUTE_WORD(m_6502);
+            m_6502.m_register.PC = ABSOLUTE_WORD(m_6502);
 #if JUMP_TRACE
-        log4c_category_info(m_6502.m_jumptracelog, JUMP_TRACE_LOGFORMAT,
-                            "JMP", from, m_6502.m_register.PC);
+            log4c_category_info(m_6502.m_jumptracelog, JUMP_TRACE_LOGFORMAT,
+                                "JMP", from, m_6502.m_register.PC);
 #endif
-    };
+        };
 };
 
 class Instr_JSR_DIRECT : public MCS6502::Instruction {
 public:
     explicit Instr_JSR_DIRECT(MCS6502 &p_6502) : MCS6502::Instruction(p_6502, 0x20, 6, "JSR ", 2) {};
     virtual void execute()
-    {
-        INST_CTRACE_LOG("Instr_JSR_DIRECT::execute");
+        {
+            INST_CTRACE_LOG("Instr_JSR_DIRECT::execute");
 #if JUMP_TRACE
-        const word from(m_6502.m_register.PC-1);
+            const word from(m_6502.m_register.PC-1);
 #endif
-        PUSH_WORD(m_6502, m_6502.m_register.PC+1); // Last byte of JSR
-        m_6502.m_register.PC = IMMEDIATE_WORD(m_6502);
+            PUSH_WORD(m_6502, m_6502.m_register.PC+1); // Last byte of JSR
+            m_6502.m_register.PC = IMMEDIATE_WORD(m_6502);
 #if JUMP_TRACE
-        log4c_category_info(m_6502.m_jumptracelog, JUMP_TRACE_LOGFORMAT,
-                            "JSR", from, m_6502.m_register.PC);
+            log4c_category_info(m_6502.m_jumptracelog, JUMP_TRACE_LOGFORMAT,
+                                "JSR", from, m_6502.m_register.PC);
 #endif
-    };
+        };
 };
 
 ///****************************************************************************
@@ -1374,180 +1374,180 @@ class Instr_LDA_IMM : public MCS6502::Instruction {
 public:
     explicit Instr_LDA_IMM(MCS6502 &p_6502) : MCS6502::Instruction(p_6502, 0xA9, 2, "LDA @", 1) {};
     virtual void execute()
-    {
-        INST_CTRACE_LOG("Instr_LDA_IMM::execute");
-        LD_R(m_6502, m_6502.m_register.A, IMMEDIATE_BYTE(m_6502));
-    };
+        {
+            INST_CTRACE_LOG("Instr_LDA_IMM::execute");
+            LD_R(m_6502, m_6502.m_register.A, IMMEDIATE_BYTE(m_6502));
+        };
 };
 
 class Instr_LDA_ZERO : public MCS6502::Instruction {
 public:
     explicit Instr_LDA_ZERO(MCS6502 &p_6502) : MCS6502::Instruction(p_6502, 0xA5, 3, "LDA ", 1) {};
     virtual void execute()
-    {
-        INST_CTRACE_LOG("Instr_LDA_ZERO::execute");
-        LD_R(m_6502, m_6502.m_register.A, ZPAGE_BYTE(m_6502));
-    };
+        {
+            INST_CTRACE_LOG("Instr_LDA_ZERO::execute");
+            LD_R(m_6502, m_6502.m_register.A, ZPAGE_BYTE(m_6502));
+        };
 };
 
 class Instr_LDA_ZERO_X : public MCS6502::Instruction {
 public:
     explicit Instr_LDA_ZERO_X(MCS6502 &p_6502) : MCS6502::Instruction(p_6502, 0xB5, 4, "LDA ", 1, ",X") {};
     virtual void execute()
-    {
-        INST_CTRACE_LOG("Instr_LDA_ZERO_X::execute");
-        LD_R(m_6502, m_6502.m_register.A, ZPAGE_X_BYTE(m_6502));
-    };
+        {
+            INST_CTRACE_LOG("Instr_LDA_ZERO_X::execute");
+            LD_R(m_6502, m_6502.m_register.A, ZPAGE_X_BYTE(m_6502));
+        };
 };
 
 class Instr_LDA_ABS : public MCS6502::Instruction {
 public:
     explicit Instr_LDA_ABS(MCS6502 &p_6502) : MCS6502::Instruction(p_6502, 0xAD, 4, "LDA ", 2) {};
     virtual void execute()
-    {
-        INST_CTRACE_LOG("Instr_LDA_ABS::execute");
-        LD_R(m_6502, m_6502.m_register.A, ABSOLUTE_BYTE(m_6502));
-    };
+        {
+            INST_CTRACE_LOG("Instr_LDA_ABS::execute");
+            LD_R(m_6502, m_6502.m_register.A, ABSOLUTE_BYTE(m_6502));
+        };
 };
 
 class Instr_LDA_ABS_X : public MCS6502::Instruction {
 public:
     explicit Instr_LDA_ABS_X(MCS6502 &p_6502) : MCS6502::Instruction(p_6502, 0xBD, 4, "LDA ", 2, ",X") {};
     virtual void execute()
-    {
-        INST_CTRACE_LOG("Instr_LDA_ABS_X::execute");
-        LD_R(m_6502, m_6502.m_register.A, ABSOLUTE_X_BYTE(m_6502));
-    };
+        {
+            INST_CTRACE_LOG("Instr_LDA_ABS_X::execute");
+            LD_R(m_6502, m_6502.m_register.A, ABSOLUTE_X_BYTE(m_6502));
+        };
 };
 
 class Instr_LDA_ABS_Y : public MCS6502::Instruction {
 public:
     explicit Instr_LDA_ABS_Y(MCS6502 &p_6502) : MCS6502::Instruction(p_6502, 0xB9, 4, "LDA ", 2, ",Y") {};
     virtual void execute()
-    {
-        INST_CTRACE_LOG("Instr_LDA_ABS_Y::execute");
-        LD_R(m_6502, m_6502.m_register.A, ABSOLUTE_Y_BYTE(m_6502));
-    };
+        {
+            INST_CTRACE_LOG("Instr_LDA_ABS_Y::execute");
+            LD_R(m_6502, m_6502.m_register.A, ABSOLUTE_Y_BYTE(m_6502));
+        };
 };
 
 class Instr_LDA_PRE_INDEXED_INDIRECT : public MCS6502::Instruction {
 public:
     explicit Instr_LDA_PRE_INDEXED_INDIRECT(MCS6502 &p_6502) : MCS6502::Instruction(p_6502, 0xA1, 6, "LDA (", 1, ",X)") {};
     virtual void execute()
-    {
-        INST_CTRACE_LOG("Instr_LDA_PRE_INDEXED_INDIRECT::execute");
-        LD_R(m_6502, m_6502.m_register.A, INDIRECT_ZPAGE_X_BYTE(m_6502));
-    };
+        {
+            INST_CTRACE_LOG("Instr_LDA_PRE_INDEXED_INDIRECT::execute");
+            LD_R(m_6502, m_6502.m_register.A, INDIRECT_ZPAGE_X_BYTE(m_6502));
+        };
 };
 
 class Instr_LDA_POST_INDEXED_INDIRECT : public MCS6502::Instruction {
 public:
     explicit Instr_LDA_POST_INDEXED_INDIRECT(MCS6502 &p_6502) : MCS6502::Instruction(p_6502, 0xB1, 5, "LDA (", 1, "),Y") {};
     virtual void execute()
-    {
-        INST_CTRACE_LOG("Instr_LDA_POST_INDEXED_INDIRECT::execute");
-        LD_R(m_6502, m_6502.m_register.A, INDIRECT_ZPAGE_Y_BYTE(m_6502));
-    };
+        {
+            INST_CTRACE_LOG("Instr_LDA_POST_INDEXED_INDIRECT::execute");
+            LD_R(m_6502, m_6502.m_register.A, INDIRECT_ZPAGE_Y_BYTE(m_6502));
+        };
 };
 
 class Instr_LDX_IMM : public MCS6502::Instruction {
 public:
     explicit Instr_LDX_IMM(MCS6502 &p_6502) : MCS6502::Instruction(p_6502, 0xA2, 2, "LDX @", 1) {};
     virtual void execute()
-    {
-        INST_CTRACE_LOG("Instr_LDX_IMM::execute");
-        LD_R(m_6502, m_6502.m_register.X, IMMEDIATE_BYTE(m_6502));
-    };
+        {
+            INST_CTRACE_LOG("Instr_LDX_IMM::execute");
+            LD_R(m_6502, m_6502.m_register.X, IMMEDIATE_BYTE(m_6502));
+        };
 };
 
 class Instr_LDX_ZERO : public MCS6502::Instruction {
 public:
     explicit Instr_LDX_ZERO(MCS6502 &p_6502) : MCS6502::Instruction(p_6502, 0xA6, 3, "LDX ", 1) {};
     virtual void execute()
-    {
-        INST_CTRACE_LOG("Instr_LDX_ZERO::execute");
-        LD_R(m_6502, m_6502.m_register.X, ZPAGE_BYTE(m_6502));
-    };
+        {
+            INST_CTRACE_LOG("Instr_LDX_ZERO::execute");
+            LD_R(m_6502, m_6502.m_register.X, ZPAGE_BYTE(m_6502));
+        };
 };
 
 class Instr_LDX_ZERO_Y : public MCS6502::Instruction {
 public:
     explicit Instr_LDX_ZERO_Y(MCS6502 &p_6502) : MCS6502::Instruction(p_6502, 0xB6, 4, "LDX ", 1, ",Y") {};
     virtual void execute()
-    {
-        INST_CTRACE_LOG("Instr_LDX_ZERO_Y::execute");
-        LD_R(m_6502, m_6502.m_register.X, ZPAGE_Y_BYTE(m_6502));
-    };
+        {
+            INST_CTRACE_LOG("Instr_LDX_ZERO_Y::execute");
+            LD_R(m_6502, m_6502.m_register.X, ZPAGE_Y_BYTE(m_6502));
+        };
 };
 
 class Instr_LDX_ABS : public MCS6502::Instruction {
 public:
     explicit Instr_LDX_ABS(MCS6502 &p_6502) : MCS6502::Instruction(p_6502, 0xAE, 4, "LDX ", 2) {};
     virtual void execute()
-    {
-        INST_CTRACE_LOG("Instr_LDX_ABS::execute");
-        LD_R(m_6502, m_6502.m_register.X, ABSOLUTE_BYTE(m_6502));
-    };
+        {
+            INST_CTRACE_LOG("Instr_LDX_ABS::execute");
+            LD_R(m_6502, m_6502.m_register.X, ABSOLUTE_BYTE(m_6502));
+        };
 };
 
 class Instr_LDX_ABS_Y : public MCS6502::Instruction {
 public:
     explicit Instr_LDX_ABS_Y(MCS6502 &p_6502) : MCS6502::Instruction(p_6502, 0xBE, 4, "LDX ", 2, ",Y") {};
     virtual void execute()
-    {
-        INST_CTRACE_LOG("Instr_LDX_ABS_Y::execute");
-        LD_R(m_6502, m_6502.m_register.X, ABSOLUTE_Y_BYTE(m_6502));
-    };
+        {
+            INST_CTRACE_LOG("Instr_LDX_ABS_Y::execute");
+            LD_R(m_6502, m_6502.m_register.X, ABSOLUTE_Y_BYTE(m_6502));
+        };
 };
 
 class Instr_LDY_IMM : public MCS6502::Instruction {
 public:
     explicit Instr_LDY_IMM(MCS6502 &p_6502) : MCS6502::Instruction(p_6502, 0xA0, 2, "LDY @", 1) {};
     virtual void execute()
-    {
-        INST_CTRACE_LOG("Instr_LDY_IMM::execute");
-        LD_R(m_6502, m_6502.m_register.Y, IMMEDIATE_BYTE(m_6502));
-    };
+        {
+            INST_CTRACE_LOG("Instr_LDY_IMM::execute");
+            LD_R(m_6502, m_6502.m_register.Y, IMMEDIATE_BYTE(m_6502));
+        };
 };
 
 class Instr_LDY_ZERO : public MCS6502::Instruction {
 public:
     explicit Instr_LDY_ZERO(MCS6502 &p_6502) : MCS6502::Instruction(p_6502, 0xA4, 3, "LDY ", 1) {};
     virtual void execute()
-    {
-        INST_CTRACE_LOG("Instr_LDY_ZERO::execute");
-        LD_R(m_6502, m_6502.m_register.Y, ZPAGE_BYTE(m_6502));
-    };
+        {
+            INST_CTRACE_LOG("Instr_LDY_ZERO::execute");
+            LD_R(m_6502, m_6502.m_register.Y, ZPAGE_BYTE(m_6502));
+        };
 };
 
 class Instr_LDY_ZERO_X : public MCS6502::Instruction {
 public:
     explicit Instr_LDY_ZERO_X(MCS6502 &p_6502) : MCS6502::Instruction(p_6502, 0xB4, 4, "LDY ", 1, ",X") {};
     virtual void execute()
-    {
-        INST_CTRACE_LOG("Instr_LDY_ZERO_X::execute");
-        LD_R(m_6502, m_6502.m_register.Y, ZPAGE_X_BYTE(m_6502));
-    };
+        {
+            INST_CTRACE_LOG("Instr_LDY_ZERO_X::execute");
+            LD_R(m_6502, m_6502.m_register.Y, ZPAGE_X_BYTE(m_6502));
+        };
 };
 
 class Instr_LDY_ABS : public MCS6502::Instruction {
 public:
     explicit Instr_LDY_ABS(MCS6502 &p_6502) : MCS6502::Instruction(p_6502, 0xAC, 4, "LDY ", 2) {};
     virtual void execute()
-    {
-        INST_CTRACE_LOG("Instr_LDY_ABS::execute");
-        LD_R(m_6502, m_6502.m_register.Y, ABSOLUTE_BYTE(m_6502));
-    };
+        {
+            INST_CTRACE_LOG("Instr_LDY_ABS::execute");
+            LD_R(m_6502, m_6502.m_register.Y, ABSOLUTE_BYTE(m_6502));
+        };
 };
 
 class Instr_LDY_ABS_X : public MCS6502::Instruction {
 public:
     explicit Instr_LDY_ABS_X(MCS6502 &p_6502) : MCS6502::Instruction(p_6502, 0xBC, 4, "LDY ", 2, ",X") {};
     virtual void execute()
-    {
-        INST_CTRACE_LOG("Instr_LDY_ABS_X::execute");
-        LD_R(m_6502, m_6502.m_register.Y, ABSOLUTE_X_BYTE(m_6502));
-    };
+        {
+            INST_CTRACE_LOG("Instr_LDY_ABS_X::execute");
+            LD_R(m_6502, m_6502.m_register.Y, ABSOLUTE_X_BYTE(m_6502));
+        };
 };
 
 ///****************************************************************************
@@ -1575,50 +1575,50 @@ class Instr_LSR_A : public MCS6502::Instruction {
 public:
     explicit Instr_LSR_A(MCS6502 &p_6502) : MCS6502::Instruction(p_6502, 0x4A, 2, "LSR A") {};
     virtual void execute()
-    {
-        INST_CTRACE_LOG("Instr_LSR_A::execute");
-        LSR(m_6502, m_6502.m_register.A);
-    };
+        {
+            INST_CTRACE_LOG("Instr_LSR_A::execute");
+            LSR(m_6502, m_6502.m_register.A);
+        };
 };
 
 class Instr_LSR_ZERO : public MCS6502::Instruction {
 public:
     explicit Instr_LSR_ZERO(MCS6502 &p_6502) : MCS6502::Instruction(p_6502, 0x46, 5, "LSR ", 1) {};
     virtual void execute()
-    {
-        INST_CTRACE_LOG("Instr_LSR_ZERO::execute");
-        LSR_EA(m_6502, EA_ZPAGE(m_6502));
-    };
+        {
+            INST_CTRACE_LOG("Instr_LSR_ZERO::execute");
+            LSR_EA(m_6502, EA_ZPAGE(m_6502));
+        };
 };
 
 class Instr_LSR_ZERO_X : public MCS6502::Instruction {
 public:
     explicit Instr_LSR_ZERO_X(MCS6502 &p_6502) : MCS6502::Instruction(p_6502, 0x56, 6, "LSR ", 1, ",X") {};
     virtual void execute()
-    {
-        INST_CTRACE_LOG("Instr_LSR_ZERO_X::execute");
-        LSR_EA(m_6502, EA_ZPAGE_X(m_6502));
-    };
+        {
+            INST_CTRACE_LOG("Instr_LSR_ZERO_X::execute");
+            LSR_EA(m_6502, EA_ZPAGE_X(m_6502));
+        };
 };
 
 class Instr_LSR_ABS : public MCS6502::Instruction {
 public:
     explicit Instr_LSR_ABS(MCS6502 &p_6502) : MCS6502::Instruction(p_6502, 0x4E, 6, "LSR ", 2) {};
     virtual void execute()
-    {
-        INST_CTRACE_LOG("Instr_LSR_ABS::execute");
-        LSR_EA(m_6502, EA_ABSOLUTE(m_6502));
-    };
+        {
+            INST_CTRACE_LOG("Instr_LSR_ABS::execute");
+            LSR_EA(m_6502, EA_ABSOLUTE(m_6502));
+        };
 };
 
 class Instr_LSR_ABS_X : public MCS6502::Instruction {
 public:
     explicit Instr_LSR_ABS_X(MCS6502 &p_6502) : MCS6502::Instruction(p_6502, 0x5E, 7, "LSR ", 2, ",X") {};
     virtual void execute()
-    {
-        INST_CTRACE_LOG("Instr_LSR_ABS_X::execute");
-        LSR_EA(m_6502, EA_ABSOLUTE_X(m_6502));
-    };
+        {
+            INST_CTRACE_LOG("Instr_LSR_ABS_X::execute");
+            LSR_EA(m_6502, EA_ABSOLUTE_X(m_6502));
+        };
 };
 
 ///****************************************************************************
@@ -1629,10 +1629,10 @@ class Instr_NOP : public MCS6502::Instruction {
 public:
     explicit Instr_NOP(MCS6502 &p_6502) : MCS6502::Instruction(p_6502, 0xEA, 2, "NOP") {};
     virtual void execute()
-    {
-        INST_CTRACE_LOG("Instr_NOP::execute");
-        // Do Nothing
-    };
+        {
+            INST_CTRACE_LOG("Instr_NOP::execute");
+            // Do Nothing
+        };
 };
 
 ///****************************************************************************
@@ -1653,80 +1653,80 @@ class Instr_ORA_IMM : public MCS6502::Instruction {
 public:
     explicit Instr_ORA_IMM(MCS6502 &p_6502) : MCS6502::Instruction(p_6502, 0x09, 2, "ORA @", 1) {};
     virtual void execute()
-    {
-        INST_CTRACE_LOG("Instr_ORA_IMM::execute");
-        ORA(m_6502, IMMEDIATE_BYTE(m_6502));
-    };
+        {
+            INST_CTRACE_LOG("Instr_ORA_IMM::execute");
+            ORA(m_6502, IMMEDIATE_BYTE(m_6502));
+        };
 };
 
 class Instr_ORA_ZERO : public MCS6502::Instruction {
 public:
     explicit Instr_ORA_ZERO(MCS6502 &p_6502) : MCS6502::Instruction(p_6502, 0x05, 3, "ORA ", 1) {};
     virtual void execute()
-    {
-        INST_CTRACE_LOG("Instr_ORA_ZERO::execute");
-        ORA(m_6502, ZPAGE_BYTE(m_6502));
-    };
+        {
+            INST_CTRACE_LOG("Instr_ORA_ZERO::execute");
+            ORA(m_6502, ZPAGE_BYTE(m_6502));
+        };
 };
 
 class Instr_ORA_ZERO_X : public MCS6502::Instruction {
 public:
     explicit Instr_ORA_ZERO_X(MCS6502 &p_6502) : MCS6502::Instruction(p_6502, 0x15, 4, "ORA ", 1, ",X") {};
     virtual void execute()
-    {
-        INST_CTRACE_LOG("Instr_ORA_ZERO_X::execute");
-        ORA(m_6502, ZPAGE_X_BYTE(m_6502));
-    };
+        {
+            INST_CTRACE_LOG("Instr_ORA_ZERO_X::execute");
+            ORA(m_6502, ZPAGE_X_BYTE(m_6502));
+        };
 };
 
 class Instr_ORA_ABS : public MCS6502::Instruction {
 public:
     explicit Instr_ORA_ABS(MCS6502 &p_6502) : MCS6502::Instruction(p_6502, 0x0D, 4, "ORA ", 2) {};
     virtual void execute()
-    {
-        INST_CTRACE_LOG("Instr_ORA_ABS::execute");
-        ORA(m_6502, ABSOLUTE_BYTE(m_6502));
-    };
+        {
+            INST_CTRACE_LOG("Instr_ORA_ABS::execute");
+            ORA(m_6502, ABSOLUTE_BYTE(m_6502));
+        };
 };
 
 class Instr_ORA_ABS_X : public MCS6502::Instruction {
 public:
     explicit Instr_ORA_ABS_X(MCS6502 &p_6502) : MCS6502::Instruction(p_6502, 0x1D, 4, "ORA ", 2, ",X") {};
     virtual void execute()
-    {
-        INST_CTRACE_LOG("Instr_ORA_ABS_X::execute");
-        ORA(m_6502, ABSOLUTE_X_BYTE(m_6502));
-    };
+        {
+            INST_CTRACE_LOG("Instr_ORA_ABS_X::execute");
+            ORA(m_6502, ABSOLUTE_X_BYTE(m_6502));
+        };
 };
 
 class Instr_ORA_ABS_Y : public MCS6502::Instruction {
 public:
     explicit Instr_ORA_ABS_Y(MCS6502 &p_6502) : MCS6502::Instruction(p_6502, 0x19, 4, "ORA ", 2, ",Y") {};
     virtual void execute()
-    {
-        INST_CTRACE_LOG("Instr_ORA_ABS_Y::execute");
-        ORA(m_6502, ABSOLUTE_Y_BYTE(m_6502));
-    };
+        {
+            INST_CTRACE_LOG("Instr_ORA_ABS_Y::execute");
+            ORA(m_6502, ABSOLUTE_Y_BYTE(m_6502));
+        };
 };
 
 class Instr_ORA_PRE_INDEXED_INDIRECT : public MCS6502::Instruction {
 public:
     explicit Instr_ORA_PRE_INDEXED_INDIRECT(MCS6502 &p_6502) : MCS6502::Instruction(p_6502, 0x01, 6, "ORA (", 1, ",X)") {};
     virtual void execute()
-    {
-        INST_CTRACE_LOG("Instr_ORA_PRE_INDEXED_INDIRECT::execute");
-        ORA(m_6502, INDIRECT_ZPAGE_X_BYTE(m_6502));
-    };
+        {
+            INST_CTRACE_LOG("Instr_ORA_PRE_INDEXED_INDIRECT::execute");
+            ORA(m_6502, INDIRECT_ZPAGE_X_BYTE(m_6502));
+        };
 };
 
 class Instr_ORA_POST_INDEXED_INDIRECT : public MCS6502::Instruction {
 public:
     explicit Instr_ORA_POST_INDEXED_INDIRECT(MCS6502 &p_6502) : MCS6502::Instruction(p_6502, 0x11, 5, "ORA (", 1, "),Y") {};
     virtual void execute()
-    {
-        INST_CTRACE_LOG("Instr_ORA_POST_INDEXED_INDIRECT::execute");
-        ORA(m_6502, INDIRECT_ZPAGE_Y_BYTE(m_6502));
-    };
+        {
+            INST_CTRACE_LOG("Instr_ORA_POST_INDEXED_INDIRECT::execute");
+            ORA(m_6502, INDIRECT_ZPAGE_Y_BYTE(m_6502));
+        };
 };
 
 ///****************************************************************************
@@ -1737,45 +1737,45 @@ class Instr_PHA : public MCS6502::Instruction {
 public:
     explicit Instr_PHA(MCS6502 &p_6502) : MCS6502::Instruction(p_6502, 0x48, 3, "PHA") {};
     virtual void execute()
-    {
-        INST_CTRACE_LOG("Instr_PHA::execute");
-        PUSH_BYTE(m_6502, m_6502.m_register.A);
-    };
+        {
+            INST_CTRACE_LOG("Instr_PHA::execute");
+            PUSH_BYTE(m_6502, m_6502.m_register.A);
+        };
 };
 
 class Instr_PHP : public MCS6502::Instruction {
 public:
     explicit Instr_PHP(MCS6502 &p_6502) : MCS6502::Instruction(p_6502, 0x08, 3, "PHP") {};
     virtual void execute()
-    {
-        INST_CTRACE_LOG("Instr_PHP::execute");
-        PUSH_BYTE(m_6502, m_6502.m_register.P);
-    };
+        {
+            INST_CTRACE_LOG("Instr_PHP::execute");
+            PUSH_BYTE(m_6502, m_6502.m_register.P);
+        };
 };
 
 class Instr_PLA : public MCS6502::Instruction {
 public:
     explicit Instr_PLA(MCS6502 &p_6502) : MCS6502::Instruction(p_6502, 0x68, 4, "PLA") {};
     virtual void execute()
-    {
-        INST_CTRACE_LOG("Instr_PLA::execute");
-        m_6502.m_register.A = POP_BYTE(m_6502);
-        m_6502.m_register.P &= ~(NEGATIVE | ZERO);
-        if (m_6502.m_register.A & NEGATIVE)
-            m_6502.m_register.P |= NEGATIVE;
-        if (m_6502.m_register.A == 0)
-            m_6502.m_register.P |= ZERO;
-    };
+        {
+            INST_CTRACE_LOG("Instr_PLA::execute");
+            m_6502.m_register.A = POP_BYTE(m_6502);
+            m_6502.m_register.P &= ~(NEGATIVE | ZERO);
+            if (m_6502.m_register.A & NEGATIVE)
+                m_6502.m_register.P |= NEGATIVE;
+            if (m_6502.m_register.A == 0)
+                m_6502.m_register.P |= ZERO;
+        };
 };
 
 class Instr_PLP : public MCS6502::Instruction {
 public:
     explicit Instr_PLP(MCS6502 &p_6502) : MCS6502::Instruction(p_6502, 0x28, 4, "PLP") {};
     virtual void execute()
-    {
-        INST_CTRACE_LOG("Instr_PLP::execute");
-        m_6502.m_register.P = POP_BYTE(m_6502);
-    };
+        {
+            INST_CTRACE_LOG("Instr_PLP::execute");
+            m_6502.m_register.P = POP_BYTE(m_6502);
+        };
 };
 
 ///****************************************************************************
@@ -1808,50 +1808,50 @@ class Instr_ROL_A : public MCS6502::Instruction {
 public:
     explicit Instr_ROL_A(MCS6502 &p_6502) : MCS6502::Instruction(p_6502, 0x2A, 2, "ROL A") {};
     virtual void execute()
-    {
-        INST_CTRACE_LOG("Instr_ROL_A::execute");
-        ROL(m_6502, m_6502.m_register.A);
-    };
+        {
+            INST_CTRACE_LOG("Instr_ROL_A::execute");
+            ROL(m_6502, m_6502.m_register.A);
+        };
 };
 
 class Instr_ROL_ZERO : public MCS6502::Instruction {
 public:
     explicit Instr_ROL_ZERO(MCS6502 &p_6502) : MCS6502::Instruction(p_6502, 0x26, 5, "ROL ", 1) {};
     virtual void execute()
-    {
-        INST_CTRACE_LOG("Instr_ROL_ZERO::execute");
-        ROL_EA(m_6502, EA_ZPAGE(m_6502));
-    };
+        {
+            INST_CTRACE_LOG("Instr_ROL_ZERO::execute");
+            ROL_EA(m_6502, EA_ZPAGE(m_6502));
+        };
 };
 
 class Instr_ROL_ZERO_X : public MCS6502::Instruction {
 public:
     explicit Instr_ROL_ZERO_X(MCS6502 &p_6502) : MCS6502::Instruction(p_6502, 0x36, 6, "ROL ", 1, ",X") {};
     virtual void execute()
-    {
-        INST_CTRACE_LOG("Instr_ROL_ZERO_X::execute");
-        ROL_EA(m_6502, EA_ZPAGE_X(m_6502));
-    };
+        {
+            INST_CTRACE_LOG("Instr_ROL_ZERO_X::execute");
+            ROL_EA(m_6502, EA_ZPAGE_X(m_6502));
+        };
 };
 
 class Instr_ROL_ABS : public MCS6502::Instruction {
 public:
     explicit Instr_ROL_ABS(MCS6502 &p_6502) : MCS6502::Instruction(p_6502, 0x2E, 6, "ROL ", 2) {};
     virtual void execute()
-    {
-        INST_CTRACE_LOG("Instr_ROL_ABS::execute");
-        ROL_EA(m_6502, EA_ABSOLUTE(m_6502));
-    };
+        {
+            INST_CTRACE_LOG("Instr_ROL_ABS::execute");
+            ROL_EA(m_6502, EA_ABSOLUTE(m_6502));
+        };
 };
 
 class Instr_ROL_ABS_X : public MCS6502::Instruction {
 public:
     explicit Instr_ROL_ABS_X(MCS6502 &p_6502) : MCS6502::Instruction(p_6502, 0x3E, 7, "ROL ", 2, ",X") {};
     virtual void execute()
-    {
-        INST_CTRACE_LOG("Instr_ROL_ABS_X::execute");
-        ROL_EA(m_6502, EA_ABSOLUTE_X(m_6502));
-    };
+        {
+            INST_CTRACE_LOG("Instr_ROL_ABS_X::execute");
+            ROL_EA(m_6502, EA_ABSOLUTE_X(m_6502));
+        };
 };
 
 ///****************************************************************************
@@ -1884,50 +1884,50 @@ class Instr_ROR_A : public MCS6502::Instruction {
 public:
     explicit Instr_ROR_A(MCS6502 &p_6502) : MCS6502::Instruction(p_6502, 0x6A, 2, "ROR A") {};
     virtual void execute()
-    {
-        INST_CTRACE_LOG("Instr_ROR_A::execute");
-        ROR(m_6502, m_6502.m_register.A);
-    };
+        {
+            INST_CTRACE_LOG("Instr_ROR_A::execute");
+            ROR(m_6502, m_6502.m_register.A);
+        };
 };
 
 class Instr_ROR_ZERO : public MCS6502::Instruction {
 public:
     explicit Instr_ROR_ZERO(MCS6502 &p_6502) : MCS6502::Instruction(p_6502, 0x66, 5, "ROR ", 1) {};
     virtual void execute()
-    {
-        INST_CTRACE_LOG("Instr_ROR_ZERO::execute");
-        ROR_EA(m_6502, EA_ZPAGE(m_6502));
-    };
+        {
+            INST_CTRACE_LOG("Instr_ROR_ZERO::execute");
+            ROR_EA(m_6502, EA_ZPAGE(m_6502));
+        };
 };
 
 class Instr_ROR_ZERO_X : public MCS6502::Instruction {
 public:
     explicit Instr_ROR_ZERO_X(MCS6502 &p_6502) : MCS6502::Instruction(p_6502, 0x76, 6, "ROR ", 1, ",X") {};
     virtual void execute()
-    {
-        INST_CTRACE_LOG("Instr_ROR_ZERO_X::execute");
-        ROR_EA(m_6502, EA_ZPAGE_X(m_6502));
-    };
+        {
+            INST_CTRACE_LOG("Instr_ROR_ZERO_X::execute");
+            ROR_EA(m_6502, EA_ZPAGE_X(m_6502));
+        };
 };
 
 class Instr_ROR_ABS : public MCS6502::Instruction {
 public:
     explicit Instr_ROR_ABS(MCS6502 &p_6502) : MCS6502::Instruction(p_6502, 0x6E, 6, "ROR ", 2) {};
     virtual void execute()
-    {
-        INST_CTRACE_LOG("Instr_ROR_ABS::execute");
-        ROR_EA(m_6502, EA_ABSOLUTE(m_6502));
-    };
+        {
+            INST_CTRACE_LOG("Instr_ROR_ABS::execute");
+            ROR_EA(m_6502, EA_ABSOLUTE(m_6502));
+        };
 };
 
 class Instr_ROR_ABS_X : public MCS6502::Instruction {
 public:
     explicit Instr_ROR_ABS_X(MCS6502 &p_6502) : MCS6502::Instruction(p_6502, 0x7E, 7, "ROR ", 2, ",X") {};
     virtual void execute()
-    {
-        INST_CTRACE_LOG("Instr_ROR_ABS_X::execute");
-        ROR_EA(m_6502, EA_ABSOLUTE_X(m_6502));
-    };
+        {
+            INST_CTRACE_LOG("Instr_ROR_ABS_X::execute");
+            ROR_EA(m_6502, EA_ABSOLUTE_X(m_6502));
+        };
 };
 
 ///****************************************************************************
@@ -1938,36 +1938,36 @@ class Instr_RTI : public MCS6502::Instruction {
 public:
     explicit Instr_RTI(MCS6502 &p_6502) : MCS6502::Instruction(p_6502, 0x40, 6, "RTI") {};
     virtual void execute()
-    {
-        INST_CTRACE_LOG("Instr_RTI::execute");
+        {
+            INST_CTRACE_LOG("Instr_RTI::execute");
 #if JUMP_TRACE
-        const word from(m_6502.m_register.PC-1);
+            const word from(m_6502.m_register.PC-1);
 #endif
-        m_6502.m_register.P  = POP_BYTE(m_6502);
-        m_6502.m_register.PC = POP_WORD(m_6502);
+            m_6502.m_register.P  = POP_BYTE(m_6502);
+            m_6502.m_register.PC = POP_WORD(m_6502);
 #if JUMP_TRACE
-        log4c_category_info(m_6502.m_jumptracelog, JUMP_TRACE_LOGFORMAT,
-                            "RTI", from, m_6502.m_register.PC);
+            log4c_category_info(m_6502.m_jumptracelog, JUMP_TRACE_LOGFORMAT,
+                                "RTI", from, m_6502.m_register.PC);
 #endif
 
-    };
+        };
 };
 
 class Instr_RTS : public MCS6502::Instruction {
 public:
     explicit Instr_RTS(MCS6502 &p_6502) : MCS6502::Instruction(p_6502, 0x60, 6, "RTS") {};
     virtual void execute()
-    {
-        INST_CTRACE_LOG("Instr_RTS::execute");
+        {
+            INST_CTRACE_LOG("Instr_RTS::execute");
 #if JUMP_TRACE
-        const word from(m_6502.m_register.PC-1);
+            const word from(m_6502.m_register.PC-1);
 #endif
-        m_6502.m_register.PC = POP_WORD(m_6502) + 1;
+            m_6502.m_register.PC = POP_WORD(m_6502) + 1;
 #if JUMP_TRACE
-        log4c_category_info(m_6502.m_jumptracelog, JUMP_TRACE_LOGFORMAT,
-                            "RTS", from, m_6502.m_register.PC);
+            log4c_category_info(m_6502.m_jumptracelog, JUMP_TRACE_LOGFORMAT,
+                                "RTS", from, m_6502.m_register.PC);
 #endif
-    };
+        };
 };
 
 ///****************************************************************************
@@ -2009,80 +2009,80 @@ class Instr_SBC_IMM : public MCS6502::Instruction {
 public:
     explicit Instr_SBC_IMM(MCS6502 &p_6502) : MCS6502::Instruction(p_6502, 0xE9, 2, "SBC @", 1) {};
     virtual void execute()
-    {
-        INST_CTRACE_LOG("Instr_SBC_IMM::execute");
-        SBC(m_6502, IMMEDIATE_BYTE(m_6502));
-    };
+        {
+            INST_CTRACE_LOG("Instr_SBC_IMM::execute");
+            SBC(m_6502, IMMEDIATE_BYTE(m_6502));
+        };
 };
 
 class Instr_SBC_ZERO : public MCS6502::Instruction {
 public:
     explicit Instr_SBC_ZERO(MCS6502 &p_6502) : MCS6502::Instruction(p_6502, 0xE5, 3, "SBC ", 1) {};
     virtual void execute()
-    {
-        INST_CTRACE_LOG("Instr_SBC_ZERO::execute");
-        SBC(m_6502, ZPAGE_BYTE(m_6502));
-    };
+        {
+            INST_CTRACE_LOG("Instr_SBC_ZERO::execute");
+            SBC(m_6502, ZPAGE_BYTE(m_6502));
+        };
 };
 
 class Instr_SBC_ZERO_X : public MCS6502::Instruction {
 public:
     explicit Instr_SBC_ZERO_X(MCS6502 &p_6502) : MCS6502::Instruction(p_6502, 0xF5, 4, "SBC ", 1, ",X") {};
     virtual void execute()
-    {
-        INST_CTRACE_LOG("Instr_SBC_ZERO_X::execute");
-        SBC(m_6502, ZPAGE_X_BYTE(m_6502));
-    };
+        {
+            INST_CTRACE_LOG("Instr_SBC_ZERO_X::execute");
+            SBC(m_6502, ZPAGE_X_BYTE(m_6502));
+        };
 };
 
 class Instr_SBC_ABS : public MCS6502::Instruction {
 public:
     explicit Instr_SBC_ABS(MCS6502 &p_6502) : MCS6502::Instruction(p_6502, 0xED, 4, "SBC ", 2) {};
     virtual void execute()
-    {
-        INST_CTRACE_LOG("Instr_SBC_ABS::execute");
-        SBC(m_6502, ABSOLUTE_BYTE(m_6502));
-    };
+        {
+            INST_CTRACE_LOG("Instr_SBC_ABS::execute");
+            SBC(m_6502, ABSOLUTE_BYTE(m_6502));
+        };
 };
 
 class Instr_SBC_ABS_X : public MCS6502::Instruction {
 public:
     explicit Instr_SBC_ABS_X(MCS6502 &p_6502) : MCS6502::Instruction(p_6502, 0xFD, 4, "SBC ", 2, ",X") {};
     virtual void execute()
-    {
-        INST_CTRACE_LOG("Instr_SBC_ABS_X::execute");
-        SBC(m_6502, ABSOLUTE_X_BYTE(m_6502));
-    };
+        {
+            INST_CTRACE_LOG("Instr_SBC_ABS_X::execute");
+            SBC(m_6502, ABSOLUTE_X_BYTE(m_6502));
+        };
 };
 
 class Instr_SBC_ABS_Y : public MCS6502::Instruction {
 public:
     explicit Instr_SBC_ABS_Y(MCS6502 &p_6502) : MCS6502::Instruction(p_6502, 0xF9, 4, "SBC ", 2, ",Y") {};
     virtual void execute()
-    {
-        INST_CTRACE_LOG("Instr_SBC_ABS_Y::execute");
-        SBC(m_6502, ABSOLUTE_Y_BYTE(m_6502));
-    };
+        {
+            INST_CTRACE_LOG("Instr_SBC_ABS_Y::execute");
+            SBC(m_6502, ABSOLUTE_Y_BYTE(m_6502));
+        };
 };
 
 class Instr_SBC_PRE_INDEXED_INDIRECT : public MCS6502::Instruction {
 public:
     explicit Instr_SBC_PRE_INDEXED_INDIRECT(MCS6502 &p_6502) : MCS6502::Instruction(p_6502, 0xE1, 6, "SBC (", 1, ",X)") {};
     virtual void execute()
-    {
-        INST_CTRACE_LOG("Instr_SBC_PRE_INDEXED_INDIRECT::execute");
-        SBC(m_6502, INDIRECT_ZPAGE_X_BYTE(m_6502));
-    };
+        {
+            INST_CTRACE_LOG("Instr_SBC_PRE_INDEXED_INDIRECT::execute");
+            SBC(m_6502, INDIRECT_ZPAGE_X_BYTE(m_6502));
+        };
 };
 
 class Instr_SBC_POST_INDEXED_INDIRECT : public MCS6502::Instruction {
 public:
     explicit Instr_SBC_POST_INDEXED_INDIRECT(MCS6502 &p_6502) : MCS6502::Instruction(p_6502, 0xF1, 5, "SBC (", 1, "),Y") {};
     virtual void execute()
-    {
-        INST_CTRACE_LOG("Instr_SBC_POST_INDEXED_INDIRECT::execute");
-        SBC(m_6502, INDIRECT_ZPAGE_Y_BYTE(m_6502));
-    };
+        {
+            INST_CTRACE_LOG("Instr_SBC_POST_INDEXED_INDIRECT::execute");
+            SBC(m_6502, INDIRECT_ZPAGE_Y_BYTE(m_6502));
+        };
 };
 
 ///****************************************************************************
@@ -2093,30 +2093,30 @@ class Instr_SEC : public MCS6502::Instruction {
 public:
     explicit Instr_SEC(MCS6502 &p_6502) : MCS6502::Instruction(p_6502, 0x38, 2, "SEC") {};
     virtual void execute()
-    {
-        INST_CTRACE_LOG("Instr_SEC::execute");
-        m_6502.m_register.P |= CARRY;
-    };
+        {
+            INST_CTRACE_LOG("Instr_SEC::execute");
+            m_6502.m_register.P |= CARRY;
+        };
 };
 
 class Instr_SED : public MCS6502::Instruction {
 public:
     explicit Instr_SED(MCS6502 &p_6502) : MCS6502::Instruction(p_6502, 0xF8, 2, "SED") {};
     virtual void execute()
-    {
-        INST_CTRACE_LOG("Instr_SED::execute");
-        m_6502.m_register.P |= DECIMAL;
-    };
+        {
+            INST_CTRACE_LOG("Instr_SED::execute");
+            m_6502.m_register.P |= DECIMAL;
+        };
 };
 
 class Instr_SEI : public MCS6502::Instruction {
 public:
     explicit Instr_SEI(MCS6502 &p_6502) : MCS6502::Instruction(p_6502, 0x78, 2, "SEI") {};
     virtual void execute()
-    {
-        INST_CTRACE_LOG("Instr_SEI::execute");
-        m_6502.m_register.P |= IRQB;
-    };
+        {
+            INST_CTRACE_LOG("Instr_SEI::execute");
+            m_6502.m_register.P |= IRQB;
+        };
 };
 
 ///****************************************************************************
@@ -2127,130 +2127,130 @@ class Instr_STA_ZERO : public MCS6502::Instruction {
 public:
     explicit Instr_STA_ZERO(MCS6502 &p_6502) : MCS6502::Instruction(p_6502, 0x85, 3, "STA ", 1) {};
     virtual void execute()
-    {
-        INST_CTRACE_LOG("Instr_STA_ZERO::execute");
-        m_6502.m_memory.set_byte(EA_ZPAGE(m_6502), m_6502.m_register.A, AT_DATA);
-    };
+        {
+            INST_CTRACE_LOG("Instr_STA_ZERO::execute");
+            m_6502.m_memory.set_byte(EA_ZPAGE(m_6502), m_6502.m_register.A, AT_DATA);
+        };
 };
 
 class Instr_STA_ZERO_X : public MCS6502::Instruction {
 public:
     explicit Instr_STA_ZERO_X(MCS6502 &p_6502) : MCS6502::Instruction(p_6502, 0x95, 4, "STA ", 1, ",X") {};
     virtual void execute()
-    {
-        INST_CTRACE_LOG("Instr_STA_ZERO_X::execute");
-        m_6502.m_memory.set_byte(EA_ZPAGE_X(m_6502), m_6502.m_register.A, AT_DATA);
-    };
+        {
+            INST_CTRACE_LOG("Instr_STA_ZERO_X::execute");
+            m_6502.m_memory.set_byte(EA_ZPAGE_X(m_6502), m_6502.m_register.A, AT_DATA);
+        };
 };
 
 class Instr_STA_ABS : public MCS6502::Instruction {
 public:
     explicit Instr_STA_ABS(MCS6502 &p_6502) : MCS6502::Instruction(p_6502, 0x8D, 4, "STA ", 2) {};
     virtual void execute()
-    {
-        INST_CTRACE_LOG("Instr_STA_ABS::execute");
-        m_6502.m_memory.set_byte(EA_ABSOLUTE(m_6502), m_6502.m_register.A, AT_DATA);
-    };
+        {
+            INST_CTRACE_LOG("Instr_STA_ABS::execute");
+            m_6502.m_memory.set_byte(EA_ABSOLUTE(m_6502), m_6502.m_register.A, AT_DATA);
+        };
 };
 
 class Instr_STA_ABS_X : public MCS6502::Instruction {
 public:
     explicit Instr_STA_ABS_X(MCS6502 &p_6502) : MCS6502::Instruction(p_6502, 0x9D, 5, "STA ", 2, ",X") {};
     virtual void execute()
-    {
-        INST_CTRACE_LOG("Instr_STA_ABS_X::execute");
-        m_6502.m_memory.set_byte(EA_ABSOLUTE_X(m_6502), m_6502.m_register.A, AT_DATA);
-    };
+        {
+            INST_CTRACE_LOG("Instr_STA_ABS_X::execute");
+            m_6502.m_memory.set_byte(EA_ABSOLUTE_X(m_6502), m_6502.m_register.A, AT_DATA);
+        };
 };
 
 class Instr_STA_ABS_Y : public MCS6502::Instruction {
 public:
     explicit Instr_STA_ABS_Y(MCS6502 &p_6502) : MCS6502::Instruction(p_6502, 0x99, 5, "STA ", 2, ",Y") {};
     virtual void execute()
-    {
-        INST_CTRACE_LOG("Instr_STA_ABS_Y::execute");
-        m_6502.m_memory.set_byte(EA_ABSOLUTE_Y(m_6502), m_6502.m_register.A, AT_DATA);
-    };
+        {
+            INST_CTRACE_LOG("Instr_STA_ABS_Y::execute");
+            m_6502.m_memory.set_byte(EA_ABSOLUTE_Y(m_6502), m_6502.m_register.A, AT_DATA);
+        };
 };
 
 class Instr_STA_PRE_INDEXED_INDIRECT : public MCS6502::Instruction {
 public:
     explicit Instr_STA_PRE_INDEXED_INDIRECT(MCS6502 &p_6502) : MCS6502::Instruction(p_6502, 0x81, 6, "STA (", 1, ",X)") {};
     virtual void execute()
-    {
-        INST_CTRACE_LOG("Instr_STA_PRE_INDEXED_INDIRECT::execute");
-        m_6502.m_memory.set_byte(EA_INDIRECT_ZPAGE_X(m_6502), m_6502.m_register.A, AT_DATA);
-    };
+        {
+            INST_CTRACE_LOG("Instr_STA_PRE_INDEXED_INDIRECT::execute");
+            m_6502.m_memory.set_byte(EA_INDIRECT_ZPAGE_X(m_6502), m_6502.m_register.A, AT_DATA);
+        };
 };
 
 class Instr_STA_POST_INDEXED_INDIRECT : public MCS6502::Instruction {
 public:
     explicit Instr_STA_POST_INDEXED_INDIRECT(MCS6502 &p_6502) : MCS6502::Instruction(p_6502, 0x91, 6, "STA (", 1, "),Y") {};
     virtual void execute()
-    {
-        INST_CTRACE_LOG("Instr_STA_POST_INDEXED_INDIRECT::execute");
-        m_6502.m_memory.set_byte(EA_INDIRECT_ZPAGE_Y(m_6502), m_6502.m_register.A, AT_DATA);
-    };
+        {
+            INST_CTRACE_LOG("Instr_STA_POST_INDEXED_INDIRECT::execute");
+            m_6502.m_memory.set_byte(EA_INDIRECT_ZPAGE_Y(m_6502), m_6502.m_register.A, AT_DATA);
+        };
 };
 
 class Instr_STX_ZERO : public MCS6502::Instruction {
 public:
     explicit Instr_STX_ZERO(MCS6502 &p_6502) : MCS6502::Instruction(p_6502, 0x86, 3, "STX ", 1) {};
     virtual void execute()
-    {
-        INST_CTRACE_LOG("Instr_STX_ZERO::execute");
-        m_6502.m_memory.set_byte(EA_ZPAGE(m_6502), m_6502.m_register.X, AT_DATA);
-    };
+        {
+            INST_CTRACE_LOG("Instr_STX_ZERO::execute");
+            m_6502.m_memory.set_byte(EA_ZPAGE(m_6502), m_6502.m_register.X, AT_DATA);
+        };
 };
 
 class Instr_STX_ZERO_Y : public MCS6502::Instruction {
 public:
     explicit Instr_STX_ZERO_Y(MCS6502 &p_6502) : MCS6502::Instruction(p_6502, 0x96, 4, "STX ", 1, ",Y") {};
     virtual void execute()
-    {
-        INST_CTRACE_LOG("Instr_STX_ZERO_Y::execute");
-        m_6502.m_memory.set_byte(EA_ZPAGE_Y(m_6502), m_6502.m_register.X, AT_DATA);
-    };
+        {
+            INST_CTRACE_LOG("Instr_STX_ZERO_Y::execute");
+            m_6502.m_memory.set_byte(EA_ZPAGE_Y(m_6502), m_6502.m_register.X, AT_DATA);
+        };
 };
 
 class Instr_STX_ABS : public MCS6502::Instruction {
 public:
     explicit Instr_STX_ABS(MCS6502 &p_6502) : MCS6502::Instruction(p_6502, 0x8E, 4, "STX ", 2) {};
     virtual void execute()
-    {
-        INST_CTRACE_LOG("Instr_STX_ABS::execute");
-        m_6502.m_memory.set_byte(EA_ABSOLUTE(m_6502), m_6502.m_register.X, AT_DATA);
-    };
+        {
+            INST_CTRACE_LOG("Instr_STX_ABS::execute");
+            m_6502.m_memory.set_byte(EA_ABSOLUTE(m_6502), m_6502.m_register.X, AT_DATA);
+        };
 };
 
 class Instr_STY_ZERO : public MCS6502::Instruction {
 public:
     explicit Instr_STY_ZERO(MCS6502 &p_6502) : MCS6502::Instruction(p_6502, 0x84, 3, "STY ", 1) {};
     virtual void execute()
-    {
-        INST_CTRACE_LOG("Instr_STY_ZERO::execute");
-        m_6502.m_memory.set_byte(EA_ZPAGE(m_6502), m_6502.m_register.Y, AT_DATA);
-    };
+        {
+            INST_CTRACE_LOG("Instr_STY_ZERO::execute");
+            m_6502.m_memory.set_byte(EA_ZPAGE(m_6502), m_6502.m_register.Y, AT_DATA);
+        };
 };
 
 class Instr_STY_ZERO_X : public MCS6502::Instruction {
 public:
     explicit Instr_STY_ZERO_X(MCS6502 &p_6502) : MCS6502::Instruction(p_6502, 0x94, 4, "STY ", 1, ",X") {};
     virtual void execute()
-    {
-        INST_CTRACE_LOG("Instr_STY_ZERO_X::execute");
-        m_6502.m_memory.set_byte(EA_ZPAGE_X(m_6502), m_6502.m_register.Y, AT_DATA);
-    };
+        {
+            INST_CTRACE_LOG("Instr_STY_ZERO_X::execute");
+            m_6502.m_memory.set_byte(EA_ZPAGE_X(m_6502), m_6502.m_register.Y, AT_DATA);
+        };
 };
 
 class Instr_STY_ABS : public MCS6502::Instruction {
 public:
     explicit Instr_STY_ABS(MCS6502 &p_6502) : MCS6502::Instruction(p_6502, 0x8C, 4, "STY ", 2) {};
     virtual void execute()
-    {
-        INST_CTRACE_LOG("Instr_STY_ABS::execute");
-        m_6502.m_memory.set_byte(EA_ABSOLUTE(m_6502), m_6502.m_register.Y, AT_DATA);
-    };
+        {
+            INST_CTRACE_LOG("Instr_STY_ABS::execute");
+            m_6502.m_memory.set_byte(EA_ABSOLUTE(m_6502), m_6502.m_register.Y, AT_DATA);
+        };
 };
 
 ///****************************************************************************
@@ -2271,69 +2271,69 @@ class Instr_TAX : public MCS6502::Instruction {
 public:
     explicit Instr_TAX(MCS6502 &p_6502) : MCS6502::Instruction(p_6502, 0xAA, 2, "TAX") {};
     virtual void execute()
-    {
-        INST_CTRACE_LOG("Instr_TAX::execute");
-        TR(m_6502, m_6502.m_register.A, m_6502.m_register.X);
-    };
+        {
+            INST_CTRACE_LOG("Instr_TAX::execute");
+            TR(m_6502, m_6502.m_register.A, m_6502.m_register.X);
+        };
 };
 
 class Instr_TAY : public MCS6502::Instruction {
 public:
     explicit Instr_TAY(MCS6502 &p_6502) : MCS6502::Instruction(p_6502, 0xA8, 2, "TAY") {};
     virtual void execute()
-    {
-        INST_CTRACE_LOG("Instr_TAY::execute");
-        TR(m_6502, m_6502.m_register.A, m_6502.m_register.Y);
-    };
+        {
+            INST_CTRACE_LOG("Instr_TAY::execute");
+            TR(m_6502, m_6502.m_register.A, m_6502.m_register.Y);
+        };
 };
 
 class Instr_TSX : public MCS6502::Instruction {
 public:
     explicit Instr_TSX(MCS6502 &p_6502) : MCS6502::Instruction(p_6502, 0xBA, 2, "TSX") {};
     virtual void execute()
-    {
-        INST_CTRACE_LOG("Instr_TSX::execute");
-        TR(m_6502, m_6502.m_register.S, m_6502.m_register.X);
-    };
+        {
+            INST_CTRACE_LOG("Instr_TSX::execute");
+            TR(m_6502, m_6502.m_register.S, m_6502.m_register.X);
+        };
 };
 
 class Instr_TXA : public MCS6502::Instruction {
 public:
     explicit Instr_TXA(MCS6502 &p_6502) : MCS6502::Instruction(p_6502, 0x8A, 2, "TXA") {};
     virtual void execute()
-    {
-        INST_CTRACE_LOG("Instr_TXA::execute");
-        TR(m_6502, m_6502.m_register.X, m_6502.m_register.A);
-    };
+        {
+            INST_CTRACE_LOG("Instr_TXA::execute");
+            TR(m_6502, m_6502.m_register.X, m_6502.m_register.A);
+        };
 };
 
 class Instr_TXS : public MCS6502::Instruction {
 public:
     explicit Instr_TXS(MCS6502 &p_6502) : MCS6502::Instruction(p_6502, 0x9A, 2, "TXS") {};
     virtual void execute()
-    {
-        INST_CTRACE_LOG("Instr_TXS::execute");
-        TR(m_6502, m_6502.m_register.X, m_6502.m_register.S);
-    };
+        {
+            INST_CTRACE_LOG("Instr_TXS::execute");
+            TR(m_6502, m_6502.m_register.X, m_6502.m_register.S);
+        };
 };
 
 class Instr_TYA : public MCS6502::Instruction {
 public:
     explicit Instr_TYA(MCS6502 &p_6502) : MCS6502::Instruction(p_6502, 0x98, 2, "TYA") {};
     virtual void execute()
-    {
-        INST_CTRACE_LOG("Instr_TYA::execute");
-        TR(m_6502, m_6502.m_register.Y, m_6502.m_register.A);
-    };
+        {
+            INST_CTRACE_LOG("Instr_TYA::execute");
+            TR(m_6502, m_6502.m_register.Y, m_6502.m_register.A);
+        };
 };
 
 class Instr_Undefined : public MCS6502::Instruction {
 public:
     explicit Instr_Undefined(MCS6502 &p_6502) : MCS6502::Instruction(p_6502, -1, 0, "Undefined Instruction") {};
     virtual void execute()
-    {
-        assert (false);
-    };
+        {
+            assert (false);
+        };
 
     friend std::ostream &::operator<<(std::ostream&, const Instr_Undefined &);
 };
@@ -2358,9 +2358,9 @@ public:
 /// F0: BEQ SBC  -   -   -  SBC INC  -  SED SBC  -   -   -  SBC INC  -
 ///*****************************************************************************
 MCS6502::MCS6502(Memory &p_memory, const Configurator &p_cfg)
-  : Core(p_memory, p_cfg)
-  , m_opcode_mapping(256, std::shared_ptr<MCS6502::Instruction>(new Instr_Undefined(*this)))
-  , m_InterruptSource(NO_INTERRUPT)
+    : Core(p_memory, p_cfg)
+    , m_opcode_mapping(256, std::shared_ptr<MCS6502::Instruction>(new Instr_Undefined(*this)))
+    , m_InterruptSource(NO_INTERRUPT)
 {
     LOG4CXX_INFO(cpptrace_log(), "MCS6502::MCS6502([" << p_memory.name() << "], " << p_cfg << ")");
     new Instr_BRK(*this);
@@ -2576,7 +2576,7 @@ void MCS6502::single_step()
 #if JUMP_TRACE
         if (from != m_6502.m_register.PC)
             log4c_category_info(m_6502.m_jumptracelog, JUMP_TRACE_LOGFORMAT,
-                    "Interrupt!", from, m_6502.m_register.PC);
+                                "Interrupt!", from, m_6502.m_register.PC);
 #endif
     }
     const byte opcode(m_memory.get_byte(m_register.PC++, AT_INSTRUCTION));
@@ -2789,4 +2789,3 @@ std::ostream &operator<<(std::ostream &p_s, const MCS6502 &p_6502)
         << ", IntrSrc:" << p_6502.m_InterruptSource;
     return p_s;
 }
-

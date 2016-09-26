@@ -24,7 +24,7 @@ static log4cxx::LoggerPtr cpptrace_log()
 // Device helper functions
 
 Device::Device(const Configurator &p_cfg)
-  : Named(p_cfg)
+    : Named(p_cfg)
 {
     LOG4CXX_INFO(cpptrace_log(), "Device::Device(" << p_cfg << ")");
 }
@@ -32,12 +32,12 @@ Device::Device(const Configurator &p_cfg)
 // Ram Methods
 
 Ram::Ram(const Configurator &p_cfg)
-  : Device(p_cfg)
-  , m_storage(p_cfg.size())
+    : Device(p_cfg)
+    , m_storage(p_cfg.size())
 {
     LOG4CXX_INFO(cpptrace_log(), "Ram::Ram(" << p_cfg << ")");
     for (int i(0); i < p_cfg.size(); i++)
-      m_storage[i] = 0;
+        m_storage[i] = 0;
 }
 
 void Ram::load(const std::string &p_filename)
@@ -79,8 +79,8 @@ void Ram::set_byte(word p_addr, byte p_byte, AccessType p_at)
 // Rom Methods
 
 Rom::Rom(const Configurator &p_cfg)
-  : Ram(p_cfg)
-  , m_is_writeable(false)
+    : Ram(p_cfg)
+    , m_is_writeable(false)
 {
     LOG4CXX_INFO(cpptrace_log(), "Rom::Rom(" << p_cfg << ")");
     load(p_cfg.filename());
@@ -102,7 +102,7 @@ void Rom::set_byte(word p_addr, byte p_byte, AccessType p_at)
 // Hook Methods
 
 Hook::Hook(const Configurator &p_cfg)
-  : Device(p_cfg)
+    : Device(p_cfg)
 {
     LOG4CXX_INFO(cpptrace_log(), "Hook::Hook(" << p_cfg << ")");
 }
@@ -131,9 +131,9 @@ void Hook::set_byte(word p_addr, byte p_byte, AccessType p_at)
 // Memory Methods
 
 Memory::Memory(const Configurator &p_cfg)
-  : Device(p_cfg)
-  , m_base(65536, 0)
-  , m_map(65536, 0)
+    : Device(p_cfg)
+    , m_base(65536, 0)
+    , m_map(65536, 0)
 {
     LOG4CXX_INFO(cpptrace_log(), "Memory::Memory(" << p_cfg << ")");
 }

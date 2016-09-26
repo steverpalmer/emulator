@@ -65,8 +65,8 @@ static log4cxx::LoggerPtr cpptrace_log()
 }
 
 KeyboardController::KeyboardController(Atom &p_atom, const Configurator &p_cfg)
-  : Named(p_cfg)
-  , m_atom(p_atom)
+    : Named(p_cfg)
+    , m_atom(p_atom)
 {
     LOG4CXX_INFO(cpptrace_log(), "KeyboardController::KeyboardController([" << p_atom.name() << "], " << p_cfg << ")");
     (void)SDL_EnableUNICODE(1);

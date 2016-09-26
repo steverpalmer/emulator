@@ -77,8 +77,8 @@ enum Ports {
 ///****************************************************************************
 
 Ppia::Ppia(const Configurator &p_cfg)
-  : Device(p_cfg)
-  , m_byte(4, 0)
+    : Device(p_cfg)
+    , m_byte(4, 0)
 {
     LOG4CXX_INFO(cpptrace_log(), "Ppia::Ppia(" << p_cfg << ")");
 }
@@ -96,134 +96,134 @@ byte Ppia::get_PortB(int p_row)
         byte m_row;
         byte m_scan;
     } key_mapping[128] = {
-            { 7, SCANCODE(3, CONTROL) }, // 00 - <Ctrl> @ (nul)
-            { 6, SCANCODE(3, CONTROL) }, // 01 - <Ctrl> A (soh)
-            { 5, SCANCODE(3, CONTROL) }, // 02 - <Ctrl> B (stx) start printer
-            { 4, SCANCODE(3, CONTROL) }, // 03 - <Ctrl> C (etx) end printer
-            { 3, SCANCODE(3, CONTROL) }, // 04 - <Ctrl> D (eot)
-            { 2, SCANCODE(3, CONTROL) }, // 05 - <Ctrl> E (enq)
-            { 1, SCANCODE(3, CONTROL) }, // 06 - <Ctrl> F (ack) start screen
-            { 0, SCANCODE(3, CONTROL) }, // 07 - <Ctrl> G (bel) bleep
-            { 9, SCANCODE(4, CONTROL) }, // 08 - <Ctrl> H (bs)  backspace
-            { 8, SCANCODE(4, CONTROL) }, // 09 - <Ctrl> I (tab) horizontal tab
-            { 6, SCANCODE(1, CONTROL) }, // 0A - <Ctrl> J (lf)  linefeed
-            { 6, SCANCODE(4, CONTROL) }, // 0B - <Ctrl> K (vt)  vertical tab
-            { 5, SCANCODE(4, CONTROL) }, // 0C - <Ctrl> L (ff)  formfeed
-            { 4, SCANCODE(4, CONTROL) }, // 0D - <Ctrl> M (cr)  return
-            { 3, SCANCODE(4, CONTROL) }, // 0E - <Ctrl> N (so)  page mode on
-            { 2, SCANCODE(4, CONTROL) }, // 0F - <Ctrl> O (si)  page mode off
-            { 1, SCANCODE(4, CONTROL) }, // 10 - <Ctrl> P (dle)
-            { 0, SCANCODE(4, CONTROL) }, // 11 - <Ctrl> Q (dc1)
-            { 9, SCANCODE(5, CONTROL) }, // 12 - <Ctrl> R (dc2)
-            { 8, SCANCODE(5, CONTROL) }, // 13 - <Ctrl> S (dc3)
-            { 7, SCANCODE(5, CONTROL) }, // 14 - <Ctrl> T (dc4)
-            { 6, SCANCODE(5, CONTROL) }, // 15 - <Ctrl> U (nak) end screen
-            { 5, SCANCODE(5, CONTROL) }, // 16 - <Ctrl> V (syn)
-            { 4, SCANCODE(5, CONTROL) }, // 17 - <Ctrl> W (etb)
-            { 3, SCANCODE(5, CONTROL) }, // 18 - <Ctrl> X (can) cancel
-            { 2, SCANCODE(5, CONTROL) }, // 19 - <Ctrl> Y (em)
-            { 1, SCANCODE(5, CONTROL) }, // 1A - <Ctrl> Z (sub)
-            { 8, SCANCODE(0, CONTROL) }, // 1B - <Ctrl> [ (esc) escape
-            { 7, SCANCODE(0, CONTROL) }, // 1C - <Ctrl> \ (fs)
-            { 6, SCANCODE(0, CONTROL) }, // 1D - <Ctrl> ] (gs)
-            { 5, SCANCODE(0, CONTROL) }, // 1E - <Ctrl> <Up> (rs) home cursor
-            { 4, SCANCODE(0, CONTROL) }, // 1F - <Ctrl> <Left> (us)
-            { 9, SCANCODE(0, 0      ) }, // 20 - <Space>
-            { 2, SCANCODE(1, SHIFT  ) }, // 21 - '!'
-            { 1, SCANCODE(1, SHIFT  ) }, // 22 - '"'
-            { 0, SCANCODE(1, SHIFT  ) }, // 23 - '#'
-            { 9, SCANCODE(2, SHIFT  ) }, // 24 - '$'
-            { 8, SCANCODE(2, SHIFT  ) }, // 25 - '%'
-            { 7, SCANCODE(2, SHIFT  ) }, // 26 - '&'
-            { 6, SCANCODE(2, SHIFT  ) }, // 27 - '''
-            { 5, SCANCODE(2, SHIFT  ) }, // 28 - '('
-            { 4, SCANCODE(2, SHIFT  ) }, // 29 - ')'
-            { 3, SCANCODE(2, SHIFT  ) }, // 2A - '*'
-            { 2, SCANCODE(2, SHIFT  ) }, // 2B - '+'
-            { 1, SCANCODE(2, 0      ) }, // 2C - ','
-            { 0, SCANCODE(2, 0      ) }, // 2D - '-'
-            { 9, SCANCODE(3, 0      ) }, // 2E - '.'
-            { 8, SCANCODE(3, 0      ) }, // 2F - '/'
-            { 3, SCANCODE(1, 0      ) }, // 30 - '0'
-            { 2, SCANCODE(1, 0      ) }, // 31 - '1'
-            { 1, SCANCODE(1, 0      ) }, // 32 - '2'
-            { 0, SCANCODE(1, 0      ) }, // 33 - '3'
-            { 9, SCANCODE(2, 0      ) }, // 34 - '4'
-            { 8, SCANCODE(2, 0      ) }, // 35 - '5'
-            { 7, SCANCODE(2, 0      ) }, // 36 - '6'
-            { 6, SCANCODE(2, 0      ) }, // 37 - '7'
-            { 5, SCANCODE(2, 0      ) }, // 38 - '8'
-            { 4, SCANCODE(2, 0      ) }, // 39 - '9'
-            { 3, SCANCODE(2, 0      ) }, // 3A - ':'
-            { 2, SCANCODE(2, 0      ) }, // 3B - ';'
-            { 1, SCANCODE(2, SHIFT  ) }, // 3C - '<'
-            { 0, SCANCODE(2, SHIFT  ) }, // 3D - '='
-            { 9, SCANCODE(3, SHIFT  ) }, // 3E - '>'
-            { 8, SCANCODE(3, SHIFT  ) }, // 3F - '?'
-            { 7, SCANCODE(3, 0      ) }, // 40 - '@'
-            { 6, SCANCODE(3, 0      ) }, // 41 - 'A'
-            { 5, SCANCODE(3, 0      ) }, // 42 - 'B'
-            { 4, SCANCODE(3, 0      ) }, // 43 - 'C'
-            { 3, SCANCODE(3, 0      ) }, // 44 - 'D'
-            { 2, SCANCODE(3, 0      ) }, // 45 - 'E'
-            { 1, SCANCODE(3, 0      ) }, // 46 - 'F'
-            { 0, SCANCODE(3, 0      ) }, // 47 - 'G'
-            { 9, SCANCODE(4, 0      ) }, // 48 - 'H'
-            { 8, SCANCODE(4, 0      ) }, // 49 - 'I'
-            { 7, SCANCODE(4, 0      ) }, // 4A - 'J'
-            { 6, SCANCODE(4, 0      ) }, // 4B - 'K'
-            { 5, SCANCODE(4, 0      ) }, // 4C - 'L'
-            { 4, SCANCODE(4, 0      ) }, // 4D - 'M,
-            { 3, SCANCODE(4, 0      ) }, // 4E - 'N'
-            { 2, SCANCODE(4, 0      ) }, // 4F - 'O'
-            { 1, SCANCODE(4, 0      ) }, // 50 - 'P'
-            { 0, SCANCODE(4, 0      ) }, // 51 - 'Q'
-            { 9, SCANCODE(5, 0      ) }, // 52 - 'R'
-            { 8, SCANCODE(5, 0      ) }, // 53 - 'S'
-            { 7, SCANCODE(5, 0      ) }, // 54 - 'T'
-            { 6, SCANCODE(5, 0      ) }, // 55 - 'U'
-            { 5, SCANCODE(5, 0      ) }, // 56 - 'V'
-            { 4, SCANCODE(5, 0      ) }, // 57 - 'W'
-            { 3, SCANCODE(5, 0      ) }, // 58 - 'X'
-            { 2, SCANCODE(5, 0      ) }, // 59 - 'Y'
-            { 1, SCANCODE(5, 0      ) }, // 5A - 'Z'
-            { 8, SCANCODE(0, 0      ) }, // 5B - '['
-            { 7, SCANCODE(0, 0      ) }, // 5C - '\'
-            { 6, SCANCODE(0, 0      ) }, // 5D - ']'
-            { 5, SCANCODE(0, 0      ) }, // 5E - '^'
-            { 4, SCANCODE(0, 0      ) }, // 5F - '_'
-            { 0, SCANCODE(5, 0      ) }, // 60 - '`' mapped to <Esc>
-            { 6, SCANCODE(3, SHIFT  ) }, // 61 - 'a'
-            { 5, SCANCODE(3, SHIFT  ) }, // 62 - 'b'
-            { 4, SCANCODE(3, SHIFT  ) }, // 63 - 'c'
-            { 3, SCANCODE(3, SHIFT  ) }, // 64 - 'd'
-            { 2, SCANCODE(3, SHIFT  ) }, // 65 - 'e'
-            { 1, SCANCODE(3, SHIFT  ) }, // 66 - 'f'
-            { 0, SCANCODE(3, SHIFT  ) }, // 67 - 'g'
-            { 9, SCANCODE(4, SHIFT  ) }, // 68 - 'h'
-            { 8, SCANCODE(4, SHIFT  ) }, // 69 - 'i'
-            { 7, SCANCODE(4, SHIFT  ) }, // 6A - 'j'
-            { 6, SCANCODE(4, SHIFT  ) }, // 6B - 'k'
-            { 5, SCANCODE(4, SHIFT  ) }, // 6C - 'l'
-            { 4, SCANCODE(4, SHIFT  ) }, // 6D - 'm'
-            { 3, SCANCODE(4, SHIFT  ) }, // 6E - 'n'
-            { 2, SCANCODE(4, SHIFT  ) }, // 6F - 'o'
-            { 1, SCANCODE(4, SHIFT  ) }, // 70 - 'p'
-            { 0, SCANCODE(4, SHIFT  ) }, // 71 - 'q'
-            { 9, SCANCODE(5, SHIFT  ) }, // 72 - 'r'
-            { 8, SCANCODE(5, SHIFT  ) }, // 73 - 's'
-            { 7, SCANCODE(5, SHIFT  ) }, // 74 - 't'
-            { 6, SCANCODE(5, SHIFT  ) }, // 75 - 'u'
-            { 5, SCANCODE(5, SHIFT  ) }, // 76 - 'v'
-            { 4, SCANCODE(5, SHIFT  ) }, // 77 - 'w'
-            { 3, SCANCODE(5, SHIFT  ) }, // 78 - 'x'
-            { 2, SCANCODE(5, SHIFT  ) }, // 79 - 'y'
-            { 1, SCANCODE(5, SHIFT  ) }, // 7A - 'z'
-            { 8, SCANCODE(0, SHIFT  ) }, // 7B - '{'
-            { 7, SCANCODE(0, SHIFT  ) }, // 7C - '|'
-            { 6, SCANCODE(0, SHIFT  ) }, // 7D - '}'
-            { 5, SCANCODE(0, SHIFT  ) }, // 7E - '~'
-            { 4, SCANCODE(1, 0      ) }  // 7F - <del>
+        { 7, SCANCODE(3, CONTROL) }, // 00 - <Ctrl> @ (nul)
+        { 6, SCANCODE(3, CONTROL) }, // 01 - <Ctrl> A (soh)
+        { 5, SCANCODE(3, CONTROL) }, // 02 - <Ctrl> B (stx) start printer
+        { 4, SCANCODE(3, CONTROL) }, // 03 - <Ctrl> C (etx) end printer
+        { 3, SCANCODE(3, CONTROL) }, // 04 - <Ctrl> D (eot)
+        { 2, SCANCODE(3, CONTROL) }, // 05 - <Ctrl> E (enq)
+        { 1, SCANCODE(3, CONTROL) }, // 06 - <Ctrl> F (ack) start screen
+        { 0, SCANCODE(3, CONTROL) }, // 07 - <Ctrl> G (bel) bleep
+        { 9, SCANCODE(4, CONTROL) }, // 08 - <Ctrl> H (bs)  backspace
+        { 8, SCANCODE(4, CONTROL) }, // 09 - <Ctrl> I (tab) horizontal tab
+        { 6, SCANCODE(1, CONTROL) }, // 0A - <Ctrl> J (lf)  linefeed
+        { 6, SCANCODE(4, CONTROL) }, // 0B - <Ctrl> K (vt)  vertical tab
+        { 5, SCANCODE(4, CONTROL) }, // 0C - <Ctrl> L (ff)  formfeed
+        { 4, SCANCODE(4, CONTROL) }, // 0D - <Ctrl> M (cr)  return
+        { 3, SCANCODE(4, CONTROL) }, // 0E - <Ctrl> N (so)  page mode on
+        { 2, SCANCODE(4, CONTROL) }, // 0F - <Ctrl> O (si)  page mode off
+        { 1, SCANCODE(4, CONTROL) }, // 10 - <Ctrl> P (dle)
+        { 0, SCANCODE(4, CONTROL) }, // 11 - <Ctrl> Q (dc1)
+        { 9, SCANCODE(5, CONTROL) }, // 12 - <Ctrl> R (dc2)
+        { 8, SCANCODE(5, CONTROL) }, // 13 - <Ctrl> S (dc3)
+        { 7, SCANCODE(5, CONTROL) }, // 14 - <Ctrl> T (dc4)
+        { 6, SCANCODE(5, CONTROL) }, // 15 - <Ctrl> U (nak) end screen
+        { 5, SCANCODE(5, CONTROL) }, // 16 - <Ctrl> V (syn)
+        { 4, SCANCODE(5, CONTROL) }, // 17 - <Ctrl> W (etb)
+        { 3, SCANCODE(5, CONTROL) }, // 18 - <Ctrl> X (can) cancel
+        { 2, SCANCODE(5, CONTROL) }, // 19 - <Ctrl> Y (em)
+        { 1, SCANCODE(5, CONTROL) }, // 1A - <Ctrl> Z (sub)
+        { 8, SCANCODE(0, CONTROL) }, // 1B - <Ctrl> [ (esc) escape
+        { 7, SCANCODE(0, CONTROL) }, // 1C - <Ctrl> \ (fs)
+        { 6, SCANCODE(0, CONTROL) }, // 1D - <Ctrl> ] (gs)
+        { 5, SCANCODE(0, CONTROL) }, // 1E - <Ctrl> <Up> (rs) home cursor
+        { 4, SCANCODE(0, CONTROL) }, // 1F - <Ctrl> <Left> (us)
+        { 9, SCANCODE(0, 0      ) }, // 20 - <Space>
+        { 2, SCANCODE(1, SHIFT  ) }, // 21 - '!'
+        { 1, SCANCODE(1, SHIFT  ) }, // 22 - '"'
+        { 0, SCANCODE(1, SHIFT  ) }, // 23 - '#'
+        { 9, SCANCODE(2, SHIFT  ) }, // 24 - '$'
+        { 8, SCANCODE(2, SHIFT  ) }, // 25 - '%'
+        { 7, SCANCODE(2, SHIFT  ) }, // 26 - '&'
+        { 6, SCANCODE(2, SHIFT  ) }, // 27 - '''
+        { 5, SCANCODE(2, SHIFT  ) }, // 28 - '('
+        { 4, SCANCODE(2, SHIFT  ) }, // 29 - ')'
+        { 3, SCANCODE(2, SHIFT  ) }, // 2A - '*'
+        { 2, SCANCODE(2, SHIFT  ) }, // 2B - '+'
+        { 1, SCANCODE(2, 0      ) }, // 2C - ','
+        { 0, SCANCODE(2, 0      ) }, // 2D - '-'
+        { 9, SCANCODE(3, 0      ) }, // 2E - '.'
+        { 8, SCANCODE(3, 0      ) }, // 2F - '/'
+        { 3, SCANCODE(1, 0      ) }, // 30 - '0'
+        { 2, SCANCODE(1, 0      ) }, // 31 - '1'
+        { 1, SCANCODE(1, 0      ) }, // 32 - '2'
+        { 0, SCANCODE(1, 0      ) }, // 33 - '3'
+        { 9, SCANCODE(2, 0      ) }, // 34 - '4'
+        { 8, SCANCODE(2, 0      ) }, // 35 - '5'
+        { 7, SCANCODE(2, 0      ) }, // 36 - '6'
+        { 6, SCANCODE(2, 0      ) }, // 37 - '7'
+        { 5, SCANCODE(2, 0      ) }, // 38 - '8'
+        { 4, SCANCODE(2, 0      ) }, // 39 - '9'
+        { 3, SCANCODE(2, 0      ) }, // 3A - ':'
+        { 2, SCANCODE(2, 0      ) }, // 3B - ';'
+        { 1, SCANCODE(2, SHIFT  ) }, // 3C - '<'
+        { 0, SCANCODE(2, SHIFT  ) }, // 3D - '='
+        { 9, SCANCODE(3, SHIFT  ) }, // 3E - '>'
+        { 8, SCANCODE(3, SHIFT  ) }, // 3F - '?'
+        { 7, SCANCODE(3, 0      ) }, // 40 - '@'
+        { 6, SCANCODE(3, 0      ) }, // 41 - 'A'
+        { 5, SCANCODE(3, 0      ) }, // 42 - 'B'
+        { 4, SCANCODE(3, 0      ) }, // 43 - 'C'
+        { 3, SCANCODE(3, 0      ) }, // 44 - 'D'
+        { 2, SCANCODE(3, 0      ) }, // 45 - 'E'
+        { 1, SCANCODE(3, 0      ) }, // 46 - 'F'
+        { 0, SCANCODE(3, 0      ) }, // 47 - 'G'
+        { 9, SCANCODE(4, 0      ) }, // 48 - 'H'
+        { 8, SCANCODE(4, 0      ) }, // 49 - 'I'
+        { 7, SCANCODE(4, 0      ) }, // 4A - 'J'
+        { 6, SCANCODE(4, 0      ) }, // 4B - 'K'
+        { 5, SCANCODE(4, 0      ) }, // 4C - 'L'
+        { 4, SCANCODE(4, 0      ) }, // 4D - 'M,
+        { 3, SCANCODE(4, 0      ) }, // 4E - 'N'
+        { 2, SCANCODE(4, 0      ) }, // 4F - 'O'
+        { 1, SCANCODE(4, 0      ) }, // 50 - 'P'
+        { 0, SCANCODE(4, 0      ) }, // 51 - 'Q'
+        { 9, SCANCODE(5, 0      ) }, // 52 - 'R'
+        { 8, SCANCODE(5, 0      ) }, // 53 - 'S'
+        { 7, SCANCODE(5, 0      ) }, // 54 - 'T'
+        { 6, SCANCODE(5, 0      ) }, // 55 - 'U'
+        { 5, SCANCODE(5, 0      ) }, // 56 - 'V'
+        { 4, SCANCODE(5, 0      ) }, // 57 - 'W'
+        { 3, SCANCODE(5, 0      ) }, // 58 - 'X'
+        { 2, SCANCODE(5, 0      ) }, // 59 - 'Y'
+        { 1, SCANCODE(5, 0      ) }, // 5A - 'Z'
+        { 8, SCANCODE(0, 0      ) }, // 5B - '['
+        { 7, SCANCODE(0, 0      ) }, // 5C - '\'
+        { 6, SCANCODE(0, 0      ) }, // 5D - ']'
+        { 5, SCANCODE(0, 0      ) }, // 5E - '^'
+        { 4, SCANCODE(0, 0      ) }, // 5F - '_'
+        { 0, SCANCODE(5, 0      ) }, // 60 - '`' mapped to <Esc>
+        { 6, SCANCODE(3, SHIFT  ) }, // 61 - 'a'
+        { 5, SCANCODE(3, SHIFT  ) }, // 62 - 'b'
+        { 4, SCANCODE(3, SHIFT  ) }, // 63 - 'c'
+        { 3, SCANCODE(3, SHIFT  ) }, // 64 - 'd'
+        { 2, SCANCODE(3, SHIFT  ) }, // 65 - 'e'
+        { 1, SCANCODE(3, SHIFT  ) }, // 66 - 'f'
+        { 0, SCANCODE(3, SHIFT  ) }, // 67 - 'g'
+        { 9, SCANCODE(4, SHIFT  ) }, // 68 - 'h'
+        { 8, SCANCODE(4, SHIFT  ) }, // 69 - 'i'
+        { 7, SCANCODE(4, SHIFT  ) }, // 6A - 'j'
+        { 6, SCANCODE(4, SHIFT  ) }, // 6B - 'k'
+        { 5, SCANCODE(4, SHIFT  ) }, // 6C - 'l'
+        { 4, SCANCODE(4, SHIFT  ) }, // 6D - 'm'
+        { 3, SCANCODE(4, SHIFT  ) }, // 6E - 'n'
+        { 2, SCANCODE(4, SHIFT  ) }, // 6F - 'o'
+        { 1, SCANCODE(4, SHIFT  ) }, // 70 - 'p'
+        { 0, SCANCODE(4, SHIFT  ) }, // 71 - 'q'
+        { 9, SCANCODE(5, SHIFT  ) }, // 72 - 'r'
+        { 8, SCANCODE(5, SHIFT  ) }, // 73 - 's'
+        { 7, SCANCODE(5, SHIFT  ) }, // 74 - 't'
+        { 6, SCANCODE(5, SHIFT  ) }, // 75 - 'u'
+        { 5, SCANCODE(5, SHIFT  ) }, // 76 - 'v'
+        { 4, SCANCODE(5, SHIFT  ) }, // 77 - 'w'
+        { 3, SCANCODE(5, SHIFT  ) }, // 78 - 'x'
+        { 2, SCANCODE(5, SHIFT  ) }, // 79 - 'y'
+        { 1, SCANCODE(5, SHIFT  ) }, // 7A - 'z'
+        { 8, SCANCODE(0, SHIFT  ) }, // 7B - '{'
+        { 7, SCANCODE(0, SHIFT  ) }, // 7C - '|'
+        { 6, SCANCODE(0, SHIFT  ) }, // 7D - '}'
+        { 5, SCANCODE(0, SHIFT  ) }, // 7E - '~'
+        { 4, SCANCODE(1, 0      ) }  // 7F - <del>
     };
     if (m_io.m_pressed_key >= 0 && m_io.m_pressed_key < 128) { // ASCII 'normal' Key
         const KeyData &key_data(key_mapping[m_io.m_pressed_key]);
@@ -294,18 +294,18 @@ byte Ppia::get_byte(word p_addr, AccessType p_at)
     assert (p_addr < 4);
     byte result(m_byte[p_addr]);             // By default, set it to last value
     switch (p_addr)
-        {
-        case PortA :                                       // Nothing more to do
-            break;
-        case PortB :
-            result = get_PortB(m_byte[PortA] & 0x0F);
-            break;
-        case PortC :
-            result = get_PortC(result);
-            break;
-        case ControlPort :                                 // Nothing more to do
-            break;
-        }
+    {
+    case PortA :                                       // Nothing more to do
+        break;
+    case PortB :
+        result = get_PortB(m_byte[PortA] & 0x0F);
+        break;
+    case PortC :
+        result = get_PortC(result);
+        break;
+    case ControlPort :                                 // Nothing more to do
+        break;
+    }
     m_byte[p_addr] = result;
     return result;
 }
@@ -340,30 +340,30 @@ void Ppia::set_byte(word p_addr, byte p_byte, AccessType p_at)
     LOG4CXX_INFO(cpptrace_log(), "[" << name() << "].set_byte(" << Hex(p_addr) << ", " << Hex(p_byte) << ", " << p_at << ")");
     assert (p_addr < 4);
     switch (p_addr)
+    {
+    case PortA :
+        set_PortA(p_byte);
+        break;
+    case PortB :                                               // Do Nothing
+        break;
+    case PortC :
+        p_byte &= 0x0F;                              // Remember the outputs
+        p_byte |= (m_byte[PortC] & 0xF0);            // Remember last inputs
+        break;
+    case ControlPort :
+        switch (p_byte)
         {
-        case PortA :
-            set_PortA(p_byte);
+        case 0x8A:                      // Normal condition - Do Nothing
             break;
-        case PortB :                                               // Do Nothing
+        case 0x04:
+        case 0x05:                                         // Error bell
+            // TODO: beep (#7)
             break;
-        case PortC :
-            p_byte &= 0x0F;                              // Remember the outputs
-            p_byte |= (m_byte[PortC] & 0xF0);            // Remember last inputs
-            break;
-        case ControlPort :
-            switch (p_byte)
-                {
-                case 0x8A:                      // Normal condition - Do Nothing
-                    break;
-                case 0x04:
-                case 0x05:                                         // Error bell
-                    // TODO: beep (#7)
-                    break;
-                default:                                     // TODO: Unexpected
-                    assert (false);
-                }
-            break;
+        default:                                     // TODO: Unexpected
+            assert (false);
         }
+        break;
+    }
     m_byte[p_addr] = p_byte;                            // Remember byte written
 }
 
@@ -430,4 +430,3 @@ std::ostream &operator<<(std::ostream &p_s, const Ppia &p_ppia)
         << ", Alt:"     << p_ppia.m_io.m_is_rept_pressed;
     return p_s;
 }
-

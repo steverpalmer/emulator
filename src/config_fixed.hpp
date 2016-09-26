@@ -24,10 +24,10 @@ private:
     const word        m_size;
 public:
     RamConfigurator(const std::string &p_name, word p_base, word p_size)
-    : m_name(p_name)
-    , m_base(p_base)
-    , m_size(p_size)
-    {}
+        : m_name(p_name)
+        , m_base(p_base)
+        , m_size(p_size)
+        {}
     virtual const std::string &name() const { return m_name; }
     virtual word base() const { return m_base; }
     virtual word size() const { return m_size; }
@@ -41,11 +41,11 @@ private:
     const std::string m_filename;
 public:
     RomConfigurator(const std::string &p_name, word p_base, word p_size, const std::string &p_filename)
-    : m_name(p_name)
-    , m_base(p_base)
-    , m_size(p_size)
-    , m_filename(p_filename)
-    {}
+        : m_name(p_name)
+        , m_base(p_base)
+        , m_size(p_size)
+        , m_filename(p_filename)
+        {}
     virtual const std::string &name()     const { return m_name; }
     virtual word              base()      const { return m_base; }
     virtual word              size()      const { return m_size; }
@@ -59,10 +59,10 @@ private:
     const word        m_memory_size;
 public:
     PpiaConfigurator(const std::string &p_name, word p_base, word p_memory_size)
-    : m_name(p_name)
-    , m_base(p_base)
-    , m_memory_size(p_memory_size)
-    {}
+        : m_name(p_name)
+        , m_base(p_base)
+        , m_memory_size(p_memory_size)
+        {}
     virtual const std::string &name() const { return m_name; }
     word base()                       const { return m_base; }
     word memory_size()                const { return m_memory_size; }
@@ -92,19 +92,19 @@ private:
     const MCS6502Configurator m_mcs6502;
 public:
     AtomConfigurator()
-    : m_name("atom")
-    , m_devices(0)
-    , m_memory("memory")
-    , m_mcs6502("6502")
-    {
-        m_devices.push_back(new RamConfigurator( "block0", 0x0000, 0x0400));
-        m_devices.push_back(new RamConfigurator( "lower",  0x2800, 0x1400));
-        m_devices.push_back(new RamConfigurator( "video",  0x8000, 0x1800));
-        m_devices.push_back(new PpiaConfigurator("ppia",   0xB000, 0x0400));
-        m_devices.push_back(new RomConfigurator( "basic",  0xC000, 0x1000, "basic.rom"));
-        m_devices.push_back(new RomConfigurator( "float",  0xD000, 0x1000, "float.rom"));
-        m_devices.push_back(new RomConfigurator( "kernel", 0xF000, 0x1000, "kernel.rom"));
-    }
+        : m_name("atom")
+        , m_devices(0)
+        , m_memory("memory")
+        , m_mcs6502("6502")
+        {
+            m_devices.push_back(new RamConfigurator( "block0", 0x0000, 0x0400));
+            m_devices.push_back(new RamConfigurator( "lower",  0x2800, 0x1400));
+            m_devices.push_back(new RamConfigurator( "video",  0x8000, 0x1800));
+            m_devices.push_back(new PpiaConfigurator("ppia",   0xB000, 0x0400));
+            m_devices.push_back(new RomConfigurator( "basic",  0xC000, 0x1000, "basic.rom"));
+            m_devices.push_back(new RomConfigurator( "float",  0xD000, 0x1000, "float.rom"));
+            m_devices.push_back(new RomConfigurator( "kernel", 0xF000, 0x1000, "kernel.rom"));
+        }
     virtual const std::string           &name()        const { return m_name; }
     virtual const Device::Configurator  *device(int i) const { return i < int(m_devices.size()) ? m_devices[i] : 0; }
     virtual const Memory::Configurator  &memory()      const { return m_memory; }
@@ -128,12 +128,12 @@ private:
     const std::string m_icon_title;
 public:
     ScreenGraphicsViewConfigurator()
-    : m_name("ScreenGraphicsView")
-    , m_scale(2.0)
-    , m_fontfilename("mc6847.bmp")
-    , m_window_title("Acorn Atom")
-    , m_icon_title("Acorn Atom")
-    {}
+        : m_name("ScreenGraphicsView")
+        , m_scale(2.0)
+        , m_fontfilename("mc6847.bmp")
+        , m_window_title("Acorn Atom")
+        , m_icon_title("Acorn Atom")
+        {}
     virtual const std::string &name()         const { return m_name; }
     virtual float              scale()        const { return m_scale; }
     virtual const std::string &fontfilename() const { return m_fontfilename; }
@@ -148,9 +148,9 @@ private:
     const int m_RefreshRate_ms;
 public:
     ScreenGraphicsControllerConfigurator()
-    : m_name("ScreenGraphicsController")
-    , m_RefreshRate_ms(100)
-    {}
+        : m_name("ScreenGraphicsController")
+        , m_RefreshRate_ms(100)
+        {}
     virtual const std::string                    &name()           const { return m_name; }
     virtual const ScreenGraphicsViewConfigurator &view()           const { return m_view; }
     virtual int                                   RefreshRate_ms() const { return m_RefreshRate_ms; }

@@ -38,19 +38,19 @@ public:
     void        update() { SDL_UpdateRect(m_array, m_pos.x, m_pos.y, m_pos.w, m_pos.h); }
 
     SurfaceArray( SDL_Surface *p_surface, std::string p_name = "", int x_range = 1, int y_range = 1, int p_key = 0 )
-    : Named(p_name)
-    , m_array(p_surface)
-    , m_x_range(x_range)
-    , m_key(p_key)
-    {
-        LOG4CXX_INFO(cpptrace_log(), "SurfaceArray::SurfaceArray(" << p_surface << ", [" << p_name << "], " << x_range << ", " << y_range << ", " << p_key << ")");
-        assert (p_surface);
-        assert (p_surface->w % x_range == 0);
-        assert (p_surface->h % y_range == 0);
-        m_pos.w = p_surface->w / x_range;
-        m_pos.h = p_surface->h / y_range;
-        m_pos   = at(p_key);
-    }
+        : Named(p_name)
+        , m_array(p_surface)
+        , m_x_range(x_range)
+        , m_key(p_key)
+        {
+            LOG4CXX_INFO(cpptrace_log(), "SurfaceArray::SurfaceArray(" << p_surface << ", [" << p_name << "], " << x_range << ", " << y_range << ", " << p_key << ")");
+            assert (p_surface);
+            assert (p_surface->w % x_range == 0);
+            assert (p_surface->h % y_range == 0);
+            m_pos.w = p_surface->w / x_range;
+            m_pos.h = p_surface->h / y_range;
+            m_pos   = at(p_key);
+        }
     // rely on the default copy constructor
     // SurfaceArray( SurfaceArray &other );
     // SurfaceArray( const SurfaceArray &other );
@@ -60,128 +60,128 @@ public:
     // rely on the default destructor
     // ~SurfaceArray();
     SurfaceArray  &operator++()
-    {
-        LOG4CXX_INFO(cpptrace_log(), "[" << name() << "].operator++()");
-        m_key++;
-        m_pos.x += m_pos.w;
-        if (m_pos.x >= m_array->w) {
-            m_pos.x = 0;
-            m_pos.y += m_pos.h;
-        }
-        return *this;
-    }
-    SurfaceArray  &operator--()
-    {
-        LOG4CXX_INFO(cpptrace_log(), "[" << name() << "].operator--()");
-        if (m_pos.x == 0)
         {
-            m_pos.x = m_array->w;
-            m_pos.y -= m_array->h;
+            LOG4CXX_INFO(cpptrace_log(), "[" << name() << "].operator++()");
+            m_key++;
+            m_pos.x += m_pos.w;
+            if (m_pos.x >= m_array->w) {
+                m_pos.x = 0;
+                m_pos.y += m_pos.h;
+            }
+            return *this;
         }
-        m_pos.x -= m_pos.w;
-        m_key--;
-        return *this;
-    }
+    SurfaceArray  &operator--()
+        {
+            LOG4CXX_INFO(cpptrace_log(), "[" << name() << "].operator--()");
+            if (m_pos.x == 0)
+            {
+                m_pos.x = m_array->w;
+                m_pos.y -= m_array->h;
+            }
+            m_pos.x -= m_pos.w;
+            m_key--;
+            return *this;
+        }
     operator bool() const
-    {
-        LOG4CXX_INFO(cpptrace_log(), "[" << name() << "].operator bool()");
-        return (0 <= m_pos.x && m_pos.x + m_pos.w <= m_array->w) &&
-               (0 <= m_pos.y && m_pos.y + m_pos.h <= m_array->h);
-    }
+        {
+            LOG4CXX_INFO(cpptrace_log(), "[" << name() << "].operator bool()");
+            return (0 <= m_pos.x && m_pos.x + m_pos.w <= m_array->w) &&
+                (0 <= m_pos.y && m_pos.y + m_pos.h <= m_array->h);
+        }
     bool fill(Uint32 color)
-    {
-        LOG4CXX_INFO(cpptrace_log(), "[" << name() << "].fill(" << color << ")");
-        const int rv = SDL_FillRect(m_array, &m_pos, color);
-        return rv == 0;
-    }
+        {
+            LOG4CXX_INFO(cpptrace_log(), "[" << name() << "].fill(" << color << ")");
+            const int rv = SDL_FillRect(m_array, &m_pos, color);
+            return rv == 0;
+        }
     SDL_Rect at(int p_key) const
-    {
-        LOG4CXX_INFO(cpptrace_log(), "[" << name() << "].at(" << p_key << ")");
-        SDL_Rect result(m_pos);
-        const int y(p_key / m_x_range);
-        result.x = (p_key - y * m_x_range) * result.w;
-        result.y = y * result.h;
-        return result;
-    }
+        {
+            LOG4CXX_INFO(cpptrace_log(), "[" << name() << "].at(" << p_key << ")");
+            SDL_Rect result(m_pos);
+            const int y(p_key / m_x_range);
+            result.x = (p_key - y * m_x_range) * result.w;
+            result.y = y * result.h;
+            return result;
+        }
     void set(const SurfaceArray &other, int p_key = -1)
-    {
-        LOG4CXX_INFO(cpptrace_log(), "[" << name() << "].set([" << other.name() << "], " << p_key << ")");
-        SDL_Rect tmp(other.m_pos); // Nasty Kludge because of SDL typing
-        if (p_key >= 0)
-            m_pos = at(p_key);
-        const int rv =SDL_BlitSurface(other.m_array, &tmp, m_array, &m_pos);
-        assert (!rv);
-        update();
-    }
+        {
+            LOG4CXX_INFO(cpptrace_log(), "[" << name() << "].set([" << other.name() << "], " << p_key << ")");
+            SDL_Rect tmp(other.m_pos); // Nasty Kludge because of SDL typing
+            if (p_key >= 0)
+                m_pos = at(p_key);
+            const int rv =SDL_BlitSurface(other.m_array, &tmp, m_array, &m_pos);
+            assert (!rv);
+            update();
+        }
     SDL_Surface *get(int p_key = -1) const
-    {
-        LOG4CXX_INFO(cpptrace_log(), "[" << name() << "].get(" << p_key << ")");
-        int rv;
-        SDL_Rect tmp( p_key < 0 ? m_pos : at(p_key));
-        const SDL_PixelFormat *format = m_array->format;
-        assert (format->BitsPerPixel == 8);
-        SDL_Surface *result = SDL_CreateRGBSurface( m_array->flags,
-                                                    m_pos.w,
-                                                    m_pos.h,
-                                                    format->BitsPerPixel,
-                                                    format->Rmask,
-                                                    format->Gmask,
-                                                    format->Bmask,
-                                                    format->Amask );
-        if (result) {
-            if (format->BitsPerPixel == 8) {
-                rv = SDL_SetPalette( result,
-                                     SDL_LOGPAL,
-                                     format->palette->colors,
-                                     0,
-                                     format->palette->ncolors );
-                assert (rv);
-            }
-            rv = SDL_BlitSurface(m_array, &tmp, result, 0);
-            assert (!rv);
-        }
-        return result;
-    }
-    SDL_Surface *get(int new_w, int new_h) const
-    {
-        LOG4CXX_INFO(cpptrace_log(), "[" << name() << "].get(" << new_w << ", " << new_h << ")");
-        int rv;
-        assert (new_w >= m_pos.w);
-        assert (new_h >= m_pos.h);
-        const SDL_PixelFormat *format = m_array->format;
-        assert (format->BitsPerPixel == 8);
-        SDL_Surface *result = SDL_CreateRGBSurface( m_array->flags,
-                                                    new_w,
-                                                    new_h,
-                                                    format->BitsPerPixel,
-                                                    format->Rmask,
-                                                    format->Gmask,
-                                                    format->Bmask,
-                                                    format->Amask);
-        if (result) {
-            if (format->BitsPerPixel == 8) {
-                rv = SDL_SetPalette( result,
-                                     SDL_LOGPAL,
-                                     format->palette->colors,
-                                     0,
-                                     format->palette->ncolors );
-                assert (rv);
-            }
-            rv = SDL_LockSurface(result);
-            assert (!rv);
-            byte *rbp=(byte *)result->pixels;
-            for (int y = 0; y < new_h; y++) {
-                const int src_y((m_pos.h * y) / new_h + m_pos.y);
-                const byte *sbp(((byte *)m_array->pixels) + (src_y * m_array->pitch));
-                for (int x = 0; x < new_w; x++, rbp++) {
-                    const int src_x((m_pos.w * x) / new_w + m_pos.x);
-                    *rbp = sbp[src_x];
+        {
+            LOG4CXX_INFO(cpptrace_log(), "[" << name() << "].get(" << p_key << ")");
+            int rv;
+            SDL_Rect tmp( p_key < 0 ? m_pos : at(p_key));
+            const SDL_PixelFormat *format = m_array->format;
+            assert (format->BitsPerPixel == 8);
+            SDL_Surface *result = SDL_CreateRGBSurface( m_array->flags,
+                                                        m_pos.w,
+                                                        m_pos.h,
+                                                        format->BitsPerPixel,
+                                                        format->Rmask,
+                                                        format->Gmask,
+                                                        format->Bmask,
+                                                        format->Amask );
+            if (result) {
+                if (format->BitsPerPixel == 8) {
+                    rv = SDL_SetPalette( result,
+                                         SDL_LOGPAL,
+                                         format->palette->colors,
+                                         0,
+                                         format->palette->ncolors );
+                    assert (rv);
                 }
+                rv = SDL_BlitSurface(m_array, &tmp, result, 0);
+                assert (!rv);
             }
-            SDL_UnlockSurface(result);
+            return result;
         }
-        return result;
-    }
+    SDL_Surface *get(int new_w, int new_h) const
+        {
+            LOG4CXX_INFO(cpptrace_log(), "[" << name() << "].get(" << new_w << ", " << new_h << ")");
+            int rv;
+            assert (new_w >= m_pos.w);
+            assert (new_h >= m_pos.h);
+            const SDL_PixelFormat *format = m_array->format;
+            assert (format->BitsPerPixel == 8);
+            SDL_Surface *result = SDL_CreateRGBSurface( m_array->flags,
+                                                        new_w,
+                                                        new_h,
+                                                        format->BitsPerPixel,
+                                                        format->Rmask,
+                                                        format->Gmask,
+                                                        format->Bmask,
+                                                        format->Amask);
+            if (result) {
+                if (format->BitsPerPixel == 8) {
+                    rv = SDL_SetPalette( result,
+                                         SDL_LOGPAL,
+                                         format->palette->colors,
+                                         0,
+                                         format->palette->ncolors );
+                    assert (rv);
+                }
+                rv = SDL_LockSurface(result);
+                assert (!rv);
+                byte *rbp=(byte *)result->pixels;
+                for (int y = 0; y < new_h; y++) {
+                    const int src_y((m_pos.h * y) / new_h + m_pos.y);
+                    const byte *sbp(((byte *)m_array->pixels) + (src_y * m_array->pitch));
+                    for (int x = 0; x < new_w; x++, rbp++) {
+                        const int src_x((m_pos.w * x) / new_w + m_pos.x);
+                        *rbp = sbp[src_x];
+                    }
+                }
+                SDL_UnlockSurface(result);
+            }
+            return result;
+        }
 };
 
 void ScreenGraphicsView::render_mode0()
@@ -198,11 +198,11 @@ void ScreenGraphicsView::render_mode0()
 }
 
 ScreenGraphicsView::ScreenGraphicsView(Atom &p_atom, const Configurator &p_cfg)
-  : Named(p_cfg)
-  , m_atom(p_atom)
-  , m_video_memory(p_atom.vdg_memory())
-  , m_rendered(0x1800)
-  , m_glyph(256, 0)
+    : Named(p_cfg)
+    , m_atom(p_atom)
+    , m_video_memory(p_atom.vdg_memory())
+    , m_rendered(0x1800)
+    , m_glyph(256, 0)
 {
     LOG4CXX_INFO(cpptrace_log(), "ScreenGraphicsView::ScreenGraphicsView([" << p_atom.name() << "], " << p_cfg << ")");
     assert (p_cfg.scale() >= 1.0);
@@ -266,4 +266,3 @@ std::ostream &operator<<(std::ostream &p_s, const ScreenGraphicsView &p_sgv)
         << "character_h:" << p_sgv.m_character_h;
     return p_s;
 }
-
