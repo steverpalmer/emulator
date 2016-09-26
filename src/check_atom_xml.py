@@ -159,19 +159,19 @@ def check(filename):
         if len(scale) != 1:
             LOG.error("scale parameter should only occur once")
         else:
-            scale = float(scale[0])
+            scale = float(scale[0].text)
             if scale < 1.0:
                 LOG.error("scale must be at least 1.0 or larger")
             elif scale > 4.0:
                 LOG.warning("scale value unexpectedlu large: %f", scale)
 
-    LOG.debug("...fontfilename")
+    LOG.debug("... fontfilename")
     fontfilename = atomrc.xpath("/a:atom/a:io/a:fontfilename", namespaces=namespaces)
     if (fontfilename):
         if len(fontfilename) != 1:
             LOG.error("fontfilename parameter should only occur once")
         else:
-            fontfilename = pathlib.Path(fontfilename[0])
+            fontfilename = pathlib.Path(fontfilename[0].text)
             if not fontfilename.exists():
                 LOG.error("fontfilename %s does not exist", fontfilename)
             elif not fontfilename.is_file():
@@ -179,13 +179,13 @@ def check(filename):
             elif not fontfilename.suffix == '.bmp':
                 LOG.error("fontfilename %s does not end '.bmp'", fontfilename)
 
-    LOG.debug("...refreshrate")
+    LOG.debug("... refreshrate")
     refreshrate = atomrc.xpath("/a:atom/a:io/a:refreshrate", namespaces=namespaces)
     if (refreshrate):
         if len(refreshrate) != 1:
             LOG.error("refreshrate parameter should only occur once")
         else:
-            refreshrate = float(refreshrate[0])
+            refreshrate = float(refreshrate[0].text)
             if refreshrate > 100:
                 LOG.error("refreshrate above 100Hz is excessive")
             elif refreshrate < 2:
