@@ -4,8 +4,6 @@ Help("""
 Builder for my Acorn Atom Emulation
 """)
 
-USE_XML = True
-
 def add_library(env, lib):
     env.AppendUnique( CPPPATH = subprocess.check_output(['pkg-config', '--cflags', lib]).split()
                     , LIBS    = subprocess.check_output(['pkg-config', '--libs', lib]).split()
@@ -18,18 +16,24 @@ common_env['LINKFLAGS'] = r'-pthread'
 
 add_library(common_env, 'liblog4cxx')
 
-common_env['BUILDERS']['rng2rnc'] = Builder(action='trang -I rng -O rnc $SOURCE $TARGET', suffix='rnc')
-common_env.rng2rnc('relaxng.rnc', 'relaxng.rng')
-common_env.rng2rnc('atom.rnc', 'atom.rng')
-common_env.rng2rnc('emulator.rnc', 'emulator.rng')
+common_env['BUILDERS']['rng2rnc'] = Builder(action='trang -I rng -O rnc $SOURCE $TARGET',
+                                            suffix='rnc', src_suffix='rng')
+common_env.rng2rnc('relaxng')
+common_env.rng2rnc('atom')
+common_env.rng2rnc('emulator')
 
-common_env['BUILDERS']['rng2xsd'] = Builder(action='trang -I rng -O xsd $SOURCE $TARGET', suffix='xsd')
-common_env.rng2xsd('relaxng.xsd', 'relaxng.rng')
-common_env.rng2xsd('atom.xsd', 'atom.rng')
-common_env.rng2xsd('emulator.xsd', 'emulator.rng')
+common_env['BUILDERS']['rng2xsd'] = Builder(action='trang -I rng -O xsd $SOURCE $TARGET',
+                                            suffix='xsd', src_suffix='rng')
+common_env.rng2xsd('relaxng')
+common_env.rng2xsd('atom')
+common_env.rng2xsd('emulator')
+
+common_env['BUILDERS']['uxf2png'] = Builder(action='umlet -action=convert -format=png -filename=$SOURCE',
+                                            suffix='uxf.png', src_suffix='uxf')
+common_env.uxf2png('system2')
 
 libatom_env = common_env.Clone()
-atomlib = libatom_env.StaticLibrary(r'atom', [ r'memory.cpp'
+atomlib = libatom_env.StaticLibrary(r'atom', [ r'device.cpp'
                                              , r'ppia.cpp'
                                              , r'cpu.cpp'
                                              , r'atom.cpp'
@@ -38,13 +42,12 @@ atomlib = libatom_env.StaticLibrary(r'atom', [ r'memory.cpp'
 atom_gui_sdl_env = common_env.Clone()
 add_library(atom_gui_sdl_env, 'sdl')
 
-if USE_XML:
-    add_library(atom_gui_sdl_env, 'libxml++-2.6')
+add_library(atom_gui_sdl_env, 'libxml++-2.6')
 
-atom_gui_sdl_env.Program('atom', [ r'screen_graphics_controller.cpp'
-                                 , r'screen_graphics_view.cpp'
-                                 , r'keyboard_controller.cpp'
-                                 , (r'config_xml.cpp' if USE_XML else r'config_fixed.cpp')
-                                 , r'main.cpp'
-                                 , atomlib
-                                 ])
+#atom_gui_sdl_env.Program('atom', [ r'screen_graphics_controller.cpp'
+#                                 , r'screen_graphics_view.cpp'
+#                                 , r'keyboard_controller.cpp'
+#                                 , r'config_xml.cpp'
+#                                 , r'main.cpp'
+#                                 , atomlib
+#                                 ])

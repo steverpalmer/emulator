@@ -3,6 +3,7 @@
   <ram name="video">
     <size>0400</size>
   </ram>
+  <ppia/>
   <memory>
     <map>
       <base>0000</base>
@@ -16,7 +17,7 @@
     </map>
     <map>
       <base>B000</base>
-      <ppia/>
+      <device name="ppia"/>
       <size>0400</size>
     </map>
     <map>
