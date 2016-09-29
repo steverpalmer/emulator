@@ -35,7 +35,7 @@ class Main {
 private:
     Main();
     Main(const Main &);
-    void operator=(const Main&);
+    Main &operator=(const Main&);
 public:
     Main(int agrc, char *argv[]);
     ~Main();

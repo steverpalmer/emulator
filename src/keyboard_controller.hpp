@@ -65,7 +65,7 @@ private:
     Atom &m_atom;
 private:
     KeyboardController(const KeyboardController &);
-    void operator=(const KeyboardController&);
+    KeyboardController &operator=(const KeyboardController&);
 public:
     KeyboardController(Atom &, const Configurator &);
     void update(SDL_KeyboardEvent *);

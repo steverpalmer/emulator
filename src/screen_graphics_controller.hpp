@@ -33,7 +33,7 @@ private:
     SDL_TimerID        m_timer;
 private:
     ScreenGraphicsController(const ScreenGraphicsController &);
-    void operator=(const ScreenGraphicsController&);
+    ScreenGraphicsController &operator=(const ScreenGraphicsController&);
 public:
     ScreenGraphicsController(Atom &, const Configurator &);
     virtual ~ScreenGraphicsController();

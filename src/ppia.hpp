@@ -62,8 +62,8 @@ public:
     } m_io;
     // Methods
 private:
-    void operator=(const Ppia&);
     Ppia(const Ppia &);
+    Ppia &operator=(const Ppia&);
     byte get_PortB(int p_row);
     byte get_PortC(byte p_previous);
     void set_PortA(byte p_byte);

@@ -54,8 +54,8 @@ public:
     int              m_cycles;
     // Methods
 private:
-    void operator=(const Core&);
     Core(const Core &);
+    Core &operator=(const Core&);
 protected:
     Core(Memory &, const Configurator &);
     void start();

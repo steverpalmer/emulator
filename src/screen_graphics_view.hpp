@@ -40,7 +40,7 @@ private:
     std::vector<SDL_Surface *>  m_glyph;
 private:
     ScreenGraphicsView(const ScreenGraphicsView &);
-    void operator=(const ScreenGraphicsView&);
+    ScreenGraphicsView &operator=(const ScreenGraphicsView&);
     SDL_Surface *scale_and_convert_surface(SDL_Surface *src);
     void render_mode0();
 public:

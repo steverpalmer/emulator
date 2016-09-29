@@ -1,5 +1,5 @@
 /*
- * trivia.hpp
+ * common.hpp
  *
  *  Created on: 7 May 2012
  *      Author: steve
@@ -21,6 +21,8 @@ typedef int16_t  signed_word;
 #include <ostream>
 #include <iomanip>
 
+
+#define SIZE(n) (word((n)-word(1))+1)
 
 class Named {
 public:
@@ -46,7 +48,7 @@ protected:
 	Named(const Configurator &p_cfg) : m_name(p_cfg.name()) {}
 private:
 	Named(const Named &);
-	void operator=(const Named &);
+	Named &operator=(const Named &);
 
 	friend std::ostream &operator<<(std::ostream &p_s, const Named& p_n)
 	{
