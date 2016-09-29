@@ -1,5 +1,5 @@
 /*
- * memory.cpp
+ * device.cpp
  *
  *  Created on: 30 Mar 2012
  *      Author: steve
@@ -29,80 +29,87 @@ Device::Device(const Configurator &p_cfg)
     LOG4CXX_INFO(cpptrace_log(), "Device::Device(" << p_cfg << ")");
 }
 
+word Device::get_word(word p_addr, AccessType p_at)
+{
+    LOG4CXX_INFO(cpptrace_log(), "[" << name() << "].get_word(" << Hex(p_addr) << ", " << p_at << ")");
+    const word low_byte(get_byte(p_addr, p_at));
+    const word high_byte(get_byte((p_addr+1)==m_storage.size()?0:(p_addr+1), p_at));
+    return low_byte | high_byte << 8;
+}
+
+void Device::set_word(word p_addr, word p_word, AccessType p_at)
+{
+    LOG4CXX_INFO(cpptrace_log(), "[" << name() << "].set_word(" << Hex(p_addr) << ", " << Hex(p_word) << ", " << p_at << ")");
+    set_byte(p_addr, byte(p_word), p_at);
+    set_byte((p_addr+1)==m_storage.size()?0:(p_addr+1), byte(p_word >> 8), p_at);
+}
+
+// Ram_Rom_Helper Methods
+
+bool Ram_Rom_Helper::load(const std::string &p_filename)
+{
+    bool result(true);
+    if (!p_filename.empty()) {
+        using namespace std;
+        fstream file(p_filename, fstream::in | fstream::binary);
+        if (result = (file.rdstate()  & std::ifstream::goodbit) )
+            for (byte &b : m_storage)
+                b = file.get();
+    }
+    result result
+}
+
+bool Ram_Rom_Helper::save(const std::string &p_filename) const
+{
+    bool result(true);
+    if (!p_filename.empty()) {
+        using namespace std;
+        fstream file(p_filename, fstream::out | fstream::binary | fstream::trunc);
+        if (result = (file.rdstate()  & std::ifstream::goodbit) )
+            for (const byte b : m_storage)
+                file.put(b);
+    }
+    return result;
+}
+
 // Ram Methods
 
 Ram::Ram(const Configurator &p_cfg)
     : Device(p_cfg)
-    , m_storage(p_cfg.size())
+    , m_memory(p_cfg.size())
+    , m_filename(p_cfg.filename())
 {
     LOG4CXX_INFO(cpptrace_log(), "Ram::Ram(" << p_cfg << ")");
-    for (int i(0); i < p_cfg.size(); i++)
-        m_storage[i] = 0;
+    (void) m_memory.load(m_filename);
 }
 
-void Ram::load(const std::string &p_filename)
+Ram::~Ram()
 {
-    LOG4CXX_INFO(cpptrace_log(), "[" << name() << "].load(\"" << p_filename << "\")");
-    if (!p_filename.empty()) {
-        using namespace std;
-        fstream file(p_filename, fstream::in | fstream::binary);
-        for (byte &b : m_storage)
-            b = file.get();
-    }
-}
-
-void Ram::save(const std::string &p_filename) const
-{
-    LOG4CXX_INFO(cpptrace_log(), "[" << name() << "].save(\"" << p_filename << "\")");
-    if (!p_filename.empty()) {
-        using namespace std;
-        fstream file(p_filename, fstream::out | fstream::binary | fstream::trunc);
-        for (const byte b : m_storage)
-            file.put(b);
-    }
-}
-
-byte Ram::get_byte(word p_addr, AccessType p_at)
-{
-    LOG4CXX_INFO(cpptrace_log(), "[" << name() << "].get_byte(" << Hex(p_addr) << ", " << p_at << ")");
-    assert (p_addr < m_storage.size());
-    return m_storage[p_addr];
-}
-
-void Ram::set_byte(word p_addr, byte p_byte, AccessType p_at)
-{
-    LOG4CXX_INFO(cpptrace_log(), "[" << name() << "].set_byte(" << Hex(p_addr) << ", " << Hex(p_byte) << ", " << p_at << ")");
-    assert (p_addr < m_storage.size());
-    m_storage[p_addr] = p_byte;
+    (void) m_memory.save(m_filename);
 }
 
 // Rom Methods
 
 Rom::Rom(const Configurator &p_cfg)
-    : Ram(p_cfg)
-    , m_is_writeable(false)
+    : Device(p_cfg)
+    , helper(p_cfg.size())
 {
     LOG4CXX_INFO(cpptrace_log(), "Rom::Rom(" << p_cfg << ")");
-    load(p_cfg.filename());
+    assert (load(p_cfg.filename()))
 }
 
-void Rom::set_writeable(bool p_writeable)
+Rom::~Rom()
 {
-    LOG4CXX_INFO(cpptrace_log(), "[" << name() << "].set_writeable(" << p_writeable << ")");
-    m_is_writeable = p_writeable;
+    // Do Nothing
 }
 
-void Rom::set_byte(word p_addr, byte p_byte, AccessType p_at)
-{
-    LOG4CXX_INFO(cpptrace_log(), "[" << name() << "].set_byte(" << Hex(p_addr) << ", " << Hex(p_byte) << ", " << p_at << ")");
-    if (m_is_writeable)
-        Ram::set_byte(p_addr, p_byte);
-}
-
+#if 0
 // Hook Methods
 
 Hook::Hook(const Configurator &p_cfg)
     : Device(p_cfg)
+    , m_base(0)
+    , m_device(0)
 {
     LOG4CXX_INFO(cpptrace_log(), "Hook::Hook(" << p_cfg << ")");
 }
@@ -115,27 +122,48 @@ Hook::~Hook()
 byte Hook::get_byte(word p_addr, AccessType p_at)
 {
     LOG4CXX_INFO(cpptrace_log(), "[" << name() << "].get_byte(" << Hex(p_addr) << ", " << p_at << ")");
-    int result(execute(p_addr, -1, p_at));
+    int result(execute(p_addr+m_base, -1, p_at));
     if (result < 0)
-        result = m_device ? m_device->get_byte(p_addr, p_at) : 0;
+    {
+        assert (m_device);
+        result = m_device->get_byte(p_addr+m_base, p_at);
+    }
     return byte(result);
 }
 
 void Hook::set_byte(word p_addr, byte p_byte, AccessType p_at)
 {
     LOG4CXX_INFO(cpptrace_log(), "[" << name() << "].set_byte(" << Hex(p_addr) << ", " << Hex(p_byte) << ", " << p_at << ")");
-    if (execute(p_addr, p_byte, p_at))
-        m_device->set_byte(p_addr, p_byte, p_at);
+    if (execute(p_addr+m_base, p_byte, p_at))
+    {
+        assert m_device;
+        m_device->set_byte(p_addr+m_base, p_byte, p_at);
+    }
 }
+#endif
 
 // Memory Methods
 
 Memory::Memory(const Configurator &p_cfg)
     : Device(p_cfg)
-    , m_base(65536, 0)
-    , m_map(65536, 0)
+    , m_device(0)
+    , m_base(SIZE(p_cfg.size()), 0)
+    , m_map(SIZE(p_cfg.size()), 0)
 {
     LOG4CXX_INFO(cpptrace_log(), "Memory::Memory(" << p_cfg << ")");
+    const Device::Configurator::mapping *mapping;
+    for (int i(0); (mapping = p_cfg.device(i)); i++)
+    {
+    	std::shared_ptr<Device> device(mapping->device.factory());
+    	m_devices.push_back(device);
+    	m_memory.add_device(mapping->base, device, mapping->size);
+    }
+}
+
+Memory::reset()
+{
+    for (std::shared_ptr<Device> d : m_devices)
+        d->reset();
 }
 
 byte Memory::get_byte(word p_addr, AccessType p_at)
@@ -151,35 +179,18 @@ void Memory::set_byte(word p_addr, byte p_byte, AccessType p_at)
     	m_map[p_addr]->set_byte(p_addr-m_base[p_addr], p_byte, p_at);
 }
 
-word Memory::get_word(word p_addr, AccessType p_at)
-{
-    LOG4CXX_INFO(cpptrace_log(), "[" << name() << "].get_word(" << Hex(p_addr) << ", " << p_at << ")");
-    const word low_byte(get_byte(p_addr, p_at));
-    const word high_byte(get_byte(p_addr + 1, p_at));
-    return low_byte | high_byte << 8;
-}
-
-void Memory::set_word(word p_addr, word p_word, AccessType p_at)
-{
-    LOG4CXX_INFO(cpptrace_log(), "[" << name() << "].set_word(" << Hex(p_addr) << ", " << Hex(p_word) << ", " << p_at << ")");
-    set_byte(p_addr,     byte(p_word), p_at);
-    set_byte(p_addr + 1, byte(p_word >> 8), p_at);
-}
-
-void Memory::add_device(word p_base, std::shared_ptr<Device> p_device, word p_memory_size)
+void Memory::add_device(word p_base, std::shared_ptr<Device> p_device, word p_size)
 {
     assert (p_device);
-    LOG4CXX_INFO(cpptrace_log(), "[" << name() << "].add_device(" << Hex(p_base) << ", [" << p_device->name() << "], " << Hex(p_memory_size) << ")");
-    const word device_size(p_device->size());
-    if (device_size > 0) {
-        assert (!p_memory_size || (p_memory_size % device_size == 0));
-        if (!p_memory_size)
-            p_memory_size = device_size;
-        for (word offset = 0; offset < p_memory_size; offset++)
-        {
-        	m_base[p_base + offset] = p_base + (offset / device_size) * device_size;
-            m_map[p_base + offset] = p_device;
-        }
+    LOG4CXX_INFO(cpptrace_log(), "[" << name() << "].add_device(" << Hex(p_base) << ", [" << p_device->name() << "], " << Hex(p_size) << ")");
+    const int device_size(SIZE(p_device->size()));
+    assert (device_size > 0);
+    assert (!p_size || (p_size % device_size == 0));
+    const int memory_size(p_size?p_size:device_size);
+    for (int offset = 0; offset < memory_size; offset++)
+    {
+        m_base[p_base + offset] = p_base + (offset / device_size) * device_size;
+        m_map[p_base + offset] = p_device;
     }
 }
 
@@ -194,27 +205,29 @@ void Memory::drop_devices()
     LOG4CXX_INFO(cpptrace_log(), "[" << name() << "].drop_devices(" << ")");
     for (int i(0); i < 65536; i++)
     {
-    	m_map[i] = 0;
+    	m_map[i].reset();
     	m_base[i] = 0;
     }
+    m_devices.clear();
 }
 
+#if 0
 void Memory::add_hook(word p_base, std::shared_ptr<Hook> p_hook, word p_size)
 {
     assert (p_hook);
     LOG4CXX_INFO(cpptrace_log(), "[" << name() << "].add_hook(" << Hex(p_base) << ", [" << p_hook->name() << "], " << Hex(p_size) << ")");
-    int hook_size(p_hook->size());
-    if (!hook_size) hook_size = 65536;
+    const int hook_size(SIZE(p_hook->size()));
     assert (!p_size || (p_size % hook_size == 0));
-    if (!p_size)
-    	p_size = hook_size;
+    const int memory_size(p_size?p_size:hook_size);
+    p_hook->m_base = m_base[p_base];
     p_hook->m_device = m_map[p_base];
     m_map[p_base] = p_hook;
-    for (word offset = 1; offset < p_size; offset++) {
+    for (int offset = 1; offset < p_size; offset++) {
     	assert (m_map[p_base + offset] == p_hook->m_device);
     	m_map[p_base + offset] = p_hook;
     }
 }
+#endif
 
 std::ostream &operator<<(std::ostream &p_s, const Device::Configurator &p_cfg)
 {
