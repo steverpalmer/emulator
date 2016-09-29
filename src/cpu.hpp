@@ -11,13 +11,13 @@
 #include <pthread.h>
 
 #include <ostream>
-#include <string>
 #include <array>
 #include <memory>
 #include <atomic>
 
 #include "common.hpp"
-#include "memory.hpp"
+#include "part.hpp"
+#include "device.hpp"
 
 enum InterruptState { INTERRUPT_ON,
                       INTERRUPT_OFF,
@@ -36,10 +36,10 @@ enum  InterruptSource { NO_INTERRUPT          = 0,
 };
 extern std::ostream &operator<<(std::ostream&, const InterruptSource&);
 
-class Core : public Named {
+class Core : public Part {
     // Types
 public:
-    class Configurator : public Named::Configurator
+    class Configurator : public Part::Configurator
     {
     public:
         friend std::ostream &::operator <<(std::ostream &, const Configurator &);
@@ -49,7 +49,6 @@ private:
     pthread_t        m_thread;
 public:
     friend void      *loop(void *);
-    Memory           &m_memory;
     std::atomic_uint m_steps_to_go;
     int              m_cycles;
     // Methods
@@ -57,7 +56,7 @@ private:
     Core(const Core &);
     Core &operator=(const Core&);
 protected:
-    Core(Memory &, const Configurator &);
+    Core(const Configurator &);
     void start();
     void stop();
 public:
@@ -82,6 +81,8 @@ public:
     };
     class Instruction; // Forward declaration
     // Attributes
+public:
+    Device           &m_memory;
 private:
     std::vector<std::shared_ptr<Instruction>> m_opcode_mapping;
 public:
@@ -93,11 +94,11 @@ public:
 #if JUMP_TRACE
     log4c_category_t *m_jumptracelog;
 private:
-    int m_trace_finish_priority;
-    unsigned int m_trace_start_count;
+    int               m_trace_finish_priority;
+    unsigned int      m_trace_start_count;
 #endif
 public:
-    volatile int        m_InterruptSource;
+    volatile int      m_InterruptSource;
     struct {
         word PC;
         byte A;
@@ -111,7 +112,7 @@ private:
     void interrupt(word p_addr);
     void construct();
 public:
-    explicit MCS6502(Memory &, const Configurator &);
+    explicit MCS6502(Device &, const Configurator &);
     virtual ~MCS6502();
     virtual void reset(InterruptState p_is = INTERRUPT_PULSE);
     virtual void NMI  (InterruptState p_is = INTERRUPT_PULSE);

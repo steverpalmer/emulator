@@ -15,6 +15,7 @@ common_env['CPPPATH']   = [r'.']
 common_env['LINKFLAGS'] = r'-pthread'
 
 add_library(common_env, 'liblog4cxx')
+add_library(common_env, 'glibmm-2.4')
 
 common_env['BUILDERS']['rng2rnc'] = Builder(action='trang -I rng -O rnc $SOURCE $TARGET',
                                             suffix='rnc', src_suffix='rng')

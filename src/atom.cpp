@@ -22,116 +22,74 @@ static log4cxx::LoggerPtr cpptrace_log()
 }
 
 Atom::Atom(const Configurator &p_cfg)
-    : Named    (p_cfg)
-    , m_memory (p_cfg.memory())
-    , m_6502   (m_memory, p_cfg.mcs6502())
+    : Part(p_cfg)
+    , m_memory(p_cfg.memory())
+    , m_6502(m_memory, p_cfg.mcs6502())
 {
     LOG4CXX_INFO(cpptrace_log(), "Atom::Atom(" << p_cfg << ")");
+#if 0
     const Device::Configurator *d_cfg;
     for (int i(0); (d_cfg = p_cfg.device(i)); i++)
     {
     	std::shared_ptr<Device> device(d_cfg->factory());
     	m_devices.push_back(device);
     	m_memory.add_device(d_cfg->base(), device, d_cfg->memory_size());
-        if (device->name() == "video")
+        if (device->id() == "video")
         	m_video_ram = std::shared_ptr<Ram>(dynamic_cast<Ram *>(device.operator->()));
-        else if (device->name() == "ppia")
+        else if (device->id() == "ppia")
             m_ppia  = std::shared_ptr<Ppia>(dynamic_cast<Ppia *>(device.operator->()));
     }
+#endif
     reset();
 }
 
 Atom::~Atom()
 {
-    LOG4CXX_INFO(cpptrace_log(), "[" << name() << "].~Atom()");
+    LOG4CXX_INFO(cpptrace_log(), "[" << id() << "].~Atom()");
     m_memory.drop_devices();
 }
 
 int Atom::cycles() const
 {
-    LOG4CXX_INFO(cpptrace_log(), "[" << name() << "].cycles()");
+    LOG4CXX_INFO(cpptrace_log(), "[" << id() << "].cycles()");
     return m_6502.m_cycles;
 }
 
 void Atom::reset()
 {
-    LOG4CXX_INFO(cpptrace_log(), "[" << name() << "].reset()");
-    for (std::shared_ptr<Device> d : m_devices)
-        d->reset();
+    LOG4CXX_INFO(cpptrace_log(), "[" << id() << "].reset()");
     m_memory.reset();
     m_6502.reset();
 }
 
 void Atom::NMI()
 {
-    LOG4CXX_INFO(cpptrace_log(), "[" << name() << "].NMI()");
+    LOG4CXX_INFO(cpptrace_log(), "[" << id() << "].NMI()");
     m_6502.NMI();
 }
 
 void Atom::IRQ()
 {
-    LOG4CXX_INFO(cpptrace_log(), "[" << name() << "].IRQ()");
+    LOG4CXX_INFO(cpptrace_log(), "[" << id() << "].IRQ()");
     m_6502.IRQ();
 }
 
 void Atom::step(int p_cnt)
 {
-    LOG4CXX_INFO(cpptrace_log(), "[" << name() << "].step(" << p_cnt << ")");
+    LOG4CXX_INFO(cpptrace_log(), "[" << id() << "].step(" << p_cnt << ")");
     m_6502.step(p_cnt);
 }
 
 void Atom::resume()
 {
-    LOG4CXX_INFO(cpptrace_log(), "[" << name() << "].resume()");
+    LOG4CXX_INFO(cpptrace_log(), "[" << id() << "].resume()");
     m_6502.resume();
 }
 
 void Atom::pause()
 {
-    LOG4CXX_INFO(cpptrace_log(), "[" << name() << "].pause()");
+    LOG4CXX_INFO(cpptrace_log(), "[" << id() << "].pause()");
     m_6502.pause();
-}
-
-VDGMode Atom::vdg_mode() const
-{
-    LOG4CXX_INFO(cpptrace_log(), "[" << name() << "].vdg_mode()");
-    return m_ppia->m_io.m_vdg_mode;
-}
-
-const std::shared_ptr<Ram> &Atom::vdg_memory() const
-{
-    LOG4CXX_INFO(cpptrace_log(), "[" << name() << "].vdg_ram()");
-    return m_video_ram;
-}
-
-void Atom::set_vdg_refresh(bool p_is_refresh)
-{
-    LOG4CXX_INFO(cpptrace_log(), "[" << name() << "].set_vdg_refresh(" << p_is_refresh << ")");
-    m_ppia->m_io.m_is_vdg_refresh = p_is_refresh;
-}
-
-void Atom::set_keypress(int p_key)
-{
-    LOG4CXX_INFO(cpptrace_log(), "[" << name() << "].set_keypress(" << p_key << ")");
-    m_ppia->m_io.m_pressed_key = p_key;
-}
-
-void Atom::set_is_shift_pressed(bool p_is_shift_pressed)
-{
-    LOG4CXX_INFO(cpptrace_log(), "[" << name() << "].set_is_shift_pressed(" << p_is_shift_pressed << ")");
-    m_ppia->m_io.m_is_shift_pressed = p_is_shift_pressed;
-}
-
-void Atom::set_is_ctrl_pressed(bool p_is_ctrl_pressed)
-{
-    LOG4CXX_INFO(cpptrace_log(), "[" << name() << "].set_is_ctrl_pressed(" << p_is_ctrl_pressed << ")");
-    m_ppia->m_io.m_is_ctrl_pressed = p_is_ctrl_pressed;
-}
-
-void Atom::set_is_rept_pressed(bool p_is_rept_pressed)
-{
-    LOG4CXX_INFO(cpptrace_log(), "[" << name() << "].set_is_rept_pressed(" << p_is_rept_pressed << ")");
-    m_ppia->m_io.m_is_rept_pressed = p_is_rept_pressed;
 }
 
 std::ostream &operator<<(std::ostream &p_s, const Atom::Configurator &p_cfg)

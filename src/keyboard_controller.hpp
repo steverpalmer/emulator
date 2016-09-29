@@ -51,23 +51,24 @@
 #include <SDL.h>
 
 #include "common.hpp"
-#include "atom.hpp"
+#include "part.hpp"
+#include "terminal_interface.hpp"
 
-class KeyboardController : public Named {
+class KeyboardController : public Part {
     // Types
 public:
-    class Configurator : public Named::Configurator
+    class Configurator : public Part::Configurator
     {
     public:
         friend std::ostream &::operator <<(std::ostream &, const Configurator &);
     };
 private:
-    Atom &m_atom;
+    TerminalInterface &m_terminal;
 private:
     KeyboardController(const KeyboardController &);
     KeyboardController &operator=(const KeyboardController&);
 public:
-    KeyboardController(Atom &, const Configurator &);
+    KeyboardController(TerminalInterface &, const Configurator &);
     void update(SDL_KeyboardEvent *);
 
     friend std::ostream &::operator<<(std::ostream&, const KeyboardController &);

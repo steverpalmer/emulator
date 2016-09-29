@@ -29,20 +29,20 @@ static Uint32 callback(Uint32 interval, void *param)
     return interval;
 }
 
-ScreenGraphicsController::ScreenGraphicsController(Atom &p_atom, const Configurator &p_cfg)
-    : Named(p_cfg)
-    , m_atom(p_atom)
-    , m_view(new ScreenGraphicsView(p_atom, p_cfg.view()))
+ScreenGraphicsController::ScreenGraphicsController(TerminalInterface &p_terminal, const Configurator &p_cfg)
+    : Part(p_cfg)
+    , m_terminal(p_terminal)
+    , m_view(new ScreenGraphicsView(p_terminal, NULL, p_cfg.view()))
     , m_timer(SDL_AddTimer(std::ceil(1000.0 / p_cfg.RefreshRate_Hz()), callback, 0))
 {
-    LOG4CXX_INFO(cpptrace_log(), "ScreenGraphicsController::ScreenGraphicsController([" << p_atom.name() << "], " << p_cfg << ")");
+    LOG4CXX_INFO(cpptrace_log(), "ScreenGraphicsController::ScreenGraphicsController(" << p_cfg << ")");
     assert (m_view);
     assert (m_timer);
 }
 
 ScreenGraphicsController::~ScreenGraphicsController()
 {
-    LOG4CXX_INFO(cpptrace_log(), "[" << name() << "].~ScreenGraphicsController()");
+    LOG4CXX_INFO(cpptrace_log(), "[" << id() << "].~ScreenGraphicsController()");
     const SDL_bool rv = SDL_RemoveTimer(m_timer);
     assert(rv);
     delete m_view;
@@ -50,15 +50,15 @@ ScreenGraphicsController::~ScreenGraphicsController()
 
 void ScreenGraphicsController::update()
 {
-    LOG4CXX_INFO(cpptrace_log(), "[" << name() << "].update()");
-    m_atom.set_vdg_refresh(true);
+    LOG4CXX_INFO(cpptrace_log(), "[" << id() << "].update()");
+    m_terminal.set_vdg_refresh(true);
     m_view->update();
-    m_atom.set_vdg_refresh(false);
+    m_terminal.set_vdg_refresh(false);
 }
 
 std::ostream &operator<<(std::ostream &p_s, const ScreenGraphicsController::Configurator &p_cfg)
 {
-    p_s << static_cast<const Named::Configurator &>(p_cfg)
+    p_s << static_cast<const Part::Configurator &>(p_cfg)
         << ", view=(" << p_cfg.view() << ")"
         << ", RefreshRate_Hz=" << p_cfg.RefreshRate_Hz();
     return p_s;
@@ -67,9 +67,8 @@ std::ostream &operator<<(std::ostream &p_s, const ScreenGraphicsController::Conf
 std::ostream &operator<<(std::ostream &p_s, const ScreenGraphicsController &p_sgc)
 {
     p_s << "<ScreenGraphicsController>";
-    p_s << static_cast<const Named &>(p_sgc);
-    p_s << "<atom>[" << p_sgc.m_atom.name() << "]</atom>";
-    p_s << "<view>[" << p_sgc.m_view->name() << "]</view>";
+    p_s << static_cast<const Part &>(p_sgc);
+    p_s << "<view>[" << p_sgc.m_view->id() << "]</view>";
     p_s << "</ScreenGraphicsController>";
     return p_s;
 }

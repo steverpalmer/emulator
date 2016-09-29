@@ -13,10 +13,10 @@
 #include <ostream>
 
 #include "common.hpp"
-#include "atom.hpp"
+#include "terminal_interface.hpp"
 #include "screen_graphics_view.hpp"
 
-class ScreenGraphicsController : public Named {
+class ScreenGraphicsController : public Part {
     // Types
 public:
     class Configurator : public Named::Configurator
@@ -28,14 +28,14 @@ public:
         friend std::ostream &::operator <<(std::ostream &, const Configurator &);
     };
 private:
-    Atom               &m_atom;
+    TerminalInterface  &m_terminal;
     ScreenGraphicsView *m_view;
     SDL_TimerID        m_timer;
 private:
     ScreenGraphicsController(const ScreenGraphicsController &);
     ScreenGraphicsController &operator=(const ScreenGraphicsController&);
 public:
-    ScreenGraphicsController(Atom &, const Configurator &);
+    ScreenGraphicsController(TerminalInterface &, const Configurator &);
     virtual ~ScreenGraphicsController();
     void update();
 

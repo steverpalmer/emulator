@@ -14,14 +14,15 @@
 #include <list>
 
 #include "common.hpp"
-#include "memory.hpp"
+#include "terminal_interface.hpp"
+#include "device.hpp"
 #include "ppia.hpp"
 #include "cpu.hpp"
 
-class Atom : public Named {
+class Atom : public Part, public TerminalInterface {
     // Types
 public:
-    class Configurator : public Named::Configurator
+    class Configurator : public Part::Configurator
     {
     public:
         virtual const Device::Configurator  *device(int i)     const = 0;
@@ -33,7 +34,6 @@ public:
     // Attributes
 private:
     std::list<std::shared_ptr<Device>> m_devices;
-    std::shared_ptr<Ram>  m_video_ram;
     std::shared_ptr<Ppia> m_ppia;
     Memory                m_memory;
     MCS6502               m_6502;
@@ -55,13 +55,18 @@ public:
     void    resume();
     void    pause();
 
-    VDGMode                 vdg_mode() const;
-    const std::shared_ptr<Ram> &vdg_memory() const;
-    void                    set_vdg_refresh(bool);
-    void                    set_keypress(int key);
-    void                    set_is_shift_pressed(bool);
-    void                    set_is_ctrl_pressed(bool);
-    void                    set_is_rept_pressed(bool);
+    VDGMode vdg_mode() const
+        { return m_ppia->vdg_mode(); }
+    void set_vdg_refresh(bool p_flag)
+        { m_ppia->set_vdg_refresh(p_flag); }
+    void set_keypress(int p_key)
+        { m_ppia->set_keypress(p_key); }
+    void set_is_shift_pressed(bool p_flag)
+        { m_ppia->set_is_shift_pressed(p_flag); }
+    void set_is_ctrl_pressed(bool p_flag)
+        { m_ppia->set_is_ctrl_pressed(p_flag); }
+    void set_is_rept_pressed(bool p_flag)
+        { m_ppia->set_is_rept_pressed(p_flag); }
 
     friend std::ostream &::operator<<(std::ostream&, const Atom&);
 };

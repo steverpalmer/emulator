@@ -5,8 +5,8 @@
  *      Author: steve
  */
 
-#ifndef TRIVIA_HPP_
-#define TRIVIA_HPP_
+#ifndef COMMON_HPP_
+#define COMMON_HPP_
 
 #define CTRACE_PREFIX "ctrace"
 
@@ -21,41 +21,7 @@ typedef int16_t  signed_word;
 #include <ostream>
 #include <iomanip>
 
-
 #define SIZE(n) (word((n)-word(1))+1)
-
-class Named {
-public:
-	class Configurator
-	{
-	public:
-		virtual const std::string &name() const = 0;
-
-		friend std::ostream &::operator <<(std::ostream &p_s, const Configurator &p_cfg)
-		{
-			p_s << "name=\"";
-			p_s << p_cfg.name();
-			p_s << "\"";
-			return p_s;
-		}
-	};
-private:
-	const std::string m_name;
-public:
-	const std::string &name() const { return m_name; }
-protected:
-	Named(const std::string &p_name = "") : m_name(p_name) {}
-	Named(const Configurator &p_cfg) : m_name(p_cfg.name()) {}
-private:
-	Named(const Named &);
-	Named &operator=(const Named &);
-
-	friend std::ostream &operator<<(std::ostream &p_s, const Named& p_n)
-	{
-		p_s << "name:\"" << p_n.m_name << "\"";
-		return p_s;
-	}
-};
 
 class Hex {
 	unsigned int m_v;
@@ -65,10 +31,9 @@ public:
 	explicit Hex(word p_v) : m_v(p_v), m_w(4) {}
 	friend std::ostream &operator<<(std::ostream &p_s, const Hex& p_n)
 	{
-		p_s << std::hex << std::setw(p_n.m_w) << std::setfill('0') << std::uppercase << p_n.m_v;
-		return p_s;
+		return p_s << std::hex << std::setw(p_n.m_w) << std::setfill('0') << std::uppercase << p_n.m_v;
 	}
 };
 
 
-#endif /* TRIVIA_HPP_ */
+#endif /* COMMON_HPP_ */

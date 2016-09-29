@@ -12,6 +12,7 @@
 #include <iomanip>
 
 #include <log4cxx/logger.h>
+#include <glibmm/ustring.h>
 
 #include "cpu.hpp"
 
@@ -33,19 +34,18 @@ static log4cxx::LoggerPtr cpptrace_log()
 
 #define INFINITE_STEPS_TO_GO static_cast<unsigned int>(-1)
 
-Core::Core(Memory &p_memory, const Configurator &p_cfg)
-    : Named(p_cfg)
+Core::Core(const Configurator &p_cfg)
+    : Part(p_cfg)
     , m_thread(pthread_self())
-    , m_memory(p_memory)
     , m_steps_to_go(0)
     , m_cycles(0)
 {
-    LOG4CXX_INFO(cpptrace_log(), "Core::Core([" << p_memory.name() << "], " << p_cfg << ")");
+    LOG4CXX_INFO(cpptrace_log(), "Core::Core(" << p_cfg << ")");
 }
 
 Core::~Core()
 {
-    LOG4CXX_INFO(cpptrace_log(), "[" << name() << "].~Core()");
+    LOG4CXX_INFO(cpptrace_log(), "[" << id() << "].~Core()");
     if (!pthread_equal(m_thread, pthread_self())) {
         pthread_cancel(m_thread);
         pthread_join(m_thread, 0); // Wait for thread to terminate
@@ -57,7 +57,7 @@ Core::~Core()
 void *loop(void *p)
 {
     Core &c(*static_cast<Core *>(p));
-    LOG4CXX_INFO(cpptrace_log(), "[" << c.name() << "].loop() started");
+    LOG4CXX_INFO(cpptrace_log(), "[" << c.id() << "].loop() started");
     for(;;) {
         if (c.m_steps_to_go) {
             c.single_step();
@@ -70,7 +70,7 @@ void *loop(void *p)
 
 void Core::start()
 {
-    LOG4CXX_INFO(cpptrace_log(), "[" << name() << "].start()");
+    LOG4CXX_INFO(cpptrace_log(), "[" << id() << "].start()");
     if (pthread_equal(m_thread, pthread_self())) {
         const int rv = pthread_create(&m_thread, 0, loop, this);
         assert (!rv);
@@ -79,7 +79,7 @@ void Core::start()
 
 void Core::step(int p_cnt)
 {
-    LOG4CXX_INFO(cpptrace_log(), "[" << name() << "].step(" << p_cnt << ")");
+    LOG4CXX_INFO(cpptrace_log(), "[" << id() << "].step(" << p_cnt << ")");
 #if EXEC_TRACE
     dump(m_6502tracelog, 1);
 #endif
@@ -91,14 +91,14 @@ void Core::step(int p_cnt)
 
 void Core::resume()
 {
-    LOG4CXX_INFO(cpptrace_log(), "[" << name() << "].resume()");
+    LOG4CXX_INFO(cpptrace_log(), "[" << id() << "].resume()");
     m_steps_to_go = INFINITE_STEPS_TO_GO;
     start();
 }
 
 void Core::pause()
 {
-    LOG4CXX_INFO(cpptrace_log(), "[" << name() << "].pause()");
+    LOG4CXX_INFO(cpptrace_log(), "[" << id() << "].pause()");
     m_steps_to_go = 0;
     start();
 }
@@ -356,12 +356,10 @@ inline void PUSH_WORD(MCS6502 &p_6502, word p_word)
 /// Cpu::Instruction General Utilities
 ///****************************************************************************
 
-class MCS6502::Instruction : public Named {
+class MCS6502::Instruction : public Part {
     // Attributes
 private:
-    const std::string m_prefix;
     const int         m_args;
-    const std::string m_suffix;
 protected:
     MCS6502           &m_6502;
 public:
@@ -372,11 +370,11 @@ private:
     Instruction & operator= (const Instruction &);
 protected:
     Instruction( MCS6502 &p_6502
-                 , int p_opcode
-                 , int p_cycles
-                 , const std::string p_prefix
-                 , int p_args = 0
-                 , const std::string p_suffix = "");
+               , int p_opcode
+               , int p_cycles
+               , const Glib::ustring p_prefix
+               , int p_args = 0
+               , const Glib::ustring p_suffix = "");
 public:
     virtual void execute() = 0;
 
@@ -384,15 +382,13 @@ public:
 };
 
 MCS6502::Instruction::Instruction( MCS6502 &p_6502
-                                   , int p_opcode
-                                   , int p_cycles
-                                   , const std::string p_prefix
-                                   , int p_args
-                                   , const std::string p_suffix)
-    : Named(p_prefix + std::string(p_args < 0 ? 4 : p_args * 2, '_') + p_suffix)
-    , m_prefix(p_prefix)
+                                 , int p_opcode
+                                 , int p_cycles
+                                 , const Glib::ustring p_prefix
+                                 , int p_args
+                                 , const Glib::ustring p_suffix)
+    : Part("MCS6502:Instruction:" + p_prefix + Glib::ustring(p_args < 0 ? 4 : p_args * 2, '_') + p_suffix)
     , m_args(p_args)
-    , m_suffix(p_suffix)
     , m_6502(p_6502)
     , m_cycles(p_cycles)
 {
@@ -2357,12 +2353,14 @@ public:
 /// E0: CPX SBC  -   -  CPX SBC INC  -  INX SBC NOP  -  CPX SBC INC  -
 /// F0: BEQ SBC  -   -   -  SBC INC  -  SED SBC  -   -   -  SBC INC  -
 ///*****************************************************************************
-MCS6502::MCS6502(Memory &p_memory, const Configurator &p_cfg)
-    : Core(p_memory, p_cfg)
+MCS6502::MCS6502(Device &p_memory, const Configurator &p_cfg)
+    : Core(p_cfg)
+    , m_memory(p_memory)
     , m_opcode_mapping(256, std::shared_ptr<MCS6502::Instruction>(new Instr_Undefined(*this)))
     , m_InterruptSource(NO_INTERRUPT)
 {
-    LOG4CXX_INFO(cpptrace_log(), "MCS6502::MCS6502([" << p_memory.name() << "], " << p_cfg << ")");
+    LOG4CXX_INFO(cpptrace_log(), "MCS6502::MCS6502([" << p_memory.id() << "], " << p_cfg << ")");
+    assert (SIZE(m_memory.size()) == 65536);
     new Instr_BRK(*this);
     new Instr_ORA_PRE_INDEXED_INDIRECT(*this);
     new Instr_ORA_ZERO(*this);
@@ -2519,12 +2517,12 @@ MCS6502::MCS6502(Memory &p_memory, const Configurator &p_cfg)
 
 MCS6502::~MCS6502()
 {
-    LOG4CXX_INFO(cpptrace_log(), "[" << name() << "].~Cpu()");
+    LOG4CXX_INFO(cpptrace_log(), "[" << id() << "].~Cpu()");
 }
 
 void MCS6502::single_step()
 {
-    LOG4CXX_INFO(cpptrace_log(), "[" << name() << "].single_step()");
+    LOG4CXX_INFO(cpptrace_log(), "[" << id() << "].single_step()");
 #if EXEC_TRACE
     dump(m_6502tracelog, 1);
 #endif
@@ -2591,7 +2589,7 @@ void MCS6502::single_step()
 
 void MCS6502::reset(InterruptState p_is)
 {
-    LOG4CXX_INFO(cpptrace_log(), "[" << name() << "].reset(" << p_is << ")");
+    LOG4CXX_INFO(cpptrace_log(), "[" << id() << "].reset(" << p_is << ")");
     switch (p_is) {
     case INTERRUPT_ON:
         m_InterruptSource |= RESET_INTERRUPT_ON;
@@ -2613,7 +2611,7 @@ void MCS6502::reset(InterruptState p_is)
 
 void MCS6502::NMI(InterruptState p_is)
 {
-    LOG4CXX_INFO(cpptrace_log(), "[" << name() << "].NMI(" << p_is << ")");
+    LOG4CXX_INFO(cpptrace_log(), "[" << id() << "].NMI(" << p_is << ")");
     switch (p_is) {
     case INTERRUPT_ON:
         m_InterruptSource |= NMI_INTERRUPT_ON;
@@ -2635,7 +2633,7 @@ void MCS6502::NMI(InterruptState p_is)
 
 void MCS6502::IRQ(InterruptState p_is)
 {
-    LOG4CXX_INFO(cpptrace_log(), "[" << name() << "].IRQ(" << p_is << ")");
+    LOG4CXX_INFO(cpptrace_log(), "[" << id() << "].IRQ(" << p_is << ")");
     switch (p_is) {
     case INTERRUPT_ON:
         m_InterruptSource |= IRQ_INTERRUPT_ON;
@@ -2658,7 +2656,7 @@ void MCS6502::IRQ(InterruptState p_is)
 #if 0
 void MCS6502::trace_start()
 {
-    CPU_CTRACE_LOG("Cpu::trace_start(\"%s\")", name());
+    CPU_CTRACE_LOG("Cpu::trace_start(\"%s\")", id());
 #if EXEC_TRACE
     const int previous_priority(log4c_category_set_priority(m_6502tracelog, LOG4C_PRIORITY_INFO));
     if (m_trace_start_count == 0) {
@@ -2673,7 +2671,7 @@ void MCS6502::trace_start()
 
 void MCS6502::trace_finish()
 {
-    CPU_CTRACE_LOG("Cpu::trace_finish(\"%s\")", name());
+    CPU_CTRACE_LOG("Cpu::trace_finish(\"%s\")", id());
     if (m_trace_start_count > 0) {
         m_trace_start_count--;
 #if EXEC_TRACE
@@ -2691,18 +2689,16 @@ void MCS6502::trace_finish()
 
 std::ostream &operator<<(std::ostream &p_s, const Core::Configurator &p_cfg)
 {
-    p_s << "Core::Configurator("
-        << static_cast<const Named::Configurator &>(p_cfg)
-        << ")";
-    return p_s;
+    return p_s << "Core::Configurator("
+               << static_cast<const Part::Configurator &>(p_cfg)
+               << ")";
 }
 
 std::ostream &operator<<(std::ostream &p_s, const MCS6502::Configurator &p_cfg)
 {
-    p_s << "MCS6502::Configurator("
-        << static_cast<const Core::Configurator &>(p_cfg)
-        << ")";
-    return p_s;
+    return p_s << "MCS6502::Configurator("
+               << static_cast<const Core::Configurator &>(p_cfg)
+               << ")";
 }
 
 std::ostream &operator<<(std::ostream &p_s, const InterruptState &p_is)
@@ -2722,11 +2718,9 @@ std::ostream &operator<<(std::ostream &p_s, const InterruptState &p_is)
 
 std::ostream &operator<<(std::ostream &p_s, const Core &p_c)
 {
-    p_s << static_cast<const Named &>(p_c)
-        << ", Memory:"    << p_c.m_memory.name()
-        << ", Running:"   << !pthread_equal(p_c.m_thread, pthread_self())
-        << ", StepsToGo:" << p_c.m_steps_to_go;
-    return p_s;
+    return p_s << static_cast<const Part &>(p_c)
+               << ", Running:"   << !pthread_equal(p_c.m_thread, pthread_self())
+               << ", StepsToGo:" << p_c.m_steps_to_go;
 }
 
 std::ostream &operator<<(std::ostream &p_s, const InterruptSource &p_is)
@@ -2747,14 +2741,13 @@ std::ostream &operator<<(std::ostream &p_s, const Instr_Undefined &p_i)
 {
     const word PC(p_i.m_6502.m_register.PC-1);
     const byte opcode(p_i.m_6502.m_memory.get_byte(PC));
-    p_s << "Opcode:" << Hex(opcode);
-    return p_s;
+    return p_s << "Opcode:" << Hex(opcode);
 }
 
 std::ostream &operator<<(std::ostream &p_s, const MCS6502::Instruction &p_i)
 {
     int val(0);
-    p_s << Hex(p_i.m_6502.m_register.PC) << ": " << p_i.name();
+    p_s << Hex(p_i.m_6502.m_register.PC) << ": " << p_i.id();
     switch (p_i.m_args) {
     case -1: /* Relative */
         val = p_i.m_6502.m_register.PC;
@@ -2773,19 +2766,18 @@ std::ostream &operator<<(std::ostream &p_s, const MCS6502::Instruction &p_i)
         p_s << '#' << Hex(static_cast<word>(val));
         break;
     }
-    p_s << p_i.m_suffix << std::endl;
-    return p_s;
+    return p_s << std::endl;
 }
 
 std::ostream &operator<<(std::ostream &p_s, const MCS6502 &p_6502)
 {
-    p_s << static_cast<const Named &>(p_6502)
-        << ", PC:" << Hex(p_6502.m_register.PC)
-        << ", A:"  << Hex(p_6502.m_register.A)
-        << ", X:"  << Hex(p_6502.m_register.X)
-        << ", Y:"  << Hex(p_6502.m_register.Y)
-        << ", S:"  << Hex(p_6502.m_register.S)
-        << ", P:"  << Hex(p_6502.m_register.P)
-        << ", IntrSrc:" << p_6502.m_InterruptSource;
-    return p_s;
+    return p_s << static_cast<const Core &>(p_6502)
+               << ", Memory:"  << p_6502.m_memory.id()
+               << ", PC:" << Hex(p_6502.m_register.PC)
+               << ", A:"  << Hex(p_6502.m_register.A)
+               << ", X:"  << Hex(p_6502.m_register.X)
+               << ", Y:"  << Hex(p_6502.m_register.Y)
+               << ", S:"  << Hex(p_6502.m_register.S)
+               << ", P:"  << Hex(p_6502.m_register.P)
+               << ", IntrSrc:" << p_6502.m_InterruptSource;
 }

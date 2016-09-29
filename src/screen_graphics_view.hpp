@@ -14,12 +14,13 @@
 #include <array>
 
 #include "common.hpp"
-#include "atom.hpp"
+#include "terminal_interface.hpp"
+#include "device.hpp"
 
-class ScreenGraphicsView : public Named {
+class ScreenGraphicsView : public Part {
     // Types
 public:
-    class Configurator : public Named::Configurator
+    class Configurator : public Part::Configurator
     {
     public:
         virtual float scale() const = 0;
@@ -30,21 +31,21 @@ public:
         friend std::ostream &::operator <<(std::ostream &, const Configurator &);
     };
 private:
-    const Atom                 &m_atom;
-    const std::shared_ptr<Ram> &m_video_memory;
-    SDL_Surface                *m_screen;
-    std::vector<int>            m_rendered;
+    const TerminalInterface       &m_terminal;
+    Device                        &m_memory;
+    SDL_Surface                   *m_screen;
+    std::vector<int>               m_rendered;
     // Mode 0 Stuff
-    int                         m_character_w;
-    int                         m_character_h;
-    std::vector<SDL_Surface *>  m_glyph;
+    int                            m_character_w;
+    int                            m_character_h;
+    std::vector<SDL_Surface *>     m_glyph;
 private:
     ScreenGraphicsView(const ScreenGraphicsView &);
     ScreenGraphicsView &operator=(const ScreenGraphicsView&);
     SDL_Surface *scale_and_convert_surface(SDL_Surface *src);
     void render_mode0();
 public:
-    ScreenGraphicsView(Atom &, const Configurator &);
+    ScreenGraphicsView(const TerminalInterface &, Device &, const Configurator &);
     virtual ~ScreenGraphicsView();
     void update();
 

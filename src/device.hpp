@@ -15,9 +15,11 @@
 #include <memory>
 
 #include "common.hpp"
+#include "part.hpp"
 
 enum AccessType {AT_UNKNOWN, AT_INSTRUCTION, AT_OPERAND, AT_DATA, AT_LAST};
 extern std::ostream &operator<<(std::ostream &, const AccessType);
+
 
 /// Model of all memory mapped devices.
 ///
@@ -32,13 +34,13 @@ extern std::ostream &operator<<(std::ostream &, const AccessType);
 ///
 /// It also provides a few helpers for getting and putting words as
 /// combinations of getting and putting words (Low Endian).
-class Device : public Named {
+class Device : public Part {
     // Types
 public:
 	/// The Device Configurator is an interface to two key items
 	/// 1. the information needed by the device to construct an instance
 	/// 2. a factory method that builds the instance of the device
-    class Configurator : public Named::Configurator
+    class Configurator : public Part::Configurator
     {
     public:
     	/// 1. Constructor Information - Name only at this level
@@ -64,6 +66,7 @@ public:
     friend std::ostream &::operator<<(std::ostream &, const Device &);
 };
 
+
 /// SimpleMemory is the basic model of memory
 ///
 /// The difference bewteen Ram and Rom are:
@@ -76,15 +79,18 @@ class SimpleMemory {
     std::vector<byte> m_storage;
 public:
     SimpleMemory(int size) : m_storage(size, 0) {}
-    inline word size()
+    inline word size() const
         { return m_storage.size(); }
     inline byte get_byte(word p_addr, AccessType p_at)
         { return m_storage[p_addr]; }
-    inline byte set_byte(word p_addr, byte p_byte, AccessType p_at)
+    inline void set_byte(word p_addr, byte p_byte, AccessType p_at)
         { m_storage[p_addr] = p_byte; }
-    bool load(const std::string &p_filename);
-    bool save(const std::string &p_filename) const;
+    bool load(const Glib::ustring &p_filename);
+    bool save(const Glib::ustring &p_filename) const;
+
+    friend std::ostream &::operator<<(std::ostream &, const SimpleMemory &);
 };
+
 
 /// Ram is a trivial implementation of Device as a simple RAM device.
 ///
@@ -97,7 +103,7 @@ public:
     public:
     	/// 1. Constructor Information
     	virtual word size() const = 0;
-        virtual const std::string &filename() const = 0;
+        virtual const Glib::ustring &filename() const = 0;
     	/// 2. Factory Method
         virtual std::unique_ptr<Device> factory() const
             { return std::unique_ptr<Device>(new Ram(*this)); }
@@ -107,7 +113,7 @@ public:
     // Attributes
 private:
     SimpleMemory m_memory;
-    std::string m_filename;
+    Glib::ustring m_filename;
     // Methods
 private:
     Ram(const Ram &);
@@ -123,8 +129,8 @@ public:
         { m_memory.set_byte(p_addr, p_byte, p_at); }
 
     friend std::ostream &::operator<<(std::ostream &, const Ram &);
-
 };
+
 
 /// Rom is a trivial implementation of Device as a simple ROM device.
 ///
@@ -137,7 +143,7 @@ public:
     {
     public:
     	/// 1. Constructor Information
-        virtual const std::string &filename() const = 0;
+        virtual const Glib::ustring &filename() const = 0;
     	virtual word size() const = 0;
         /// 2. Factory Method
         virtual std::unique_ptr<Device> factory() const
@@ -166,6 +172,7 @@ public:
 
 };
 
+
 #if 0
 class Hook: public Device
 {
@@ -192,6 +199,7 @@ public:
 };
 #endif
 
+
 /// This is the Main Memory class whose primary client in the CPU.
 ///
 /// It is a composite pattern with the actual memory being made up
@@ -204,12 +212,13 @@ public:
     {
     public:
     	/// 1. Constructor Information
+        virtual word size() const { return 0; }
         struct mapping {
-            word base;
-            Device::Configurator device;
-            word size;
+            word                 base;
+            Device::Configurator *device;
+            word                 size;
         };
-        virtual const std::unique_ptr<struct mapping> device(int i) const = 0;
+        virtual mapping &device(int i) const = 0;
         /// 2. Factory Method
         virtual std::unique_ptr<Device> factory() const
             { return std::unique_ptr<Device>(new Memory(*this)); }

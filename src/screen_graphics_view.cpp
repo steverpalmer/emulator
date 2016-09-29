@@ -26,7 +26,7 @@ static log4cxx::LoggerPtr cpptrace_log()
     return result;
 }
 
-class SurfaceArray : public Named {
+class SurfaceArray {
 private:
     SDL_Surface *m_array;
     SDL_Rect     m_pos;
@@ -37,13 +37,12 @@ public:
     int         key() const { return m_key; }
     void        update() { SDL_UpdateRect(m_array, m_pos.x, m_pos.y, m_pos.w, m_pos.h); }
 
-    SurfaceArray( SDL_Surface *p_surface, std::string p_name = "", int x_range = 1, int y_range = 1, int p_key = 0 )
-        : Named(p_name)
-        , m_array(p_surface)
+    SurfaceArray( SDL_Surface *p_surface, int x_range = 1, int y_range = 1, int p_key = 0 )
+        : m_array(p_surface)
         , m_x_range(x_range)
         , m_key(p_key)
         {
-            LOG4CXX_INFO(cpptrace_log(), "SurfaceArray::SurfaceArray(" << p_surface << ", [" << p_name << "], " << x_range << ", " << y_range << ", " << p_key << ")");
+            LOG4CXX_INFO(cpptrace_log(), "SurfaceArray::SurfaceArray(" << p_surface << ", " << x_range << ", " << y_range << ", " << p_key << ")");
             assert (p_surface);
             assert (p_surface->w % x_range == 0);
             assert (p_surface->h % y_range == 0);
@@ -61,7 +60,7 @@ public:
     // ~SurfaceArray();
     SurfaceArray  &operator++()
         {
-            LOG4CXX_INFO(cpptrace_log(), "[" << name() << "].operator++()");
+            LOG4CXX_INFO(cpptrace_log(), "operator++()");
             m_key++;
             m_pos.x += m_pos.w;
             if (m_pos.x >= m_array->w) {
@@ -72,7 +71,7 @@ public:
         }
     SurfaceArray  &operator--()
         {
-            LOG4CXX_INFO(cpptrace_log(), "[" << name() << "].operator--()");
+            LOG4CXX_INFO(cpptrace_log(), "operator--()");
             if (m_pos.x == 0)
             {
                 m_pos.x = m_array->w;
@@ -84,19 +83,19 @@ public:
         }
     operator bool() const
         {
-            LOG4CXX_INFO(cpptrace_log(), "[" << name() << "].operator bool()");
+            LOG4CXX_INFO(cpptrace_log(), "operator bool()");
             return (0 <= m_pos.x && m_pos.x + m_pos.w <= m_array->w) &&
                 (0 <= m_pos.y && m_pos.y + m_pos.h <= m_array->h);
         }
     bool fill(Uint32 color)
         {
-            LOG4CXX_INFO(cpptrace_log(), "[" << name() << "].fill(" << color << ")");
+            LOG4CXX_INFO(cpptrace_log(), "fill(" << color << ")");
             const int rv = SDL_FillRect(m_array, &m_pos, color);
             return rv == 0;
         }
     SDL_Rect at(int p_key) const
         {
-            LOG4CXX_INFO(cpptrace_log(), "[" << name() << "].at(" << p_key << ")");
+            LOG4CXX_INFO(cpptrace_log(), "at(" << p_key << ")");
             SDL_Rect result(m_pos);
             const int y(p_key / m_x_range);
             result.x = (p_key - y * m_x_range) * result.w;
@@ -105,7 +104,7 @@ public:
         }
     void set(const SurfaceArray &other, int p_key = -1)
         {
-            LOG4CXX_INFO(cpptrace_log(), "[" << name() << "].set([" << other.name() << "], " << p_key << ")");
+            LOG4CXX_INFO(cpptrace_log(), "set(" << p_key << ")");
             SDL_Rect tmp(other.m_pos); // Nasty Kludge because of SDL typing
             if (p_key >= 0)
                 m_pos = at(p_key);
@@ -115,7 +114,7 @@ public:
         }
     SDL_Surface *get(int p_key = -1) const
         {
-            LOG4CXX_INFO(cpptrace_log(), "[" << name() << "].get(" << p_key << ")");
+            LOG4CXX_INFO(cpptrace_log(), "get(" << p_key << ")");
             int rv;
             SDL_Rect tmp( p_key < 0 ? m_pos : at(p_key));
             const SDL_PixelFormat *format = m_array->format;
@@ -144,7 +143,7 @@ public:
         }
     SDL_Surface *get(int new_w, int new_h) const
         {
-            LOG4CXX_INFO(cpptrace_log(), "[" << name() << "].get(" << new_w << ", " << new_h << ")");
+            LOG4CXX_INFO(cpptrace_log(), "get(" << new_w << ", " << new_h << ")");
             int rv;
             assert (new_w >= m_pos.w);
             assert (new_h >= m_pos.h);
@@ -186,10 +185,10 @@ public:
 
 void ScreenGraphicsView::render_mode0()
 {
-    LOG4CXX_INFO(cpptrace_log(), "[" << name() << "].render_mode0()");
+    LOG4CXX_INFO(cpptrace_log(), "[" << id() << "].render_mode0()");
     SurfaceArray si(m_screen, "render_mode0", 32, 16);
     for (int addr = 0; addr < 512; addr++, ++si) {
-        const byte ch = m_video_memory->get_byte(addr);
+        const byte ch = m_memory.get_byte(addr);
         if (ch != m_rendered[addr]) {
             si.set(m_glyph[ch]);
             m_rendered[addr] = ch;
@@ -197,14 +196,16 @@ void ScreenGraphicsView::render_mode0()
     }
 }
 
-ScreenGraphicsView::ScreenGraphicsView(Atom &p_atom, const Configurator &p_cfg)
-    : Named(p_cfg)
-    , m_atom(p_atom)
-    , m_video_memory(p_atom.vdg_memory())
+ScreenGraphicsView::ScreenGraphicsView(const TerminalInterface &p_terminal,
+                                       Device &p_memory,
+                                       const Configurator &p_cfg)
+    : Part(p_cfg)
+    , m_terminal(p_terminal)
+    , m_memory(p_memory)
     , m_rendered(0x1800)
     , m_glyph(256, 0)
 {
-    LOG4CXX_INFO(cpptrace_log(), "ScreenGraphicsView::ScreenGraphicsView([" << p_atom.name() << "], " << p_cfg << ")");
+    LOG4CXX_INFO(cpptrace_log(), "ScreenGraphicsView::ScreenGraphicsView(" << p_cfg << ")");
     assert (p_cfg.scale() >= 1.0);
     m_character_w = std::floor(8 * p_cfg.scale());
     m_character_h = std::floor(12 * p_cfg.scale());
@@ -228,7 +229,7 @@ ScreenGraphicsView::ScreenGraphicsView(Atom &p_atom, const Configurator &p_cfg)
 
 ScreenGraphicsView::~ScreenGraphicsView()
 {
-    LOG4CXX_INFO(cpptrace_log(), "[" << name() << "].~ScreenGraphicsView()");
+    LOG4CXX_INFO(cpptrace_log(), "[" << id() << "].~ScreenGraphicsView()");
     for (SDL_Surface * cg : m_glyph)
         if (cg)
             SDL_FreeSurface(cg);
@@ -237,8 +238,8 @@ ScreenGraphicsView::~ScreenGraphicsView()
 
 void ScreenGraphicsView::update()
 {
-    LOG4CXX_INFO(cpptrace_log(), "[" << name() << "].update()");
-    switch(m_atom.vdg_mode()) {
+    LOG4CXX_INFO(cpptrace_log(), "[" << id() << "].update()");
+    switch(m_terminal.vdg_mode()) {
     case VDG_MODE0 :                                                // Text Mode
         render_mode0();
         break;
@@ -249,7 +250,7 @@ void ScreenGraphicsView::update()
 
 std::ostream &operator<<(std::ostream &p_s, const ScreenGraphicsView::Configurator &p_cfg)
 {
-    p_s << static_cast<const Named::Configurator &>(p_cfg)
+    p_s << static_cast<const Part::Configurator &>(p_cfg)
         << ", scale=" << p_cfg.scale()
         << ", fontfilename=\"" << p_cfg.fontfilename() << "\""
         << ", windowtitle=\""  << p_cfg.window_title() << "\""
@@ -259,8 +260,7 @@ std::ostream &operator<<(std::ostream &p_s, const ScreenGraphicsView::Configurat
 
 std::ostream &operator<<(std::ostream &p_s, const ScreenGraphicsView &p_sgv)
 {
-    p_s << static_cast<const Named &>(p_sgv)
-        << "atom:[" << p_sgv.m_atom.name() << "]"
+    p_s << static_cast<const Part &>(p_sgv)
         << "screen:" << p_sgv.m_screen
         << "character_w:" << p_sgv.m_character_w
         << "character_h:" << p_sgv.m_character_h;
