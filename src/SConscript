@@ -1,0 +1,52 @@
+Import('common_env')
+
+compile_env = common_env.Clone()
+
+import subprocess
+
+def add_library(env, lib):
+    def convert(cmd, prefix):
+        return [ (opt[2:] if opt.startswith(prefix) else opt) for opt in cmd.split() ]
+    env.AppendUnique( CFLAGS    = subprocess.check_output(['pkg-config', '--cflags-only-other', lib]).split()
+                    , CPPPATH   = convert(subprocess.check_output(['pkg-config', '--cflags-only-I', lib]), '-I')
+                    , LINKFLAGS = subprocess.check_output(['pkg-config', '--libs-only-other', lib]).split()
+                    , LIBPATH   = convert(subprocess.check_output(['pkg-config', '--libs-only-L', lib]), '-L')
+                    , LIBS      = convert(subprocess.check_output(['pkg-config', '--libs-only-l', lib]), '-l')
+                    )
+
+compile_env['CCFLAGS']   = r'-Wall -g -pipe -std=c++11 -pthread -O0'
+compile_env['LINKFLAGS'] = r'-pthread'
+
+add_library(compile_env, 'liblog4cxx')
+add_library(compile_env, 'glibmm-2.4')
+
+compile_env['BUILDERS']['rng2rnc'] = Builder(action='trang -I rng -O rnc $SOURCE $TARGET',
+                                            suffix='rnc', src_suffix='rng')
+compile_env.rng2rnc('relaxng')
+compile_env.rng2rnc('atom')
+compile_env.rng2rnc('emulator')
+
+compile_env['BUILDERS']['rng2xsd'] = Builder(action='trang -I rng -O xsd $SOURCE $TARGET',
+                                            suffix='xsd', src_suffix='rng')
+compile_env.rng2xsd('relaxng')
+compile_env.rng2xsd('atom')
+compile_env.rng2xsd('emulator')
+
+libatom_env = compile_env.Clone()
+atomlib = libatom_env.StaticLibrary(r'atom', [ r'device.cpp'
+                                             , r'ppia.cpp'
+                                             , r'cpu.cpp'
+                                             , r'atom.cpp'
+                                             ])
+
+atom_gui_sdl_env = compile_env.Clone()
+add_library(atom_gui_sdl_env, 'sdl')
+add_library(atom_gui_sdl_env, 'libxml++-2.6')
+
+#atom_gui_sdl_env.Program('atom', [ r'screen_graphics_controller.cpp'
+#                                 , r'screen_graphics_view.cpp'
+#                                 , r'keyboard_controller.cpp'
+#                                 , r'config_xml.cpp'
+#                                 , r'main.cpp'
+#                                 , atomlib
+#                                 ])

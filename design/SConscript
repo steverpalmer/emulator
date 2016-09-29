@@ -1,0 +1,12 @@
+Import('common_env')
+common_env['BUILDERS']['uxf2png'] = Builder(action='umlet -action=convert -format=png -filename=$SOURCE',
+                                    suffix='uxf.png', src_suffix='uxf')
+
+common_env.uxf2png('cpu')
+common_env.uxf2png('KeyboardInput')
+common_env.uxf2png('memory')
+common_env.uxf2png('model_facade')
+common_env.uxf2png('MVC')
+common_env.uxf2png('OutputSequences')
+common_env.uxf2png('ScreenGraphicsView')
+common_env.uxf2png('system2')
