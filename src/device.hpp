@@ -34,7 +34,7 @@ extern std::ostream &operator<<(std::ostream &, const AccessType);
 /// combinations of getting and putting words (Low Endian).
 
 class Device
-    : public Part
+    : public virtual Part
 {
     // Types
 public:
@@ -123,7 +123,8 @@ public:
 ///   On construction Rom will initialize the memory with the contents of a file
 ///   On destruction Ram may save the memory to a file
 /// These difference are handled in the Ram and Rom wrappers around Ram_Rom_Helper.
-class SimpleMemory {
+class SimpleMemory
+{
     std::vector<byte> m_storage;
 public:
     SimpleMemory(int size) : m_storage(size, 0) {}
@@ -144,9 +145,12 @@ public:
 ///
 /// It provides a wrapper around SimpleMemory, with addition that
 /// the storage may be persistent if it is configured with a filename.
-class Ram : public Device {
+class Ram
+    : public Device
+{
 public:
-    class Configurator : public Device::Configurator
+    class Configurator
+        : public Device::Configurator
     {
     public:
     	/// 1. Constructor Information
@@ -186,9 +190,12 @@ protected:
 /// It provides a wrapper around SimpleMemory, with addition that
 /// set_byte does nothing and
 /// the storage is initialised on construction.
-class Rom : public Device {
+class Rom
+    : public Device
+{
 public:
-    class Configurator : public Device::Configurator
+    class Configurator
+        : public Device::Configurator
     {
     public:
     	/// 1. Constructor Information
@@ -228,9 +235,12 @@ protected:
 /// of other Devices located at specific places.
 /// Optionally, the device can be replicated in the memory map by defining
 /// it to occupy a larger part of the memory space.
-class Memory : public Device {
+class Memory
+    : public Device
+{
 public:
-    class Configurator : public Device::Configurator
+    class Configurator
+        : public Device::Configurator
     {
     public:
     	/// 1. Constructor Information
@@ -240,7 +250,7 @@ public:
             Device::Configurator *device;
             word                 size;
         };
-        virtual mapping &device(int i) const = 0;
+        virtual const mapping &device(int i) const = 0;
         /// 2. Factory Method
         virtual std::unique_ptr<Device> factory() const
             { return std::unique_ptr<Device>(new Memory(*this)); }

@@ -14,13 +14,14 @@
 #include "ppia.hpp"
 #include "cpu.hpp"
 
-class Atom : public Part, public TerminalInterface {
+class Atom
+    : public virtual Part
+{
     // Types
 public:
     class Configurator : public Part::Configurator
     {
     public:
-        virtual const Device::Configurator  *device(int i)     const = 0;
         virtual const Memory::Configurator  &memory()          const = 0;
         virtual const MCS6502::Configurator &mcs6502()         const = 0;
 
@@ -51,18 +52,6 @@ public:
     void    step(int cnt=1) { m_6502.step(cnt); }
     void    resume() { m_6502.resume(); }
     void    pause() { m_6502.pause(); }
-
-    // Wrappers on Terminal Interface
-    VDGMode vdg_mode() const
-        { return m_ppia->vdg_mode(); }
-    void set_keypress(int p_key)
-        { m_ppia->set_keypress(p_key); }
-    void set_is_shift_pressed(bool p_flag)
-        { m_ppia->set_is_shift_pressed(p_flag); }
-    void set_is_ctrl_pressed(bool p_flag)
-        { m_ppia->set_is_ctrl_pressed(p_flag); }
-    void set_is_rept_pressed(bool p_flag)
-        { m_ppia->set_is_rept_pressed(p_flag); }
 
     friend std::ostream &::operator<<(std::ostream&, const Atom&);
 };

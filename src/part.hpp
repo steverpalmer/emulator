@@ -7,7 +7,8 @@
 
 #include <glibmm/ustring.h>
 
-class Part {
+class Part
+{
 public:
 	class Configurator
 	{
@@ -30,10 +31,39 @@ private:
 	Part(const Part &);
 	Part &operator=(const Part &);
 
-	friend std::ostream &operator<<(std::ostream &p_s, const Part& p_n)
+	friend std::ostream &operator<<(std::ostream &p_s, const Part& p_p)
 	{
-		return p_s << "Part(" << p_n.m_id << ")";
+		return p_s << "Part(" << p_p.m_id << ")";
 	}
+};
+
+class ActivePart
+    : public virtual Part
+{
+public:
+    class Configurator
+        : public Part::Configurator
+    {
+		friend std::ostream &::operator <<(std::ostream &p_s, const Configurator &p_cfg)
+		{
+			return p_s << static_cast<const Part::Configurator &>(p_cfg);
+		}
+    };
+private:
+    ActivePart(const ActivePart &);
+    ActivePart &operator=(const ActivePart &);
+protected:
+    explicit ActivePart(const Configurator &p_cfg) : Part(p_cfg) {}
+        
+	friend std::ostream &operator<<(std::ostream &p_s, const ActivePart& p_ap)
+	{
+		return p_s << "ActivePart(" << static_cast<const Part &>(p_ap) << ")";
+	}
+};
+
+class Computer
+    : public ActivePart
+{
 };
 
 #endif /* PART_HPP_ */

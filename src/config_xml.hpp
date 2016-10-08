@@ -6,134 +6,127 @@
 #include <ostream>
 #include <string>
 
+#include <glibmm/ustring.h>
 #include <libxml++/libxml++.h>
 
 #include "common.hpp"
 
 #include "atom.hpp"
-#include "keyboard_controller.hpp"
-#include "screen_graphics_controller.hpp"
+#include "terminal.hpp"
 
-class RamConfigurator : public Ram::Configurator {
+class RamConfigurator : public Ram::Configurator
+{
 private:
-    std::string m_name;
-    word m_base;
-    word m_size;
+    Glib::ustring m_id;
+    word          m_size;
+    Glib::ustring m_filename;
 public:
     explicit RamConfigurator(const xmlpp::Node *p_node);
-    virtual const std::string &name() const { return m_name; }
-    virtual word base() const  { return m_base; }
-    virtual word size() const  { return m_size; }
+    const Glib::ustring &id()       const { return m_id; }
+    word                size()      const  { return m_size; }
+    const Glib::ustring &filename() const { return m_filename; }
 };
 
-class RomConfigurator : public Rom::Configurator {
+class RomConfigurator : public Rom::Configurator
+{
 private:
-    std::string m_name;
-    word        m_base;
-    word        m_size;
-    std::string m_filename;
+    Glib::ustring m_id;
+    word          m_size;
+    Glib::ustring m_filename;
 public:
     explicit RomConfigurator(const xmlpp::Node *p_node);
-    virtual const std::string &name()     const { return m_name; }
-    virtual word              base()      const { return m_base; }
-    virtual word              size()      const { return m_size; }
-    virtual const std::string &filename() const { return m_filename; }
+    const Glib::ustring &id()       const { return m_id; }
+    const Glib::ustring &filename() const { return m_filename; }
+    word                size()      const { return m_size; }
 };
 
-class PpiaConfigurator : public Ppia::Configurator {
+class PpiaConfigurator : public Ppia::Configurator
+{
 private:
-    std::string m_name;
-    word m_base;
-    word m_memory_size;
+    Glib::ustring m_id;
 public:
     explicit PpiaConfigurator(const xmlpp::Node *p_node);
-    virtual const std::string &name()       const { return m_name; }
-    virtual word              base()        const { return m_base; }
-    virtual word              memory_size() const { return m_memory_size; }
+    const Glib::ustring &id() const { return m_id; }
 };
 
-class MemoryConfigurator : public Memory::Configurator {
+class MemoryConfigurator : public Memory::Configurator
+{
 private:
-    std::string m_name;
+    Glib::ustring m_id;
+    word          m_size;
+    struct Memory::Configurator::mapping m_last_device;
+    std::vector<struct Memory::Configurator::mapping> m_device;
 public:
     explicit MemoryConfigurator(const xmlpp::Node *p_node);
-    virtual const std::string &name() const { return m_name; }
+    const Glib::ustring &id()  const { return m_id; }
+    word                size() const { return m_size; }
+    const struct Memory::Configurator::mapping &device(int i) const
+        { return (i < int(m_device.size())) ? m_device[i] : m_last_device; }
 };
 
-class MCS6502Configurator : public MCS6502::Configurator {
+class MCS6502Configurator : public MCS6502::Configurator
+{
 private:
-    std::string m_name;
+    Glib::ustring m_id;
 public:
     explicit MCS6502Configurator(const xmlpp::Node *p_node = 0);
-    virtual const std::string &name() const { return m_name; }
+    const Glib::ustring &id() const { return m_id; }
 };
 
-class AtomConfigurator : public Atom::Configurator {
+class AtomConfigurator : public Atom::Configurator
+{
 private:
-    std::string m_name;
-    MemoryConfigurator *m_memory;
-    std::vector<const Device::Configurator *> m_devices;
+    Glib::ustring       m_id;
+    MemoryConfigurator  *m_memory;
     MCS6502Configurator *m_mcs6502;
 public:
     explicit AtomConfigurator(const xmlpp::Node *p_node);
-    virtual const std::string &name() const { return m_name; }
-    virtual const Device::Configurator  *device(int i) const { return i < int(m_devices.size()) ? m_devices[i] : 0; }
-    virtual const Memory::Configurator  &memory()      const { return *m_memory; }
-    virtual const MCS6502::Configurator &mcs6502()     const { return *m_mcs6502; }
-
-    friend std::ostream &::operator<<(std::ostream&, const AtomConfigurator&);
+    const Glib::ustring &id() const { return m_id; }
+    const Memory::Configurator &memory()      const { return *m_memory; }
+    const MCS6502::Configurator &mcs6502()    const { return *m_mcs6502; }
 };
 
-class KeyboardControllerConfigurator : public KeyboardController::Configurator {
-private:
-    std::string m_name;
+class KeyboardControllerConfigurator : public KeyboardController::Configurator
+{
 public:
     explicit KeyboardControllerConfigurator(const xmlpp::Node *p_node = 0);
-    virtual const std::string &name() const { return m_name; }
-
-    friend std::ostream &::operator<<(std::ostream&, const KeyboardControllerConfigurator&);
 };
 
-class ScreenGraphicsViewConfigurator : public ScreenGraphicsView::Configurator {
+class MonitorViewConfigurator : public MonitorView::Configurator
+{
 private:
-    std::string m_name;
-    float       m_scale;
-    std::string m_fontfilename;
-    std::string m_window_title;
-    std::string m_icon_title;
+    float         m_scale;
+    Glib::ustring m_fontfilename;
+    Glib::ustring m_window_title;
+    Glib::ustring m_icon_title;
 public:
-    explicit ScreenGraphicsViewConfigurator(const xmlpp::Node *p_node = 0);
-    virtual const std::string &name()         const { return m_name; }
-    virtual float              scale()        const { return m_scale; }
-    virtual const std::string &fontfilename() const { return m_fontfilename; }
-    virtual const std::string &window_title() const { return m_window_title; }
-    virtual const std::string &icon_title()   const { return m_icon_title; }
-
-    friend std::ostream &::operator<<(std::ostream&, const ScreenGraphicsViewConfigurator&);
+    explicit MonitorViewConfigurator(const xmlpp::Node *p_node = 0);
+    float               scale()         const { return m_scale; }
+    const Glib::ustring &fontfilename() const { return m_fontfilename; }
+    const Glib::ustring &window_title() const { return m_window_title; }
+    const Glib::ustring &icon_title()   const { return m_icon_title; }
 };
 
-class ScreenGraphicsControllerConfigurator : public ScreenGraphicsController::Configurator {
+class TerminalConfigurator : public Terminal::Configurator
+{
 private:
-    std::string m_name;
-    ScreenGraphicsViewConfigurator *m_view;
-    float m_RefreshRate_Hz;
+    Glib::ustring m_id;
+    KeyboardControllerConfigurator *m_keyboard;
+    MonitorViewConfigurator *m_monitor;
 public:
-    explicit ScreenGraphicsControllerConfigurator(const xmlpp::Node *p_node = 0);
-    virtual const std::string                    &name()          const { return m_name; }
-    virtual const ScreenGraphicsViewConfigurator &view()          const { return *m_view; }
-    virtual float                                RefreshRate_Hz() const { return m_RefreshRate_Hz; }
-
-    friend std::ostream &::operator<<(std::ostream&, const ScreenGraphicsControllerConfigurator&);
+    explicit TerminalConfigurator(const xmlpp::Node *p_node = 0);
+    const Glib::ustring              &id()                  const { return m_id; }
+    KeyboardController::Configurator &keyboard_controller() const { return *m_keyboard; }
+    MonitorView::Configurator        &monitor_view()        const { return *m_monitor; }
 };
 
 class Configurator
 {
 private:
-    std::string                          m_XMLfilename;
+    Glib::ustring                  m_XMLfilename;
 public:
-    AtomConfigurator                     *m_atom;
-    KeyboardControllerConfigurator       *m_keyboard;
-    ScreenGraphicsControllerConfigurator *m_screen;
+    AtomConfigurator               *m_atom;
+    TerminalConfigurator           *m_terminal;
 private:
     void process_command_line(int argc, char *argv[]);
     void process_XML();
@@ -141,9 +134,8 @@ private:
 public:
     explicit Configurator(int argc, char *argv[]);
     virtual ~Configurator();
-    const Atom::Configurator                     &atom()     const { return *m_atom;     }
-    const KeyboardController::Configurator       &keyboard() const { return *m_keyboard; }
-    const ScreenGraphicsController::Configurator &screen()   const { return *m_screen;   }
+    const Atom::Configurator               &atom()     const { return *m_atom;     }
+    const Terminal::Configurator           &terminal() const { return *m_terminal; }
 
     friend std::ostream &::operator<<(std::ostream&, const Configurator&);
 };

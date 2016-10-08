@@ -3,7 +3,7 @@
 #include "terminal.hpp"
 
 Terminal::Terminal(Device &p_device, TerminalInterface &p_terminal_interface, const Configurator &p_cfg)
-    : Part(p_cfg)
+    : ActivePart(p_cfg)
     , m_monitor_view(p_device, p_terminal_interface, p_cfg.monitor_view())
     , m_keyboard_controller(p_terminal_interface, p_cfg.keyboard_controller())
 {
@@ -11,7 +11,7 @@ Terminal::Terminal(Device &p_device, TerminalInterface &p_terminal_interface, co
 
 friend std::ostream &::operator <<(std::ostream &, const Configurator &)
 {
-    return ps << "<terminal " << static_const<const Part::Configurator &>(p_cfg) << ">"
+    return ps << "<terminal " << static_const<const ActivePart::Configurator &>(p_cfg) << ">"
               << p_cfg.screen_controller()
               << p_cfg.keyboard_controller()
               << "</terminal>";

@@ -13,7 +13,10 @@
 #include "terminal_interface.hpp"
 
 
-class Ppia : public Device, public TerminalInterface {
+class Ppia
+    : public Device
+    , public TerminalInterface
+{
 public:
     class Configurator : public Device::Configurator
     {
@@ -28,7 +31,8 @@ public:
     // Attributes
 private:
     std::array<byte, 4> m_register;
-    struct {
+    struct
+    {
         mutable pthread_mutex_t mutex;
         VDGMode vdg_mode;
         VDGMode notified_vdg_mode;

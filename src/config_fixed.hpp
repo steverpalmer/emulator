@@ -12,7 +12,8 @@
 #include "keyboard_controller.hpp"
 #include "screen_graphics_controller.hpp"
 
-class RamConfigurator : public Ram::Configurator {
+class RamConfigurator : public Ram::Configurator
+{
 private:
     const std::string m_name;
     const word        m_base;
@@ -28,7 +29,8 @@ public:
     virtual word size() const { return m_size; }
 };
 
-class RomConfigurator : public Rom::Configurator {
+class RomConfigurator : public Rom::Configurator
+{
 private:
     const std::string m_name;
     const word        m_base;
@@ -47,7 +49,8 @@ public:
     virtual const std::string &filename() const { return m_filename; }
 };
 
-class PpiaConfigurator : public Ppia::Configurator {
+class PpiaConfigurator : public Ppia::Configurator
+{
 private:
     const std::string m_name;
     const word        m_base;
@@ -63,7 +66,8 @@ public:
     word memory_size()                const { return m_memory_size; }
 };
 
-class MemoryConfigurator : public Memory::Configurator {
+class MemoryConfigurator : public Memory::Configurator
+{
 private:
     const std::string m_name;
 public:
@@ -71,7 +75,8 @@ public:
     virtual const std::string &name() const { return m_name; }
 };
 
-class MCS6502Configurator : public MCS6502::Configurator {
+class MCS6502Configurator : public MCS6502::Configurator
+{
 private:
     const std::string m_name;
 public:
@@ -79,7 +84,8 @@ public:
     virtual const std::string &name() const { return m_name; }
 };
 
-class AtomConfigurator : public Atom::Configurator {
+class AtomConfigurator : public Atom::Configurator
+{
 private:
     const std::string m_name;
     std::vector<const Device::Configurator *> m_devices;
@@ -106,7 +112,8 @@ public:
     virtual const MCS6502::Configurator &mcs6502()     const { return m_mcs6502; }
 };
 
-class KeyboardControllerConfigurator : public KeyboardController::Configurator {
+class KeyboardControllerConfigurator : public KeyboardController::Configurator
+{
 private:
     const std::string m_name;
 public:
@@ -114,7 +121,8 @@ public:
     virtual const std::string &name() const { return m_name; }
 };
 
-class ScreenGraphicsViewConfigurator : public ScreenGraphicsView::Configurator {
+class ScreenGraphicsViewConfigurator : public ScreenGraphicsView::Configurator
+{
 private:
     const std::string m_name;
     const float       m_scale;
@@ -136,7 +144,8 @@ public:
     virtual const std::string &icon_title()   const { return m_icon_title; }
 };
 
-class ScreenGraphicsControllerConfigurator : public ScreenGraphicsController::Configurator {
+class ScreenGraphicsControllerConfigurator : public ScreenGraphicsController::Configurator
+{
 private:
     const std::string m_name;
     const ScreenGraphicsViewConfigurator m_view;

@@ -18,7 +18,8 @@ typedef int16_t  signed_word;
 
 #define SIZE(n) (word((n)-word(1))+1)
 
-class Hex {
+class Hex
+{
 	unsigned int m_v;
 	int          m_w;
 public:

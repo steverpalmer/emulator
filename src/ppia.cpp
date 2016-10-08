@@ -285,7 +285,7 @@ byte Ppia::get_PortC(byte p_previous)
 
 byte Ppia::_get_byte(word p_addr, AccessType p_at)
 {
-    LOG4CXX_INFO(cpptrace_log(), "[" << id() << "].get_byte(" << Hex(p_addr) << ", " << p_at << ")");
+    LOG4CXX_INFO(cpptrace_log(), "[" << id() << "]._get_byte(" << Hex(p_addr) << ", " << p_at << ")");
     assert (p_addr < 4);
     byte result(m_register[p_addr]);             // By default, set it to last value
     switch (p_addr)
@@ -339,7 +339,7 @@ void Ppia::set_PortA(byte p_byte)
 
 void Ppia::_set_byte(word p_addr, byte p_byte, AccessType p_at)
 {
-    LOG4CXX_INFO(cpptrace_log(), "[" << id() << "].set_byte(" << Hex(p_addr) << ", " << Hex(p_byte) << ", " << p_at << ")");
+    LOG4CXX_INFO(cpptrace_log(), "[" << id() << "]._set_byte(" << Hex(p_addr) << ", " << Hex(p_byte) << ", " << p_at << ")");
     assert (p_addr < 4);
     switch (p_addr)
     {
@@ -447,7 +447,6 @@ std::ostream &operator<<(std::ostream &p_s, const Ppia &p_ppia)
         << ", PortB("   << Hex(p_ppia.m_register[PortB]) << ")"
         << ", PortC("   << Hex(p_ppia.m_register[PortC]) << ")"
         << ", Control(" << Hex(p_ppia.m_register[ControlPort]) << ")"
-        << ", Refresh(" << p_ppia.m_terminal.is_vdg_refresh << ")"
         << ", Key("     << p_ppia.m_terminal.pressed_key << ")"
         << ", Shift("   << p_ppia.m_terminal.is_shift_pressed << ")"
         << ", Ctrl("    << p_ppia.m_terminal.is_ctrl_pressed << ")"

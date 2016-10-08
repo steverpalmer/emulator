@@ -31,10 +31,12 @@ enum  InterruptSource { NO_INTERRUPT          = 0,
 };
 extern std::ostream &operator<<(std::ostream&, const InterruptSource&);
 
-class Core : public Part {
+class Core
+    : public ActivePart
+{
     // Types
 public:
-    class Configurator : public Part::Configurator
+    class Configurator : public ActivePart::Configurator
     {
     public:
         friend std::ostream &::operator <<(std::ostream &, const Configurator &);
@@ -67,7 +69,9 @@ public:
     friend std::ostream &::operator<<(std::ostream&, const Core&);
 };
 
-class MCS6502 : public Core {
+class MCS6502
+    : public Core
+{
 public:
     class Configurator : public Core::Configurator
     {

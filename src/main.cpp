@@ -13,8 +13,7 @@
 
 #include "config_xml.hpp"
 #include "atom.hpp"
-#include "keyboard_controller.hpp"
-#include "monitor_view.hpp"
+#include "terminal.hpp"
 
 static log4cxx::LoggerPtr cpptrace_log()
 {
@@ -22,11 +21,11 @@ static log4cxx::LoggerPtr cpptrace_log()
     return result;
 }
 
-class Main {
+class Main
+{
     Configurator       m_cfg;
     Atom               *m_atom;
-    KeyboardController *m_keyboard;
-    MonitorView        *m_monitor;
+    Terminal           *m_terminal;
     bool               m_more;
 private:
     Main();
@@ -49,12 +48,9 @@ Main::Main(int argc, char *argv[])
     LOG4CXX_INFO(cpptrace_log(), "Atom");
     m_atom = new Atom(m_cfg.atom());
     assert (m_atom);
-    LOG4CXX_INFO(cpptrace_log(), "Keyboard");
-    m_keyboard = new KeyboardController(*m_atom, m_cfg.keyboard());
-    assert (m_keyboard);
-    LOG4CXX_INFO(cpptrace_log(), "Screen");
-    m_monitor = new MonitorView(*m_atom, _, m_cfg.screen());
-    assert (m_monitor);
+    LOG4CXX_INFO(cpptrace_log(), "Terminal");
+    m_terminal = new Terminal(*m_atom, _, m_cfg.terminal());
+    assert (m_terminal);
 
     LOG4CXX_INFO(cpptrace_log(), "Atom is about to start ...");
     m_atom->resume();
@@ -64,7 +60,7 @@ Main::Main(int argc, char *argv[])
         switch( event.type ){
         case SDL_KEYDOWN:
         case SDL_KEYUP:
-            m_keyboard->update(&event.key);
+            m_terminal->update(&event);
             break;
 #if 0
         case SDL_USEREVENT:

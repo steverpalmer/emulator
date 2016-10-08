@@ -30,7 +30,7 @@ static log4cxx::LoggerPtr cpptrace_log()
 #define INFINITE_STEPS_TO_GO static_cast<unsigned int>(-1)
 
 Core::Core(const Configurator &p_cfg)
-    : Part(p_cfg)
+    : ActivePart(p_cfg)
     , m_thread(pthread_self())
     , m_steps_to_go(0)
     , m_cycles(0)

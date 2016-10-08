@@ -6,13 +6,16 @@
 #include <SDL.h>
 
 #include "part.hpp"
-#include "screen_graphics_controller.hpp"
+#include "monitor_view.hpp"
 #include "keyboard_controller.hpp"
 
 
-class Terminal : public Part {
+class Terminal
+    : public virtual ActivePart
+{
 public:
-    class Configurator : public Part::Configurator
+    class Configurator
+        : public ActivePart::Configurator
     {
     public:
         virtual MonitorView::Configurator        &monitor_view() const = 0;
@@ -30,7 +33,7 @@ private:
     Terminal &operator=(const Terminal &);
 public:
     Terminal(Device &p_device, TerminalInterface &p_terminal_interface, const Configurator &p_cfg);
-    void update(SDL_Event *) { m_keyboard_controller.update(&event.key); }
+    void update(SDL_Event *event) { m_keyboard_controller.update(&event->key); }
 
     friend std::ostream &::operator <<(std::ostream &, const Terminal &);
 };

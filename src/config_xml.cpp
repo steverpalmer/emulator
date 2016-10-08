@@ -21,24 +21,25 @@ static log4cxx::LoggerPtr cpptrace_log()
 }
 
 RamConfigurator::RamConfigurator(const xmlpp::Node *p_node)
-    : m_name("ram")
+    : m_id("ram")
+    , m_filename("")
 {
     LOG4CXX_INFO(cpptrace_log(), "RamConfigurator::RamConfigurator(" << p_node << ")");
     assert (p_node);
-    try { m_name = p_node->eval_to_string("@name"); }
+    try { m_id = p_node->eval_to_string("@name"); }
     catch (xmlpp::exception e) { /* Do Nothing */ }
-    m_base = p_node->eval_to_number("base");
     m_size = p_node->eval_to_number("size");
+    try { m_id = p_node->eval_to_string("filename"); }
+    catch (xmlpp::exception e) { /* Do Nothing */ }
 }
 
 RomConfigurator::RomConfigurator(const xmlpp::Node *p_node)
-    : m_name("rom")
+    : m_id("rom")
 {
     LOG4CXX_INFO(cpptrace_log(), "RomConfigurator::RomConfigurator(" << p_node << ")");
     assert (p_node);
-    try { m_name = p_node->eval_to_string("@name"); }
+    try { m_id = p_node->eval_to_string("@name"); }
     catch (xmlpp::exception e) { /* Do Nothing */ }
-    m_base = p_node->eval_to_number("base");
     m_filename = p_node->eval_to_string("filename");
     try { m_size = p_node->eval_to_number("size"); }
     catch(xmlpp::exception e)
@@ -48,92 +49,92 @@ RomConfigurator::RomConfigurator(const xmlpp::Node *p_node)
 }
 
 PpiaConfigurator::PpiaConfigurator(const xmlpp::Node *p_node)
-    : m_name("ppia")
+    : m_id("ppia")
 {
     LOG4CXX_INFO(cpptrace_log(), "PpiaConfigurator::PPiaConfigurator(" << p_node << ")");
     assert (p_node);
-    try { m_name = p_node->eval_to_string("@name"); }
+    try { m_id = p_node->eval_to_string("@name"); }
     catch (xmlpp::exception e) { /* Do Nothing */ }
-    m_base = p_node->eval_to_number("base");
-    m_memory_size = p_node->eval_to_number("size");
 }
 
 MemoryConfigurator::MemoryConfigurator(const xmlpp::Node *p_node)
-    : m_name("memory")
+    : m_id("memory")
+    , m_size(0)
+    , m_last_device( { 0, 0, 0 } )
+    , m_device(0)
 {
     LOG4CXX_INFO(cpptrace_log(), "MemoryConfigurator::MemoryConfigurator(" << p_node << ")");
     assert (p_node);
-    try { m_name = p_node->eval_to_string("@name"); }
+    try { m_id = p_node->eval_to_string("@name"); }
     catch (xmlpp::exception e) { /* Do Nothing */ }
+    try { m_size = p_node->eval_to_number("size"); }
+    catch(xmlpp::exception e) { /* Do Nothing */ }
+    for (const xmlpp::Node *child: p_node->get_children())
+    {
+        const xmlpp::Element *elm = dynamic_cast<const xmlpp::Element *>(child);
+        if (elm && elm->get_name() == "map")
+        {
+            struct Memory::Configurator::mapping *map = new struct Memory::Configurator::mapping();
+            map->size = 0;
+            map->base = elm->eval_to_number("base");
+            try { map->size = elm->eval_to_number("size"); }
+            catch (xmlpp::exception e) { /* Do Nothing */ }
+            const xmlpp::NodeSet ns(elm->find("ram|rom|ppia"));
+            assert (ns.size() == 1);
+            const xmlpp::Node *dev(ns[0]);
+            if (dev->get_name() == "ram")
+                map->device = new RamConfigurator(dev);
+            else if (dev->get_name() == "rom")
+                map->device = new RomConfigurator(dev);
+            else if (elm->get_name() == "ppia")
+                map->device = new PpiaConfigurator(dev);
+            else
+                assert (false);
+            m_device.push_back(*map);
+        }
+    }
 }
 
 MCS6502Configurator::MCS6502Configurator(const xmlpp::Node *p_node)
-    : m_name("mcs6502")
+    : m_id("mcs6502")
 {
     LOG4CXX_INFO(cpptrace_log(), "MCS6502Configurator::MCS6502Configurator(" << p_node << ")");
     if (p_node)
     {
-        try { m_name = p_node->eval_to_string("@name"); }
+        try { m_id = p_node->eval_to_string("@name"); }
         catch (xmlpp::exception e) { /* Do Nothing */ }
     }
 }
 
 AtomConfigurator::AtomConfigurator(const xmlpp::Node *p_node)
-    : m_name("atom")
-    , m_devices(0)
+    : m_id("atom")
 {
     LOG4CXX_INFO(cpptrace_log(), "AtomConfigurator::AtomConfigurator(" << p_node << ")");
     assert(p_node);
-    try { m_name = p_node->eval_to_string("@name"); }
+    try { m_id = p_node->eval_to_string("@name"); }
     catch (xmlpp::exception e) { /* Do Nothing */ }
-    xmlpp::NodeSet ns(p_node->find("memorymap/*"));
-    for (const xmlpp::Node *child: p_node->get_children())
-    {
-        const xmlpp::Element *elm = dynamic_cast<const xmlpp::Element *>(child);
-        assert (elm);
-        if (elm->get_name() == "ram")
-            m_devices.push_back(new RamConfigurator(elm));
-        else if (elm->get_name() == "rom")
-            m_devices.push_back(new RomConfigurator(elm));
-        else if (elm->get_name() == "ppia")
-            m_devices.push_back(new PpiaConfigurator(elm));
-        else
-            ;// Skip
-    }
+    xmlpp::NodeSet ns(p_node->find("memorymap"));
+    // More...
 }
 
 KeyboardControllerConfigurator::KeyboardControllerConfigurator(const xmlpp::Node *p_node)
-    : m_name("KeyboardController")
 {
     LOG4CXX_INFO(cpptrace_log(), "KeyboardControllerConfigurator::KeyboardControllerConfigurator(" << p_node << ")");
     // Do Nothing
 }
 
-ScreenGraphicsViewConfigurator::ScreenGraphicsViewConfigurator(const xmlpp::Node *p_node)
-    : m_name("ScreenGraphicsView")
-    , m_scale(2.0)
+MonitorViewConfigurator::MonitorViewConfigurator(const xmlpp::Node *p_node)
+    : m_scale(2.0)
     , m_fontfilename("mc6847.bmp")
     , m_window_title("Acorn Atom")
     , m_icon_title("Acorn Atom")
 {
-    LOG4CXX_INFO(cpptrace_log(), "ScreenGraphicsViewConfigurator::ScreenGraphicsViewConfigurator(" << p_node << ")");
+    LOG4CXX_INFO(cpptrace_log(), "MonitorViewConfigurator::MonitorViewConfigurator(" << p_node << ")");
     if (p_node)
     {
         try { m_scale = p_node->eval_to_number("scale"); }
         catch (xmlpp::exception e) { /* Do Nothing */ }
         try { m_fontfilename = p_node->eval_to_string("fontfilename"); }
-        catch (xmlpp::exception e) { /* Do Nothing */ }
-    }
-}
-
-ScreenGraphicsControllerConfigurator::ScreenGraphicsControllerConfigurator(const xmlpp::Node *p_node)
-    : m_name("ScreenGraphicsController")
-    , m_RefreshRate_Hz(10)
-{
-    LOG4CXX_INFO(cpptrace_log(), "ScreenGraphicsControllerConfigurator::ScreenGraphicsControllerConfigurator(" << p_node << ")");
-    if (p_node)
-    {
-        try { m_RefreshRate_Hz = p_node->eval_to_number("refreshrate"); }
         catch (xmlpp::exception e) { /* Do Nothing */ }
     }
 }
@@ -185,13 +186,10 @@ void Configurator::process_XML()
         m_atom = new AtomConfigurator(root);
         try
         {
-            const xmlpp::NodeSet ns(root->find("io"));
+            const xmlpp::NodeSet ns(root->find("terminal"));
             assert (ns.size() == 0 || ns.size() == 1);
             if (ns.size() == 1)
-            {
-                m_keyboard = new KeyboardControllerConfigurator(ns[0]);
-                m_screen = new ScreenGraphicsControllerConfigurator(ns[0]);
-            }
+                m_terminal = new TerminalConfigurator(ns[0]);
         }
         catch (xmlpp::exception e) { /* Do Nothing */ }
 
@@ -226,8 +224,8 @@ bool Configurator::check_and_complete_params()
 {
     LOG4CXX_INFO(cpptrace_log(), "Configurator::check_and_complete_params()");
     bool result = true;
-    if (m_screen->view().scale() && (m_screen->view().scale() < 1.0)) {
-        LOG4CXX_ERROR(cpptrace_log(), "Bad Scale Factor " << m_screen->view().scale());
+    if (m_terminal->monitor_view().scale() && (m_terminal->monitor_view().scale() < 1.0)) {
+        LOG4CXX_ERROR(cpptrace_log(), "Bad Scale Factor " << m_terminal->monitor_view().scale());
         result = false;
     }
 #if 0
@@ -295,42 +293,23 @@ Configurator::~Configurator()
 
 std::ostream &operator<<(std::ostream &p_s, const AtomConfigurator &p_cfg)
 {
-    p_s << static_cast<const Named::Configurator &>(p_cfg)
-        // :TODO: << p_cfg.m_devices
-        << p_cfg.m_memory
-        << p_cfg.m_mcs6502;
-    return p_s;
+    return p_s << static_cast<const Part::Configurator &>(p_cfg)
+               // :TODO: << p_cfg.m_devices
+               << p_cfg.memory()
+               << p_cfg.mcs6502();
 }
 
 std::ostream &operator<<(std::ostream &p_s, const KeyboardControllerConfigurator &p_cfg)
 {
-    p_s << static_cast<const Named::Configurator &>(p_cfg);
-    return p_s;
+    return p_s << static_cast<const KeyboardController::Configurator>(p_cfg);
 }
 
-std::ostream &operator<<(std::ostream &p_s, const ScreenGraphicsViewConfigurator &p_cfg)
+std::ostream &operator<<(std::ostream &p_s, const MonitorViewConfigurator &p_cfg)
 {
-    p_s << static_cast<const Named::Configurator &>(p_cfg)
-        << ", scale=" << p_cfg.m_scale
-        << ", fontfilename=" << p_cfg.m_fontfilename
-        << ", window_title=" << p_cfg.m_window_title
-        << ". icon_title=" << p_cfg.m_icon_title;
-    return p_s;
-}
-
-std::ostream &operator<<(std::ostream &p_s, const ScreenGraphicsControllerConfigurator &p_cfg)
-{
-    p_s << static_cast<const Named::Configurator &>(p_cfg)
-        << p_cfg.m_view
-        << ", RefreshRate_Hz=" << p_cfg.m_RefreshRate_Hz;
-    return p_s;
+    return p_s << static_cast<const MonitorView::Configurator &>(p_cfg);
 }
 
 std::ostream &operator<<(std::ostream &p_s, const Configurator &p_cfg)
 {
-    p_s << "Configurator::Configurator("
-        << static_cast<const Atom::Configurator &>(*p_cfg.m_atom) << ", "
-        << p_cfg.m_keyboard << ", "
-        << p_cfg.m_screen << ")";
     return p_s;
 }

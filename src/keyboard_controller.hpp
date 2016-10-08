@@ -9,7 +9,8 @@
 #include "common.hpp"
 #include "terminal_interface.hpp"
 
-class KeyboardController {
+class KeyboardController
+{
     // Types
 public:
     class Configurator
