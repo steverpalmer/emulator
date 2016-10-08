@@ -1,9 +1,4 @@
-/*
- * screen_graphics_view.cpp
- *
- *  Created on: 9 May 2012
- *      Author: steve
- */
+// monitor_view.cpp
 
 #include <cassert>
 #include <cmath>
@@ -16,16 +11,18 @@
 
 #include <log4cxx/logger.h>
 
-#include "screen_graphics_view.hpp"
+#include "monitor_view.hpp"
 
 #define FONT_FNAME "mc6847.bmp"
 
 static log4cxx::LoggerPtr cpptrace_log()
 {
-    static log4cxx::LoggerPtr result(log4cxx::Logger::getLogger(CTRACE_PREFIX ".screen_graphics_view.cpp"));
+    static log4cxx::LoggerPtr result(log4cxx::Logger::getLogger(CTRACE_PREFIX ".monitor_view.cpp"));
     return result;
 }
 
+
+/// SurfaceArray overlays a Surface with an square array
 class SurfaceArray {
 private:
     SDL_Surface *m_array;
@@ -33,9 +30,9 @@ private:
     int          m_x_range;
     int          m_key;
 public:
-    SDL_Surface *data() const { return m_array; }
-    int         key() const { return m_key; }
-    void        update() { SDL_UpdateRect(m_array, m_pos.x, m_pos.y, m_pos.w, m_pos.h); }
+    // SDL_Surface *data() const { return m_array; }
+    inline int  key() const { return m_key; }
+    inline void update() { SDL_UpdateRect(m_array, m_pos.x, m_pos.y, m_pos.w, m_pos.h); }
 
     SurfaceArray( SDL_Surface *p_surface, int x_range = 1, int y_range = 1, int p_key = 0 )
         : m_array(p_surface)
@@ -183,43 +180,27 @@ public:
         }
 };
 
-void ScreenGraphicsView::render_mode0()
+static int scale2character_width(float p_scale)
 {
-    LOG4CXX_INFO(cpptrace_log(), "[" << id() << "].render_mode0()");
-    SurfaceArray si(m_screen, "render_mode0", 32, 16);
-    for (int addr = 0; addr < 512; addr++, ++si) {
-        const byte ch = m_memory.get_byte(addr);
-        if (ch != m_rendered[addr]) {
-            si.set(m_glyph[ch]);
-            m_rendered[addr] = ch;
-        }
-    }
+    return std::floor(8 * p_scale);
 }
 
-ScreenGraphicsView::ScreenGraphicsView(const TerminalInterface &p_terminal,
-                                       Device &p_memory,
-                                       const Configurator &p_cfg)
-    : Part(p_cfg)
-    , m_terminal(p_terminal)
-    , m_memory(p_memory)
-    , m_rendered(0x1800)
-    , m_glyph(256, 0)
+static int scale2character_height(float p_scale)
 {
-    LOG4CXX_INFO(cpptrace_log(), "ScreenGraphicsView::ScreenGraphicsView(" << p_cfg << ")");
-    assert (p_cfg.scale() >= 1.0);
-    m_character_w = std::floor(8 * p_cfg.scale());
-    m_character_h = std::floor(12 * p_cfg.scale());
-    m_screen = SDL_SetVideoMode( m_character_w * 32,
-                                 m_character_h * 16,
-                                 0,
-                                 SDL_SWSURFACE | SDL_ANYFORMAT );
-    assert (m_screen);
-    SDL_WM_SetCaption(p_cfg.window_title().data(), p_cfg.icon_title().data());
-    SDL_Surface *fontfile(SDL_LoadBMP(p_cfg.fontfilename().data()));
-    for ( SurfaceArray mc6847(fontfile, "mc6847", 32, 8);
+    return std::floor(12 * p_scale);
+}
+
+MonitorView::Mode0::Mode0(MonitorView &p_state, const MonitorView::Configurator &p_cfg)
+    : Mode(p_state)
+{
+    LOG4CXX_INFO(cpptrace_log(), "MonitorView::Mode0::Mode0(" << p_cfg << ")");
+    const int character_w = scale2character_width(p_cfg.scale());
+    const int character_h = scale2character_height(p_cfg.scale());
+    SDL_Surface *fontfile(SDL_LoadBMP(p_cfg.fontfilename().c_str()));
+    for ( SurfaceArray mc6847(fontfile, 32, 8);
           mc6847 && mc6847.key() < 256;
           ++mc6847) {
-        SDL_Surface *tmp(mc6847.get(m_character_w, m_character_h));
+        SDL_Surface *tmp(mc6847.get(character_w, character_h));
         m_glyph[mc6847.key()] = SDL_DisplayFormat(tmp);
         SDL_FreeSurface(tmp);
     }
@@ -227,42 +208,97 @@ ScreenGraphicsView::ScreenGraphicsView(const TerminalInterface &p_terminal,
     std::fill(m_rendered.begin(), m_rendered.end(), -1); // (un)Initialise cache
 }
 
-ScreenGraphicsView::~ScreenGraphicsView()
+MonitorView::Mode0::~Mode0()
 {
-    LOG4CXX_INFO(cpptrace_log(), "[" << id() << "].~ScreenGraphicsView()");
-    for (SDL_Surface * cg : m_glyph)
+    LOG4CXX_INFO(cpptrace_log(), "MonitorView::Mode0::~Mode0()");
+    for (SDL_Surface *cg : m_glyph)
         if (cg)
             SDL_FreeSurface(cg);
-    SDL_FreeSurface(m_screen);
 }
 
-void ScreenGraphicsView::update()
+void MonitorView::Mode0::set_byte_update(word p_addr, byte p_byte)
 {
-    LOG4CXX_INFO(cpptrace_log(), "[" << id() << "].update()");
-    switch(m_terminal.vdg_mode()) {
-    case VDG_MODE0 :                                                // Text Mode
-        render_mode0();
-        break;
-    default:                                // TODO: render colour graphics (#6)
-        assert (false);
+    LOG4CXX_INFO(cpptrace_log()
+                 , "MonitorView::Mode0::set_byte_update("
+                 << Hex(p_addr)
+                 << ", "
+                 << Hex(p_byte)
+                 << ")");
+    if (p_byte != m_rendered[p_addr]) {
+        SurfaceArray si(m_state.m_screen, 32, 16, p_addr);
+        si.set(m_glyph[p_byte]);
+        m_rendered[p_addr] = p_byte;
     }
 }
 
-std::ostream &operator<<(std::ostream &p_s, const ScreenGraphicsView::Configurator &p_cfg)
+void MonitorView::Mode0::render()
 {
-    p_s << static_cast<const Part::Configurator &>(p_cfg)
-        << ", scale=" << p_cfg.scale()
-        << ", fontfilename=\"" << p_cfg.fontfilename() << "\""
-        << ", windowtitle=\""  << p_cfg.window_title() << "\""
-        << ", icontitle=\""    << p_cfg.icon_title()   << "\"";
-    return p_s;
+    LOG4CXX_INFO(cpptrace_log(), "MonitorView::Mode0::render()");
+    SurfaceArray si(m_state.m_screen, 32, 16);
+    for (int addr = 0; addr < 512; addr++, ++si) {
+        const byte ch = m_state.m_memory.get_byte(addr);
+        if (ch != m_rendered[addr]) {
+            si.set(m_glyph[ch]);
+            m_rendered[addr] = ch;
+        }
+    }
 }
 
-std::ostream &operator<<(std::ostream &p_s, const ScreenGraphicsView &p_sgv)
+MonitorView::MonitorView(TerminalInterface &p_terminal_interface,
+                         Device &p_memory,
+                         const Configurator &p_cfg)
+    : m_terminal_interface(p_terminal_interface)
+    , m_memory(p_memory)
+    , m_mode(0)
+    , m_mode0(*this, p_cfg)
 {
-    p_s << static_cast<const Part &>(p_sgv)
-        << "screen:" << p_sgv.m_screen
-        << "character_w:" << p_sgv.m_character_w
-        << "character_h:" << p_sgv.m_character_h;
-    return p_s;
+    LOG4CXX_INFO(cpptrace_log(), "MonitorView::MonitorView(" << p_cfg << ")");
+    assert (p_cfg.scale() >= 1.0);
+    m_screen = SDL_SetVideoMode( scale2character_width(p_cfg.scale()) * 32,
+                                 scale2character_height(p_cfg.scale()) * 16,
+                                 0,
+                                 SDL_SWSURFACE | SDL_ANYFORMAT );
+    assert (m_screen);
+    SDL_WM_SetCaption(p_cfg.window_title().c_str(), p_cfg.icon_title().c_str());
+    m_terminal_interface.attach(*this);
+    m_memory.attach(*this);
+}
+
+MonitorView::~MonitorView()
+{
+    LOG4CXX_INFO(cpptrace_log(), "~MonitorView()");
+    m_memory.detach(*this);
+    m_terminal_interface.detach(*this);
+    m_mode = 0;
+    SDL_FreeSurface(m_screen);
+}
+
+void MonitorView::vdg_mode_update(TerminalInterface *p_terminal, VDGMode p_mode)
+{
+    LOG4CXX_INFO(cpptrace_log(), "MonitorView::vdg_mode_update(" << p_mode << ")");
+    switch (p_mode)
+    {
+    case VDG_MODE0:
+        m_mode = &m_mode0;
+    default:
+        assert (false);  // TODO: render graphics modes
+    }
+    render();
+}
+
+std::ostream &operator<<(std::ostream &p_s, const MonitorView::Configurator &p_cfg)
+{
+    return p_s << "<scale>"        << p_cfg.scale() << "</scale>"
+               << "<fontfilename>" << p_cfg.fontfilename() << "</fontfilename>"
+               << "<windowtitle>"  << p_cfg.window_title() << "</windowtitle>"
+               << "<icontitle>"    << p_cfg.icon_title()   << "</icontitle>";
+}
+
+std::ostream &operator<<(std::ostream &p_s, const MonitorView &p_mv)
+{
+    return p_s << "MonitorView("
+               << p_mv.m_terminal_interface.id()
+               << ", " << p_mv.m_memory.id()
+               << ", Screen(" << p_mv.m_screen << ")"
+               << ")";
 }

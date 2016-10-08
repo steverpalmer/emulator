@@ -1,9 +1,4 @@
-/*
- * config.cpp
- *
- *  Created on: 20 Apr 2012
- *      Author: steve
- */
+// config_xml.cpp
 
 #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
 

@@ -1,15 +1,9 @@
-/*
- * device.cpp
- *
- *  Created on: 30 Mar 2012
- *      Author: steve
- */
+// device.cpp
 
 #include <cassert>
 #include <ostream>
 #include <fstream>
 #include <iomanip>
-//#include <algorithm>
 
 #include <log4cxx/logger.h>
 
@@ -44,7 +38,7 @@ void Device::set_word(word p_addr, word p_word, AccessType p_at)
     set_byte(((p_addr+1)==size())?0:(p_addr+1), byte(p_word >> 8), p_at);
 }
 
-// Ram_Rom_Helper Methods
+// SimpleMemory Methods
 
 bool SimpleMemory::load(const Glib::ustring &p_filename)
 {
@@ -103,45 +97,6 @@ Rom::~Rom()
     // Do Nothing
 }
 
-#if 0
-// Hook Methods
-
-Hook::Hook(const Configurator &p_cfg)
-    : Device(p_cfg)
-    , m_base(0)
-    , m_device(0)
-{
-    LOG4CXX_INFO(cpptrace_log(), "Hook::Hook(" << p_cfg << ")");
-}
-
-Hook::~Hook()
-{
-	m_device.reset();
-}
-
-byte Hook::get_byte(word p_addr, AccessType p_at)
-{
-    LOG4CXX_INFO(cpptrace_log(), "[" << id() << "].get_byte(" << Hex(p_addr) << ", " << p_at << ")");
-    int result(execute(p_addr+m_base, -1, p_at));
-    if (result < 0)
-    {
-        assert (m_device);
-        result = m_device->get_byte(p_addr+m_base, p_at);
-    }
-    return byte(result);
-}
-
-void Hook::set_byte(word p_addr, byte p_byte, AccessType p_at)
-{
-    LOG4CXX_INFO(cpptrace_log(), "[" << id() << "].set_byte(" << Hex(p_addr) << ", " << Hex(p_byte) << ", " << p_at << ")");
-    if (execute(p_addr+m_base, p_byte, p_at))
-    {
-        assert m_device;
-        m_device->set_byte(p_addr+m_base, p_byte, p_at);
-    }
-}
-#endif
-
 // Memory Methods
 
 Memory::Memory(const Configurator &p_cfg)
@@ -160,21 +115,21 @@ Memory::Memory(const Configurator &p_cfg)
     }
 }
 
-void Memory::reset()
+void Memory::_reset()
 {
     for (std::shared_ptr<Device> d : m_devices)
         d->reset();
 }
 
-byte Memory::get_byte(word p_addr, AccessType p_at)
+byte Memory::_get_byte(word p_addr, AccessType p_at)
 {
-    LOG4CXX_INFO(cpptrace_log(), "[" << id() << "].get_byte(" << Hex(p_addr) << ", " << p_at << ")");
+    LOG4CXX_INFO(cpptrace_log(), "[" << id() << "]._get_byte(" << Hex(p_addr) << ", " << p_at << ")");
     return m_map[p_addr] ? m_map[p_addr]->get_byte(p_addr-m_base[p_addr], p_at) : 0;
 }
 
-void Memory::set_byte(word p_addr, byte p_byte, AccessType p_at)
+void Memory::_set_byte(word p_addr, byte p_byte, AccessType p_at)
 {
-    LOG4CXX_INFO(cpptrace_log(), "[" << id() << "].set_byte(" << Hex(p_addr) << ", " << Hex(p_byte) << ", " << p_at << ")");
+    LOG4CXX_INFO(cpptrace_log(), "[" << id() << "]._set_byte(" << Hex(p_addr) << ", " << Hex(p_byte) << ", " << p_at << ")");
     if (m_map[p_addr])
     	m_map[p_addr]->set_byte(p_addr-m_base[p_addr], p_byte, p_at);
 }
@@ -194,12 +149,6 @@ void Memory::add_device(word p_base, std::shared_ptr<Device> p_device, word p_si
     }
 }
 
-std::shared_ptr<Device> Memory::get_device(word p_addr) const
-{
-    LOG4CXX_INFO(cpptrace_log(), "[" << id() << "].get_device(" << Hex(p_addr) << ")");
-    return m_map[p_addr];
-}
-
 void Memory::drop_devices()
 {
     LOG4CXX_INFO(cpptrace_log(), "[" << id() << "].drop_devices(" << ")");
@@ -211,74 +160,41 @@ void Memory::drop_devices()
     m_devices.clear();
 }
 
-#if 0
-void Memory::add_hook(word p_base, std::shared_ptr<Hook> p_hook, word p_size)
-{
-    assert (p_hook);
-    LOG4CXX_INFO(cpptrace_log(), "[" << id() << "].add_hook(" << Hex(p_base) << ", [" << p_hook->id() << "], " << Hex(p_size) << ")");
-    const int hook_size(SIZE(p_hook->size()));
-    assert (!p_size || (p_size % hook_size == 0));
-    const int memory_size(p_size?p_size:hook_size);
-    p_hook->m_base = m_base[p_base];
-    p_hook->m_device = m_map[p_base];
-    m_map[p_base] = p_hook;
-    for (int offset = 1; offset < p_size; offset++) {
-    	assert (m_map[p_base + offset] == p_hook->m_device);
-    	m_map[p_base + offset] = p_hook;
-    }
-}
-#endif
+// Streaming Output
 
 std::ostream &operator<<(std::ostream &p_s, const Device::Configurator &p_cfg)
 {
-    return p_s << "Device::Configurator("
-               << static_cast<const Part::Configurator &>(p_cfg)
-               << ")";
+    return p_s << static_cast<const Part::Configurator &>(p_cfg);
 }
 
 std::ostream &operator<<(std::ostream &p_s, const Ram::Configurator &p_cfg)
 {
-    return p_s << "Ram::Configurator("
-               << static_cast<const Device::Configurator &>(p_cfg)
-               << ", size=" << Hex(p_cfg.size())
-               << ", filename=\"" << p_cfg.filename()
-               << "\")";
+    return p_s << "<Ram " << static_cast<const Device::Configurator &>(p_cfg) << ">"
+               << "<size>" << Hex(p_cfg.size()) << "</size>"
+               << "<filename>" << p_cfg.filename() << "</filename>"
+               << "</Ram>";
 }
 
 std::ostream &operator<<(std::ostream &p_s, const Rom::Configurator &p_cfg)
 {
-    return p_s << "Rom::Configurator("
-               << static_cast<const Device::Configurator &>(p_cfg)
-               << ", filename=\"" << p_cfg.filename()
-               << "\", size=" << Hex(p_cfg.size())
-               << ")";
+    return p_s << "<Rom " << static_cast<const Device::Configurator &>(p_cfg) << ">"
+               << "<filename>" << p_cfg.filename() << "</filename>"
+               << "<size>" << Hex(p_cfg.size()) << "</size>"
+               << "</Rom>";
 }
-
-#if 0
-std::ostream &operator<<(std::ostream &p_s, const Hook::Configurator &p_cfg)
-{
-    return p_s << "Hook::Configurator("
-               << static_cast<const Device::Configurator &>(p_cfg)
-               << ")";
-}
-#endif
 
 std::ostream &operator<<(std::ostream &p_s, const Memory::Configurator &p_cfg)
 {
-    p_s << "Memory::Configurator("
-        << static_cast<const Device::Configurator &>(p_cfg)
-        << ", size=" << Hex(p_cfg.size())
-        << "{";
+    p_s << "<memory " << static_cast<const Device::Configurator &>(p_cfg) << ">"
+        << "<size>" << Hex(p_cfg.size()) << "</size>";
     Memory::Configurator::mapping map;
     for (int i(0); (map = p_cfg.device(i), map.device); i++)
-        p_s << "("
-            << i
-            << ":"
-            << "(base=" << Hex(map.base)
-            << ", size=" << Hex(map.size)
-            << ", device=" << map.device
-            << "),";
-    p_s << "})";
+        p_s << "<map>"
+            << "<base>" << Hex(map.base) << "</base>"
+            << map.device
+            << "<size>" << Hex(map.size) << "</size>"
+            << "</map>";
+    p_s << "</memory>";
     return p_s;
 }
 
@@ -301,7 +217,7 @@ std::ostream &operator<<(std::ostream &p_s, const AccessType p_at)
 std::ostream &operator<<(std::ostream &p_s, const Device &p_dev)
 {
     return p_s << static_cast<const Part &>(p_dev)
-               << ", size:" << Hex(p_dev.size());
+               << ", size(" << Hex(p_dev.size()) << ")";
 }
 
 std::ostream &operator<<(std::ostream &p_s, const SimpleMemory &p_simple)
@@ -322,19 +238,20 @@ std::ostream &operator<<(std::ostream &p_s, const SimpleMemory &p_simple)
 
 std::ostream &operator<<(std::ostream &p_s, const Ram &p_ram)
 {
-    p_s << static_cast<const Device &>(p_ram)
-        << ", data:" << p_ram.m_memory;
+    p_s << "Ram("
+        << static_cast<const Device &>(p_ram)
+        << ", memory(" << p_ram.m_memory << ")";
     if (!p_ram.m_filename.empty())
-        p_s << ", filename=\"" << p_ram.m_filename
-            << "\"";
-    return p_s;
+        p_s << ", filename(" << p_ram.m_filename << ")";
+    return p_s << ")";
 }
 
 std::ostream &operator<<(std::ostream &p_s, const Rom &p_rom)
 {
-    return p_s << static_cast<const Device &>(p_rom)
-               << ", data:" << p_rom.m_memory
-               << "\"";
+    p_s << "Rom("
+        << static_cast<const Device &>(p_rom)
+        << ", memory(" << p_rom.m_memory << ")";
+    return p_s << ")";
 }
 
 #if 0
@@ -347,7 +264,8 @@ std::ostream &operator<<(std::ostream &p_s, const Hook &p_hook)
 
 std::ostream &operator<<(std::ostream &p_s, const Memory &p_memory)
 {
-    p_s << static_cast<const Device &>(p_memory) << std::endl;
+    p_s << "Memory("
+        << static_cast<const Device &>(p_memory);
     std::shared_ptr<Device> previous_device;
     for (int addr=0; addr<0x10000; addr++) {
         std::shared_ptr<Device> cell(p_memory.m_map[addr]);
@@ -360,5 +278,5 @@ std::ostream &operator<<(std::ostream &p_s, const Memory &p_memory)
                 p_s << *previous_device;
         }
     }
-    return p_s;
+    return p_s << ")";
 }

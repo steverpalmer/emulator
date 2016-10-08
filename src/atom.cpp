@@ -1,9 +1,4 @@
-/*
- * atom.cpp
- *
- *  Created on: 30 Mar 2012
- *      Author: steve
- */
+// atom.cpp
 
 #include <cassert>
 #include <csignal> // used to indicate the end of streaming input
@@ -49,12 +44,6 @@ Atom::~Atom()
     m_memory.drop_devices();
 }
 
-int Atom::cycles() const
-{
-    LOG4CXX_INFO(cpptrace_log(), "[" << id() << "].cycles()");
-    return m_6502.m_cycles;
-}
-
 void Atom::reset()
 {
     LOG4CXX_INFO(cpptrace_log(), "[" << id() << "].reset()");
@@ -62,51 +51,16 @@ void Atom::reset()
     m_6502.reset();
 }
 
-void Atom::NMI()
-{
-    LOG4CXX_INFO(cpptrace_log(), "[" << id() << "].NMI()");
-    m_6502.NMI();
-}
-
-void Atom::IRQ()
-{
-    LOG4CXX_INFO(cpptrace_log(), "[" << id() << "].IRQ()");
-    m_6502.IRQ();
-}
-
-void Atom::step(int p_cnt)
-{
-    LOG4CXX_INFO(cpptrace_log(), "[" << id() << "].step(" << p_cnt << ")");
-    m_6502.step(p_cnt);
-}
-
-void Atom::resume()
-{
-    LOG4CXX_INFO(cpptrace_log(), "[" << id() << "].resume()");
-    m_6502.resume();
-}
-
-void Atom::pause()
-{
-    LOG4CXX_INFO(cpptrace_log(), "[" << id() << "].pause()");
-    m_6502.pause();
-}
-
 std::ostream &operator<<(std::ostream &p_s, const Atom::Configurator &p_cfg)
 {
-    p_s << "Atom::Configurator([";
-    const Device::Configurator *d_cfg;
-    for (int i(0); (d_cfg = p_cfg.device(i)); i++)
-    	p_s << "(" << i << ":" << *d_cfg << "), ";
-    p_s << "], (" << p_cfg.memory() << "), ";
-    p_s << "(" << p_cfg.mcs6502() << ")";
-    p_s << ")";
-    return p_s;
+    return p_s << "<atom " << static_cast<const Part::Configurator &>(p_cfg) << ">"
+               << p_cfg.memory()
+               << p_cfg.mcs6502();
 }
 
 std::ostream &operator<<(std::ostream &p_s, const Atom &p_atom)
 {
-    p_s << p_atom.m_memory
-        << p_atom.m_6502;
-    return p_s;
+    return p_s << "Atom("
+               << "Memory(" << p_atom.m_memory << ")"
+               << ", 6502(" << p_atom.m_6502 << ")";
 }

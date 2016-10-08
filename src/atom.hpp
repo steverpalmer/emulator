@@ -1,9 +1,4 @@
-/*
- * atom.hpp
- *
- *  Created on: 30 Mar 2012
- *      Author: steve
- */
+// atom.hpp
 
 #ifndef ATOM_HPP_
 #define ATOM_HPP_
@@ -47,18 +42,19 @@ public:
 public:
     explicit Atom(const Configurator &p_acfg);
     virtual ~Atom();
-    int     cycles() const;
-    void    reset();
-    void    NMI();
-    void    IRQ();
-    void    step(int cnt=1);
-    void    resume();
-    void    pause();
 
+    // Wrappers on MCS6502
+    int     cycles() const { return m_6502.m_cycles; }
+    void    reset();
+    void    NMI() { m_6502.NMI(); }
+    void    IRQ() { m_6502.IRQ(); }
+    void    step(int cnt=1) { m_6502.step(cnt); }
+    void    resume() { m_6502.resume(); }
+    void    pause() { m_6502.pause(); }
+
+    // Wrappers on Terminal Interface
     VDGMode vdg_mode() const
         { return m_ppia->vdg_mode(); }
-    void set_vdg_refresh(bool p_flag)
-        { m_ppia->set_vdg_refresh(p_flag); }
     void set_keypress(int p_key)
         { m_ppia->set_keypress(p_key); }
     void set_is_shift_pressed(bool p_flag)

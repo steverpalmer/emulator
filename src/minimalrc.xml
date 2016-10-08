@@ -39,7 +39,7 @@
     <controller name="ppia"/>
     <scale>2.0</scale>
     <fontfilename>mc6847.bmp</fontfilename>
-    <refreshrate>10</refreshrate>
+    <!-- refreshrate>10</refreshrate -->
     <!-- key_copy>F1</key_copy -->
     <!-- key_reset>F12</key_reset -->
   </terminal>

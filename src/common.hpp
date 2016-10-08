@@ -1,9 +1,4 @@
-/*
- * common.hpp
- *
- *  Created on: 7 May 2012
- *      Author: steve
- */
+// common.hpp
 
 #ifndef COMMON_HPP_
 #define COMMON_HPP_

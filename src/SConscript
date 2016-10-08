@@ -1,10 +1,6 @@
 Import('common_env')
 
-common_env['CCFLAGS']   = r'-Wall -g -pipe -std=c++11 -pthread -O0'
-common_env['LINKFLAGS'] = r'-pthread'
-
-add_library(common_env, 'liblog4cxx')
-add_library(common_env, 'glibmm-2.4')
+# Ancilliaries
 
 common_env['BUILDERS']['rng2rnc'] = rng2rnc
 common_env.rng2rnc('relaxng')
@@ -16,8 +12,16 @@ common_env.rng2xsd('relaxng')
 common_env.rng2xsd('atom')
 common_env.rng2xsd('emulator')
 
+# Main Build
+
+common_env['CCFLAGS']   = r'-Wall -g -pipe -std=c++11 -pthread -O0'
+common_env['LINKFLAGS'] = r'-pthread'
+
+add_library(common_env, 'liblog4cxx')
+add_library(common_env, 'glibmm-2.4')
+
 libatom_env = common_env.Clone()
-atomlib = libatom_env.StaticLibrary(r'atom', [ r'device.cpp'
+ATOMLIB = libatom_env.StaticLibrary(r'atom', [ r'device.cpp'
                                              , r'ppia.cpp'
                                              , r'cpu.cpp'
                                              , r'atom.cpp'
@@ -27,10 +31,9 @@ atom_gui_sdl_env = common_env.Clone()
 add_library(atom_gui_sdl_env, 'sdl')
 add_library(atom_gui_sdl_env, 'libxml++-2.6')
 
-#atom_gui_sdl_env.Program('atom', [ r'screen_graphics_controller.cpp'
-#                                 , r'screen_graphics_view.cpp'
-#                                 , r'keyboard_controller.cpp'
-#                                 , r'config_xml.cpp'
-#                                 , r'main.cpp'
-#                                 , atomlib
-#                                 ])
+atom_gui_sdl_env.Program('atom', [ r'monitor_view.cpp'
+                                 , r'keyboard_controller.cpp'
+                                 , r'config_xml.cpp'
+                                 , r'main.cpp'
+                                 , ATOMLIB
+                                 ])

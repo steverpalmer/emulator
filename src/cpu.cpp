@@ -1,9 +1,4 @@
-/*
- * cpu.cpp
- *
- *  Created on: 30 Mar 2012
- *      Author: steve
- */
+// cpu.cpp
 
 #include <cassert>
 #include <unistd.h>
@@ -2689,16 +2684,12 @@ void MCS6502::trace_finish()
 
 std::ostream &operator<<(std::ostream &p_s, const Core::Configurator &p_cfg)
 {
-    return p_s << "Core::Configurator("
-               << static_cast<const Part::Configurator &>(p_cfg)
-               << ")";
+    return p_s << static_cast<const Part::Configurator &>(p_cfg);
 }
 
 std::ostream &operator<<(std::ostream &p_s, const MCS6502::Configurator &p_cfg)
 {
-    return p_s << "MCS6502::Configurator("
-               << static_cast<const Core::Configurator &>(p_cfg)
-               << ")";
+    return p_s << "<MCS6502 " << static_cast<const Core::Configurator &>(p_cfg) << "/>";
 }
 
 std::ostream &operator<<(std::ostream &p_s, const InterruptState &p_is)
@@ -2719,8 +2710,8 @@ std::ostream &operator<<(std::ostream &p_s, const InterruptState &p_is)
 std::ostream &operator<<(std::ostream &p_s, const Core &p_c)
 {
     return p_s << static_cast<const Part &>(p_c)
-               << ", Running:"   << !pthread_equal(p_c.m_thread, pthread_self())
-               << ", StepsToGo:" << p_c.m_steps_to_go;
+               << ", Running("   << !pthread_equal(p_c.m_thread, pthread_self()) << ")"
+               << ", StepsToGo(" << p_c.m_steps_to_go << ")";
 }
 
 std::ostream &operator<<(std::ostream &p_s, const InterruptSource &p_is)
@@ -2771,13 +2762,14 @@ std::ostream &operator<<(std::ostream &p_s, const MCS6502::Instruction &p_i)
 
 std::ostream &operator<<(std::ostream &p_s, const MCS6502 &p_6502)
 {
-    return p_s << static_cast<const Core &>(p_6502)
-               << ", Memory:"  << p_6502.m_memory.id()
-               << ", PC:" << Hex(p_6502.m_register.PC)
-               << ", A:"  << Hex(p_6502.m_register.A)
-               << ", X:"  << Hex(p_6502.m_register.X)
-               << ", Y:"  << Hex(p_6502.m_register.Y)
-               << ", S:"  << Hex(p_6502.m_register.S)
-               << ", P:"  << Hex(p_6502.m_register.P)
-               << ", IntrSrc:" << p_6502.m_InterruptSource;
+    return p_s << "MCS6502("
+               << static_cast<const Core &>(p_6502)
+               << ", Memory("  << p_6502.m_memory.id() << ")"
+               << ", PC(" << Hex(p_6502.m_register.PC) << ")"
+               << ", A("  << Hex(p_6502.m_register.A) << ")"
+               << ", X("  << Hex(p_6502.m_register.X) << ")"
+               << ", Y("  << Hex(p_6502.m_register.Y) << ")"
+               << ", S("  << Hex(p_6502.m_register.S) << ")"
+               << ", P("  << Hex(p_6502.m_register.P) << ")"
+               << ", IntrSrc(" << p_6502.m_InterruptSource << ")";
 }

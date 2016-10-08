@@ -1,18 +1,12 @@
-/*
- * device.hpp
- *
- *  Created on: 30 Mar 2012
- *      Author: steve
- */
+// device.hpp
 
 #ifndef DEVICE_HPP_
 #define DEVICE_HPP_
 
 #include <ostream>
-#include <map>    // User by Devices
-#include <vector> // Used by Ram and Rom
-#include <array>  // User my Memory
-#include <memory>
+#include <set>    // Used by Device observers
+#include <vector> // Used by Ram and Rom storage
+#include <memory> // Used be Memory
 
 #include "common.hpp"
 #include "part.hpp"
@@ -32,15 +26,38 @@ extern std::ostream &operator<<(std::ostream &, const AccessType);
 ///
 /// Addresses supplied to get_ and put_byte are relative to the device.
 ///
+/// In addition, Devices are subjects (observerable), by other objects that
+/// inherit from Device::Observer.  They will then be updated when the device is
+/// reset, read or written.
+///
 /// It also provides a few helpers for getting and putting words as
 /// combinations of getting and putting words (Low Endian).
-class Device : public Part {
+
+class Device
+    : public Part
+{
     // Types
 public:
+    /// The Device Observer is an interface to allow
+    /// other classes to observe resets, get_bytes and set_bytes
+    class Observer
+    {
+    private:
+        Observer(const Observer &);
+        Observer &operator=(const Observer &);
+    protected:
+        Observer();
+    public:
+        virtual void reset_update(Device *p_device) {};
+        virtual void get_byte_update(Device *p_device, word p_addr, AccessType p_at, byte result) {};
+        virtual void set_byte_update(Device *p_device, word p_addr, byte p_byte, AccessType p_at) {};
+    };
+
 	/// The Device Configurator is an interface to two key items
 	/// 1. the information needed by the device to construct an instance
 	/// 2. a factory method that builds the instance of the device
-    class Configurator : public Part::Configurator
+    class Configurator
+        : public Part::Configurator
     {
     public:
     	/// 1. Constructor Information - Name only at this level
@@ -49,20 +66,51 @@ public:
 
         friend std::ostream &::operator <<(std::ostream &, const Configurator &);
     };
+    // Attributes
+protected:
+    std::set<Observer *> m_observers;
     // Methods
 private:
-    Device(const Device&);
+    Device(const Device &);
     Device &operator=(const Device &);
 protected:
     explicit Device(const Configurator &);
+protected:
+    virtual void _reset() {};
+    virtual byte _get_byte(word p_addr, AccessType p_at = AT_UNKNOWN);
+    virtual void _set_byte(word p_addr, byte p_byte, AccessType p_at = AT_UNKNOWN);
 public:
     virtual word size() const = 0;
-    virtual void reset() {}
-    virtual byte get_byte(word p_addr, AccessType p_at = AT_UNKNOWN) = 0;
-    virtual void set_byte(word p_addr, byte p_byte, AccessType p_at = AT_UNKNOWN) = 0;
-    word         get_word(word p_addr, AccessType p_at = AT_UNKNOWN);
-    void         set_word(word p_addr, word p_word, AccessType p_at = AT_UNKNOWN);
 
+    inline void attach(Observer &p_observer) { m_observers.insert(&p_observer); }
+    inline void detach(Observer &p_observer) { m_observers.erase(&p_observer); }
+
+    virtual ~Device() { m_observers.clear(); }
+    
+    inline void reset()
+        {
+            _reset();
+            for ( Observer *obs : m_observers )
+                obs->reset_update(this);
+        }
+    inline byte get_byte(word p_addr, AccessType p_at = AT_UNKNOWN)
+        {
+            const byte result(_get_byte(p_addr, p_at));
+            for ( Observer *obs : m_observers )
+                obs->get_byte_update(this, p_addr, p_at, result);
+            return result;
+        }
+    inline void set_byte(word p_addr, byte p_byte, AccessType p_at = AT_UNKNOWN)
+        {
+            _set_byte(p_addr, p_byte, p_at);
+            for ( Observer *obs : m_observers )
+                obs->set_byte_update(this, p_addr, p_byte, p_at);
+        }
+    word get_word(word p_addr, AccessType p_at = AT_UNKNOWN);
+    void set_word(word p_addr, word p_word, AccessType p_at = AT_UNKNOWN);
+
+    friend class Observer;
+    
     friend std::ostream &::operator<<(std::ostream &, const Device &);
 };
 
@@ -81,9 +129,9 @@ public:
     SimpleMemory(int size) : m_storage(size, 0) {}
     inline word size() const
         { return m_storage.size(); }
-    inline byte get_byte(word p_addr, AccessType p_at)
+    inline byte _get_byte(word p_addr, AccessType p_at)
         { return m_storage[p_addr]; }
-    inline void set_byte(word p_addr, byte p_byte, AccessType p_at)
+    inline void _set_byte(word p_addr, byte p_byte, AccessType p_at)
         { m_storage[p_addr] = p_byte; }
     bool load(const Glib::ustring &p_filename);
     bool save(const Glib::ustring &p_filename) const;
@@ -95,7 +143,7 @@ public:
 /// Ram is a trivial implementation of Device as a simple RAM device.
 ///
 /// It provides a wrapper around SimpleMemory, with addition that
-/// the storage may be persistent is it is configured with a filename.
+/// the storage may be persistent if it is configured with a filename.
 class Ram : public Device {
 public:
     class Configurator : public Device::Configurator
@@ -123,10 +171,11 @@ public:
     virtual ~Ram();
     virtual word size() const
         { return m_memory.size(); }
-    virtual byte get_byte(word p_addr, AccessType p_at = AT_UNKNOWN)
-        { return m_memory.get_byte(p_addr, p_at); }
-    virtual void set_byte(word p_addr, byte p_byte, AccessType p_at = AT_UNKNOWN)
-        { m_memory.set_byte(p_addr, p_byte, p_at); }
+protected:
+    virtual byte _get_byte(word p_addr, AccessType p_at = AT_UNKNOWN)
+        { return m_memory._get_byte(p_addr, p_at); }
+    virtual void _set_byte(word p_addr, byte p_byte, AccessType p_at = AT_UNKNOWN)
+        { m_memory._set_byte(p_addr, p_byte, p_at); }
 
     friend std::ostream &::operator<<(std::ostream &, const Ram &);
 };
@@ -163,41 +212,14 @@ public:
     virtual ~Rom();
     virtual word size() const
         { return m_memory.size(); }
-    virtual byte get_byte(word p_addr, AccessType p_at = AT_UNKNOWN)
-        { return m_memory.get_byte(p_addr, p_at); }
-    virtual void set_byte(word p_addr, byte p_byte, AccessType p_at = AT_UNKNOWN)
+protected:
+    virtual byte _get_byte(word p_addr, AccessType p_at = AT_UNKNOWN)
+        { return m_memory._get_byte(p_addr, p_at); }
+    virtual void _set_byte(word p_addr, byte p_byte, AccessType p_at = AT_UNKNOWN)
         { /* Do Nothing! */ }
 
     friend std::ostream &::operator<<(std::ostream &, const Rom &);
-
 };
-
-
-#if 0
-class Hook: public Device
-{
-public:
-    class Configurator : public Device::Configurator
-    {
-    public:
-        friend std::ostream &::operator <<(std::ostream &, const Configurator &);
-    };
-    // Attributes
-public:
-    word m_base;
-    std::shared_ptr<Device> m_device;
-    // Methods
-protected:
-    explicit Hook(const Configurator &);
-    virtual ~Hook();
-public:
-    virtual byte get_byte(word p_addr, AccessType p_at = AT_UNKNOWN);
-    virtual void set_byte(word p_addr, byte p_byte, AccessType = AT_UNKNOWN);
-    virtual int  execute (word p_addr, int p_byte, AccessType p_at = AT_UNKNOWN) = 0;
-
-    friend std::ostream &::operator<<(std::ostream &, const Hook &);
-};
-#endif
 
 
 /// This is the Main Memory class whose primary client in the CPU.
@@ -236,16 +258,14 @@ private:
     Memory &operator=(const Memory &);
 public:
     explicit Memory(const Configurator &);
-    virtual void            reset();
-    virtual word            size() const { return m_map.size(); }
-    virtual byte            get_byte  (word p_addr, AccessType p_at = AT_UNKNOWN);
-    virtual void            set_byte  (word p_addr, byte p_byte, AccessType p_at = AT_UNKNOWN);
-    void                    add_device(word p_base, std::shared_ptr<Device> p_device, word p_size = 0);
-    std::shared_ptr<Device> get_device(word p_addr) const;
-    void                    drop_devices();
-#if 0
-    void                    add_hook  (word p_addr, std::shared_ptr<Hook> p_hook, word p_size = 0);
-#endif
+    virtual word size() const { return m_map.size(); }
+protected:
+    virtual void _reset();
+    virtual byte _get_byte  (word p_addr, AccessType p_at = AT_UNKNOWN);
+    virtual void _set_byte  (word p_addr, byte p_byte, AccessType p_at = AT_UNKNOWN);
+public:
+    void add_device(word p_base, std::shared_ptr<Device> p_device, word p_size = 0);
+    void drop_devices();
 
     friend std::ostream &::operator<<(std::ostream &, const Memory &);
 };

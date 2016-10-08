@@ -1,9 +1,4 @@
-/*
- * ppia.hpp
- *
- *  Created on: 30 Mar 2012
- *      Author: steve
- */
+// ppia.hpp
 
 #ifndef PPIA_HPP_
 #define PPIA_HPP_
@@ -36,7 +31,7 @@ private:
     struct {
         mutable pthread_mutex_t mutex;
         VDGMode vdg_mode;
-        bool    is_vdg_refresh;
+        VDGMode notified_vdg_mode;
         int     pressed_key;
         bool    is_shift_pressed;
         bool    is_ctrl_pressed;
@@ -56,14 +51,13 @@ public:
     // Device
     
     virtual word size() const { return 4; }
-    virtual void reset();
-    virtual byte get_byte(word p_addr, AccessType p_at = AT_UNKNOWN);
-    virtual void set_byte(word p_addr, byte p_byte, AccessType p_at = AT_UNKNOWN);
+    virtual void _reset();
+    virtual byte _get_byte(word p_addr, AccessType p_at = AT_UNKNOWN);
+    virtual void _set_byte(word p_addr, byte p_byte, AccessType p_at = AT_UNKNOWN);
 
     // TerminalInterface
     
     virtual VDGMode vdg_mode() const;
-    virtual void    set_vdg_refresh(bool p_flag);
     virtual void    set_keypress(int p_key);
     virtual void    set_is_shift_pressed(bool p_flag);
     virtual void    set_is_ctrl_pressed(bool p_flag);

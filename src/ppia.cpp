@@ -1,9 +1,4 @@
-/*
- * ppia.cpp
- *
- *  Created on: 30 Mar 2012
- *      Author: steve
- */
+// ppia.cpp
 
 #include <cassert>
 #include <ostream>
@@ -82,7 +77,7 @@ Ppia::Ppia(const Configurator &p_cfg)
 {
     LOG4CXX_INFO(cpptrace_log(), "Ppia::Ppia(" << p_cfg << ")");
     m_terminal.mutex = PTHREAD_RECURSIVE_MUTEX_INITIALIZER_NP;
-    reset();
+    _reset();
 }
 
 Ppia::~Ppia()
@@ -282,18 +277,13 @@ byte Ppia::get_PortC(byte p_previous)
     pthread_mutex_lock(&m_terminal.mutex);
     if (!m_terminal.is_rept_pressed)
         result |= 0x40;
-#if 0
-    if (m_terminal.is_vdg_refresh)
-        result |= 0x80;
-#else
-    result ^= 0x80;
-#endif
+    result ^= 0x80;                                // Flip Terminal Refresh bit
     result ^= 0x30;                                      // Flip Tape input bits
     pthread_mutex_unlock(&m_terminal.mutex);
     return result;
 }
 
-byte Ppia::get_byte(word p_addr, AccessType p_at)
+byte Ppia::_get_byte(word p_addr, AccessType p_at)
 {
     LOG4CXX_INFO(cpptrace_log(), "[" << id() << "].get_byte(" << Hex(p_addr) << ", " << p_at << ")");
     assert (p_addr < 4);
@@ -339,10 +329,15 @@ void Ppia::set_PortA(byte p_byte)
         };
     pthread_mutex_lock(&m_terminal.mutex);
     m_terminal.vdg_mode = mode_mapping[p_byte >> 4 & 0x0F];
+    if (m_terminal.vdg_mode != m_terminal.notified_vdg_mode)
+    {
+        vdg_mode_notify(m_terminal.vdg_mode);
+        m_terminal.notified_vdg_mode = m_terminal.vdg_mode;
+    }
     pthread_mutex_unlock(&m_terminal.mutex);
 }
 
-void Ppia::set_byte(word p_addr, byte p_byte, AccessType p_at)
+void Ppia::_set_byte(word p_addr, byte p_byte, AccessType p_at)
 {
     LOG4CXX_INFO(cpptrace_log(), "[" << id() << "].set_byte(" << Hex(p_addr) << ", " << Hex(p_byte) << ", " << p_at << ")");
     assert (p_addr < 4);
@@ -374,15 +369,16 @@ void Ppia::set_byte(word p_addr, byte p_byte, AccessType p_at)
     m_register[p_addr] = p_byte;                            // Remember byte written
 }
 
-void Ppia::reset()
+void Ppia::_reset()
 {
     LOG4CXX_INFO(cpptrace_log(), "[" << id() << "].reset()");
     // reset the IO Model Inputs first
     pthread_mutex_lock(&m_terminal.mutex);
-    m_terminal.pressed_key      = KBD_NO_KEYPRESS;
-    m_terminal.is_shift_pressed = false;
-    m_terminal.is_ctrl_pressed  = false;
-    m_terminal.is_rept_pressed  = false;
+    m_terminal.notified_vdg_mode = VDG_LAST; // force a notification
+    m_terminal.pressed_key       = KBD_NO_KEYPRESS;
+    m_terminal.is_shift_pressed  = false;
+    m_terminal.is_ctrl_pressed   = false;
+    m_terminal.is_rept_pressed   = false;
 
     // reset "Control" port first
     m_register[ControlPort] = 0x8A;
@@ -403,14 +399,6 @@ VDGMode Ppia::vdg_mode() const
     const VDGMode result(m_terminal.vdg_mode);
     pthread_mutex_unlock(&m_terminal.mutex);
     return result;
-}
-
-void Ppia::set_vdg_refresh(bool p_is_refresh)
-{
-    LOG4CXX_INFO(cpptrace_log(), "[" << id() << "].set_vdg_refresh(" << p_is_refresh << ")");
-    pthread_mutex_lock(&m_terminal.mutex);
-    m_terminal.is_vdg_refresh = p_is_refresh;
-    pthread_mutex_unlock(&m_terminal.mutex);
 }
 
 void Ppia::set_keypress(int p_key)
@@ -447,24 +435,23 @@ void Ppia::set_is_rept_pressed(bool p_is_rept_pressed)
 
 std::ostream &operator<<(std::ostream &p_s, const Ppia::Configurator &p_cfg)
 {
-    return p_s << "Ppia::Configurator("
-               << static_cast<const Device::Configurator &>(p_cfg)
-               << ")";
+    return p_s << "<ppia " << static_cast<const Device::Configurator &>(p_cfg) << "/>";
 }
 
 std::ostream &operator<<(std::ostream &p_s, const Ppia &p_ppia)
 {
     pthread_mutex_lock(&p_ppia.m_terminal.mutex);
-    p_s << static_cast<const Device &>(p_ppia)
-        <<   "PortA:"   << Hex(p_ppia.m_register[PortA])
-        << ", PortB:"   << Hex(p_ppia.m_register[PortB])
-        << ", PortC:"   << Hex(p_ppia.m_register[PortC])
-        << ", Control:" << Hex(p_ppia.m_register[ControlPort])
-        << ", Refresh:" << p_ppia.m_terminal.is_vdg_refresh
-        << ", Key:"     << p_ppia.m_terminal.pressed_key
-        << ", Shift:"   << p_ppia.m_terminal.is_shift_pressed
-        << ", Ctrl:"    << p_ppia.m_terminal.is_ctrl_pressed
-        << ", Alt:"     << p_ppia.m_terminal.is_rept_pressed;
+    p_s << "Ppia("
+        << static_cast<const Device &>(p_ppia)
+        << ", PortA("   << Hex(p_ppia.m_register[PortA]) << ")"
+        << ", PortB("   << Hex(p_ppia.m_register[PortB]) << ")"
+        << ", PortC("   << Hex(p_ppia.m_register[PortC]) << ")"
+        << ", Control(" << Hex(p_ppia.m_register[ControlPort]) << ")"
+        << ", Refresh(" << p_ppia.m_terminal.is_vdg_refresh << ")"
+        << ", Key("     << p_ppia.m_terminal.pressed_key << ")"
+        << ", Shift("   << p_ppia.m_terminal.is_shift_pressed << ")"
+        << ", Ctrl("    << p_ppia.m_terminal.is_ctrl_pressed << ")"
+        << ", Alt("     << p_ppia.m_terminal.is_rept_pressed << ")";
     pthread_mutex_unlock(&p_ppia.m_terminal.mutex);
-    return p_s;
+    return p_s << ")";
 }

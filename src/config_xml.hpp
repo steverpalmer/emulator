@@ -1,9 +1,4 @@
-/*
- * config.hpp
- *
- *  Created on: 20 Apr 2012
- *      Author: steve
- */
+// config_xml.hpp
 
 #ifndef CONFIG_XML_HPP_
 #define CONFIG_XML_HPP_

@@ -1,9 +1,4 @@
-/*
- * cpu.hpp
- *
- *  Created on: 30 Mar 2012
- *      Author: steve
- */
+// cpu.hpp
 
 #ifndef CPU_HPP_
 #define CPU_HPP_
@@ -11,9 +6,9 @@
 #include <pthread.h>
 
 #include <ostream>
-#include <array>
 #include <memory>
 #include <atomic>
+#include <vector>
 
 #include "common.hpp"
 #include "part.hpp"

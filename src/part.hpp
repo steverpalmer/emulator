@@ -1,9 +1,4 @@
-/*
- * part.hpp
- *
- *  Created on: 29 Sep 2016
- *      Author: steve
- */
+// part.hpp
 
 #ifndef PART_HPP_
 #define PART_HPP_
@@ -21,7 +16,7 @@ public:
 
 		friend std::ostream &::operator <<(std::ostream &p_s, const Configurator &p_cfg)
 		{
-			return p_s << "id(" << p_cfg.id() << ")";
+			return p_s << "id=\"" << p_cfg.id() << "\"";
 		}
 	};
 private:

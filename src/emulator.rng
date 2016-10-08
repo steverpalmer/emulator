@@ -93,7 +93,7 @@
         <rng:ref name="optional_controller_elm"/>
         <rng:ref name="optional_scale_elm"/>
         <rng:ref name="optional_fontfile_elm"/>
-        <rng:ref name="optional_refreshrate_elm"/>
+        <!-- rng:ref name="optional_refreshrate_elm"/ -->
         <!-- rng:ref name="foreign-elements"/ -->
       </rng:interleave>
     </rng:element>

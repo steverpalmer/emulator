@@ -1,9 +1,4 @@
-/*
- * config.hpp
- *
- *  Created on: 20 Apr 2012
- *      Author: steve
- */
+// config_fixed.hpp
 
 #ifndef CONFIG_FIXED_HPP_
 #define CONFIG_FIXED_HPP_

@@ -1,8 +1,4 @@
-/******************************************************************************
- * $Author: steve $
- * $Date: 2004/04/11 09:59:52 $
- * $Id: main.c,v 1.2 2004/04/11 09:59:52 steve Exp $
- ******************************************************************************/
+// main.cpp
 
 #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
 
@@ -18,7 +14,7 @@
 #include "config_xml.hpp"
 #include "atom.hpp"
 #include "keyboard_controller.hpp"
-#include "screen_graphics_controller.hpp"
+#include "monitor_view.hpp"
 
 static log4cxx::LoggerPtr cpptrace_log()
 {
@@ -27,11 +23,11 @@ static log4cxx::LoggerPtr cpptrace_log()
 }
 
 class Main {
-    Configurator              m_cfg;
-    Atom                     *m_atom;
-    KeyboardController       *m_kc;
-    ScreenGraphicsController *m_sgc;
-    bool                      m_more;
+    Configurator       m_cfg;
+    Atom               *m_atom;
+    KeyboardController *m_keyboard;
+    MonitorView        *m_monitor;
+    bool               m_more;
 private:
     Main();
     Main(const Main &);
@@ -54,11 +50,11 @@ Main::Main(int argc, char *argv[])
     m_atom = new Atom(m_cfg.atom());
     assert (m_atom);
     LOG4CXX_INFO(cpptrace_log(), "Keyboard");
-    m_kc = new KeyboardController(*m_atom, m_cfg.keyboard());
-    assert (m_kc);
+    m_keyboard = new KeyboardController(*m_atom, m_cfg.keyboard());
+    assert (m_keyboard);
     LOG4CXX_INFO(cpptrace_log(), "Screen");
-    m_sgc = new ScreenGraphicsController(*m_atom, m_cfg.screen());
-    assert (m_sgc);
+    m_monitor = new MonitorView(*m_atom, _, m_cfg.screen());
+    assert (m_monitor);
 
     LOG4CXX_INFO(cpptrace_log(), "Atom is about to start ...");
     m_atom->resume();
@@ -68,11 +64,13 @@ Main::Main(int argc, char *argv[])
         switch( event.type ){
         case SDL_KEYDOWN:
         case SDL_KEYUP:
-            m_kc->update(&event.key);
+            m_keyboard->update(&event.key);
             break;
+#if 0
         case SDL_USEREVENT:
-            m_sgc->update();
+            m_monitor->update();
             break;
+#endif
         case SDL_QUIT:
             m_more = false;
             break;

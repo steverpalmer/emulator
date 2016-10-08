@@ -4,11 +4,12 @@
     <id>UMLClass</id>
     <coordinates>
       <x>670</x>
-      <y>60</y>
+      <y>20</y>
       <w>100</w>
-      <h>30</h>
+      <h>50</h>
     </coordinates>
-    <panel_attributes>Emulator</panel_attributes>
+    <panel_attributes>&lt;&lt;singleton&gt;&gt;
+Emulator</panel_attributes>
     <additional_attributes/>
   </element>
   <element>
@@ -19,7 +20,7 @@
       <w>120</w>
       <h>70</h>
     </coordinates>
-    <panel_attributes>&lt;&lt;Configurable&gt;&gt;
+    <panel_attributes>&lt;&lt;configurable&gt;&gt;
 Computer</panel_attributes>
     <additional_attributes/>
   </element>
@@ -29,16 +30,19 @@ Computer</panel_attributes>
       <x>1140</x>
       <y>320</y>
       <w>150</w>
-      <h>120</h>
+      <h>150</h>
     </coordinates>
-    <panel_attributes>&lt;&lt;Configurable&gt;&gt;
+    <panel_attributes>&lt;&lt;configurable&gt;&gt;
 MemorySpace
 --
 base
 --
+reset
+size
 get_byte
 set_byte
 add_device
+
 </panel_attributes>
     <additional_attributes/>
   </element>
@@ -47,13 +51,13 @@ add_device
     <coordinates>
       <x>590</x>
       <y>360</y>
-      <w>310</w>
+      <w>290</w>
       <h>50</h>
     </coordinates>
     <panel_attributes>lt=&lt;&lt;&lt;&lt;-&gt;
 m2=0..1
 memory</panel_attributes>
-    <additional_attributes>10.0;20.0;290.0;20.0</additional_attributes>
+    <additional_attributes>10.0;20.0;270.0;20.0</additional_attributes>
   </element>
   <element>
     <id>UMLClass</id>
@@ -61,15 +65,22 @@ memory</panel_attributes>
       <x>270</x>
       <y>520</y>
       <w>140</w>
-      <h>90</h>
+      <h>180</h>
     </coordinates>
     <panel_attributes>type=actclass
-&lt;&lt;Configurable&gt;&gt;
+&lt;&lt;configurable&gt;&gt;
 Core
 --
 --
-interrupt
-nmi</panel_attributes>
+/interrupt/
+/nmi/
+/single_step/
+start
+stop
+pause
+resume
+step
+</panel_attributes>
     <additional_attributes/>
   </element>
   <element>
@@ -81,7 +92,7 @@ nmi</panel_attributes>
       <h>90</h>
     </coordinates>
     <panel_attributes>type=actclass
-&lt;&lt;Configurable&gt;&gt;
+&lt;&lt;configurable&gt;&gt;
 Terminal
 --
 --
@@ -91,15 +102,17 @@ Terminal
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>880</x>
+      <x>860</x>
       <y>320</y>
-      <w>100</w>
-      <h>120</h>
+      <w>140</w>
+      <h>160</h>
     </coordinates>
-    <panel_attributes>/Device/
+    <panel_attributes>&lt;&lt;configurable&gt;&gt;
+&lt;&lt;interface&gt;&gt;
+/Device/
 --
 --
-/footprint/
+/size/
 /get_byte/
 /set_byte/
 get_word
@@ -109,13 +122,13 @@ set_word</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>970</x>
+      <x>990</x>
       <y>330</y>
-      <w>190</w>
+      <w>170</w>
       <h>30</h>
     </coordinates>
     <panel_attributes>lt=&lt;&lt;-</panel_attributes>
-    <additional_attributes>10.0;10.0;170.0;10.0</additional_attributes>
+    <additional_attributes>10.0;10.0;150.0;10.0</additional_attributes>
   </element>
   <element>
     <id>UMLClass</id>
@@ -123,14 +136,15 @@ set_word</panel_attributes>
       <x>1040</x>
       <y>560</y>
       <w>120</w>
-      <h>120</h>
+      <h>140</h>
     </coordinates>
-    <panel_attributes>&lt;&lt;Configurable&gt;&gt;
+    <panel_attributes>&lt;&lt;configurable&gt;&gt;
 RAM
 --
 storage
+filename
 --
-footprint
+size
 get_byte
 set_byte</panel_attributes>
     <additional_attributes/>
@@ -141,55 +155,59 @@ set_byte</panel_attributes>
       <x>690</x>
       <y>560</y>
       <w>130</w>
-      <h>170</h>
+      <h>230</h>
     </coordinates>
-    <panel_attributes>&lt;&lt;Configurable&gt;&gt;
+    <panel_attributes>&lt;&lt;configurable&gt;&gt;
 PPIA
 --
 ports
 --
-footprint
+reset
+size
 get_byte
 set_byte
 vdg_mode
 is_vdg_refresh
-...</panel_attributes>
+pressed_key
+is_shift_pressed
+is_ctrl_pressed
+is_rept_pressed</panel_attributes>
     <additional_attributes/>
   </element>
   <element>
     <id>Relation</id>
     <coordinates>
       <x>950</x>
-      <y>430</y>
+      <y>470</y>
       <w>160</w>
-      <h>150</h>
+      <h>110</h>
     </coordinates>
     <panel_attributes>lt=&lt;&lt;-</panel_attributes>
-    <additional_attributes>10.0;10.0;140.0;130.0</additional_attributes>
+    <additional_attributes>10.0;10.0;140.0;90.0</additional_attributes>
   </element>
   <element>
     <id>Relation</id>
     <coordinates>
       <x>750</x>
-      <y>430</y>
+      <y>470</y>
       <w>170</w>
-      <h>150</h>
+      <h>110</h>
     </coordinates>
     <panel_attributes>lt=&lt;&lt;-</panel_attributes>
-    <additional_attributes>150.0;10.0;10.0;130.0</additional_attributes>
+    <additional_attributes>150.0;10.0;10.0;90.0</additional_attributes>
   </element>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>970</x>
+      <x>990</x>
       <y>350</y>
-      <w>190</w>
+      <w>170</w>
       <h>50</h>
     </coordinates>
     <panel_attributes>lt=&lt;&lt;&lt;&lt;-&gt;
 map
 m2=*</panel_attributes>
-    <additional_attributes>170.0;20.0;10.0;20.0</additional_attributes>
+    <additional_attributes>150.0;20.0;10.0;20.0</additional_attributes>
   </element>
   <element>
     <id>UMLClass</id>
@@ -197,15 +215,14 @@ m2=*</panel_attributes>
       <x>870</x>
       <y>560</y>
       <w>120</w>
-      <h>140</h>
+      <h>120</h>
     </coordinates>
-    <panel_attributes>&lt;&lt;Configurable&gt;&gt;
+    <panel_attributes>&lt;&lt;configurable&gt;&gt;
 ROM
 --
-filename
 storage
 --
-footprint
+size
 get_byte
 set_byte</panel_attributes>
     <additional_attributes/>
@@ -214,12 +231,12 @@ set_byte</panel_attributes>
     <id>Relation</id>
     <coordinates>
       <x>910</x>
-      <y>430</y>
+      <y>470</y>
       <w>30</w>
-      <h>150</h>
+      <h>110</h>
     </coordinates>
     <panel_attributes>lt=&lt;&lt;-</panel_attributes>
-    <additional_attributes>10.0;10.0;10.0;130.0</additional_attributes>
+    <additional_attributes>10.0;10.0;10.0;90.0</additional_attributes>
   </element>
   <element>
     <id>Relation</id>
@@ -235,15 +252,17 @@ set_byte</panel_attributes>
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>670</x>
-      <y>170</y>
-      <w>100</w>
-      <h>70</h>
+      <x>660</x>
+      <y>150</y>
+      <w>120</w>
+      <h>100</h>
     </coordinates>
-    <panel_attributes>/Part/
+    <panel_attributes>&lt;&lt;configurable&gt;&gt;
+/Part/
 --
+_id_
 --
-name
+#Part(string)
 reset</panel_attributes>
     <additional_attributes/>
   </element>
@@ -251,7 +270,7 @@ reset</panel_attributes>
     <id>Relation</id>
     <coordinates>
       <x>710</x>
-      <y>80</y>
+      <y>60</y>
       <w>90</w>
       <h>110</h>
     </coordinates>
@@ -264,23 +283,23 @@ m2=*</panel_attributes>
     <id>Relation</id>
     <coordinates>
       <x>720</x>
-      <y>230</y>
-      <w>180</w>
-      <h>130</h>
+      <y>240</y>
+      <w>160</w>
+      <h>120</h>
     </coordinates>
     <panel_attributes>lt=&lt;&lt;-</panel_attributes>
-    <additional_attributes>10.0;10.0;160.0;110.0</additional_attributes>
+    <additional_attributes>10.0;10.0;140.0;100.0</additional_attributes>
   </element>
   <element>
     <id>Relation</id>
     <coordinates>
       <x>530</x>
-      <y>230</y>
+      <y>240</y>
       <w>180</w>
-      <h>120</h>
+      <h>110</h>
     </coordinates>
     <panel_attributes>lt=&lt;&lt;-</panel_attributes>
-    <additional_attributes>160.0;10.0;10.0;100.0</additional_attributes>
+    <additional_attributes>160.0;10.0;10.0;90.0</additional_attributes>
   </element>
   <element>
     <id>Relation</id>
@@ -301,9 +320,10 @@ m2=*</panel_attributes>
       <x>470</x>
       <y>670</y>
       <w>150</w>
-      <h>140</h>
+      <h>150</h>
     </coordinates>
-    <panel_attributes>/TerminalControl/
+    <panel_attributes>&lt;&lt;interface&gt;&gt;
+/TerminalInterface/
 --
 --
 /vdg_mode/
@@ -340,12 +360,12 @@ m2=*</panel_attributes>
     <id>Relation</id>
     <coordinates>
       <x>530</x>
-      <y>390</y>
+      <y>420</y>
       <w>30</w>
-      <h>150</h>
+      <h>120</h>
     </coordinates>
     <panel_attributes>lt=&lt;&lt;-</panel_attributes>
-    <additional_attributes>10.0;10.0;10.0;130.0</additional_attributes>
+    <additional_attributes>10.0;10.0;10.0;100.0</additional_attributes>
   </element>
   <element>
     <id>UMLClass</id>
@@ -353,24 +373,67 @@ m2=*</panel_attributes>
       <x>480</x>
       <y>330</y>
       <w>120</w>
-      <h>70</h>
+      <h>100</h>
     </coordinates>
-    <panel_attributes>/ActivePart/
+    <panel_attributes>&lt;&lt;configurable&gt;&gt;
+&lt;&lt;interface&gt;&gt;
+/ActivePart/
 --
 --
-pause
-resume</panel_attributes>
+/pause/
+/resume/</panel_attributes>
     <additional_attributes/>
   </element>
   <element>
     <id>Relation</id>
     <coordinates>
       <x>340</x>
-      <y>390</y>
+      <y>420</y>
       <w>190</w>
-      <h>150</h>
+      <h>120</h>
     </coordinates>
     <panel_attributes>lt=&lt;&lt;-</panel_attributes>
-    <additional_attributes>170.0;10.0;10.0;130.0</additional_attributes>
+    <additional_attributes>170.0;10.0;10.0;100.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>990</x>
+      <y>380</y>
+      <w>170</w>
+      <h>50</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;&lt;&lt;-&gt;
+devices
+m2=*</panel_attributes>
+    <additional_attributes>150.0;20.0;10.0;20.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>270</x>
+      <y>760</y>
+      <w>150</w>
+      <h>110</h>
+    </coordinates>
+    <panel_attributes>&lt;&lt;configurable&gt;&gt;
+MCS6502
+--
+--
+interrupt
+nmi
+single_step</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>330</x>
+      <y>690</y>
+      <w>30</w>
+      <h>90</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;-</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;70.0</additional_attributes>
   </element>
 </diagram>

@@ -1,8 +1,5 @@
-/******************************************************************************
- * $Author: steve $
- * $Date: 2004/04/11 09:59:52 $
- * $Id: keyboard.c,v 1.2 2004/04/11 09:59:52 steve Exp $
- ******************************************************************************/
+// keyboard_controller.cpp
+
 /**
  * The behaviour of the Keyboard mapping from the PC to the Atom is described in keyboard.h.
  * The implementation is described below.
@@ -51,7 +48,6 @@
 #include <cassert>
 #include <cctype>
 
-#include <ostream>
 #include <iomanip>
 
 #include <log4cxx/logger.h>
@@ -64,9 +60,8 @@ static log4cxx::LoggerPtr cpptrace_log()
     return result;
 }
 
-KeyboardController::KeyboardController(TerminalInterface &p_terminal, const Configurator &p_cfg)
-    : Part(p_cfg)
-    , m_terminal(p_terminal)
+KeyboardController::KeyboardController(TerminalInterface &p_terminal_interface, const Configurator &p_cfg)
+    : m_terminal_interface(p_terminal_interface)
 {
     LOG4CXX_INFO(cpptrace_log(), "KeyboardController::KeyboardController(" << p_cfg << ")");
     (void)SDL_EnableUNICODE(1);
@@ -74,24 +69,24 @@ KeyboardController::KeyboardController(TerminalInterface &p_terminal, const Conf
 
 void KeyboardController::update(SDL_KeyboardEvent *p_key_event)
 {
-    LOG4CXX_INFO(cpptrace_log(), "[" << id() << "].update((" << Hex(p_key_event->type) << ", " << int(p_key_event->keysym.sym) << ", ...))");
+    LOG4CXX_INFO(cpptrace_log(), "update((" << Hex(p_key_event->type) << ", " << int(p_key_event->keysym.sym) << ", ...))");
     switch (p_key_event->type) {
     case SDL_KEYUP:                                                   // Release
         switch (p_key_event->keysym.sym) {
         case SDLK_RSHIFT:
         case SDLK_LSHIFT:
-            m_terminal.set_is_shift_pressed(false);
+            m_terminal_interface.set_is_shift_pressed(false);
             break;
         case SDLK_RCTRL:
         case SDLK_LCTRL:
-            m_terminal.set_is_ctrl_pressed(false);
+            m_terminal_interface.set_is_ctrl_pressed(false);
             break;
         case SDLK_RALT:
         case SDLK_LALT:
-            m_terminal.set_is_rept_pressed(false);
+            m_terminal_interface.set_is_rept_pressed(false);
             break;
         case SDLK_CAPSLOCK:
-            m_terminal.set_keypress(KBD_LOCK);
+            m_terminal_interface.set_keypress(KBD_LOCK);
             break;
         case SDLK_NUMLOCK:
         case SDLK_SCROLLOCK:
@@ -109,7 +104,7 @@ void KeyboardController::update(SDL_KeyboardEvent *p_key_event)
             // Do Nothing
             break;
         default:
-            m_terminal.set_keypress(KBD_NO_KEYPRESS);
+            m_terminal_interface.set_keypress(KBD_NO_KEYPRESS);
             break;
         }
         break;
@@ -126,46 +121,46 @@ void KeyboardController::update(SDL_KeyboardEvent *p_key_event)
                 else if (key == '\x7F')
                     key = '\x08';
             }
-            m_terminal.set_keypress(key);
+            m_terminal_interface.set_keypress(key);
         }
         else {
             switch (p_key_event->keysym.sym) {
             case SDLK_RSHIFT:
             case SDLK_LSHIFT:
-                m_terminal.set_is_shift_pressed(true);
+                m_terminal_interface.set_is_shift_pressed(true);
                 break;
             case SDLK_RCTRL:
             case SDLK_LCTRL:
-                m_terminal.set_is_ctrl_pressed(true);
+                m_terminal_interface.set_is_ctrl_pressed(true);
                 break;
             case SDLK_RALT:
             case SDLK_LALT:
-                m_terminal.set_is_rept_pressed(true);
+                m_terminal_interface.set_is_rept_pressed(true);
                 break;
             case SDLK_AT:
-                m_terminal.set_keypress(0);
+                m_terminal_interface.set_keypress(0);
                 break;
             case SDLK_LEFT:
-                m_terminal.set_keypress(KBD_LEFT);
+                m_terminal_interface.set_keypress(KBD_LEFT);
                 break;
             case SDLK_UP:
-                m_terminal.set_keypress(KBD_UP);
+                m_terminal_interface.set_keypress(KBD_UP);
                 break;
             case SDLK_RIGHT:
-                m_terminal.set_keypress(KBD_RIGHT);
+                m_terminal_interface.set_keypress(KBD_RIGHT);
                 break;
             case SDLK_DOWN:
-                m_terminal.set_keypress(KBD_DOWN);
+                m_terminal_interface.set_keypress(KBD_DOWN);
                 break;
             case SDLK_CAPSLOCK:
-                m_terminal.set_keypress(KBD_LOCK);
+                m_terminal_interface.set_keypress(KBD_LOCK);
                 break;
             case SDLK_F1:
-                m_terminal.set_keypress(KBD_COPY);
+                m_terminal_interface.set_keypress(KBD_COPY);
                 break;
 #if 0
             case SDLK_F12:
-                m_terminal.reset();
+                m_terminal_interface.reset();
                 break;
 #endif
             case SDLK_NUMLOCK:
@@ -184,7 +179,7 @@ void KeyboardController::update(SDL_KeyboardEvent *p_key_event)
                 // Do Nothing
                 break;
             default:
-                m_terminal.set_keypress(KBD_NO_KEYPRESS);
+                m_terminal_interface.set_keypress(KBD_NO_KEYPRESS);
                 break;
             }
         }
@@ -196,12 +191,12 @@ void KeyboardController::update(SDL_KeyboardEvent *p_key_event)
 
 std::ostream &operator<<(std::ostream &p_s, const KeyboardController::Configurator &p_cfg)
 {
-    p_s << static_cast<const Part::Configurator &>(p_cfg);
     return p_s;
 }
 
 std::ostream &operator<<(std::ostream &p_s, const KeyboardController &p_kc)
 {
-    p_s << static_cast<const Part &>(p_kc);
-    return p_s;
+    return p_s << "KeyboardController("
+               << p_kc.m_terminal_interface
+               << ")";
 }
