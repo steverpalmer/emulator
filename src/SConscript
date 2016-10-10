@@ -21,7 +21,8 @@ add_library(common_env, 'liblog4cxx')
 add_library(common_env, 'glibmm-2.4')
 
 libatom_env = common_env.Clone()
-ATOMLIB = libatom_env.StaticLibrary(r'atom', [ r'device.cpp'
+ATOMLIB = libatom_env.StaticLibrary(r'atom', [ r'part.cpp'
+                                             , r'device.cpp'
                                              , r'ppia.cpp'
                                              , r'cpu.cpp'
                                              , r'atom.cpp'

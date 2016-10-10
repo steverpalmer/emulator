@@ -15,6 +15,7 @@ typedef int16_t  signed_word;
 #include <string>
 #include <ostream>
 #include <iomanip>
+#include <set> // Used by Observers
 
 #define SIZE(n) (word((n)-word(1))+1)
 
@@ -30,6 +31,5 @@ public:
 		return p_s << std::hex << std::setw(p_n.m_w) << std::setfill('0') << std::uppercase << p_n.m_v;
 	}
 };
-
 
 #endif /* COMMON_HPP_ */
