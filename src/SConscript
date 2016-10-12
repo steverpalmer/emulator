@@ -23,9 +23,9 @@ add_library(common_env, 'glibmm-2.4')
 libatom_env = common_env.Clone()
 ATOMLIB = libatom_env.StaticLibrary(r'atom', [ r'part.cpp'
                                              , r'device.cpp'
+                                             , r'memory.cpp'
                                              , r'ppia.cpp'
                                              , r'cpu.cpp'
-                                             , r'atom.cpp'
                                              ])
 
 atom_gui_sdl_env = common_env.Clone()

@@ -9,22 +9,28 @@
 #include <array>
 
 #include "common.hpp"
-#include "device.hpp"
+#include "memory.hpp"
 #include "terminal_interface.hpp"
 
 
 class Ppia
-    : public Device
+    : public virtual Memory
     , public TerminalInterface
 {
 public:
-    class Configurator : public Device::Configurator
+    class Configurator : public Memory::Configurator
     {
+    protected:
+        Configurator();
+    private:
+        Configurator(const Configurator &);
+        Configurator &operator=(const Configurator &);
     public:
+        ~Configurator();
         /// 1. Constructor Information - Name only
         /// 2. Factory Method
-        virtual std::unique_ptr<Device> factory() const
-            { return std::unique_ptr<Device>(new Ppia(*this)); }
+        virtual Memory* memory_factory() const
+            { return new Ppia(*this); }
 
         friend std::ostream &::operator <<(std::ostream &, const Configurator &);
     };
@@ -55,7 +61,7 @@ public:
     // Device
     
     virtual word size() const { return 4; }
-    virtual void _reset();
+    virtual void reset();
     virtual byte _get_byte(word p_addr, AccessType p_at = AT_UNKNOWN);
     virtual void _set_byte(word p_addr, byte p_byte, AccessType p_at = AT_UNKNOWN);
 
@@ -70,4 +76,4 @@ public:
     friend std::ostream &::operator<<(std::ostream&, const Ppia &);
 };
 
-#endif /* PPIA_HPP_ */
+#endif

@@ -6,20 +6,74 @@
 #include <cassert>
 #include <ostream>
 
-#include <memory>
 #include <string>
 #include <unordered_map>
+#include <unordered_set>
+#include <memory>
+
 #include <glibmm/ustring.h>
 
-#define PARTID_DELIMITER '/'
-class Part;
-typedef Glib::ustring PartId;
 
-// PartsBin is a singleton that maps Glib::ustring to Part pointers
+// Part is the base class for all key objects in the emulated computer.
+class Part
+{
+public:
+    typedef Glib::ustring id_type;
+    
+    static const char    id_delimiter;
+    static const id_type id_here;
+    static const id_type id_up;
+
+	class Configurator
+	{
+    protected:
+        Configurator();
+    private:
+        Configurator(const Configurator &);
+        Configurator &operator=(const Configurator &);
+	public:
+        ~Configurator();
+		virtual const Part::id_type &id() const = 0;
+        virtual Part *part_factory() const = 0;
+
+		friend std::ostream &::operator <<(std::ostream &p_s, const Configurator &p_cfg);
+	};
+private:
+	const Part::id_type m_id; // Not necessarily Canonical!
+public:
+	const Part::id_type &id() const { return m_id; }
+    virtual void reset() {};
+    static std::unique_ptr<id_type> canonical_id(const id_type &);
+protected:
+	explicit Part(const Part::id_type &p_id = "");
+	explicit Part(const Configurator &p_cfg);
+    virtual ~Part();
+private:
+	Part(const Part &);
+	Part &operator=(const Part &);
+
+	friend std::ostream &operator<<(std::ostream &p_s, const Part& p_p);
+};
+
+
+// PartsBin is a singleton unordered_map wrapper mapping Glib::ustring to Part pointers
 class PartsBin
 {
+public:
+    class Configurator{
+    protected:
+        Configurator();
+    private:
+        Configurator(const Configurator &);
+        Configurator &operator=(const Configurator &);
+    public:
+        ~Configurator();
+        virtual Part::Configurator *part(int i) const = 0;
+
+        friend std::ostream &::operator<<(std::ostream &, const Configurator &);
+    };
 public: // Types
-    typedef PartId                                 key_type;
+    typedef Part::id_type                          key_type;
     typedef Part *                                 mapped_type;
 private:
     typedef std::unordered_map<std::string, mapped_type> bin_type;
@@ -37,7 +91,11 @@ private:
     int self_check() const;
 public:
     static PartsBin &instance();
-    static std::unique_ptr<Glib::ustring> canonical(const Glib::ustring &);
+    void build(const Configurator &p_cfg)
+        {
+            for (int i(0); const auto &p = p_cfg.part(i); i++)
+                (void) p->part_factory();
+        }
     // Wrapper boiler plate ...
     // Iterators
     inline iterator begin()
@@ -90,7 +148,7 @@ public:
     inline std::pair<iterator,bool> insert( const value_type& value )
         {
             assert (self_check() == 0);
-            const value_type l_v(*PartsBin::canonical(value.first), value.second);
+            const value_type l_v(*Part::canonical_id(value.first), value.second);
             std::pair<iterator,bool> result(m_bin.insert(l_v));
             assert (self_check() == 0);
             return result;
@@ -98,7 +156,7 @@ public:
     inline iterator insert( const_iterator hint, const value_type& value )
         {
             assert (self_check() == 0);
-            const value_type l_v(*PartsBin::canonical(value.first), value.second);
+            const value_type l_v(*Part::canonical_id(value.first), value.second);
             iterator result(m_bin.insert(hint, l_v));
             assert (self_check() == 0);
             return result;
@@ -126,7 +184,7 @@ public:
     inline size_type erase( const key_type& key )
         {
             assert (self_check() == 0);
-            size_type result(m_bin.erase(*PartsBin::canonical(key)));
+            size_type result(m_bin.erase(*Part::canonical_id(key)));
             assert (self_check() == 0);
             return result;
         }
@@ -134,95 +192,46 @@ public:
     inline mapped_type& at( const key_type& key )
         {
             assert (self_check() == 0);
-            mapped_type &result(m_bin.at(*PartsBin::canonical(key)));
+            mapped_type &result(m_bin.at(*Part::canonical_id(key)));
             assert (self_check() == 0);
             return result;
         }
     inline const mapped_type& at( const key_type& key ) const
         {
             assert (self_check() == 0);
-            return m_bin.at(*PartsBin::canonical(key));
+            return m_bin.at(*Part::canonical_id(key));
         }
     inline mapped_type& operator[]( const key_type& key )
         {
             assert (self_check() == 0);
-            mapped_type &result(m_bin[*PartsBin::canonical(key)]);
+            mapped_type &result(m_bin[*Part::canonical_id(key)]);
             assert (self_check() == 0);
             return result;
         }
     inline mapped_type& operator[]( key_type& key )
         {
             assert (self_check() == 0);
-            mapped_type &result(m_bin[*PartsBin::canonical(key)]);
+            mapped_type &result(m_bin[*Part::canonical_id(key)]);
             assert (self_check() == 0);
             return result;
         }
     inline size_type count( const key_type& key ) const
         {
             assert (self_check() == 0);
-            return m_bin.count(*PartsBin::canonical(key));
+            return m_bin.count(*Part::canonical_id(key));
         }
     inline iterator find( const key_type& key )
         {
             assert (self_check() == 0);
-            iterator result(m_bin.find(*PartsBin::canonical(key)));
+            iterator result(m_bin.find(*Part::canonical_id(key)));
             assert (self_check() == 0);
             return result;
         }
     inline const_iterator find( const key_type& key ) const
         {
             assert (self_check() == 0);
-            return m_bin.find(*PartsBin::canonical(key));
+            return m_bin.find(*Part::canonical_id(key));
         }
 };
 
-// Part is the base class for all key objects in the emulated computer.
-class Part
-{
-public:
-	class Configurator
-	{
-	public:
-		virtual const PartId &id() const = 0;
-
-		friend std::ostream &::operator <<(std::ostream &p_s, const Configurator &p_cfg);
-	};
-private:
-	const PartId m_id; // Not necessarily Canonical!
-public:
-	const PartId &id() const { return m_id; }
-protected:
-	explicit Part(const PartId &p_id = "");
-	explicit Part(const Configurator &p_cfg);
-    virtual ~Part();
-private:
-	Part(const Part &);
-	Part &operator=(const Part &);
-
-	friend std::ostream &operator<<(std::ostream &p_s, const Part& p_p);
-};
-
-class ActivePart
-    : public virtual Part
-{
-public:
-    class Configurator
-        : public Part::Configurator
-    {
-		friend std::ostream &::operator <<(std::ostream &p_s, const Configurator &p_cfg);
-    };
-private:
-    ActivePart(const ActivePart &);
-    ActivePart &operator=(const ActivePart &);
-protected:
-    explicit ActivePart(const Configurator &p_cfg) : Part(p_cfg) {}
-
-	friend std::ostream &operator<<(std::ostream &p_s, const ActivePart& p_ap);
-};
-
-class Computer
-    : public ActivePart
-{
-};
-
-#endif /* PART_HPP_ */
+#endif

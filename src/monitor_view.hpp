@@ -10,17 +10,23 @@
 #include <glibmm/ustring.h>
 
 #include "terminal_interface.hpp"
-#include "device.hpp"
+#include "memory.hpp"
 
 class MonitorView
     : public TerminalInterface::Observer
-    , public Device::Observer
+    , public Memory::Observer
 {
     // Types
 public:
     class Configurator
     {
-    public:
+    protected:
+        Configurator();
+    private:
+        Configurator(const Configurator &);
+        Configurator &operator=(const Configurator &);
+	public:
+        ~Configurator();
         virtual float scale() const = 0;
         virtual const Glib::ustring &fontfilename() const = 0;
         virtual const Glib::ustring &window_title() const = 0;
@@ -56,7 +62,7 @@ public:
 
 private:
     TerminalInterface             &m_terminal_interface;
-    Device                        &m_memory;
+    Memory                        &m_memory;
     SDL_Surface                   *m_screen;
     MonitorView::Mode             *m_mode;
     MonitorView::Mode0             m_mode0;
@@ -65,11 +71,11 @@ private:
     MonitorView &operator=(const MonitorView&);
     SDL_Surface *scale_and_convert_surface(SDL_Surface *src);
     inline void render() { if (m_mode) m_mode->render(); }
-    virtual void set_byte_update(Device *p_device, word p_addr, byte p_byte, AccessType p_at)
+    virtual void set_byte_update(Memory *p_memory, word p_addr, byte p_byte, AccessType p_at)
         { if (m_mode) m_mode->set_byte_update(p_addr, p_byte); }
     virtual void vdg_mode_update(TerminalInterface *p_terminal, VDGMode p_mode);
 public:
-    MonitorView(TerminalInterface &, Device &, const Configurator &);
+    MonitorView(TerminalInterface &, Memory &, const Configurator &);
     virtual ~MonitorView();
 
     friend std::ostream &::operator<<(std::ostream&, const MonitorView &);

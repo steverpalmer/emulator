@@ -11,9 +11,12 @@
 #include <log4cxx/logger.h>
 #include "log4cxx/propertyconfigurator.h"
 
+#inlcude "common.hpp"
+#include "config.hpp"
 #include "config_xml.hpp"
-#include "atom.hpp"
+#include "part.hpp"
 #include "terminal.hpp"
+#include "cpu.hpp"
 
 static log4cxx::LoggerPtr cpptrace_log()
 {
@@ -23,64 +26,56 @@ static log4cxx::LoggerPtr cpptrace_log()
 
 class Main
 {
-    Configurator       m_cfg;
-    Atom               *m_atom;
-    Terminal           *m_terminal;
-    bool               m_more;
 private:
     Main();
     Main(const Main &);
     Main &operator=(const Main&);
 public:
-    Main(int agrc, char *argv[]);
-    ~Main();
+    Main(int agrc, char *argv[])
+        {
+            LOG4CXX_INFO(cpptrace_log(), "Main::Main(" << argc << ", " << argv << ")");
+
+            LOG4CXX_INFO(cpptrace_log(), "SDL_Init");
+            const int rv = SDL_Init( SDL_INIT_VIDEO | SDL_INIT_TIMER );
+            assert (!rv);
+
+            const Configurator *cfg = Xml::Configurator(argc, argv);
+            LOG4CXX_INFO(cpptrace_log(), cfg);
+
+            PartsBin::instance().build(cfg);
+
+            Terminal *terminal = dynamic_cast<Terminal *>(PartsBin::instance()["/atom/terminal"]);
+            assert (terminal);
+            
+            Cpu *atom = dynamic_cast<Cpu *>(PartsBin::instance()["/atom/mcs6502"]);
+            assert (atom);
+            
+            LOG4CXX_INFO(cpptrace_log(), "Atom is about to start ...");
+            atom->resume();
+            SDL_Event event;
+            bool more = true;
+            while( more && SDL_WaitEvent( &event ) )
+                switch( event.type ){
+                case SDL_KEYDOWN:
+                case SDL_KEYUP:
+                    terminal->update(&event);
+                    break;
+                case SDL_QUIT:
+                    more = false;
+                    break;
+                default:
+                    break;
+                }
+            LOG4CXX_INFO(cpptrace_log(), "Atom is about to stop ...");
+            atom->pause();
+        }
+    virtual ~Main()
+        {
+            LOG4CXX_INFO(cpptrace_log(), "Main::~Main()");
+            SDL_Quit();
+        }
 };
 
-
-Main::Main(int argc, char *argv[])
-    : m_cfg(argc, argv)
-{
-    LOG4CXX_INFO(cpptrace_log(), "Position 2 => " << static_cast<const Atom::Configurator &>(m_cfg.atom()));
-    LOG4CXX_INFO(cpptrace_log(), "Main::Main(" << argc << ", " << argv << ")");
-    LOG4CXX_INFO(cpptrace_log(), "SDL_Init");
-    const int rv = SDL_Init( SDL_INIT_VIDEO | SDL_INIT_TIMER );
-    assert (!rv);
-    LOG4CXX_INFO(cpptrace_log(), "Atom");
-    m_atom = new Atom(m_cfg.atom());
-    assert (m_atom);
-    LOG4CXX_INFO(cpptrace_log(), "Terminal");
-    m_terminal = new Terminal(*m_atom, _, m_cfg.terminal());
-    assert (m_terminal);
-
-    LOG4CXX_INFO(cpptrace_log(), "Atom is about to start ...");
-    m_atom->resume();
-    SDL_Event event;
-    m_more = true;
-    while( m_more && SDL_WaitEvent( &event ) )
-        switch( event.type ){
-        case SDL_KEYDOWN:
-        case SDL_KEYUP:
-            m_terminal->update(&event);
-            break;
-#if 0
-        case SDL_USEREVENT:
-            m_monitor->update();
-            break;
-#endif
-        case SDL_QUIT:
-            m_more = false;
-            break;
-        default:
-            break;
-        }
-    LOG4CXX_INFO(cpptrace_log(), "Atom is about to stop ...");
-}
-
-Main::~Main()
-{
-    LOG4CXX_INFO(cpptrace_log(), "Main::~Main()");
-    SDL_Quit();
-}
 
 /******************************************************************************/
 int main (int argc, char *argv[])

@@ -11,12 +11,19 @@
 
 
 class Terminal
-    : public virtual ActivePart
+    : public virtual Part
 {
 public:
     class Configurator
-        : public ActivePart::Configurator
+        : public Part::Configurator
     {
+    protected:
+        Configurator();
+    private:
+        Configurator(const Configurator &);
+        Configurator &operator=(const Configurator &);
+	public:
+        ~Configurator();
     public:
         virtual MonitorView::Configurator        &monitor_view() const = 0;
         virtual KeyboardController::Configurator &keyboard_controller() const = 0;
@@ -32,7 +39,7 @@ private:
     Terminal(const Terminal &);
     Terminal &operator=(const Terminal &);
 public:
-    Terminal(Device &p_device, TerminalInterface &p_terminal_interface, const Configurator &p_cfg);
+    Terminal(Memory &p_memory, TerminalInterface &p_terminal_interface, const Configurator &p_cfg);
     void update(SDL_Event *event) { m_keyboard_controller.update(&event->key); }
 
     friend std::ostream &::operator <<(std::ostream &, const Terminal &);

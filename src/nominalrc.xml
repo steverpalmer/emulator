@@ -1,20 +1,24 @@
 <?xml version="1.0" ?>
-<computer name="nominal_atom" extends="minimalrc.xml" xmlns="http://www.srpalmer.me.uk/ns/emulator" version="0.05">
-  <ram name="video">
-    <size>1800</size>
-  </ram>
-  <memory>
-    <map>
-      <base>2800</base>
-      <ram name="lower">
-        <size>1400</size>
-      </ram>
-    </map>
-    <map>
-      <base>D000</base>
-      <rom name="float">
-        <filename>float.rom</filename>
-      </rom>
-    </map>
-  </memory>
-</computer>
+<emulator xmlns="http://www.srpalmer.me.uk/ns/emulator" version="0.05">
+
+  <computer name="nominal_atom" extends="minimal_atom">
+    <ram name="video">
+      <size>0x1800</size>
+    </ram>
+    <address_space>
+      <map>
+        <base>0x2800</base>
+        <ram name="lower">
+          <size>0x1400</size>
+        </ram>
+      </map>
+      <map>
+        <base>0xD000</base>
+        <rom name="float">
+          <filename>float.rom</filename>
+        </rom>
+      </map>
+    </address_space>
+  </computer>
+
+</emulator>

@@ -3,8 +3,6 @@
 #include <cassert>
 #include <cmath>
 #include <string>
-//#include <algorithm>
-//#include <iterator>
 
 #include <ostream>
 #include <iomanip>
@@ -245,7 +243,7 @@ void MonitorView::Mode0::render()
 }
 
 MonitorView::MonitorView(TerminalInterface &p_terminal_interface,
-                         Device &p_memory,
+                         Memory &p_memory,
                          const Configurator &p_cfg)
     : m_terminal_interface(p_terminal_interface)
     , m_memory(p_memory)

@@ -56,4 +56,4 @@ public:
     friend std::ostream &::operator<<(std::ostream&, const Atom&);
 };
 
-#endif /* ATOM_HPP_ */
+#endif

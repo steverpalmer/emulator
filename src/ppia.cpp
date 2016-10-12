@@ -73,11 +73,12 @@ enum Ports {
 
 Ppia::Ppia(const Configurator &p_cfg)
     : Device(p_cfg)
+    , Memory(p_cfg)
     , m_register( { 0, 0, 0, 0 } )
 {
     LOG4CXX_INFO(cpptrace_log(), "Ppia::Ppia(" << p_cfg << ")");
     m_terminal.mutex = PTHREAD_RECURSIVE_MUTEX_INITIALIZER_NP;
-    _reset();
+    reset();
 }
 
 Ppia::~Ppia()
@@ -369,7 +370,7 @@ void Ppia::_set_byte(word p_addr, byte p_byte, AccessType p_at)
     m_register[p_addr] = p_byte;                            // Remember byte written
 }
 
-void Ppia::_reset()
+void Ppia::reset()
 {
     LOG4CXX_INFO(cpptrace_log(), "[" << id() << "].reset()");
     // reset the IO Model Inputs first
@@ -435,14 +436,14 @@ void Ppia::set_is_rept_pressed(bool p_is_rept_pressed)
 
 std::ostream &operator<<(std::ostream &p_s, const Ppia::Configurator &p_cfg)
 {
-    return p_s << "<ppia " << static_cast<const Device::Configurator &>(p_cfg) << "/>";
+    return p_s << "<ppia " << static_cast<const Memory::Configurator &>(p_cfg) << "/>";
 }
 
 std::ostream &operator<<(std::ostream &p_s, const Ppia &p_ppia)
 {
     pthread_mutex_lock(&p_ppia.m_terminal.mutex);
     p_s << "Ppia("
-        << static_cast<const Device &>(p_ppia)
+        << static_cast<const Memory &>(p_ppia)
         << ", PortA("   << Hex(p_ppia.m_register[PortA]) << ")"
         << ", PortB("   << Hex(p_ppia.m_register[PortB]) << ")"
         << ", PortC("   << Hex(p_ppia.m_register[PortC]) << ")"

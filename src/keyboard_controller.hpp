@@ -15,7 +15,14 @@ class KeyboardController
 public:
     class Configurator
     {
-    public:
+    protected:
+        Configurator();
+    private:
+        Configurator(const Configurator &);
+        Configurator &operator=(const Configurator &);
+	public:
+        ~Configurator();
+
         friend std::ostream &::operator <<(std::ostream &, const Configurator &);
     };
 private:

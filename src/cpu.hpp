@@ -6,13 +6,12 @@
 #include <pthread.h>
 
 #include <ostream>
-#include <memory>
 #include <atomic>
-#include <vector>
+#include <array>
 
 #include "common.hpp"
 #include "part.hpp"
-#include "device.hpp"
+#include "memory.hpp"
 
 enum InterruptState { INTERRUPT_ON,
                       INTERRUPT_OFF,
@@ -31,14 +30,21 @@ enum  InterruptSource { NO_INTERRUPT          = 0,
 };
 extern std::ostream &operator<<(std::ostream&, const InterruptSource&);
 
-class Core
-    : public ActivePart
+class Cpu
+    : public Device
 {
     // Types
 public:
-    class Configurator : public ActivePart::Configurator
+    class Configurator : public Device::Configurator
     {
+    protected:
+        Configurator();
+    private:
+        Configurator(const Configurator &);
+        Configurator &operator=(const Configurator &);
     public:
+        ~Configurator();
+        virtual Device *device_factory() = 0;
         friend std::ostream &::operator <<(std::ostream &, const Configurator &);
     };
     // Attributes
@@ -50,14 +56,14 @@ public:
     int              m_cycles;
     // Methods
 private:
-    Core(const Core &);
-    Core &operator=(const Core&);
+    Cpu(const Cpu &);
+    Cpu &operator=(const Cpu&);
 protected:
-    Core(const Configurator &);
+    explicit Cpu(const Configurator &);
     void start();
     void stop();
 public:
-    virtual ~Core();
+    virtual ~Cpu();
     void resume();
     void pause();
     void step(int cnt = 1);
@@ -66,24 +72,33 @@ public:
     virtual void NMI(InterruptState p_is = INTERRUPT_PULSE) = 0;
     virtual void IRQ(InterruptState p_is = INTERRUPT_PULSE) = 0;
 
-    friend std::ostream &::operator<<(std::ostream&, const Core&);
+    friend std::ostream &::operator<<(std::ostream&, const Cpu&);
 };
 
 class MCS6502
-    : public Core
+    : public Cpu
 {
 public:
-    class Configurator : public Core::Configurator
+    class Configurator : public Cpu::Configurator
     {
+    protected:
+        Configurator();
+    private:
+        Configurator(const Configurator &);
+        Configurator &operator=(const Configurator &);
     public:
+        ~Configurator();
+        virtual Memory::id_type memory() const = 0;
+        virtual Device *device_factory() const
+            { return new MCS6502(*this); }
         friend std::ostream &::operator <<(std::ostream &, const Configurator &);
     };
     class Instruction; // Forward declaration
     // Attributes
 public:
-    Device           &m_memory;
+    Memory           *m_memory;
 private:
-    std::vector<std::shared_ptr<Instruction>> m_opcode_mapping;
+    std::array<Instruction *, 256> m_opcode_mapping;
 public:
 #if EXEC_TRACE
     log4c_category_t *m_6502tracelog;
@@ -107,11 +122,8 @@ public:
         byte P;
     } m_register;
     // Methods
-private:
-    void interrupt(word p_addr);
-    void construct();
 public:
-    explicit MCS6502(Device &, const Configurator &);
+    explicit MCS6502(const Configurator &);
     virtual ~MCS6502();
     virtual void reset(InterruptState p_is = INTERRUPT_PULSE);
     virtual void NMI  (InterruptState p_is = INTERRUPT_PULSE);
@@ -125,4 +137,4 @@ public:
     friend std::ostream &::operator<<(std::ostream&, const MCS6502&);
 };
 
-#endif /* CPU_HPP_ */
+#endif
