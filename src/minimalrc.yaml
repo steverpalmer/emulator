@@ -1,0 +1,19 @@
+%YAML 1.2
+# A Minimal Atom has only
+# - 2K of Ram,
+# - no VIA
+# - the Basic Interpreter and Kernel ROMs
+---
+computer:
+  mcs6502:
+    address_space:
+      - {base: 0x0000, ram: {size: 0x0400}}
+      - {base: 0x8000, ram: &video {size: 0x0400}}
+      - {base: 0xB000, ppia: &ppia, size: 0x0400}
+      - {base: 0xC000, rom: {filename: basic.rom}}
+      - {base: 0xF000, rom: {filename: kernel.rom}}
+terminal:
+  memory: *video
+  controller: *ppia
+  scale: 2.0
+  fontfilename: mc6847.bmp
