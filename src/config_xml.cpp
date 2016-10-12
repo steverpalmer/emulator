@@ -167,7 +167,7 @@ namespace Xml
             }
         const Glib::ustring &id()  const { return m_id; }
         word                size() const { return m_size; }
-        const AddressSpace::Configurator::Mapping &memory(int i) const
+        const AddressSpace::Configurator::Mapping &mapping(int i) const
             { return (i < int(m_memory.size())) ? m_memory[i] : m_last_memory; }
     };
 
