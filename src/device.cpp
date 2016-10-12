@@ -26,7 +26,11 @@ Device::Device(const Configurator &p_cfg)
 Device::~Device()
 {
     for (auto *p: m_parents)
-        p->remove_child(this);
+    {
+        Computer *comp(dynamic_cast<Computer *>(p));
+        if (comp)
+            comp->remove_child(this);
+    }
     m_parents.clear();
 }
 

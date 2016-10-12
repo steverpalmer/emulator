@@ -9,8 +9,6 @@
 #include "common.hpp"
 #include "part.hpp"
 
-class Computer;  // Forward Declaration
-
 /// Model of all resetable devices.
 ///
 /// This is the interface that must be supported by all resetable devices.
@@ -42,7 +40,7 @@ public:
     };
     // Attributes
 protected:
-    std::set<Computer *> m_parents;
+    std::set<Device *> m_parents;
     // Methods
 private:
     Device(const Device &);
@@ -50,9 +48,9 @@ private:
 protected:
     explicit Device(const Configurator &);
 public:
-    void add_parent(Computer *p_parent)
+    void add_parent(Device *p_parent)
         { (void) m_parents.insert(p_parent); }
-    void remove_parent(Computer *p_parent)
+    void remove_parent(Device *p_parent)
         { (void) m_parents.erase(p_parent); }
     virtual ~Device();
     virtual void reset() {};

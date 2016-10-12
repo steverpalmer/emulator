@@ -2354,6 +2354,7 @@ MCS6502::MCS6502(const Configurator &p_cfg)
 {
     LOG4CXX_INFO(cpptrace_log(), "MCS6502::MCS6502([" << p_cfg.memory() << "], " << p_cfg << ")");
     m_memory = dynamic_cast<Memory *>(PartsBin::instance()[p_cfg.memory()]);
+    m_memory->add_parent(this);
     assert (m_memory);
     assert (SIZE(m_memory->size()) == 65536);
     m_opcode_mapping.fill(new Instr_Undefined(*this));
@@ -2514,6 +2515,7 @@ MCS6502::MCS6502(const Configurator &p_cfg)
 MCS6502::~MCS6502()
 {
     LOG4CXX_INFO(cpptrace_log(), "[" << id() << "].~Cpu()");
+    m_memory->remove_parent(this);
 }
 
 void MCS6502::single_step()

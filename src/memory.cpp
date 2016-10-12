@@ -26,7 +26,12 @@ Memory::Memory(const Configurator &p_cfg)
 Memory::~Memory()
 {
     for (auto *p: m_parents)
-        p->remove_child(this);
+    {
+        AddressSpace *as(dynamic_cast<AddressSpace *>(p));
+        Computer *comp(dynamic_cast<Computer *>(p));
+        if (as)   as->remove_child(this);
+        if (comp) comp->remove_child(this);
+    }
     m_parents.clear();
     m_observers.clear();
 }
