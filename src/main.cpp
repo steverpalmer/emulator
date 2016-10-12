@@ -11,7 +11,7 @@
 #include <log4cxx/logger.h>
 #include "log4cxx/propertyconfigurator.h"
 
-#inlcude "common.hpp"
+#include "common.hpp"
 #include "config.hpp"
 #include "config_xml.hpp"
 #include "part.hpp"
@@ -31,7 +31,7 @@ private:
     Main(const Main &);
     Main &operator=(const Main&);
 public:
-    Main(int agrc, char *argv[])
+    Main(int argc, char *argv[])
         {
             LOG4CXX_INFO(cpptrace_log(), "Main::Main(" << argc << ", " << argv << ")");
 
@@ -39,10 +39,12 @@ public:
             const int rv = SDL_Init( SDL_INIT_VIDEO | SDL_INIT_TIMER );
             assert (!rv);
 
-            const Configurator *cfg = Xml::Configurator(argc, argv);
+            const Configurator *cfg = new Xml::Configurator(argc, argv);
             LOG4CXX_INFO(cpptrace_log(), cfg);
+            assert (cfg);
 
-            PartsBin::instance().build(cfg);
+            PartsBin::instance().build(*cfg);
+            delete cfg;
 
             Terminal *terminal = dynamic_cast<Terminal *>(PartsBin::instance()["/atom/terminal"]);
             assert (terminal);
