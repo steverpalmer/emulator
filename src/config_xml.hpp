@@ -26,6 +26,7 @@ namespace Xml
     public:
         explicit Configurator(int argc, char *argv[]);
         virtual ~Configurator();
+        Part::Configurator *part(int i) const;
     };
 
 }
