@@ -23,6 +23,14 @@ Memory::Memory(const Configurator &p_cfg)
     LOG4CXX_INFO(cpptrace_log(), "Memory::Memory(" << p_cfg << ")");
 }
 
+Memory::~Memory()
+{
+    for (auto *p: m_parents)
+        p->remove_child(this);
+    m_parents.clear();
+    m_observers.clear();
+}
+
 word Memory::get_word(word p_addr, AccessType p_at)
 {
     LOG4CXX_INFO(cpptrace_log(), "[" << id() << "].get_word(" << Hex(p_addr) << ", " << p_at << ")");
@@ -104,7 +112,6 @@ Rom::~Rom()
 AddressSpace::AddressSpace(const Configurator &p_cfg)
     : Device(p_cfg)
     , Memory(p_cfg)
-    , m_memorys(0)
     , m_base(SIZE(p_cfg.size()), 0)
     , m_map(SIZE(p_cfg.size()), 0)
 {
@@ -113,14 +120,14 @@ AddressSpace::AddressSpace(const Configurator &p_cfg)
     for (int i(0); (mapping = p_cfg.mapping(i), mapping.memory); i++)
     {
         Memory * const memory(mapping.memory->memory_factory());
-        m_memorys.push_back(memory);
-        add(mapping.base, memory, mapping.size);
+        add_child(mapping.base, memory, mapping.size);
+        memory->add_parent(this);
     }
 }
 
 void AddressSpace::reset()
 {
-    for (auto &mem : m_memorys)
+    for (auto &mem : m_children)
         mem->reset();
 }
 
@@ -137,10 +144,11 @@ void AddressSpace::_set_byte(word p_addr, byte p_byte, AccessType p_at)
     	m_map[p_addr]->set_byte(p_addr-m_base[p_addr], p_byte, p_at);
 }
 
-void AddressSpace::add(word p_base, Memory *p_memory, word p_size)
+void AddressSpace::add_child(word p_base, Memory *p_memory, word p_size)
 {
     assert (p_memory);
     LOG4CXX_INFO(cpptrace_log(), "[" << id() << "].add(" << Hex(p_base) << ", [" << p_memory->id() << "], " << Hex(p_size) << ")");
+    m_children.insert(p_memory);
     const int memory_size(SIZE(p_memory->size()));
     assert (memory_size > 0);
     assert (!p_size || (p_size % memory_size == 0));
@@ -155,12 +163,16 @@ void AddressSpace::add(word p_base, Memory *p_memory, word p_size)
 void AddressSpace::clear()
 {
     LOG4CXX_INFO(cpptrace_log(), "[" << id() << "].clear(" << ")");
-    for (int i(0); i < 65536; i++)
-    {
-    	m_map[i] = 0;
-    	m_base[i] = 0;
-    }
-    m_memorys.clear();
+    m_map.clear();
+    m_base.clear();
+    for (auto *m : m_children)
+        m->remove_parent(this);
+    m_children.clear();
+}
+
+AddressSpace::~AddressSpace()
+{
+    clear();
 }
 
 // Streaming Output

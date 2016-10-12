@@ -47,6 +47,7 @@ public:
 protected:
 	explicit Part(const Part::id_type &p_id = "");
 	explicit Part(const Configurator &p_cfg);
+public:
     virtual ~Part();
 private:
 	Part(const Part &);
@@ -143,6 +144,8 @@ public:
     inline void clear()
         {
             assert (self_check() == 0);
+            for (auto &v: m_bin)
+                delete v.second;
             m_bin.clear();
             assert (self_check() == 0);
         }

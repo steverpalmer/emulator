@@ -4,9 +4,9 @@
 #define MEMORY_HPP_
 
 #include <ostream>
-#include <unordered_set> // Used by Device observers
-#include <vector>        // Used by Ram and Rom storage
-#include <memory>        // Used be Memory
+#include <set>     // Used by Device observers and parents
+#include <vector>  // Used by Ram and Rom storage
+#include <memory>  // Used be Memory
 
 #include "common.hpp"
 #include "device.hpp"
@@ -14,6 +14,7 @@
 enum AccessType {AT_UNKNOWN, AT_INSTRUCTION, AT_OPERAND, AT_DATA, AT_LAST};
 extern std::ostream &operator<<(std::ostream &, const AccessType);
 
+class AddressSpace;  // Forward declaration
 
 /// Model of all memory mapped devices.
 ///
@@ -75,7 +76,8 @@ public:
     };
     // Attributes
 protected:
-    std::unordered_set<Observer *> m_observers;
+    std::set<AddressSpace *> m_parents;
+    std::set<Observer *> m_observers;
     // Methods
 private:
     Memory(const Memory &);
@@ -91,7 +93,11 @@ public:
     inline void attach(Observer &p_observer) { m_observers.insert(&p_observer); }
     inline void detach(Observer &p_observer) { m_observers.erase(&p_observer); }
 
-    virtual ~Memory() { m_observers.clear(); }
+    void add_parent(AddressSpace *p_parent)
+        { (void) m_parents.insert(p_parent); }
+    void remove_parent(AddressSpace *p_parent)
+        { (void) m_parents.erase(p_parent); }
+    virtual ~Memory();
     
     inline byte get_byte(word p_addr, AccessType p_at = AT_UNKNOWN)
         {
@@ -277,7 +283,7 @@ public:
     };
     // Attributes
 private:
-    std::vector<Memory *> m_memorys;
+    std::set<Memory *>    m_children;
     std::vector<word>     m_base;
     std::vector<Memory *> m_map;
     // Methods
@@ -292,8 +298,10 @@ protected:
     virtual byte _get_byte  (word p_addr, AccessType p_at = AT_UNKNOWN);
     virtual void _set_byte  (word p_addr, byte p_byte, AccessType p_at = AT_UNKNOWN);
 public:
-    void add(word p_base, Memory *p_memory, word p_size = 0);
+    void add_child(word p_base, Memory *p_memory, word p_size = 0);
+    void remove_child(Memory *p_memory);
     void clear();
+    virtual ~AddressSpace();
 
     friend std::ostream &::operator<<(std::ostream &, const AddressSpace &);
 };

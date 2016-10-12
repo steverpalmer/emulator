@@ -4,10 +4,12 @@
 #define DEVICE_HPP_
 
 #include <ostream>
-#include <unordered_set>  // Used by Computer
+#include <set>  // Used by Computer
 
 #include "common.hpp"
 #include "part.hpp"
+
+class Computer;  // Forward Declaration
 
 /// Model of all resetable devices.
 ///
@@ -38,6 +40,9 @@ public:
 
         friend std::ostream &::operator <<(std::ostream &, const Configurator &);
     };
+    // Attributes
+protected:
+    std::set<Computer *> m_parents;
     // Methods
 private:
     Device(const Device &);
@@ -45,6 +50,10 @@ private:
 protected:
     explicit Device(const Configurator &);
 public:
+    void add_parent(Computer *p_parent)
+        { (void) m_parents.insert(p_parent); }
+    void remove_parent(Computer *p_parent)
+        { (void) m_parents.erase(p_parent); }
     virtual ~Device();
     virtual void reset() {};
 
@@ -80,7 +89,7 @@ public:
     };
     // Attributes
 private:
-    std::unordered_set<Device *> m_devices;
+    std::set<Device *> m_children;
     // Methods
 private:
     Computer(const Computer &);
@@ -91,9 +100,9 @@ public:
 protected:
     virtual void reset();
 public:
-    void insert(Device *p_device) { (void) m_devices.insert(p_device); }
-    void erase(Device *p_device)  { (void) m_devices.erase(p_device); }
-    void clear()                  { (void) m_devices.clear(); }
+    void add_child(Device *p_device) { (void) m_children.insert(p_device); }
+    void remove_child(Device *p_device)  { (void) m_children.erase(p_device); }
+    void clear();
 
     friend std::ostream &::operator<<(std::ostream &, const Computer &);
 };
