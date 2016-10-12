@@ -7,7 +7,7 @@
 #include <ostream>
 
 #include <string>
-#include <unordered_map>
+#include <map>
 #include <unordered_set>
 #include <memory>
 
@@ -56,7 +56,7 @@ private:
 };
 
 
-// PartsBin is a singleton unordered_map wrapper mapping Glib::ustring to Part pointers
+// PartsBin is a singleton map wrapper mapping Glib::ustring to Part pointers
 class PartsBin
 {
 public:
@@ -76,7 +76,7 @@ public: // Types
     typedef Part::id_type                          key_type;
     typedef Part *                                 mapped_type;
 private:
-    typedef std::unordered_map<std::string, mapped_type> bin_type;
+    typedef std::map<std::string, mapped_type>     bin_type;
 public:
     typedef bin_type::iterator                     iterator;
     typedef bin_type::const_iterator               const_iterator;
@@ -84,7 +84,7 @@ public:
     typedef std::pair<const key_type, mapped_type> value_type;
 private:
     bin_type m_bin;
-    PartsBin() : m_bin(100) {}
+    PartsBin();
     PartsBin(const PartsBin &);
     PartsBin &operator=(const PartsBin &);
     static PartsBin *s_instance;
