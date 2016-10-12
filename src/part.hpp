@@ -90,6 +90,7 @@ private:
     static PartsBin *s_instance;
     int self_check() const;
 public:
+    virtual ~PartsBin();
     static PartsBin &instance();
     void build(const Configurator &p_cfg)
         {
