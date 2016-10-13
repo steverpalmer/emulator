@@ -15,7 +15,7 @@ class Terminal
 {
 public:
     class Configurator
-        : public Part::Configurator
+        : public virtual Part::Configurator
     {
     protected:
         Configurator();
@@ -27,6 +27,8 @@ public:
     public:
         virtual MonitorView::Configurator        &monitor_view() const = 0;
         virtual KeyboardController::Configurator &keyboard_controller() const = 0;
+        virtual Part *part_factory() const
+            { return new Terminal(*this); }
         
         friend std::ostream &::operator <<(std::ostream &, const Configurator &);
     };
@@ -39,7 +41,7 @@ private:
     Terminal(const Terminal &);
     Terminal &operator=(const Terminal &);
 public:
-    Terminal(Memory &p_memory, TerminalInterface &p_terminal_interface, const Configurator &p_cfg);
+    Terminal(const Configurator &);
     void update(SDL_Event *event) { m_keyboard_controller.update(&event->key); }
 
     friend std::ostream &::operator <<(std::ostream &, const Terminal &);

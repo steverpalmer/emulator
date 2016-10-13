@@ -22,7 +22,7 @@ public:
 	/// 1. the information needed by the device to construct an instance
 	/// 2. a factory method that builds the instance of the device
     class Configurator
-        : public Part::Configurator
+        : public virtual Part::Configurator
     {
     protected:
         Configurator();

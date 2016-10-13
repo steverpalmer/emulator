@@ -33,18 +33,32 @@ static log4cxx::LoggerPtr cpptrace_log()
 namespace Xml
 {
 
-    class RamConfigurator
-        : public Ram::Configurator
+    class PartConfigurator
+        : public virtual Part::Configurator
     {
     private:
+        PartConfigurator(const PartConfigurator &);
+        PartConfigurator &operator=(const PartConfigurator &);
+    protected:
         Part::id_type m_id;
+        explicit PartConfigurator(Part::id_type p_id) : m_id(p_id) {}
+    public:
+        virtual ~PartConfigurator();
+        inline virtual const Part::id_type &id() const { return m_id; }
+    };
+    
+    class RamConfigurator
+        : public PartConfigurator
+        , public Ram::Configurator
+    {
+    private:
         word          m_size;
         Glib::ustring m_filename;
         RamConfigurator(const RamConfigurator &);
         RamConfigurator &operator=(const RamConfigurator &);
     public:
         explicit RamConfigurator(const xmlpp::Node *p_node)
-            : m_id("ram")
+            : PartConfigurator("ram")
             , m_filename("")
             {
                 LOG4CXX_INFO(cpptrace_log(), "Xml::RamConfigurator::RamConfigurator(" << p_node << ")");
@@ -52,27 +66,26 @@ namespace Xml
                 try { m_id = p_node->eval_to_string("@name"); }
                 catch (xmlpp::exception e) { /* Do Nothing */ }
                 m_size = p_node->eval_to_number("size");
-                try { m_id = p_node->eval_to_string("filename"); }
+                try { m_filename = p_node->eval_to_string("filename"); }
                 catch (xmlpp::exception e) { /* Do Nothing */ }
             }
         virtual ~RamConfigurator();
-        inline virtual const Part::id_type &id()       const { return m_id; }
         inline virtual word                size()      const { return m_size; }
         inline virtual const Glib::ustring &filename() const { return m_filename; }
     };
 
     class RomConfigurator
-        : public Rom::Configurator
+        : public PartConfigurator
+        , public Rom::Configurator
     {
     private:
-        Part::id_type m_id;
         word          m_size;
         Glib::ustring m_filename;
         RomConfigurator(const RomConfigurator &);
         RomConfigurator &operator=(const RomConfigurator &);
     public:
         explicit RomConfigurator(const xmlpp::Node *p_node)
-            : m_id("rom")
+            : PartConfigurator("rom")
             {
                 LOG4CXX_INFO(cpptrace_log(), "Xml::RomConfigurator::RomConfigurator(" << p_node << ")");
                 assert (p_node);
@@ -86,21 +99,20 @@ namespace Xml
                 }
             }
         virtual ~RomConfigurator();
-        inline virtual const Part::id_type &id()       const { return m_id; }
         inline virtual const Glib::ustring &filename() const { return m_filename; }
         inline virtual word                size()      const { return m_size; }
     };
 
     class PpiaConfigurator
-        : public Ppia::Configurator
+        : public PartConfigurator
+        , public Ppia::Configurator
     {
     private:
-        Part::id_type m_id;
         PpiaConfigurator(const PpiaConfigurator &);
         PpiaConfigurator &operator=(const PpiaConfigurator &);
     public:
         explicit PpiaConfigurator(const xmlpp::Node *p_node)
-            : m_id("ppia")
+            : PartConfigurator("ppia")
             {
                 LOG4CXX_INFO(cpptrace_log(), "Xml::PpiaConfigurator::PpiaConfigurator(" << p_node << ")");
                 assert (p_node);
@@ -108,14 +120,13 @@ namespace Xml
                 catch (xmlpp::exception e) { /* Do Nothing */ }
             }
         virtual ~PpiaConfigurator();
-        inline virtual const Part::id_type &id() const { return m_id; }
     };
 
     class AddressSpaceConfigurator
-        : public AddressSpace::Configurator
+        : public PartConfigurator
+        , public AddressSpace::Configurator
     {
     private:
-        Part::id_type m_id;
         word m_size;
         AddressSpace::Configurator::Mapping m_last_memory;
         std::vector<AddressSpace::Configurator::Mapping> m_memory;
@@ -123,7 +134,7 @@ namespace Xml
         AddressSpaceConfigurator &operator=(const AddressSpaceConfigurator &);
     public:
         explicit AddressSpaceConfigurator(const xmlpp::Node *p_node)
-            : m_id("address_space")
+            : PartConfigurator("address_space")
             , m_size(0)
             , m_last_memory( { 0, 0, 0 } )
             , m_memory(0)
@@ -169,22 +180,21 @@ namespace Xml
                     delete &m;
                 m_memory.clear();
             }
-        inline virtual const Part::id_type &id() const { return m_id; }
         inline virtual word                size() const { return m_size; }
         inline virtual const AddressSpace::Configurator::Mapping &mapping(int i) const
             { return (i < int(m_memory.size())) ? m_memory[i] : m_last_memory; }
     };
 
     class MCS6502Configurator
-        : public MCS6502::Configurator
+        : public PartConfigurator
+        , public MCS6502::Configurator
     {
     private:
-        Part::id_type m_id;
         MCS6502Configurator(const MCS6502Configurator &);
         MCS6502Configurator &operator=(const MCS6502Configurator &);
     public:
         explicit MCS6502Configurator(const xmlpp::Node *p_node = 0)
-            : m_id("mcs6502")
+            : PartConfigurator("mcs6502")
             {
                 LOG4CXX_INFO(cpptrace_log(), "Xml::MCS6502Configurator::MCS6502Configurator(" << p_node << ")");
                 if (p_node)
@@ -194,19 +204,18 @@ namespace Xml
                 }
             }
         virtual ~MCS6502Configurator();
-        inline virtual const Part::id_type &id() const { return m_id; }
     };
 
     class ComputerConfigurator
-        : public Computer::Configurator
+        : public PartConfigurator
+        , public Computer::Configurator
     {
     private:
-        Part::id_type m_id;
         ComputerConfigurator(const ComputerConfigurator &);
         ComputerConfigurator &operator=(const ComputerConfigurator &);
     public:
         explicit ComputerConfigurator(const xmlpp::Node *p_node)
-            : m_id("computer")
+            : PartConfigurator("computer")
             {
                 LOG4CXX_INFO(cpptrace_log(), "Xml::ComputerConfigurator::ComputerConfigurator(" << p_node << ")");
                 assert(p_node);
@@ -216,7 +225,6 @@ namespace Xml
                 xmlpp::NodeSet ns(p_node->find("memorymap"));
             }
         virtual ~ComputerConfigurator();
-        inline virtual const Part::id_type &id() const { return m_id; }
     };
 
     class KeyboardControllerConfigurator
@@ -267,15 +275,15 @@ namespace Xml
     };
 
     class TerminalConfigurator
-        : public Terminal::Configurator
+        : public PartConfigurator
+        , public Terminal::Configurator
     {
     private:
-        Part::id_type m_id;
         KeyboardControllerConfigurator *m_keyboard;
         MonitorViewConfigurator *m_monitor;
     public:
         explicit TerminalConfigurator(const xmlpp::Node *p_node = 0)
-            : m_id("terminal")
+            : PartConfigurator("terminal")
             {
                 LOG4CXX_INFO(cpptrace_log(), "Xml::TerminalConfigurator::TerminalConfigurator(" << p_node << ")");
                 // FIXME:
@@ -285,7 +293,6 @@ namespace Xml
                 assert (m_monitor);
             }
         virtual ~TerminalConfigurator();
-        inline virtual const Part::id_type &id() const { return m_id; }
         KeyboardController::Configurator   &keyboard_controller() const { return *m_keyboard; }
         MonitorView::Configurator          &monitor_view()        const { return *m_monitor; }
     };
@@ -333,7 +340,7 @@ namespace Xml
             }
 
             const xmlpp::Node *root(parser.get_document()->get_root_node());
-
+#if 0
             m_atom = new AtomConfigurator(root);
             try
             {
@@ -343,7 +350,7 @@ namespace Xml
                     m_terminal = new TerminalConfigurator(ns[0]);
             }
             catch (xmlpp::exception e) { /* Do Nothing */ }
-
+#endif
 #if 0
             // Keyboard Stuff
             if (!cfg->keyboard.filename)
