@@ -14,7 +14,7 @@
 
 
 class Ppia
-    : public virtual Memory
+    : public Memory
     , public TerminalInterface
 {
 public:

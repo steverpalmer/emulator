@@ -54,6 +54,8 @@ public:
         { (void) m_parents.erase(p_parent); }
     virtual ~Device();
     virtual void reset() {};
+    virtual void pause() {};
+    virtual void resume() {};
 
     friend std::ostream &::operator<<(std::ostream &, const Device &);
 };
@@ -95,12 +97,14 @@ private:
 public:
     explicit Computer(const Configurator &);
     virtual ~Computer();
-protected:
-    virtual void reset();
 public:
     void add_child(Device *p_device) { (void) m_children.insert(p_device); }
     void remove_child(Device *p_device)  { (void) m_children.erase(p_device); }
     void clear();
+
+    virtual void reset();
+    virtual void pause();
+    virtual void resume();
 
     friend std::ostream &::operator<<(std::ostream &, const Computer &);
 };

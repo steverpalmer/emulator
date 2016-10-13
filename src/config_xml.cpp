@@ -18,7 +18,7 @@
 
 #include "common.hpp"
 #include "config_xml.hpp"
-
+#include "device.hpp"
 #include "memory.hpp"
 #include "ppia.hpp"
 #include "cpu.hpp"
@@ -33,10 +33,11 @@ static log4cxx::LoggerPtr cpptrace_log()
 namespace Xml
 {
 
-    class RamConfigurator : public Ram::Configurator
+    class RamConfigurator
+        : public Ram::Configurator
     {
     private:
-        Glib::ustring m_id;
+        Part::id_type m_id;
         word          m_size;
         Glib::ustring m_filename;
         RamConfigurator(const RamConfigurator &);
@@ -55,15 +56,16 @@ namespace Xml
                 catch (xmlpp::exception e) { /* Do Nothing */ }
             }
         virtual ~RamConfigurator();
-        inline const Glib::ustring &id()       const { return m_id; }
-        inline word                size()      const { return m_size; }
-        inline const Glib::ustring &filename() const { return m_filename; }
+        inline virtual const Part::id_type &id()       const { return m_id; }
+        inline virtual word                size()      const { return m_size; }
+        inline virtual const Glib::ustring &filename() const { return m_filename; }
     };
 
-    class RomConfigurator : public Rom::Configurator
+    class RomConfigurator
+        : public Rom::Configurator
     {
     private:
-        Glib::ustring m_id;
+        Part::id_type m_id;
         word          m_size;
         Glib::ustring m_filename;
         RomConfigurator(const RomConfigurator &);
@@ -84,15 +86,16 @@ namespace Xml
                 }
             }
         virtual ~RomConfigurator();
-        inline const Glib::ustring &id()       const { return m_id; }
-        inline const Glib::ustring &filename() const { return m_filename; }
-        inline word                size()      const { return m_size; }
+        inline virtual const Part::id_type &id()       const { return m_id; }
+        inline virtual const Glib::ustring &filename() const { return m_filename; }
+        inline virtual word                size()      const { return m_size; }
     };
 
-    class PpiaConfigurator : public Ppia::Configurator
+    class PpiaConfigurator
+        : public Ppia::Configurator
     {
     private:
-        Glib::ustring m_id;
+        Part::id_type m_id;
         PpiaConfigurator(const PpiaConfigurator &);
         PpiaConfigurator &operator=(const PpiaConfigurator &);
     public:
@@ -105,21 +108,22 @@ namespace Xml
                 catch (xmlpp::exception e) { /* Do Nothing */ }
             }
         virtual ~PpiaConfigurator();
-        const Glib::ustring &id() const { return m_id; }
+        inline virtual const Part::id_type &id() const { return m_id; }
     };
 
-    class AddressSpaceConfigurator : public AddressSpace::Configurator
+    class AddressSpaceConfigurator
+        : public AddressSpace::Configurator
     {
     private:
-        Glib::ustring m_id;
-        word          m_size;
+        Part::id_type m_id;
+        word m_size;
         AddressSpace::Configurator::Mapping m_last_memory;
         std::vector<AddressSpace::Configurator::Mapping> m_memory;
         AddressSpaceConfigurator(const AddressSpaceConfigurator &);
         AddressSpaceConfigurator &operator=(const AddressSpaceConfigurator &);
     public:
         explicit AddressSpaceConfigurator(const xmlpp::Node *p_node)
-            : m_id("memory")
+            : m_id("address_space")
             , m_size(0)
             , m_last_memory( { 0, 0, 0 } )
             , m_memory(0)
@@ -165,16 +169,17 @@ namespace Xml
                     delete &m;
                 m_memory.clear();
             }
-        const Glib::ustring &id()  const { return m_id; }
-        word                size() const { return m_size; }
-        const AddressSpace::Configurator::Mapping &mapping(int i) const
+        inline virtual const Part::id_type &id() const { return m_id; }
+        inline virtual word                size() const { return m_size; }
+        inline virtual const AddressSpace::Configurator::Mapping &mapping(int i) const
             { return (i < int(m_memory.size())) ? m_memory[i] : m_last_memory; }
     };
 
-    class MCS6502Configurator : public MCS6502::Configurator
+    class MCS6502Configurator
+        : public MCS6502::Configurator
     {
     private:
-        Glib::ustring m_id;
+        Part::id_type m_id;
         MCS6502Configurator(const MCS6502Configurator &);
         MCS6502Configurator &operator=(const MCS6502Configurator &);
     public:
@@ -189,18 +194,19 @@ namespace Xml
                 }
             }
         virtual ~MCS6502Configurator();
-        const Glib::ustring &id() const { return m_id; }
+        inline virtual const Part::id_type &id() const { return m_id; }
     };
 
-    class ComputerConfigurator : public Computer::Configurator
+    class ComputerConfigurator
+        : public Computer::Configurator
     {
     private:
-        Glib::ustring m_id;
+        Part::id_type m_id;
         ComputerConfigurator(const ComputerConfigurator &);
         ComputerConfigurator &operator=(const ComputerConfigurator &);
     public:
         explicit ComputerConfigurator(const xmlpp::Node *p_node)
-            : m_id("atom")
+            : m_id("computer")
             {
                 LOG4CXX_INFO(cpptrace_log(), "Xml::ComputerConfigurator::ComputerConfigurator(" << p_node << ")");
                 assert(p_node);
@@ -210,10 +216,11 @@ namespace Xml
                 xmlpp::NodeSet ns(p_node->find("memorymap"));
             }
         virtual ~ComputerConfigurator();
-        const Glib::ustring &id() const { return m_id; }
+        inline virtual const Part::id_type &id() const { return m_id; }
     };
 
-    class KeyboardControllerConfigurator : public KeyboardController::Configurator
+    class KeyboardControllerConfigurator
+        : public KeyboardController::Configurator
     {
     private:
         KeyboardControllerConfigurator(const KeyboardControllerConfigurator &);
@@ -226,7 +233,8 @@ namespace Xml
         virtual ~KeyboardControllerConfigurator();
     };
 
-    class MonitorViewConfigurator : public MonitorView::Configurator
+    class MonitorViewConfigurator
+        : public MonitorView::Configurator
     {
     private:
         float         m_scale;
@@ -258,10 +266,11 @@ namespace Xml
         const Glib::ustring &icon_title()   const { return m_icon_title; }
     };
 
-    class TerminalConfigurator : public Terminal::Configurator
+    class TerminalConfigurator
+        : public Terminal::Configurator
     {
     private:
-        Glib::ustring m_id;
+        Part::id_type m_id;
         KeyboardControllerConfigurator *m_keyboard;
         MonitorViewConfigurator *m_monitor;
     public:
@@ -276,9 +285,9 @@ namespace Xml
                 assert (m_monitor);
             }
         virtual ~TerminalConfigurator();
-        const Glib::ustring              &id()                  const { return m_id; }
-        KeyboardController::Configurator &keyboard_controller() const { return *m_keyboard; }
-        MonitorView::Configurator        &monitor_view()        const { return *m_monitor; }
+        inline virtual const Part::id_type &id() const { return m_id; }
+        KeyboardController::Configurator   &keyboard_controller() const { return *m_keyboard; }
+        MonitorView::Configurator          &monitor_view()        const { return *m_monitor; }
     };
 
     void Configurator::process_command_line(int argc, char *argv[])

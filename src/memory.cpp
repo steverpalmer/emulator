@@ -17,10 +17,11 @@ static log4cxx::LoggerPtr cpptrace_log()
 
 // Memory
 
-Memory::Memory(const Configurator &p_cfg)
-    : Device(p_cfg)
+Memory::Memory(const Configurator &p_cfgr)
+    : Part(p_cfgr)
+    , Device(p_cfgr)
 {
-    LOG4CXX_INFO(cpptrace_log(), "Memory::Memory(" << p_cfg << ")");
+    LOG4CXX_INFO(cpptrace_log(), "Memory::Memory(" << p_cfgr << ")");
 }
 
 Memory::~Memory()
@@ -55,6 +56,7 @@ void Memory::set_word(word p_addr, word p_word, AccessType p_at)
 
 bool Storage::load(const Glib::ustring &p_filename)
 {
+    LOG4CXX_INFO(cpptrace_log(), "Storage::load(" << p_filename << ")");
     bool result(true);
     if (!p_filename.empty()) {
         using namespace std;
@@ -68,6 +70,7 @@ bool Storage::load(const Glib::ustring &p_filename)
 
 bool Storage::save(const Glib::ustring &p_filename) const
 {
+    LOG4CXX_INFO(cpptrace_log(), "Storage::save(" << p_filename << ")");
     bool result(true);
     if (!p_filename.empty()) {
         using namespace std;
@@ -81,48 +84,53 @@ bool Storage::save(const Glib::ustring &p_filename) const
 
 // Ram Methods
 
-Ram::Ram(const Configurator &p_cfg)
-    : Device(p_cfg)
-    , Memory(p_cfg)
-    , m_storage(p_cfg.size())
-    , m_filename(p_cfg.filename())
+Ram::Ram(const Configurator &p_cfgr)
+    : Part(p_cfgr)
+    , Device(p_cfgr)
+    , Memory(p_cfgr)
+    , m_storage(p_cfgr.size())
+    , m_filename(p_cfgr.filename())
 {
-    LOG4CXX_INFO(cpptrace_log(), "Ram::Ram(" << p_cfg << ")");
+    LOG4CXX_INFO(cpptrace_log(), "Ram::Ram(" << p_cfgr << ")");
     (void) m_storage.load(m_filename);
 }
 
 Ram::~Ram()
 {
+    LOG4CXX_INFO(cpptrace_log(), "Ram::~Ram([" << id() << "])");
     (void) m_storage.save(m_filename);
 }
 
 // Rom Methods
 
-Rom::Rom(const Configurator &p_cfg)
-    : Device(p_cfg)
-    , Memory(p_cfg)
-    , m_storage(p_cfg.size())
+Rom::Rom(const Configurator &p_cfgr)
+    : Part(p_cfgr)
+    , Device(p_cfgr)
+    , Memory(p_cfgr)
+    , m_storage(p_cfgr.size())
 {
-    LOG4CXX_INFO(cpptrace_log(), "Rom::Rom(" << p_cfg << ")");
-    assert (m_storage.load(p_cfg.filename()));
+    LOG4CXX_INFO(cpptrace_log(), "Rom::Rom(" << p_cfgr << ")");
+    assert (m_storage.load(p_cfgr.filename()));
 }
 
 Rom::~Rom()
 {
+    LOG4CXX_INFO(cpptrace_log(), "Rom::~Rom([" << id() << "])");
     // Do Nothing
 }
 
 // AddressSpace Methods
 
-AddressSpace::AddressSpace(const Configurator &p_cfg)
-    : Device(p_cfg)
-    , Memory(p_cfg)
-    , m_base(SIZE(p_cfg.size()), 0)
-    , m_map(SIZE(p_cfg.size()), 0)
+AddressSpace::AddressSpace(const Configurator &p_cfgr)
+    : Part(p_cfgr)
+    , Device(p_cfgr)
+    , Memory(p_cfgr)
+    , m_base(SIZE(p_cfgr.size()), 0)
+    , m_map(SIZE(p_cfgr.size()), 0)
 {
-    LOG4CXX_INFO(cpptrace_log(), "AddressSpace::AddressSpace(" << p_cfg << ")");
+    LOG4CXX_INFO(cpptrace_log(), "AddressSpace::AddressSpace(" << p_cfgr << ")");
     AddressSpace::Configurator::Mapping mapping;
-    for (int i(0); (mapping = p_cfg.mapping(i), mapping.memory); i++)
+    for (int i(0); (mapping = p_cfgr.mapping(i), mapping.memory); i++)
     {
         Memory * const memory(mapping.memory->memory_factory());
         add_child(mapping.base, memory, mapping.size);
@@ -130,21 +138,15 @@ AddressSpace::AddressSpace(const Configurator &p_cfg)
     }
 }
 
-void AddressSpace::reset()
-{
-    for (auto &mem : m_children)
-        mem->reset();
-}
-
 byte AddressSpace::_get_byte(word p_addr, AccessType p_at)
 {
-    LOG4CXX_INFO(cpptrace_log(), "[" << id() << "]._get_byte(" << Hex(p_addr) << ", " << p_at << ")");
+    LOG4CXX_INFO(cpptrace_log(), "[" << id() << "].AddressSpace::_get_byte(" << Hex(p_addr) << ", " << p_at << ")");
     return m_map[p_addr] ? m_map[p_addr]->get_byte(p_addr-m_base[p_addr], p_at) : 0;
 }
 
 void AddressSpace::_set_byte(word p_addr, byte p_byte, AccessType p_at)
 {
-    LOG4CXX_INFO(cpptrace_log(), "[" << id() << "]._set_byte(" << Hex(p_addr) << ", " << Hex(p_byte) << ", " << p_at << ")");
+    LOG4CXX_INFO(cpptrace_log(), "[" << id() << "].AddressSpace::_set_byte(" << Hex(p_addr) << ", " << Hex(p_byte) << ", " << p_at << ")");
     if (m_map[p_addr])
     	m_map[p_addr]->set_byte(p_addr-m_base[p_addr], p_byte, p_at);
 }
@@ -152,7 +154,7 @@ void AddressSpace::_set_byte(word p_addr, byte p_byte, AccessType p_at)
 void AddressSpace::add_child(word p_base, Memory *p_memory, word p_size)
 {
     assert (p_memory);
-    LOG4CXX_INFO(cpptrace_log(), "[" << id() << "].add(" << Hex(p_base) << ", [" << p_memory->id() << "], " << Hex(p_size) << ")");
+    LOG4CXX_INFO(cpptrace_log(), "[" << id() << "].AddressSpace::add_child(" << Hex(p_base) << ", [" << p_memory->id() << "], " << Hex(p_size) << ")");
     m_children.insert(p_memory);
     const int memory_size(SIZE(p_memory->size()));
     assert (memory_size > 0);
@@ -167,7 +169,7 @@ void AddressSpace::add_child(word p_base, Memory *p_memory, word p_size)
 
 void AddressSpace::clear()
 {
-    LOG4CXX_INFO(cpptrace_log(), "[" << id() << "].clear(" << ")");
+    LOG4CXX_INFO(cpptrace_log(), "[" << id() << "].AddressSpace::clear()");
     m_map.clear();
     m_base.clear();
     for (auto *m : m_children)
@@ -177,38 +179,61 @@ void AddressSpace::clear()
 
 AddressSpace::~AddressSpace()
 {
+    LOG4CXX_INFO(cpptrace_log(), "AddressSpace::~AddressSpace([" << id() << "])");
     clear();
 }
 
-// Streaming Output
-
-std::ostream &operator<<(std::ostream &p_s, const Memory::Configurator &p_cfg)
+void AddressSpace::reset()
 {
-    return p_s << static_cast<const Device::Configurator &>(p_cfg);
+    LOG4CXX_INFO(cpptrace_log(), "[" << id() << "].AddressSpace::reset()");
+    for (auto &mem : m_children)
+        mem->reset();
 }
 
-std::ostream &operator<<(std::ostream &p_s, const Ram::Configurator &p_cfg)
+void AddressSpace::pause()
 {
-    return p_s << "<ram " << static_cast<const Device::Configurator &>(p_cfg) << ">"
-               << "<size>" << Hex(p_cfg.size()) << "</size>"
-               << "<filename>" << p_cfg.filename() << "</filename>"
+    LOG4CXX_INFO(cpptrace_log(), "[" << id() << "].AddressSpace::pause()");
+    for (auto &mem : m_children)
+        mem->pause();
+}
+
+void AddressSpace::resume()
+{
+    LOG4CXX_INFO(cpptrace_log(), "[" << id() << "].AddressSpace::resume()");
+    for (auto &mem : m_children)
+        mem->resume();
+}
+
+
+// Streaming Output
+
+std::ostream &operator<<(std::ostream &p_s, const Memory::Configurator &p_cfgr)
+{
+    return p_s << static_cast<const Device::Configurator &>(p_cfgr);
+}
+
+std::ostream &operator<<(std::ostream &p_s, const Ram::Configurator &p_cfgr)
+{
+    return p_s << "<ram " << static_cast<const Device::Configurator &>(p_cfgr) << ">"
+               << "<size>" << Hex(p_cfgr.size()) << "</size>"
+               << "<filename>" << p_cfgr.filename() << "</filename>"
                << "</ram>";
 }
 
-std::ostream &operator<<(std::ostream &p_s, const Rom::Configurator &p_cfg)
+std::ostream &operator<<(std::ostream &p_s, const Rom::Configurator &p_cfgr)
 {
-    return p_s << "<rom " << static_cast<const Device::Configurator &>(p_cfg) << ">"
-               << "<filename>" << p_cfg.filename() << "</filename>"
-               << "<size>" << Hex(p_cfg.size()) << "</size>"
+    return p_s << "<rom " << static_cast<const Device::Configurator &>(p_cfgr) << ">"
+               << "<filename>" << p_cfgr.filename() << "</filename>"
+               << "<size>" << Hex(p_cfgr.size()) << "</size>"
                << "</rom>";
 }
 
-std::ostream &operator<<(std::ostream &p_s, const AddressSpace::Configurator &p_cfg)
+std::ostream &operator<<(std::ostream &p_s, const AddressSpace::Configurator &p_cfgr)
 {
-    p_s << "<address_space " << static_cast<const Memory::Configurator &>(p_cfg) << ">"
-        << "<size>" << Hex(p_cfg.size()) << "</size>";
+    p_s << "<address_space " << static_cast<const Memory::Configurator &>(p_cfgr) << ">"
+        << "<size>" << Hex(p_cfgr.size()) << "</size>";
     AddressSpace::Configurator::Mapping mapping;
-    for (int i(0); (mapping = p_cfg.mapping(i), mapping.memory); i++)
+    for (int i(0); (mapping = p_cfgr.mapping(i), mapping.memory); i++)
         p_s << "<map>"
             << "<base>" << Hex(mapping.base) << "</base>"
             << mapping.memory
@@ -234,10 +259,10 @@ std::ostream &operator<<(std::ostream &p_s, const AccessType p_at)
     return p_s;
 }
 
-std::ostream &operator<<(std::ostream &p_s, const Memory &p_mem)
+std::ostream &operator<<(std::ostream &p_s, const Memory &p_memory)
 {
-    return p_s << static_cast<const Device &>(p_mem)
-               << ", size(" << Hex(p_mem.size()) << ")";
+    return p_s << static_cast<const Device &>(p_memory)
+               << ", size(" << Hex(p_memory.size()) << ")";
 }
 
 std::ostream &operator<<(std::ostream &p_s, const Storage &p_storage)

@@ -2,22 +2,26 @@
 
 #include <list>
 
+#include <log4cxx/logger.h>
+
 #include "part.hpp"
 
-Part::Part(const id_type &p_id)
-    : m_id(p_id)
+static log4cxx::LoggerPtr cpptrace_log()
 {
-    PartsBin::instance()[m_id] = this;
+    static log4cxx::LoggerPtr result(log4cxx::Logger::getLogger(CTRACE_PREFIX ".part.cpp"));
+    return result;
 }
 
-Part::Part(const Part::Configurator &p_cfg)
-    : m_id(p_cfg.id())
+Part::Part(const Part::Configurator &p_cfgr)
+    : m_id(p_cfgr.id())
 {
+    LOG4CXX_INFO(cpptrace_log(), "Part::Part(" << p_cfgr << ")");
     PartsBin::instance()[m_id] = this;
 }
 
 Part::~Part()
 {
+    LOG4CXX_INFO(cpptrace_log(), "Part::~Part(" << id() << ")");
     (void) PartsBin::instance().erase(m_id);
 }
 
@@ -27,6 +31,7 @@ const Part::id_type Part::id_up   = "..";
     
 std::unique_ptr<Part::id_type> Part::canonical_id(const id_type &p_s)
 {
+    LOG4CXX_INFO(cpptrace_log(), "Part::canonical_id(" << p_s << ")");
     std::list<Glib::ustring> l;
     const Glib::ustring s(p_s.normalize());
     // split on Delimiter
@@ -80,6 +85,7 @@ std::unique_ptr<Part::id_type> Part::canonical_id(const id_type &p_s)
 
 PartsBin &PartsBin::instance()
 {
+    LOG4CXX_INFO(cpptrace_log(), "PartsBin::instance()");
     if (!s_instance)
         s_instance = new PartsBin;
     return *s_instance;
@@ -87,6 +93,7 @@ PartsBin &PartsBin::instance()
 
 int PartsBin::self_check() const
 {
+    LOG4CXX_INFO(cpptrace_log(), "PartsBin::self_check()");
     for (const auto &i : m_bin)
     {
         const std::unique_ptr<Part::id_type> s(Part::canonical_id(i.first));
@@ -96,9 +103,9 @@ int PartsBin::self_check() const
 }
 
 
-std::ostream &operator<<(std::ostream &p_s, const Part::Configurator &p_cfg)
+std::ostream &operator<<(std::ostream &p_s, const Part::Configurator &p_cfgr)
 {
-    return p_s << "id=\"" << p_cfg.id() << "\" ";
+    return p_s << "name=\"" << p_cfgr.id() << "\" ";
 }
 
 std::ostream &operator<<(std::ostream &p_s, const Part& p_p)

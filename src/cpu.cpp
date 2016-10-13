@@ -29,18 +29,19 @@ static log4cxx::LoggerPtr cpptrace_log()
 
 #define INFINITE_STEPS_TO_GO static_cast<unsigned int>(-1)
 
-Cpu::Cpu(const Configurator &p_cfg)
-    : Device(p_cfg)
+Cpu::Cpu(const Configurator &p_cfgr)
+    : Part(p_cfgr)
+    , Device(p_cfgr)
     , m_thread(pthread_self())
     , m_steps_to_go(0)
     , m_cycles(0)
 {
-    LOG4CXX_INFO(cpptrace_log(), "Cpu::Cpu(" << p_cfg << ")");
+    LOG4CXX_INFO(cpptrace_log(), "Cpu::Cpu(" << p_cfgr << ")");
 }
 
 Cpu::~Cpu()
 {
-    LOG4CXX_INFO(cpptrace_log(), "[" << id() << "].~Cpu()");
+    LOG4CXX_INFO(cpptrace_log(), "Cpu::~Cpu([" << id() << "])");
     if (!pthread_equal(m_thread, pthread_self())) {
         pthread_cancel(m_thread);
         pthread_join(m_thread, 0); // Wait for thread to terminate
@@ -51,13 +52,14 @@ Cpu::~Cpu()
 // Crude implementation of "cpu_loop" with a busy wait
 void *loop(void *p)
 {
-    Cpu &c(*static_cast<Cpu *>(p));
-    LOG4CXX_INFO(cpptrace_log(), "[" << c.id() << "].loop() started");
+    Cpu *c(static_cast<Cpu *>(p));  // Nasty static cast
+    assert (c);
+    LOG4CXX_INFO(cpptrace_log(), "loop([" << c->id() << "]) started");
     for(;;) {
-        if (c.m_steps_to_go) {
-            c.single_step();
-            if (c.m_steps_to_go != INFINITE_STEPS_TO_GO)
-                c.m_steps_to_go--;
+        if (c->m_steps_to_go) {
+            c->single_step();
+            if (c->m_steps_to_go != INFINITE_STEPS_TO_GO)
+                c->m_steps_to_go--;
         }
     }
     return 0;
@@ -65,7 +67,7 @@ void *loop(void *p)
 
 void Cpu::start()
 {
-    LOG4CXX_INFO(cpptrace_log(), "[" << id() << "].start()");
+    LOG4CXX_INFO(cpptrace_log(), "[" << id() << "].Cpu::start()");
     if (pthread_equal(m_thread, pthread_self())) {
         const int rv = pthread_create(&m_thread, 0, loop, this);
         assert (!rv);
@@ -74,7 +76,7 @@ void Cpu::start()
 
 void Cpu::step(int p_cnt)
 {
-    LOG4CXX_INFO(cpptrace_log(), "[" << id() << "].step(" << p_cnt << ")");
+    LOG4CXX_INFO(cpptrace_log(), "[" << id() << "].Cpu::step(" << p_cnt << ")");
 #if EXEC_TRACE
     dump(m_6502tracelog, 1);
 #endif
@@ -86,14 +88,14 @@ void Cpu::step(int p_cnt)
 
 void Cpu::resume()
 {
-    LOG4CXX_INFO(cpptrace_log(), "[" << id() << "].resume()");
+    LOG4CXX_INFO(cpptrace_log(), "[" << id() << "].Cpu::resume()");
     m_steps_to_go = INFINITE_STEPS_TO_GO;
     start();
 }
 
 void Cpu::pause()
 {
-    LOG4CXX_INFO(cpptrace_log(), "[" << id() << "].pause()");
+    LOG4CXX_INFO(cpptrace_log(), "[" << id() << "].Cpu::pause()");
     m_steps_to_go = 0;
     start();
 }
@@ -351,9 +353,10 @@ inline void PUSH_WORD(MCS6502 &p_6502, word p_word)
 /// Cpu::Instruction General Utilities
 ///****************************************************************************
 
-class MCS6502::Instruction : public Part {
+class MCS6502::Instruction {
     // Attributes
 private:
+    const Glib::ustring m_name;
     const int         m_args;
 protected:
     MCS6502           &m_6502;
@@ -382,7 +385,7 @@ MCS6502::Instruction::Instruction( MCS6502 &p_6502
                                  , const Glib::ustring p_prefix
                                  , int p_args
                                  , const Glib::ustring p_suffix)
-    : Part("MCS6502:Instruction:" + p_prefix + Glib::ustring(p_args < 0 ? 4 : p_args * 2, '_') + p_suffix)
+    : m_name(p_prefix + Glib::ustring(p_args < 0 ? 4 : p_args * 2, '_') + p_suffix)
     , m_args(p_args)
     , m_6502(p_6502)
     , m_cycles(p_cycles)
@@ -2348,14 +2351,16 @@ public:
 /// E0: CPX SBC  -   -  CPX SBC INC  -  INX SBC NOP  -  CPX SBC INC  -
 /// F0: BEQ SBC  -   -   -  SBC INC  -  SED SBC  -   -   -  SBC INC  -
 ///*****************************************************************************
-MCS6502::MCS6502(const Configurator &p_cfg)
-    : Cpu(p_cfg)
+MCS6502::MCS6502(const Configurator &p_cfgr)
+    : Part(p_cfgr)
+    , Device(p_cfgr)
+    , Cpu(p_cfgr)
     , m_InterruptSource(NO_INTERRUPT)
 {
-    LOG4CXX_INFO(cpptrace_log(), "MCS6502::MCS6502([" << p_cfg.memory() << "], " << p_cfg << ")");
-    m_memory = dynamic_cast<Memory *>(PartsBin::instance()[p_cfg.memory()]);
-    m_memory->add_parent(this);
+    LOG4CXX_INFO(cpptrace_log(), "MCS6502::MCS6502(" << p_cfgr << ")");
+    m_memory = dynamic_cast<Memory *>(PartsBin::instance()[p_cfgr.memory()]);
     assert (m_memory);
+    m_memory->add_parent(this);
     assert (SIZE(m_memory->size()) == 65536);
     m_opcode_mapping.fill(new Instr_Undefined(*this));
     new Instr_BRK(*this);
@@ -2514,13 +2519,13 @@ MCS6502::MCS6502(const Configurator &p_cfg)
 
 MCS6502::~MCS6502()
 {
-    LOG4CXX_INFO(cpptrace_log(), "[" << id() << "].~Cpu()");
+    LOG4CXX_INFO(cpptrace_log(), "[" << id() << "].~MCS6502::MCS6502()");
     m_memory->remove_parent(this);
 }
 
 void MCS6502::single_step()
 {
-    LOG4CXX_INFO(cpptrace_log(), "[" << id() << "].single_step()");
+    LOG4CXX_INFO(cpptrace_log(), "[" << id() << "].MCS6502::single_step()");
 #if EXEC_TRACE
     dump(m_6502tracelog, 1);
 #endif
@@ -2587,7 +2592,7 @@ void MCS6502::single_step()
 
 void MCS6502::reset(InterruptState p_is)
 {
-    LOG4CXX_INFO(cpptrace_log(), "[" << id() << "].reset(" << p_is << ")");
+    LOG4CXX_INFO(cpptrace_log(), "[" << id() << "].MCS6502::reset(" << p_is << ")");
     switch (p_is) {
     case INTERRUPT_ON:
         m_InterruptSource |= RESET_INTERRUPT_ON;
@@ -2609,7 +2614,7 @@ void MCS6502::reset(InterruptState p_is)
 
 void MCS6502::NMI(InterruptState p_is)
 {
-    LOG4CXX_INFO(cpptrace_log(), "[" << id() << "].NMI(" << p_is << ")");
+    LOG4CXX_INFO(cpptrace_log(), "[" << id() << "].MCS6502::NMI(" << p_is << ")");
     switch (p_is) {
     case INTERRUPT_ON:
         m_InterruptSource |= NMI_INTERRUPT_ON;
@@ -2631,7 +2636,7 @@ void MCS6502::NMI(InterruptState p_is)
 
 void MCS6502::IRQ(InterruptState p_is)
 {
-    LOG4CXX_INFO(cpptrace_log(), "[" << id() << "].IRQ(" << p_is << ")");
+    LOG4CXX_INFO(cpptrace_log(), "[" << id() << "].MCS6502::IRQ(" << p_is << ")");
     switch (p_is) {
     case INTERRUPT_ON:
         m_InterruptSource |= IRQ_INTERRUPT_ON;
@@ -2654,7 +2659,7 @@ void MCS6502::IRQ(InterruptState p_is)
 #if 0
 void MCS6502::trace_start()
 {
-    CPU_CTRACE_LOG("Cpu::trace_start(\"%s\")", id());
+    CPU_CTRACE_LOG("MCS6502::trace_start(\"%s\")", id());
 #if EXEC_TRACE
     const int previous_priority(log4c_category_set_priority(m_6502tracelog, LOG4C_PRIORITY_INFO));
     if (m_trace_start_count == 0) {
@@ -2669,7 +2674,7 @@ void MCS6502::trace_start()
 
 void MCS6502::trace_finish()
 {
-    CPU_CTRACE_LOG("Cpu::trace_finish(\"%s\")", id());
+    CPU_CTRACE_LOG("MCS6502::trace_finish(\"%s\")", id());
     if (m_trace_start_count > 0) {
         m_trace_start_count--;
 #if EXEC_TRACE
@@ -2685,14 +2690,15 @@ void MCS6502::trace_finish()
 }
 #endif
 
-std::ostream &operator<<(std::ostream &p_s, const Cpu::Configurator &p_cfg)
+
+std::ostream &operator<<(std::ostream &p_s, const Cpu::Configurator &p_cfgr)
 {
-    return p_s << static_cast<const Part::Configurator &>(p_cfg);
+    return p_s << static_cast<const Part::Configurator &>(p_cfgr);
 }
 
-std::ostream &operator<<(std::ostream &p_s, const MCS6502::Configurator &p_cfg)
+std::ostream &operator<<(std::ostream &p_s, const MCS6502::Configurator &p_cfgr)
 {
-    return p_s << "<MCS6502 " << static_cast<const Cpu::Configurator &>(p_cfg) << "/>";
+    return p_s << "<MCS6502 " << static_cast<const Cpu::Configurator &>(p_cfgr) << "/>";
 }
 
 std::ostream &operator<<(std::ostream &p_s, const InterruptState &p_is)
@@ -2710,11 +2716,11 @@ std::ostream &operator<<(std::ostream &p_s, const InterruptState &p_is)
     return p_s;
 }
 
-std::ostream &operator<<(std::ostream &p_s, const Cpu &p_c)
+std::ostream &operator<<(std::ostream &p_s, const Cpu &p_cpu)
 {
-    return p_s << static_cast<const Part &>(p_c)
-               << ", Running("   << !pthread_equal(p_c.m_thread, pthread_self()) << ")"
-               << ", StepsToGo(" << p_c.m_steps_to_go << ")";
+    return p_s << static_cast<const Part &>(p_cpu)
+               << ", Running("   << !pthread_equal(p_cpu.m_thread, pthread_self()) << ")"
+               << ", StepsToGo(" << p_cpu.m_steps_to_go << ")";
 }
 
 std::ostream &operator<<(std::ostream &p_s, const InterruptSource &p_is)
@@ -2741,7 +2747,7 @@ std::ostream &operator<<(std::ostream &p_s, const Instr_Undefined &p_i)
 std::ostream &operator<<(std::ostream &p_s, const MCS6502::Instruction &p_i)
 {
     int val(0);
-    p_s << Hex(p_i.m_6502.m_register.PC) << ": " << p_i.id();
+    p_s << Hex(p_i.m_6502.m_register.PC) << ": " << p_i.m_name;
     switch (p_i.m_args) {
     case -1: /* Relative */
         val = p_i.m_6502.m_register.PC;
@@ -2763,16 +2769,16 @@ std::ostream &operator<<(std::ostream &p_s, const MCS6502::Instruction &p_i)
     return p_s << std::endl;
 }
 
-std::ostream &operator<<(std::ostream &p_s, const MCS6502 &p_6502)
+std::ostream &operator<<(std::ostream &p_s, const MCS6502 &p_mcs6502)
 {
     return p_s << "MCS6502("
-               << static_cast<const Cpu &>(p_6502)
-               << ", Memory("  << p_6502.m_memory->id() << ")"
-               << ", PC(" << Hex(p_6502.m_register.PC) << ")"
-               << ", A("  << Hex(p_6502.m_register.A) << ")"
-               << ", X("  << Hex(p_6502.m_register.X) << ")"
-               << ", Y("  << Hex(p_6502.m_register.Y) << ")"
-               << ", S("  << Hex(p_6502.m_register.S) << ")"
-               << ", P("  << Hex(p_6502.m_register.P) << ")"
-               << ", IntrSrc(" << p_6502.m_InterruptSource << ")";
+               << static_cast<const Cpu &>(p_mcs6502)
+               << ", Memory("  << p_mcs6502.m_memory->id() << ")"
+               << ", PC(" << Hex(p_mcs6502.m_register.PC) << ")"
+               << ", A("  << Hex(p_mcs6502.m_register.A) << ")"
+               << ", X("  << Hex(p_mcs6502.m_register.X) << ")"
+               << ", Y("  << Hex(p_mcs6502.m_register.Y) << ")"
+               << ", S("  << Hex(p_mcs6502.m_register.S) << ")"
+               << ", P("  << Hex(p_mcs6502.m_register.P) << ")"
+               << ", IntrSrc(" << p_mcs6502.m_InterruptSource << ")";
 }

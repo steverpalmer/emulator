@@ -71,24 +71,25 @@ enum Ports {
 /// Acorn Atom only uses code 0x8A which configures Ports A, B & C appropriately
 ///****************************************************************************
 
-Ppia::Ppia(const Configurator &p_cfg)
-    : Device(p_cfg)
-    , Memory(p_cfg)
+Ppia::Ppia(const Configurator &p_cfgr)
+    : Part(p_cfgr)
+    , Device(p_cfgr)
+    , Memory(p_cfgr)
     , m_register( { 0, 0, 0, 0 } )
 {
-    LOG4CXX_INFO(cpptrace_log(), "Ppia::Ppia(" << p_cfg << ")");
+    LOG4CXX_INFO(cpptrace_log(), "Ppia::Ppia(" << p_cfgr << ")");
     m_terminal.mutex = PTHREAD_RECURSIVE_MUTEX_INITIALIZER_NP;
     reset();
 }
 
 Ppia::~Ppia()
 {
-    LOG4CXX_INFO(cpptrace_log(), "[" << id() << "].~Ppia()");
+    LOG4CXX_INFO(cpptrace_log(), "Ppia::~Ppia([" << id() << "])");
 }
 
 byte Ppia::get_PortB(int p_row)
 {
-    LOG4CXX_INFO(cpptrace_log(), "[" << id() << "].get_PortB(" << p_row << ")");
+    LOG4CXX_INFO(cpptrace_log(), "[" << id() << "].Ppia::get_PortB(" << p_row << ")");
     byte result(0xFF); // Active Low, so start with all high
     static const struct KeyData {
         byte row;
@@ -273,7 +274,7 @@ byte Ppia::get_PortB(int p_row)
 
 byte Ppia::get_PortC(byte p_previous)
 {
-    LOG4CXX_INFO(cpptrace_log(), "[" << id() << "].get_PortC(" << Hex(p_previous) << ")");
+    LOG4CXX_INFO(cpptrace_log(), "[" << id() << "].Ppia::get_PortC(" << Hex(p_previous) << ")");
     byte result(p_previous & 0xBF);          // clear REPT and FLYBACK signals
     pthread_mutex_lock(&m_terminal.mutex);
     if (!m_terminal.is_rept_pressed)
@@ -286,7 +287,7 @@ byte Ppia::get_PortC(byte p_previous)
 
 byte Ppia::_get_byte(word p_addr, AccessType p_at)
 {
-    LOG4CXX_INFO(cpptrace_log(), "[" << id() << "]._get_byte(" << Hex(p_addr) << ", " << p_at << ")");
+    LOG4CXX_INFO(cpptrace_log(), "[" << id() << "].Ppia::_get_byte(" << Hex(p_addr) << ", " << p_at << ")");
     assert (p_addr < 4);
     byte result(m_register[p_addr]);             // By default, set it to last value
     switch (p_addr)
@@ -308,7 +309,7 @@ byte Ppia::_get_byte(word p_addr, AccessType p_at)
 
 void Ppia::set_PortA(byte p_byte)
 {
-    LOG4CXX_INFO(cpptrace_log(), "[" << id() << "].set_PortA(" << Hex(p_byte) << ")");
+    LOG4CXX_INFO(cpptrace_log(), "[" << id() << "].Ppia::set_PortA(" << Hex(p_byte) << ")");
     static const VDGMode mode_mapping[16] =
         {
             VDG_MODE0,  // 0x0
@@ -340,7 +341,7 @@ void Ppia::set_PortA(byte p_byte)
 
 void Ppia::_set_byte(word p_addr, byte p_byte, AccessType p_at)
 {
-    LOG4CXX_INFO(cpptrace_log(), "[" << id() << "]._set_byte(" << Hex(p_addr) << ", " << Hex(p_byte) << ", " << p_at << ")");
+    LOG4CXX_INFO(cpptrace_log(), "[" << id() << "].Ppia::_set_byte(" << Hex(p_addr) << ", " << Hex(p_byte) << ", " << p_at << ")");
     assert (p_addr < 4);
     switch (p_addr)
     {
@@ -372,7 +373,7 @@ void Ppia::_set_byte(word p_addr, byte p_byte, AccessType p_at)
 
 void Ppia::reset()
 {
-    LOG4CXX_INFO(cpptrace_log(), "[" << id() << "].reset()");
+    LOG4CXX_INFO(cpptrace_log(), "[" << id() << "].Ppia::reset()");
     // reset the IO Model Inputs first
     pthread_mutex_lock(&m_terminal.mutex);
     m_terminal.notified_vdg_mode = VDG_LAST; // force a notification
@@ -395,7 +396,7 @@ void Ppia::reset()
 
 VDGMode Ppia::vdg_mode() const
 {
-    LOG4CXX_INFO(cpptrace_log(), "[" << id() << "].vdg_mode()");
+    LOG4CXX_INFO(cpptrace_log(), "[" << id() << "].Ppia::vdg_mode()");
     pthread_mutex_lock(&m_terminal.mutex);
     const VDGMode result(m_terminal.vdg_mode);
     pthread_mutex_unlock(&m_terminal.mutex);
@@ -404,7 +405,7 @@ VDGMode Ppia::vdg_mode() const
 
 void Ppia::set_keypress(int p_key)
 {
-    LOG4CXX_INFO(cpptrace_log(), "[" << id() << "].set_keypress(" << p_key << ")");
+    LOG4CXX_INFO(cpptrace_log(), "[" << id() << "].Ppia::set_keypress(" << p_key << ")");
     pthread_mutex_lock(&m_terminal.mutex);
     m_terminal.pressed_key = p_key;
     pthread_mutex_unlock(&m_terminal.mutex);
@@ -412,7 +413,7 @@ void Ppia::set_keypress(int p_key)
 
 void Ppia::set_is_shift_pressed(bool p_is_shift_pressed)
 {
-    LOG4CXX_INFO(cpptrace_log(), "[" << id() << "].set_is_shift_pressed(" << p_is_shift_pressed << ")");
+    LOG4CXX_INFO(cpptrace_log(), "[" << id() << "].Ppia::set_is_shift_pressed(" << p_is_shift_pressed << ")");
     pthread_mutex_lock(&m_terminal.mutex);
     m_terminal.is_shift_pressed = p_is_shift_pressed;
     pthread_mutex_unlock(&m_terminal.mutex);
@@ -420,7 +421,7 @@ void Ppia::set_is_shift_pressed(bool p_is_shift_pressed)
 
 void Ppia::set_is_ctrl_pressed(bool p_is_ctrl_pressed)
 {
-    LOG4CXX_INFO(cpptrace_log(), "[" << id() << "].set_is_ctrl_pressed(" << p_is_ctrl_pressed << ")");
+    LOG4CXX_INFO(cpptrace_log(), "[" << id() << "].Ppia::set_is_ctrl_pressed(" << p_is_ctrl_pressed << ")");
     pthread_mutex_lock(&m_terminal.mutex);
     m_terminal.is_ctrl_pressed = p_is_ctrl_pressed;
     pthread_mutex_unlock(&m_terminal.mutex);
@@ -428,15 +429,16 @@ void Ppia::set_is_ctrl_pressed(bool p_is_ctrl_pressed)
 
 void Ppia::set_is_rept_pressed(bool p_is_rept_pressed)
 {
-    LOG4CXX_INFO(cpptrace_log(), "[" << id() << "].set_is_rept_pressed(" << p_is_rept_pressed << ")");
+    LOG4CXX_INFO(cpptrace_log(), "[" << id() << "].Ppia::set_is_rept_pressed(" << p_is_rept_pressed << ")");
     pthread_mutex_lock(&m_terminal.mutex);
     m_terminal.is_rept_pressed = p_is_rept_pressed;
     pthread_mutex_unlock(&m_terminal.mutex);
 }
 
-std::ostream &operator<<(std::ostream &p_s, const Ppia::Configurator &p_cfg)
+
+std::ostream &operator<<(std::ostream &p_s, const Ppia::Configurator &p_cfgr)
 {
-    return p_s << "<ppia " << static_cast<const Memory::Configurator &>(p_cfg) << "/>";
+    return p_s << "<ppia " << static_cast<const Memory::Configurator &>(p_cfgr) << "/>";
 }
 
 std::ostream &operator<<(std::ostream &p_s, const Ppia &p_ppia)

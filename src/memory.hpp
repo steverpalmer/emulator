@@ -95,14 +95,14 @@ public:
     inline byte get_byte(word p_addr, AccessType p_at = AT_UNKNOWN)
         {
             const byte result(_get_byte(p_addr, p_at));
-            for ( Observer *obs : m_observers )
+            for ( auto *obs : m_observers )
                 obs->get_byte_update(this, p_addr, p_at, result);
             return result;
         }
     inline void set_byte(word p_addr, byte p_byte, AccessType p_at = AT_UNKNOWN)
         {
             _set_byte(p_addr, p_byte, p_at);
-            for ( Observer *obs : m_observers )
+            for ( auto *obs : m_observers )
                 obs->set_byte_update(this, p_addr, p_byte, p_at);
         }
     word get_word(word p_addr, AccessType p_at = AT_UNKNOWN);
@@ -145,7 +145,7 @@ public:
 /// It provides a wrapper around SimpleMemory, with addition that
 /// the storage may be persistent if it is configured with a filename.
 class Ram
-    : public virtual Memory
+    : public Memory
 {
 public:
     class Configurator
@@ -196,7 +196,7 @@ protected:
 /// set_byte does nothing and
 /// the storage is initialised on construction.
 class Rom
-    : public virtual Memory
+    : public Memory
 {
 public:
     class Configurator
@@ -247,7 +247,7 @@ protected:
 /// Optionally, the Memory can be replicated in the memory map by defining
 /// it to occupy a larger part of the address space.
 class AddressSpace
-    : public virtual Memory
+    : public Memory
 {
 public:
     class Configurator
@@ -287,7 +287,6 @@ public:
     explicit AddressSpace(const Configurator &);
     virtual word size() const { return m_map.size(); }
 protected:
-    virtual void reset();
     virtual byte _get_byte  (word p_addr, AccessType p_at = AT_UNKNOWN);
     virtual void _set_byte  (word p_addr, byte p_byte, AccessType p_at = AT_UNKNOWN);
 public:
@@ -295,6 +294,9 @@ public:
     void remove_child(Memory *p_memory);
     void clear();
     virtual ~AddressSpace();
+    virtual void reset();
+    virtual void pause();
+    virtual void resume();
 
     friend std::ostream &::operator<<(std::ostream &, const AddressSpace &);
 };

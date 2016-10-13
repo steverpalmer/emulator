@@ -31,7 +31,7 @@ enum  InterruptSource { NO_INTERRUPT          = 0,
 extern std::ostream &operator<<(std::ostream&, const InterruptSource&);
 
 class Cpu
-    : public Device
+    : public virtual Device
 {
     // Types
 public:

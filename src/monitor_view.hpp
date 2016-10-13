@@ -61,11 +61,11 @@ public:
     };
 
 private:
-    TerminalInterface             &m_terminal_interface;
-    Memory                        &m_memory;
-    SDL_Surface                   *m_screen;
-    MonitorView::Mode             *m_mode;
-    MonitorView::Mode0             m_mode0;
+    TerminalInterface   &m_terminal_interface;
+    Memory              &m_memory;
+    SDL_Surface         *m_screen;
+    MonitorView::Mode   *m_mode;
+    MonitorView::Mode0  m_mode0;
 private:
     MonitorView(const MonitorView &);
     MonitorView &operator=(const MonitorView&);

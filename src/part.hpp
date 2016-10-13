@@ -13,6 +13,7 @@
 
 #include <glibmm/ustring.h>
 
+#include "common.hpp"
 
 // Part is the base class for all key objects in the emulated computer.
 class Part
@@ -32,21 +33,19 @@ public:
         Configurator(const Configurator &);
         Configurator &operator=(const Configurator &);
 	public:
-        ~Configurator();
-		virtual const Part::id_type &id() const = 0;
+        virtual ~Configurator();
+		virtual const id_type &id() const = 0;
         virtual Part *part_factory() const = 0;
 
 		friend std::ostream &::operator <<(std::ostream &p_s, const Configurator &p_cfg);
 	};
 private:
-	const Part::id_type m_id; // Not necessarily Canonical!
+	const id_type m_id; // Not necessarily Canonical!
 public:
-	const Part::id_type &id() const { return m_id; }
-    virtual void reset() {};
+	const id_type &id() const { return m_id; }
     static std::unique_ptr<id_type> canonical_id(const id_type &);
 protected:
-	explicit Part(const Part::id_type &p_id = "");
-	explicit Part(const Configurator &p_cfg);
+	explicit Part(const Configurator &p_cfgr);
 public:
     virtual ~Part();
 private:
