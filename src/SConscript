@@ -12,6 +12,8 @@ common_env.rng2xsd('relaxng')
 common_env.rng2xsd('atom')
 common_env.rng2xsd('emulator')
 
+common_env.Command(r'plot.bmp', r'build_plot_bmp.py', "python3 $SOURCE $TARGET")
+
 # Main Build
 
 common_env['CCFLAGS']   = r'-Wall -g -pipe -std=c++11 -pthread -O0'
