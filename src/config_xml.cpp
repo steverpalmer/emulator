@@ -46,6 +46,7 @@ namespace Xml
 
     class MemoryRefConfigurator
         : public PartConfigurator
+        , public Memory::Configurator
     {
     public:
         explicit MemoryRefConfigurator(const xmlpp::Node *p_node)
@@ -184,6 +185,7 @@ namespace Xml
 
     class DeviceRefConfigurator
         : public PartConfigurator
+        , public Device::Configurator
     {
     public:
         explicit DeviceRefConfigurator(const xmlpp::Node *p_node)
@@ -196,18 +198,25 @@ namespace Xml
         : public PartConfigurator
         , public MCS6502::Configurator
     {
+    private:
+        Memory::id_type m_memory_id;
     public:
         explicit MCS6502Configurator(const xmlpp::Node *p_node = 0)
             : PartConfigurator("mcs6502")
+            , m_memory_id("address_space")
             {
                 LOG4CXX_INFO(cpptrace_log(), "Xml::MCS6502Configurator::MCS6502Configurator(" << p_node << ")");
                 if (p_node)
                 {
                     try { m_id = p_node->eval_to_string("@name"); }
                     catch (xmlpp::exception e) { /* Do Nothing */ }
+                    try { m_memory_id = p_node->eval_to_string("memory/@name"); }
+                    catch (xmlpp::exception e) { /* Do Nothing */ }
                 }
             }
         virtual ~MCS6502Configurator();
+        virtual const Memory::id_type memory_id() const
+            { return m_memory_id; }
     };
 
     class ComputerConfigurator
@@ -467,9 +476,8 @@ namespace Xml
     }
 
     Configurator::Configurator(int argc, char *argv[])
-        : Configurator(argc, argv)
+        : ::Configurator(argc, argv)
         , m_XMLfilename("atomrc.xml")
-        , m_parts()
     {
         LOG4CXX_INFO(cpptrace_log(), "Xml::Configurator::Configurator(" << argc << ", " << argv << ")");
         process_command_line(argc, argv);

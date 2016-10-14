@@ -34,7 +34,7 @@ public:
 	public:
         virtual ~Configurator();
 		virtual const id_type &id() const = 0;
-        virtual Part *part_factory() const = 0;
+        virtual Part *part_factory() const { return 0; }
 
 		friend std::ostream &::operator <<(std::ostream &, const Configurator &);
 	};

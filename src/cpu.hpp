@@ -41,7 +41,6 @@ public:
         Configurator();
     public:
         ~Configurator();
-        virtual Device *device_factory() = 0;
         friend std::ostream &::operator <<(std::ostream &, const Configurator &);
     };
     // Attributes
@@ -82,7 +81,7 @@ public:
         Configurator &operator=(const Configurator &);
     public:
         ~Configurator();
-        virtual Memory::id_type memory() const = 0;
+        virtual const Memory::id_type memory_id() const = 0;
         virtual Device *device_factory() const
             { return new MCS6502(*this); }
         friend std::ostream &::operator <<(std::ostream &, const Configurator &);

@@ -5,7 +5,7 @@
 
 #include <ostream>
 
-#include <string>
+#include <glibmm/ustring.h>
 
 #include "config.hpp"
 
@@ -16,7 +16,7 @@ namespace Xml
         : public ::Configurator
     {
     private:
-        std::string m_XMLfilename;
+        Glib::ustring m_XMLfilename;
         std::vector<const Part::Configurator *>m_parts;
     private:
         void process_command_line(int argc, char *argv[]);

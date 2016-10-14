@@ -61,7 +61,7 @@ public:
         ~Configurator();
     	/// 1. Constructor Information - Name only at this level
     	/// 2. Factory Method
-        virtual Memory *memory_factory() const = 0;
+        virtual Memory *memory_factory() const { return 0; }
         virtual Device *device_factory() const
             { return memory_factory(); }
 
