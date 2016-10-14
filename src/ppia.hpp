@@ -22,9 +22,6 @@ public:
     {
     protected:
         Configurator();
-    private:
-        Configurator(const Configurator &);
-        Configurator &operator=(const Configurator &);
     public:
         ~Configurator();
         /// 1. Constructor Information - Name only
@@ -49,8 +46,6 @@ private:
     } m_terminal;
     // Methods
 private:
-    Ppia(const Ppia &);
-    Ppia &operator=(const Ppia&);
     byte get_PortB(int p_row);
     byte get_PortC(byte p_previous);
     void set_PortA(byte p_byte);

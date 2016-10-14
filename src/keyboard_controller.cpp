@@ -60,7 +60,7 @@ static log4cxx::LoggerPtr cpptrace_log()
     return result;
 }
 
-KeyboardController::KeyboardController(TerminalInterface &p_terminal_interface, const Configurator &p_cfg)
+KeyboardController::KeyboardController(TerminalInterface *p_terminal_interface, const Configurator &p_cfg)
     : m_terminal_interface(p_terminal_interface)
 {
     LOG4CXX_INFO(cpptrace_log(), "KeyboardController::KeyboardController(" << p_cfg << ")");
@@ -75,18 +75,18 @@ void KeyboardController::update(SDL_KeyboardEvent *p_key_event)
         switch (p_key_event->keysym.sym) {
         case SDLK_RSHIFT:
         case SDLK_LSHIFT:
-            m_terminal_interface.set_is_shift_pressed(false);
+            m_terminal_interface->set_is_shift_pressed(false);
             break;
         case SDLK_RCTRL:
         case SDLK_LCTRL:
-            m_terminal_interface.set_is_ctrl_pressed(false);
+            m_terminal_interface->set_is_ctrl_pressed(false);
             break;
         case SDLK_RALT:
         case SDLK_LALT:
-            m_terminal_interface.set_is_rept_pressed(false);
+            m_terminal_interface->set_is_rept_pressed(false);
             break;
         case SDLK_CAPSLOCK:
-            m_terminal_interface.set_keypress(KBD_LOCK);
+            m_terminal_interface->set_keypress(KBD_LOCK);
             break;
         case SDLK_NUMLOCK:
         case SDLK_SCROLLOCK:
@@ -104,7 +104,7 @@ void KeyboardController::update(SDL_KeyboardEvent *p_key_event)
             // Do Nothing
             break;
         default:
-            m_terminal_interface.set_keypress(KBD_NO_KEYPRESS);
+            m_terminal_interface->set_keypress(KBD_NO_KEYPRESS);
             break;
         }
         break;
@@ -121,46 +121,46 @@ void KeyboardController::update(SDL_KeyboardEvent *p_key_event)
                 else if (key == '\x7F')
                     key = '\x08';
             }
-            m_terminal_interface.set_keypress(key);
+            m_terminal_interface->set_keypress(key);
         }
         else {
             switch (p_key_event->keysym.sym) {
             case SDLK_RSHIFT:
             case SDLK_LSHIFT:
-                m_terminal_interface.set_is_shift_pressed(true);
+                m_terminal_interface->set_is_shift_pressed(true);
                 break;
             case SDLK_RCTRL:
             case SDLK_LCTRL:
-                m_terminal_interface.set_is_ctrl_pressed(true);
+                m_terminal_interface->set_is_ctrl_pressed(true);
                 break;
             case SDLK_RALT:
             case SDLK_LALT:
-                m_terminal_interface.set_is_rept_pressed(true);
+                m_terminal_interface->set_is_rept_pressed(true);
                 break;
             case SDLK_AT:
-                m_terminal_interface.set_keypress(0);
+                m_terminal_interface->set_keypress(0);
                 break;
             case SDLK_LEFT:
-                m_terminal_interface.set_keypress(KBD_LEFT);
+                m_terminal_interface->set_keypress(KBD_LEFT);
                 break;
             case SDLK_UP:
-                m_terminal_interface.set_keypress(KBD_UP);
+                m_terminal_interface->set_keypress(KBD_UP);
                 break;
             case SDLK_RIGHT:
-                m_terminal_interface.set_keypress(KBD_RIGHT);
+                m_terminal_interface->set_keypress(KBD_RIGHT);
                 break;
             case SDLK_DOWN:
-                m_terminal_interface.set_keypress(KBD_DOWN);
+                m_terminal_interface->set_keypress(KBD_DOWN);
                 break;
             case SDLK_CAPSLOCK:
-                m_terminal_interface.set_keypress(KBD_LOCK);
+                m_terminal_interface->set_keypress(KBD_LOCK);
                 break;
             case SDLK_F1:
-                m_terminal_interface.set_keypress(KBD_COPY);
+                m_terminal_interface->set_keypress(KBD_COPY);
                 break;
 #if 0
             case SDLK_F12:
-                m_terminal_interface.reset();
+                m_terminal_interface->reset();
                 break;
 #endif
             case SDLK_NUMLOCK:
@@ -179,7 +179,7 @@ void KeyboardController::update(SDL_KeyboardEvent *p_key_event)
                 // Do Nothing
                 break;
             default:
-                m_terminal_interface.set_keypress(KBD_NO_KEYPRESS);
+                m_terminal_interface->set_keypress(KBD_NO_KEYPRESS);
                 break;
             }
         }
@@ -189,7 +189,7 @@ void KeyboardController::update(SDL_KeyboardEvent *p_key_event)
     }
 }
 
-std::ostream &operator<<(std::ostream &p_s, const KeyboardController::Configurator &p_cfg)
+std::ostream &operator<<(std::ostream &p_s, const KeyboardController::Configurator &p_cfgr)
 {
     return p_s;
 }

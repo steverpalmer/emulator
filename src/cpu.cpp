@@ -353,7 +353,9 @@ inline void PUSH_WORD(MCS6502 &p_6502, word p_word)
 /// Cpu::Instruction General Utilities
 ///****************************************************************************
 
-class MCS6502::Instruction {
+class MCS6502::Instruction
+    : public NonCopyable
+{
     // Attributes
 private:
     const Glib::ustring m_name;
@@ -363,9 +365,6 @@ protected:
 public:
     const int         m_cycles;
     // Method
-private:
-    Instruction(const Instruction &);
-    Instruction & operator= (const Instruction &);
 protected:
     Instruction( MCS6502 &p_6502
                , int p_opcode

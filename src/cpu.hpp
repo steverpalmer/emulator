@@ -39,9 +39,6 @@ public:
     {
     protected:
         Configurator();
-    private:
-        Configurator(const Configurator &);
-        Configurator &operator=(const Configurator &);
     public:
         ~Configurator();
         virtual Device *device_factory() = 0;
@@ -55,9 +52,6 @@ public:
     std::atomic_uint m_steps_to_go;
     int              m_cycles;
     // Methods
-private:
-    Cpu(const Cpu &);
-    Cpu &operator=(const Cpu&);
 protected:
     explicit Cpu(const Configurator &);
     void start();

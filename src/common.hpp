@@ -15,9 +15,18 @@ typedef int16_t  signed_word;
 #include <string>
 #include <ostream>
 #include <iomanip>
-#include <set> // Used by Observers
 
 #define SIZE(n) (word((n)-word(1))+1)
+
+class NonCopyable
+{
+protected:
+    NonCopyable() {}
+    virtual ~NonCopyable() {}
+private:
+    NonCopyable(const NonCopyable &) = delete;
+    const NonCopyable &operator=(const NonCopyable &) = delete;
+};
 
 class Hex
 {

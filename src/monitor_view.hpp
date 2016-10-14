@@ -19,12 +19,10 @@ class MonitorView
     // Types
 public:
     class Configurator
+        : public NonCopyable
     {
     protected:
         Configurator();
-    private:
-        Configurator(const Configurator &);
-        Configurator &operator=(const Configurator &);
 	public:
         ~Configurator();
         virtual float scale() const = 0;
@@ -36,6 +34,7 @@ public:
     };
 
     class Mode
+        : public NonCopyable
     {
     protected:
         MonitorView &m_state;
@@ -54,28 +53,26 @@ public:
         std::array<SDL_Surface *, 256> m_glyph;
         std::array<int, 512>           m_rendered;
     public:
-        Mode0(MonitorView &p_state, const MonitorView::Configurator &p_cfg);
+        Mode0(MonitorView &p_state, const MonitorView::Configurator &p_cfgr);
         ~Mode0();
         virtual void set_byte_update(word p_addr, byte p_byte);
         virtual void render();
     };
 
 private:
-    TerminalInterface   &m_terminal_interface;
-    Memory              &m_memory;
-    SDL_Surface         *m_screen;
-    MonitorView::Mode   *m_mode;
-    MonitorView::Mode0  m_mode0;
+    TerminalInterface *m_terminal_interface;  // FIXME: should be const
+    Memory             *m_memory;  // FIXME: should be const
+    SDL_Surface        *m_screen;
+    MonitorView::Mode  *m_mode;
+    MonitorView::Mode0 m_mode0;
 private:
-    MonitorView(const MonitorView &);
-    MonitorView &operator=(const MonitorView&);
     SDL_Surface *scale_and_convert_surface(SDL_Surface *src);
     inline void render() { if (m_mode) m_mode->render(); }
     virtual void set_byte_update(Memory *p_memory, word p_addr, byte p_byte, AccessType p_at)
         { if (m_mode) m_mode->set_byte_update(p_addr, p_byte); }
     virtual void vdg_mode_update(TerminalInterface *p_terminal, VDGMode p_mode);
 public:
-    MonitorView(TerminalInterface &, Memory &, const Configurator &);
+    MonitorView(TerminalInterface *, Memory *, const Configurator &);
     virtual ~MonitorView();
 
     friend std::ostream &::operator<<(std::ostream&, const MonitorView &);

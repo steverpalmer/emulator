@@ -17,6 +17,7 @@
 
 // Part is the base class for all key objects in the emulated computer.
 class Part
+    : public NonCopyable
 {
 public:
     typedef Glib::ustring id_type;
@@ -26,18 +27,16 @@ public:
     static const id_type id_up;
 
 	class Configurator
+        : public NonCopyable
 	{
     protected:
         Configurator();
-    private:
-        Configurator(const Configurator &);
-        Configurator &operator=(const Configurator &);
 	public:
         virtual ~Configurator();
 		virtual const id_type &id() const = 0;
         virtual Part *part_factory() const = 0;
 
-		friend std::ostream &::operator <<(std::ostream &p_s, const Configurator &p_cfg);
+		friend std::ostream &::operator <<(std::ostream &, const Configurator &);
 	};
 private:
 	const id_type m_id; // Not necessarily Canonical!
@@ -48,27 +47,24 @@ protected:
 	explicit Part(const Configurator &p_cfgr);
 public:
     virtual ~Part();
-private:
-	Part(const Part &);
-	Part &operator=(const Part &);
 
-	friend std::ostream &operator<<(std::ostream &p_s, const Part& p_p);
+	friend std::ostream &::operator<<(std::ostream &, const Part &);
 };
 
 
 // PartsBin is a singleton map wrapper mapping Glib::ustring to Part pointers
 class PartsBin
+    : public NonCopyable
 {
 public:
-    class Configurator{
+    class Configurator
+        : public NonCopyable
+    {
     protected:
         Configurator();
-    private:
-        Configurator(const Configurator &);
-        Configurator &operator=(const Configurator &);
     public:
         ~Configurator();
-        virtual Part::Configurator *part(int i) const = 0;
+        virtual const Part::Configurator *part(int i) const = 0;
 
         friend std::ostream &::operator<<(std::ostream &, const Configurator &);
     };
@@ -85,8 +81,6 @@ public:
 private:
     bin_type m_bin;
     PartsBin();
-    PartsBin(const PartsBin &);
-    PartsBin &operator=(const PartsBin &);
     static PartsBin *s_instance;
     int self_check() const;
 public:
@@ -95,7 +89,7 @@ public:
     void build(const Configurator &p_cfg)
         {
             for (int i(0); const auto &p = p_cfg.part(i); i++)
-                (void) p->part_factory();
+                (void) p->part_factory();  // parts are self registering
         }
     // Wrapper boiler plate ...
     // Iterators

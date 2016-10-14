@@ -1,27 +1,35 @@
 // terminal.cpp
 
+#include "part.hpp"
 #include "terminal.hpp"
 
-Terminal::Terminal(Memory &p_memory, TerminalInterface &p_terminal_interface, const Configurator &p_cfg)
-    : Part(p_cfg)
-    , m_monitor_view(p_memory, p_terminal_interface, p_cfg.monitor_view())
-    , m_keyboard_controller(p_terminal_interface, p_cfg.keyboard_controller())
+Terminal::Terminal(const Configurator &p_cfgr)
+    : Part(p_cfgr)
+    , m_memory(dynamic_cast<Memory *>(PartsBin::instance()[p_cfgr.memory_id()]))
+    , m_terminal_interface(dynamic_cast<TerminalInterface *>(PartsBin::instance()[p_cfgr.controller_id()]))
+    , m_monitor_view(m_terminal_interface, m_memory, p_cfgr.monitor_view())
+    , m_keyboard_controller(m_terminal_interface, p_cfgr.keyboard_controller())
 {
 }
 
-friend std::ostream &::operator <<(std::ostream &, const Configurator &)
+
+std::ostream &operator<<(std::ostream &p_s, const Terminal::Configurator &p_cfgr)
 {
-    return ps << "<terminal " << static_const<const ActivePart::Configurator &>(p_cfg) << ">"
-              << p_cfg.screen_controller()
-              << p_cfg.keyboard_controller()
-              << "</terminal>";
+    return p_s << "<terminal " << static_cast<const Part::Configurator &>(p_cfgr) << ">"
+               << "memory name=\"" << p_cfgr.memory_id() << "\"/>"
+               << "controller name=\"" << p_cfgr.controller_id() << "\"/>"
+               << p_cfgr.monitor_view()
+               << p_cfgr.keyboard_controller()
+               << "</terminal>";
 }
 
-friend std::ostream &::operator <<(std::ostream &, const Terminal &)
+std::ostream &operator<<(std::ostream &p_s, const Terminal &p_t)
 {
-    return ps << "Terminal("
-              << static_const<const Part &>(*this)
-              << m_screen_controller
-              << m_keyboard_controller
-              << ")"
+    return p_s << "Terminal("
+               << static_cast<const Part &>(p_t)
+               << "Memory(" << p_t.m_memory->id() << ")"
+               << "TerminalInterface(" << p_t.m_terminal_interface->id() << ")"
+               << p_t.m_monitor_view
+               << p_t.m_keyboard_controller
+               << ")";
 }

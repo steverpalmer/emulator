@@ -16,7 +16,7 @@
 #include "config_xml.hpp"
 #include "part.hpp"
 #include "terminal.hpp"
-#include "cpu.hpp"
+#include "device.hpp"
 
 static log4cxx::LoggerPtr cpptrace_log()
 {
@@ -25,11 +25,10 @@ static log4cxx::LoggerPtr cpptrace_log()
 }
 
 class Main
+    : public NonCopyable
 {
 private:
     Main();
-    Main(const Main &);
-    Main &operator=(const Main&);
 public:
     Main(int argc, char *argv[])
         {
@@ -46,12 +45,12 @@ public:
             PartsBin::instance().build(*cfg);
             delete cfg;
 
-            Terminal *terminal = dynamic_cast<Terminal *>(PartsBin::instance()["/atom/terminal"]);
+            Terminal *terminal = dynamic_cast<Terminal *>(PartsBin::instance()["terminal"]);
             assert (terminal);
-            
-            Cpu *atom = dynamic_cast<Cpu *>(PartsBin::instance()["/atom/mcs6502"]);
+
+            Device *atom = dynamic_cast<Device *>(PartsBin::instance()["atom"]);
             assert (atom);
-            
+
             LOG4CXX_INFO(cpptrace_log(), "Atom is about to start ...");
             atom->resume();
             SDL_Event event;
@@ -71,10 +70,13 @@ public:
             LOG4CXX_INFO(cpptrace_log(), "Atom is about to stop ...");
             atom->pause();
         }
+
     virtual ~Main()
         {
             LOG4CXX_INFO(cpptrace_log(), "Main::~Main()");
+            PartsBin::instance().clear();
             SDL_Quit();
+            LOG4CXX_INFO(cpptrace_log(), "Main done.");
         }
 };
 

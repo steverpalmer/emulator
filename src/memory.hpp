@@ -40,10 +40,8 @@ public:
     /// The Device Observer is an interface to allow
     /// other classes to observe resets, get_bytes and set_bytes
     class Observer
+        : NonCopyable
     {
-    private:
-        Observer(const Observer &);
-        Observer &operator=(const Observer &);
     protected:
         Observer();
     public:
@@ -59,9 +57,6 @@ public:
     {
     protected:
         Configurator();
-    private:
-        Configurator(const Configurator &);
-        Configurator &operator=(const Configurator &);
     public:
         ~Configurator();
     	/// 1. Constructor Information - Name only at this level
@@ -76,9 +71,6 @@ public:
 protected:
     std::set<Observer *> m_observers;
     // Methods
-private:
-    Memory(const Memory &);
-    Memory &operator=(const Memory &);
 protected:
     explicit Memory(const Configurator &);
 protected:
@@ -153,9 +145,6 @@ public:
     {
     protected:
         Configurator();
-    private:
-        Configurator(const Configurator &);
-        Configurator &operator=(const Configurator &);
     public:
         ~Configurator();
     	/// 1. Constructor Information
@@ -172,9 +161,6 @@ private:
     Storage m_storage;
     Glib::ustring m_filename;
     // Methods
-private:
-    Ram(const Ram &);
-    Ram &operator=(const Ram &);
 public:
     explicit Ram(const Configurator &);
     virtual ~Ram();
@@ -204,9 +190,6 @@ public:
     {
     protected:
         Configurator();
-    private:
-        Configurator(const Configurator &);
-        Configurator &operator=(const Configurator &);
     public:
         ~Configurator();
     	/// 1. Constructor Information
@@ -222,9 +205,6 @@ public:
 private:
     Storage m_storage;
     // Methods
-private:
-    Rom(const Rom &);
-    Rom &operator=(const Rom &);
 public:
     explicit Rom(const Configurator &);
     virtual ~Rom();
@@ -255,17 +235,14 @@ public:
     {
     protected:
         Configurator();
-    private:
-        Configurator(const Configurator &);
-        Configurator &operator=(const Configurator &);
     public:
         ~Configurator();
     	/// 1. Constructor Information
         virtual word size() const { return 0; }
         struct Mapping {
-            word                 base;
-            Memory::Configurator *memory;
-            word                 size;
+            word                       base;
+            const Memory::Configurator *memory;
+            word                       size;
         };
         virtual const Mapping &mapping(int i) const = 0;
         /// 2. Factory Method
@@ -280,9 +257,6 @@ private:
     std::vector<word>     m_base;
     std::vector<Memory *> m_map;
     // Methods
-private:
-    AddressSpace(const AddressSpace &);
-    AddressSpace &operator=(const AddressSpace &);
 public:
     explicit AddressSpace(const Configurator &);
     virtual word size() const { return m_map.size(); }

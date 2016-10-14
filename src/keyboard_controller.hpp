@@ -10,28 +10,24 @@
 #include "terminal_interface.hpp"
 
 class KeyboardController
+    : public NonCopyable
 {
     // Types
 public:
     class Configurator
+        : public NonCopyable
     {
     protected:
         Configurator();
-    private:
-        Configurator(const Configurator &);
-        Configurator &operator=(const Configurator &);
 	public:
         ~Configurator();
 
         friend std::ostream &::operator <<(std::ostream &, const Configurator &);
     };
 private:
-    TerminalInterface &m_terminal_interface;
-private:
-    KeyboardController(const KeyboardController &);
-    KeyboardController &operator=(const KeyboardController&);
+    TerminalInterface *m_terminal_interface;
 public:
-    KeyboardController(TerminalInterface &, const Configurator &);
+    KeyboardController(TerminalInterface *, const Configurator &);
     void update(SDL_KeyboardEvent *);
 
     friend std::ostream &::operator<<(std::ostream&, const KeyboardController &);

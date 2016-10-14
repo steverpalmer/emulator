@@ -96,7 +96,7 @@ std::ostream &operator<<(std::ostream &p_s, const Device::Configurator &p_cfgr)
 std::ostream &operator<<(std::ostream &p_s, const Computer::Configurator &p_cfgr)
 {
     p_s << "<computer " << static_cast<const Device::Configurator &>(p_cfgr) << ">";
-    for (int i(0); Device::Configurator *cfgr = p_cfgr.device(i); i++)
+    for (int i(0); const Device::Configurator *cfgr = p_cfgr.device(i); i++)
         p_s << *cfgr;
     return p_s << "</computer>";
 }

@@ -188,13 +188,13 @@ static int scale2character_height(float p_scale)
     return std::floor(12 * p_scale);
 }
 
-MonitorView::Mode0::Mode0(MonitorView &p_state, const MonitorView::Configurator &p_cfg)
+MonitorView::Mode0::Mode0(MonitorView &p_state, const MonitorView::Configurator &p_cfgr)
     : Mode(p_state)
 {
-    LOG4CXX_INFO(cpptrace_log(), "MonitorView::Mode0::Mode0(" << p_cfg << ")");
-    const int character_w = scale2character_width(p_cfg.scale());
-    const int character_h = scale2character_height(p_cfg.scale());
-    SDL_Surface *fontfile(SDL_LoadBMP(p_cfg.fontfilename().c_str()));
+    LOG4CXX_INFO(cpptrace_log(), "MonitorView::Mode0::Mode0(" << p_cfgr << ")");
+    const int character_w = scale2character_width(p_cfgr.scale());
+    const int character_h = scale2character_height(p_cfgr.scale());
+    SDL_Surface *fontfile(SDL_LoadBMP(p_cfgr.fontfilename().c_str()));
     for ( SurfaceArray mc6847(fontfile, 32, 8);
           mc6847 && mc6847.key() < 256;
           ++mc6847) {
@@ -234,7 +234,7 @@ void MonitorView::Mode0::render()
     LOG4CXX_INFO(cpptrace_log(), "MonitorView::Mode0::render()");
     SurfaceArray si(m_state.m_screen, 32, 16);
     for (int addr = 0; addr < 512; addr++, ++si) {
-        const byte ch = m_state.m_memory.get_byte(addr);
+        const byte ch = m_state.m_memory->get_byte(addr);
         if (ch != m_rendered[addr]) {
             si.set(m_glyph[ch]);
             m_rendered[addr] = ch;
@@ -242,31 +242,33 @@ void MonitorView::Mode0::render()
     }
 }
 
-MonitorView::MonitorView(TerminalInterface &p_terminal_interface,
-                         Memory &p_memory,
-                         const Configurator &p_cfg)
+MonitorView::MonitorView(TerminalInterface *p_terminal_interface,
+                         Memory *p_memory,
+                         const Configurator &p_cfgr)
     : m_terminal_interface(p_terminal_interface)
     , m_memory(p_memory)
     , m_mode(0)
-    , m_mode0(*this, p_cfg)
+    , m_mode0(*this, p_cfgr)
 {
-    LOG4CXX_INFO(cpptrace_log(), "MonitorView::MonitorView(" << p_cfg << ")");
-    assert (p_cfg.scale() >= 1.0);
-    m_screen = SDL_SetVideoMode( scale2character_width(p_cfg.scale()) * 32,
-                                 scale2character_height(p_cfg.scale()) * 16,
+    LOG4CXX_INFO(cpptrace_log(), "MonitorView::MonitorView(" << p_cfgr << ")");
+    assert (p_terminal_interface);
+    assert (p_memory);
+    assert (p_cfgr.scale() >= 1.0);
+    m_screen = SDL_SetVideoMode( scale2character_width(p_cfgr.scale()) * 32,
+                                 scale2character_height(p_cfgr.scale()) * 16,
                                  0,
                                  SDL_SWSURFACE | SDL_ANYFORMAT );
     assert (m_screen);
-    SDL_WM_SetCaption(p_cfg.window_title().c_str(), p_cfg.icon_title().c_str());
-    m_terminal_interface.attach(*this);
-    m_memory.attach(*this);
+    SDL_WM_SetCaption(p_cfgr.window_title().c_str(), p_cfgr.icon_title().c_str());
+    m_terminal_interface->attach(*this);
+    m_memory->attach(*this);
 }
 
 MonitorView::~MonitorView()
 {
-    LOG4CXX_INFO(cpptrace_log(), "~MonitorView()");
-    m_memory.detach(*this);
-    m_terminal_interface.detach(*this);
+    LOG4CXX_INFO(cpptrace_log(), "~MonitorView::MonitorView()");
+    m_memory->detach(*this);
+    m_terminal_interface->detach(*this);
     m_mode = 0;
     SDL_FreeSurface(m_screen);
 }
@@ -284,19 +286,19 @@ void MonitorView::vdg_mode_update(TerminalInterface *p_terminal, VDGMode p_mode)
     render();
 }
 
-std::ostream &operator<<(std::ostream &p_s, const MonitorView::Configurator &p_cfg)
+std::ostream &operator<<(std::ostream &p_s, const MonitorView::Configurator &p_cfgr)
 {
-    return p_s << "<scale>"        << p_cfg.scale() << "</scale>"
-               << "<fontfilename>" << p_cfg.fontfilename() << "</fontfilename>"
-               << "<windowtitle>"  << p_cfg.window_title() << "</windowtitle>"
-               << "<icontitle>"    << p_cfg.icon_title()   << "</icontitle>";
+    return p_s << "<scale>"        << p_cfgr.scale() << "</scale>"
+               << "<fontfilename>" << p_cfgr.fontfilename() << "</fontfilename>"
+               << "<windowtitle>"  << p_cfgr.window_title() << "</windowtitle>"
+               << "<icontitle>"    << p_cfgr.icon_title()   << "</icontitle>";
 }
 
 std::ostream &operator<<(std::ostream &p_s, const MonitorView &p_mv)
 {
     return p_s << "MonitorView("
-               << p_mv.m_terminal_interface.id()
-               << ", " << p_mv.m_memory.id()
+               << p_mv.m_terminal_interface->id()
+               << ", " << p_mv.m_memory->id()
                << ", Screen(" << p_mv.m_screen << ")"
                << ")";
 }

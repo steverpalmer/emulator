@@ -26,9 +26,6 @@ public:
     {
     protected:
         Configurator();
-    private:
-        Configurator(const Configurator &);
-        Configurator &operator=(const Configurator &);
     public:
         ~Configurator();
     	/// 1. Constructor Information - Name only at this level
@@ -42,9 +39,6 @@ public:
 protected:
     std::set<Device *> m_parents;
     // Methods
-private:
-    Device(const Device &);
-    Device &operator=(const Device &);
 protected:
     explicit Device(const Configurator &);
 public:
@@ -74,13 +68,10 @@ public:
     {
     protected:
         Configurator();
-    private:
-        Configurator(const Configurator &);
-        Configurator &operator=(const Configurator &);
     public:
         ~Configurator();
     	/// 1. Constructor Information
-        virtual Device::Configurator *device(int i) const = 0;
+        virtual const Device::Configurator *device(int i) const = 0;
         /// 2. Factory Method
         virtual Device *device_factory() const
             { return new Computer(*this); }
@@ -91,9 +82,6 @@ public:
 private:
     std::set<Device *> m_children;
     // Methods
-private:
-    Computer(const Computer &);
-    Computer &operator=(const Computer &);
 public:
     explicit Computer(const Configurator &);
     virtual ~Computer();

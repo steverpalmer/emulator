@@ -36,6 +36,7 @@ add_library(atom_gui_sdl_env, 'libxml++-2.6')
 
 atom_gui_sdl_env.Program('atom', [ r'monitor_view.cpp'
                                  , r'keyboard_controller.cpp'
+                                 , r'terminal.cpp'
                                  , r'config_xml.cpp'
                                  , r'main.cpp'
                                  , ATOMLIB

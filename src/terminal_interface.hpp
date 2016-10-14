@@ -59,10 +59,8 @@ class TerminalInterface
 {
 public:
     class Observer
+        : public NonCopyable
     {
-    private:
-        Observer(const Observer &);
-        Observer &operator=(const Observer &);
     protected:
         Observer();
     public:
@@ -73,9 +71,6 @@ private:
     std::set<Observer *> m_observers;
 protected:
     TerminalInterface();
-private:
-    TerminalInterface(const TerminalInterface &);
-    TerminalInterface &operator=(const TerminalInterface &);
 public:
     virtual VDGMode vdg_mode() const = 0;
     virtual void    set_keypress(int p_key) = 0;

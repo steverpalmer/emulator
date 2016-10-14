@@ -17,16 +17,16 @@ namespace Xml
     {
     private:
         std::string m_XMLfilename;
+        std::vector<const Part::Configurator *>m_parts;
     private:
-        Configurator(const Configurator &);
-        Configurator &operator=(const Configurator &);
         void process_command_line(int argc, char *argv[]);
         void process_XML();
         bool check_and_complete_params();
     public:
         explicit Configurator(int argc, char *argv[]);
         virtual ~Configurator();
-        virtual Part::Configurator *part(int i) const;
+        virtual const Part::Configurator *part(int i) const
+            { return (i < int(m_parts.size())) ? m_parts[i] : 0; }
     };
 
 }

@@ -36,9 +36,6 @@ namespace Xml
     class PartConfigurator
         : public virtual Part::Configurator
     {
-    private:
-        PartConfigurator(const PartConfigurator &);
-        PartConfigurator &operator=(const PartConfigurator &);
     protected:
         Part::id_type m_id;
         explicit PartConfigurator(Part::id_type p_id) : m_id(p_id) {}
@@ -46,7 +43,17 @@ namespace Xml
         virtual ~PartConfigurator();
         inline virtual const Part::id_type &id() const { return m_id; }
     };
-    
+
+    class MemoryRefConfigurator
+        : public PartConfigurator
+    {
+    public:
+        explicit MemoryRefConfigurator(const xmlpp::Node *p_node)
+            : PartConfigurator(p_node->eval_to_string("@name"))
+            {}
+        virtual ~MemoryRefConfigurator();
+    };
+
     class RamConfigurator
         : public PartConfigurator
         , public Ram::Configurator
@@ -54,8 +61,6 @@ namespace Xml
     private:
         word          m_size;
         Glib::ustring m_filename;
-        RamConfigurator(const RamConfigurator &);
-        RamConfigurator &operator=(const RamConfigurator &);
     public:
         explicit RamConfigurator(const xmlpp::Node *p_node)
             : PartConfigurator("ram")
@@ -81,8 +86,6 @@ namespace Xml
     private:
         word          m_size;
         Glib::ustring m_filename;
-        RomConfigurator(const RomConfigurator &);
-        RomConfigurator &operator=(const RomConfigurator &);
     public:
         explicit RomConfigurator(const xmlpp::Node *p_node)
             : PartConfigurator("rom")
@@ -107,9 +110,6 @@ namespace Xml
         : public PartConfigurator
         , public Ppia::Configurator
     {
-    private:
-        PpiaConfigurator(const PpiaConfigurator &);
-        PpiaConfigurator &operator=(const PpiaConfigurator &);
     public:
         explicit PpiaConfigurator(const xmlpp::Node *p_node)
             : PartConfigurator("ppia")
@@ -128,16 +128,13 @@ namespace Xml
     {
     private:
         word m_size;
-        AddressSpace::Configurator::Mapping m_last_memory;
-        std::vector<AddressSpace::Configurator::Mapping> m_memory;
-        AddressSpaceConfigurator(const AddressSpaceConfigurator &);
-        AddressSpaceConfigurator &operator=(const AddressSpaceConfigurator &);
+        const AddressSpace::Configurator::Mapping m_last_memory;
+        std::vector<const AddressSpace::Configurator::Mapping> m_memory;
     public:
         explicit AddressSpaceConfigurator(const xmlpp::Node *p_node)
             : PartConfigurator("address_space")
             , m_size(0)
             , m_last_memory( { 0, 0, 0 } )
-            , m_memory(0)
             {
                 LOG4CXX_INFO(cpptrace_log(), "Xml::MemoryConfigurator::MemoryConfigurator(" << p_node << ")");
                 assert (p_node);
@@ -145,7 +142,7 @@ namespace Xml
                 catch (xmlpp::exception e) { /* Do Nothing */ }
                 try { m_size = p_node->eval_to_number("size"); }
                 catch(xmlpp::exception e) { /* Do Nothing */ }
-                for (const xmlpp::Node *child: p_node->get_children())
+                for (auto *child: p_node->get_children())
                 {
                     const xmlpp::Element *elm = dynamic_cast<const xmlpp::Element *>(child);
                     if (elm && elm->get_name() == "map")
@@ -159,15 +156,15 @@ namespace Xml
                         const xmlpp::Node *mem(ns[0]);
                         map->memory = (
                             (mem->get_name() == "ram")
-                            ? static_cast<Memory::Configurator *>(new RamConfigurator(mem))
+                            ? static_cast<const Memory::Configurator *>(new RamConfigurator(mem))
                             : (mem->get_name() == "rom")
-                            ? static_cast<Memory::Configurator *>(new RomConfigurator(mem))
+                            ? static_cast<const Memory::Configurator *>(new RomConfigurator(mem))
                             : (mem->get_name() == "ppia")
-                            ? static_cast<Memory::Configurator *>(new PpiaConfigurator(mem))
+                            ? static_cast<const Memory::Configurator *>(new PpiaConfigurator(mem))
                             : (mem->get_name() == "address_space")
-                            ? static_cast<Memory::Configurator *>(new AddressSpaceConfigurator(mem))
+                            ? static_cast<const Memory::Configurator *>(new AddressSpaceConfigurator(mem))
                             : (mem->get_name() == "memory")
-                            ? dynamic_cast<Memory::Configurator *>(PartsBin::instance()[mem->eval_to_string("@name")])
+                            ? static_cast<const Memory::Configurator *>(new MemoryRefConfigurator(mem))
                             : 0 );
                         // FIXME: Should I do anything about size?
                         m_memory.push_back(*map);
@@ -180,18 +177,25 @@ namespace Xml
                     delete &m;
                 m_memory.clear();
             }
-        inline virtual word                size() const { return m_size; }
+        inline virtual word size() const { return m_size; }
         inline virtual const AddressSpace::Configurator::Mapping &mapping(int i) const
             { return (i < int(m_memory.size())) ? m_memory[i] : m_last_memory; }
+    };
+
+    class DeviceRefConfigurator
+        : public PartConfigurator
+    {
+    public:
+        explicit DeviceRefConfigurator(const xmlpp::Node *p_node)
+            : PartConfigurator(p_node->eval_to_string("@name"))
+            {}
+        virtual ~DeviceRefConfigurator();
     };
 
     class MCS6502Configurator
         : public PartConfigurator
         , public MCS6502::Configurator
     {
-    private:
-        MCS6502Configurator(const MCS6502Configurator &);
-        MCS6502Configurator &operator=(const MCS6502Configurator &);
     public:
         explicit MCS6502Configurator(const xmlpp::Node *p_node = 0)
             : PartConfigurator("mcs6502")
@@ -211,8 +215,7 @@ namespace Xml
         , public Computer::Configurator
     {
     private:
-        ComputerConfigurator(const ComputerConfigurator &);
-        ComputerConfigurator &operator=(const ComputerConfigurator &);
+        std::vector<const Device::Configurator *>m_parts;
     public:
         explicit ComputerConfigurator(const xmlpp::Node *p_node)
             : PartConfigurator("computer")
@@ -221,18 +224,42 @@ namespace Xml
                 assert(p_node);
                 try { m_id = p_node->eval_to_string("@name"); }
                 catch (xmlpp::exception e) { /* Do Nothing */ }
-                // FIXME:
-                xmlpp::NodeSet ns(p_node->find("memorymap"));
+                for (auto *child : p_node->get_children())
+                {
+                    const xmlpp::Element *child_elm(dynamic_cast<xmlpp::Element *>(child));
+                    if (child_elm)
+                    {
+                        const Glib::ustring child_elm_name(child_elm->get_name());
+                        if (child_elm_name == "device")
+                            m_parts.push_back(new DeviceRefConfigurator(child_elm));
+                        else if (child_elm_name == "computer")
+                            m_parts.push_back(new ComputerConfigurator(child_elm));
+                        else if (child_elm_name == "mcs6502")
+                            m_parts.push_back(new MCS6502Configurator(child_elm));
+                        else if (child_elm_name == "memory")
+                            m_parts.push_back(new MemoryRefConfigurator(child_elm));
+                        else if (child_elm_name == "address_space")
+                            m_parts.push_back(new AddressSpaceConfigurator(child_elm));
+                        else if (child_elm_name == "ram")
+                            m_parts.push_back(new RamConfigurator(child_elm));
+                        else if (child_elm_name == "rom")
+                            m_parts.push_back(new RomConfigurator(child_elm));
+                        else if (child_elm_name == "ppia")
+                            m_parts.push_back(new PpiaConfigurator(child_elm));
+                        else
+                            ;  // Do Nothing
+                    }
+                }
             }
         virtual ~ComputerConfigurator();
+        virtual const Device::Configurator *device(int i) const
+            { return (i < int(m_parts.size())) ? m_parts[i] : 0; }
+
     };
 
     class KeyboardControllerConfigurator
         : public KeyboardController::Configurator
     {
-    private:
-        KeyboardControllerConfigurator(const KeyboardControllerConfigurator &);
-        KeyboardControllerConfigurator &operator=(const KeyboardControllerConfigurator &);
     public:
         explicit KeyboardControllerConfigurator(const xmlpp::Node *p_node = 0)
             {
@@ -249,8 +276,6 @@ namespace Xml
         Glib::ustring m_fontfilename;
         Glib::ustring m_window_title;
         Glib::ustring m_icon_title;
-        MonitorViewConfigurator(const MonitorViewConfigurator &);
-        MonitorViewConfigurator &operator=(const MonitorViewConfigurator &);
     public:
         explicit MonitorViewConfigurator(const xmlpp::Node *p_node = 0)
             : m_scale(2.0)
@@ -279,22 +304,31 @@ namespace Xml
         , public Terminal::Configurator
     {
     private:
-        KeyboardControllerConfigurator *m_keyboard;
-        MonitorViewConfigurator *m_monitor;
+        Part::id_type m_memory_id;
+        Part::id_type m_controller_id;
+        KeyboardControllerConfigurator *m_keyboard_controller;
+        MonitorViewConfigurator *m_monitor_view;
     public:
         explicit TerminalConfigurator(const xmlpp::Node *p_node = 0)
             : PartConfigurator("terminal")
+            , m_memory_id("video")
+            , m_controller_id("ppia")
             {
                 LOG4CXX_INFO(cpptrace_log(), "Xml::TerminalConfigurator::TerminalConfigurator(" << p_node << ")");
-                // FIXME:
-                m_keyboard = new KeyboardControllerConfigurator(p_node);
-                assert (m_keyboard);
-                m_monitor = new MonitorViewConfigurator(p_node);
-                assert (m_monitor);
+                try { m_memory_id = p_node->eval_to_string("memory/@name"); }
+                catch (xmlpp::exception e) { /* Do Nothing */ }
+                try { m_controller_id = p_node->eval_to_string("controller/@name"); }
+                catch (xmlpp::exception e) { /* Do Nothing */ }
+                m_keyboard_controller = new KeyboardControllerConfigurator(p_node);
+                assert (m_keyboard_controller);
+                m_monitor_view = new MonitorViewConfigurator(p_node);
+                assert (m_monitor_view);
             }
         virtual ~TerminalConfigurator();
-        KeyboardController::Configurator   &keyboard_controller() const { return *m_keyboard; }
-        MonitorView::Configurator          &monitor_view()        const { return *m_monitor; }
+        const Part::id_type                      &memory_id()           const { return m_memory_id; }
+        const Part::id_type                      &controller_id()       const { return m_controller_id; }
+        const KeyboardController::Configurator   &keyboard_controller() const { return *m_keyboard_controller; }
+        const MonitorView::Configurator          &monitor_view()        const { return *m_monitor_view; }
     };
 
     void Configurator::process_command_line(int argc, char *argv[])
@@ -320,7 +354,7 @@ namespace Xml
             case '?': /* Unknown Option */
                 LOG4CXX_WARN(cpptrace_log(), "Unknown Option '" << optopt << "'");
                 break;
-            default: /* Unexpected response from getopt() */
+            default:
                 LOG4CXX_WARN(cpptrace_log(), "Unexpected response from getopt() " << c);
                 break;
             }
@@ -339,37 +373,37 @@ namespace Xml
                 exit(1);
             }
 
+            // TODO: Check version
             const xmlpp::Node *root(parser.get_document()->get_root_node());
-#if 0
-            m_atom = new AtomConfigurator(root);
-            try
-            {
-                const xmlpp::NodeSet ns(root->find("terminal"));
-                assert (ns.size() == 0 || ns.size() == 1);
-                if (ns.size() == 1)
-                    m_terminal = new TerminalConfigurator(ns[0]);
-            }
-            catch (xmlpp::exception e) { /* Do Nothing */ }
-#endif
-#if 0
-            // Keyboard Stuff
-            if (!cfg->keyboard.filename)
-                switch (xpath_count(ctx, "/atom/keyboard/filename")) {
-                case 0: /* No keyboard stream element */
-                    break;
-                case 1: /* keyboard streaming requested */
-                    xpath_rd_txt(ctx, "/atom/keyboard/filename/text()", cfg->keyboard.filename);
-                    if (!cfg->keyboard.filename)
-                        cfg->keyboard.filename = "";
-                    cfg->keyboard.viewscreen = ( xpath_count(ctx, "/atom/keyboard/viewscreen") > 0 );
-                    break;
-                default: /* Error */
-                    LOG_ERROR("Incorrect keyboard stream entry in configuration file");
-                    assert (false);
-                    break;
-                }
-#endif
 
+            for (auto *child : root->get_children())
+            {
+                const xmlpp::Element *child_elm(dynamic_cast<xmlpp::Element *>(child));
+                if (child_elm)
+                {
+                    const Glib::ustring child_elm_name(child_elm->get_name());
+                    if (child_elm_name == "device")
+                        m_parts.push_back(new DeviceRefConfigurator(child_elm));
+                    else if (child_elm_name == "computer")
+                        m_parts.push_back(new ComputerConfigurator(child_elm));
+                    else if (child_elm_name == "mcs6502")
+                        m_parts.push_back(new MCS6502Configurator(child_elm));
+                    else if (child_elm_name == "memory")
+                        m_parts.push_back(new MemoryRefConfigurator(child_elm));
+                    else if (child_elm_name == "address_space")
+                        m_parts.push_back(new AddressSpaceConfigurator(child_elm));
+                    else if (child_elm_name == "ram")
+                        m_parts.push_back(new RamConfigurator(child_elm));
+                    else if (child_elm_name == "rom")
+                        m_parts.push_back(new RomConfigurator(child_elm));
+                    else if (child_elm_name == "ppia")
+                        m_parts.push_back(new PpiaConfigurator(child_elm));
+                    else if (child_elm_name == "terminal")
+                        m_parts.push_back(new TerminalConfigurator(child_elm));
+                    else
+                        ; // Do Nothing
+                }
+            }
         }
         catch (const std::exception& ex)
         {
@@ -382,11 +416,11 @@ namespace Xml
     {
         LOG4CXX_INFO(cpptrace_log(), "Xml::Configurator::check_and_complete_params()");
         bool result = true;
+#if 0
         if (m_terminal->monitor_view().scale() && (m_terminal->monitor_view().scale() < 1.0)) {
             LOG4CXX_ERROR(cpptrace_log(), "Bad Scale Factor " << m_terminal->monitor_view().scale());
             result = false;
         }
-#if 0
         struct HookNode **ptr = &cfg->atom.hooks;
         if (cfg->screen.filename) {
             *ptr = malloc(sizeof(**ptr));
@@ -421,8 +455,6 @@ namespace Xml
             (*ptr)->next = 0;
             ptr = &((*ptr)->next);
         }
-#endif
-#if 0
         const int err = atom_config_error(m_atom);
         if (err) {
             LOG4CXX_ERROR(cpptrace_log(), "Invalid configuration" << err);
@@ -437,13 +469,14 @@ namespace Xml
     Configurator::Configurator(int argc, char *argv[])
         : Configurator(argc, argv)
         , m_XMLfilename("atomrc.xml")
+        , m_parts()
     {
         LOG4CXX_INFO(cpptrace_log(), "Xml::Configurator::Configurator(" << argc << ", " << argv << ")");
         process_command_line(argc, argv);
         process_XML();
         if (!check_and_complete_params())
             exit(1);
-        LOG4CXX_INFO(cpptrace_log(), "Position 1 => " << static_cast<const Atom::Configurator &>(*m_atom));
+        LOG4CXX_INFO(cpptrace_log(), "Position 1 => " << *this);
     }
 
 }
