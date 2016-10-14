@@ -2357,7 +2357,7 @@ MCS6502::MCS6502(const Configurator &p_cfgr)
     , m_InterruptSource(NO_INTERRUPT)
 {
     LOG4CXX_INFO(cpptrace_log(), "MCS6502::MCS6502(" << p_cfgr << ")");
-    m_memory = dynamic_cast<Memory *>(PartsBin::instance()[p_cfgr.memory()]);
+    m_memory = dynamic_cast<Memory *>(PartsBin::instance()[p_cfgr.memory_id()]);
     assert (m_memory);
     m_memory->add_parent(this);
     assert (SIZE(m_memory->size()) == 65536);
