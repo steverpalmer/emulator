@@ -60,10 +60,21 @@ bool Storage::load(const Glib::ustring &p_filename)
     bool result(true);
     if (!p_filename.empty()) {
         using namespace std;
-        fstream file(p_filename, fstream::in | fstream::binary);
-        if ((result = (file.rdstate()  & ifstream::goodbit) ))
+        ifstream file(p_filename, ifstream::in | ifstream::binary);
+        if ((result = file.good()))
+        {
+            if (m_storage.size() == 0)
+            {
+                file.seekg(0, ios::beg);
+                const std::streampos begin = file.tellg();
+                file.seekg(0, ios::end);
+                const std::streampos end = file.tellg();
+                m_storage.resize(end-begin);
+                file.seekg(0, ios::beg);
+            }
             for (byte &b : m_storage)
                 b = file.get();
+        }
     }
     return result;
 }
@@ -74,8 +85,8 @@ bool Storage::save(const Glib::ustring &p_filename) const
     bool result(true);
     if (!p_filename.empty()) {
         using namespace std;
-        fstream file(p_filename, fstream::out | fstream::binary | fstream::trunc);
-        if ((result = (file.rdstate()  & ifstream::goodbit) ))
+        ofstream file(p_filename, ofstream::out | ofstream::binary | ofstream::trunc);
+        if ((result = file.good()))
             for (const byte b : m_storage)
                 file.put(b);
     }
@@ -243,7 +254,7 @@ std::ostream &operator<<(std::ostream &p_s, const AddressSpace::Configurator &p_
     for (int i(0); (mapping = p_cfgr.mapping(i), mapping.memory); i++)
         p_s << "<map>"
             << "<base>" << Hex(mapping.base) << "</base>"
-            << mapping.memory
+            << *mapping.memory
             << "<size>" << Hex(mapping.size) << "</size>"
             << "</map>";
     p_s << "</address_space";

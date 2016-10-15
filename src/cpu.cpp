@@ -2697,7 +2697,9 @@ std::ostream &operator<<(std::ostream &p_s, const Cpu::Configurator &p_cfgr)
 
 std::ostream &operator<<(std::ostream &p_s, const MCS6502::Configurator &p_cfgr)
 {
-    return p_s << "<MCS6502 " << static_cast<const Cpu::Configurator &>(p_cfgr) << "/>";
+    return p_s << "<mcs6502 " << static_cast<const Cpu::Configurator &>(p_cfgr) << ">"
+               << "<memory name=\"" << p_cfgr.memory_id() << "\"/>"
+               << "</mcs6502>";
 }
 
 std::ostream &operator<<(std::ostream &p_s, const InterruptState &p_is)

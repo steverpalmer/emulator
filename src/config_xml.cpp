@@ -135,7 +135,7 @@ namespace Xml
             , m_size(0)
             , m_last_memory( { 0, 0, 0 } )
             {
-                LOG4CXX_INFO(cpptrace_log(), "Xml::MemoryConfigurator::MemoryConfigurator(" << p_node << ")");
+                LOG4CXX_INFO(cpptrace_log(), "Xml::AddressSpaceConfigurator::AddressSpaceConfigurator(" << p_node << ")");
                 assert (p_node);
                 try { m_id = p_node->eval_to_string("@name"); }
                 catch (xmlpp::exception e) { /* Do Nothing */ }
@@ -143,27 +143,27 @@ namespace Xml
                 catch(xmlpp::exception e) { /* Do Nothing */ }
                 for (auto *child: p_node->get_children())
                 {
-                    const xmlpp::Element *elm = dynamic_cast<const xmlpp::Element *>(child);
-                    if (elm && elm->get_name() == "map")
+                    const xmlpp::Element *child_elm = dynamic_cast<const xmlpp::Element *>(child);
+                    if (child_elm && child_elm->get_name() == "map")
                     {
                         AddressSpace::Configurator::Mapping *map = new AddressSpace::Configurator::Mapping(m_last_memory);
-                        map->base = elm->eval_to_number("base");
-                        try { map->size = elm->eval_to_number("size"); }
+                        map->base = child_elm->eval_to_number("base");
+                        try { map->size = child_elm->eval_to_number("size"); }
                         catch (xmlpp::exception e) { /* Do Nothing */ }
-                        const xmlpp::NodeSet ns(elm->find("ram|rom|ppia|address_space|memory"));
+                        const xmlpp::NodeSet ns(child_elm->find("ram|rom|ppia|address_space|memory"));
                         assert (ns.size() == 1);
-                        const xmlpp::Node *mem(ns[0]);
+                        const xmlpp::Node *memory_node(ns[0]);
                         map->memory = (
-                            (mem->get_name() == "ram")
-                            ? static_cast<const Memory::Configurator *>(new RamConfigurator(mem))
-                            : (mem->get_name() == "rom")
-                            ? static_cast<const Memory::Configurator *>(new RomConfigurator(mem))
-                            : (mem->get_name() == "ppia")
-                            ? static_cast<const Memory::Configurator *>(new PpiaConfigurator(mem))
-                            : (mem->get_name() == "address_space")
-                            ? static_cast<const Memory::Configurator *>(new AddressSpaceConfigurator(mem))
-                            : (mem->get_name() == "memory")
-                            ? static_cast<const Memory::Configurator *>(new MemoryRefConfigurator(mem))
+                            (memory_node->get_name() == "ram")
+                            ? static_cast<const Memory::Configurator *>(new RamConfigurator(memory_node))
+                            : (memory_node->get_name() == "rom")
+                            ? static_cast<const Memory::Configurator *>(new RomConfigurator(memory_node))
+                            : (memory_node->get_name() == "ppia")
+                            ? static_cast<const Memory::Configurator *>(new PpiaConfigurator(memory_node))
+                            : (memory_node->get_name() == "address_space")
+                            ? static_cast<const Memory::Configurator *>(new AddressSpaceConfigurator(memory_node))
+                            : (memory_node->get_name() == "memory")
+                            ? static_cast<const Memory::Configurator *>(new MemoryRefConfigurator(memory_node))
                             : 0 );
                         // FIXME: Should I do anything about size?
                         m_memory.push_back(*map);
@@ -206,11 +206,30 @@ namespace Xml
                 LOG4CXX_INFO(cpptrace_log(), "Xml::MCS6502Configurator::MCS6502Configurator(" << p_node << ")");
                 if (p_node)
                 {
-                    try { m_id = p_node->eval_to_string("@name"); }
-                    catch (xmlpp::exception e) { /* Do Nothing */ }
-                    try { m_memory_id = p_node->eval_to_string("memory/@name"); }
-                    catch (xmlpp::exception e) { /* Do Nothing */ }
+                    try
+                    {
+                        LOG4CXX_INFO(cpptrace_log(), "reading processor name");
+                        m_id = p_node->eval_to_string("@name");
+                        LOG4CXX_INFO(cpptrace_log(), "read processor name: " << m_id);
+                    }
+                    catch (xmlpp::exception e)
+                    {
+                        LOG4CXX_INFO(cpptrace_log(), "failed to read processor name");
+                        /* Do Nothing */
+                    }
+                    try
+                    {
+                        LOG4CXX_INFO(cpptrace_log(), "reading memory name");
+                        m_memory_id = p_node->eval_to_string("memory/@name");
+                        LOG4CXX_INFO(cpptrace_log(), "read memory name: " << m_memory_id);
+                    }
+                    catch (xmlpp::exception e)
+                    {
+                        LOG4CXX_INFO(cpptrace_log(), "failed to read memory name");
+                        /* Do Nothing */
+                    }
                 }
+                LOG4CXX_INFO(cpptrace_log(), "Xml::MCS6502Configurator::MCS6502Configurator(" << p_node << ") =>" << *this);
             }
         virtual ~MCS6502Configurator() {}
         virtual const Memory::id_type memory_id() const
@@ -475,7 +494,7 @@ namespace Xml
 
     Configurator::Configurator(int argc, char *argv[])
         : ::Configurator(argc, argv)
-        , m_XMLfilename("atomrc.xml")
+        , m_XMLfilename("minimalrc.xml")
     {
         LOG4CXX_INFO(cpptrace_log(), "Xml::Configurator::Configurator(" << argc << ", " << argv << ")");
         process_command_line(argc, argv);

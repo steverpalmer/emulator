@@ -1,42 +1,42 @@
 <?xml version="1.0" ?>
-<emulator xmlns="http://www.srpalmer.me.uk/ns/emulator" version="0.05">
+<!-- emulator xmlns="http://www.srpalmer.me.uk/ns/emulator" version="0.05" -->
+<emulator version="0.05">
 
   <computer name="minimal_atom">
-    <mcs6502 name="mcs6502">
-      <address_space name="address_space">
-        <map>
-          <base>0x0000</base>
-          <ram name="block0">
-            <size>0x0400</size>
-          </ram>
-        </map>
-        <map>
-          <base>0x8000</base>
-          <ram name="video">
-            <size>0x0400</size>
-          </ram>
-        </map>
-        <map>
-          <base>0xB000</base>
-          <ppia name="ppia"/>
-          <size>0x0400</size>
-        </map>
-        <map>
-          <base>0xC000</base>
-          <rom name="interpreter">
-            <filename>basic.rom</filename>
-          </rom>
-        </map>
-        <map>
-          <base>0xF000</base>
-          <rom name="kernel">
-            <filename>kernel.rom</filename>
-          </rom>
-        </map>
-      </address_space>
-    </mcs6502>
+    <address_space name="address_space">
+      <map>
+        <base>0</base>
+        <ram name="block0">
+          <size>1024</size>
+        </ram>
+      </map>
+      <map>
+        <base>32768</base>
+        <ram name="video">
+          <size>1024</size>
+        </ram>
+      </map>
+      <map>
+        <base>45056</base>
+        <ppia name="ppia"/>
+        <size>1024</size>
+      </map>
+      <map>
+        <base>49152</base>
+        <rom name="interpreter">
+          <filename>basic.rom</filename>
+        </rom>
+      </map>
+      <map>
+        <base>61440</base>
+        <rom name="kernel">
+          <filename>kernel.rom</filename>
+        </rom>
+      </map>
+    </address_space>
+    <mcs6502 name="mcs6502"/>
   </computer>
-
+  
   <terminal name="terminal">
     <memory name="video"/>
     <controller name="ppia"/>
