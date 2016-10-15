@@ -42,6 +42,10 @@ namespace Xml
         inline virtual const Part::id_type &id() const { return m_id; }
     };
 
+    Part::Configurator *part_configurator_factory(const xmlpp::Node *p_node);
+    Device::Configurator *device_configurator_factory(const xmlpp::Node *p_node);
+    Memory::Configurator *memory_configurator_factory(const xmlpp::Node *p_node);
+
     class MemoryRefConfigurator
         : public PartConfigurator
         , public Memory::Configurator
@@ -51,6 +55,8 @@ namespace Xml
             : PartConfigurator(p_node->eval_to_string("@name"))
             {}
         virtual ~MemoryRefConfigurator() {}
+        static Memory::Configurator *memory_configurator_factory(const xmlpp::Node *p_node)
+            { return new MemoryRefConfigurator(p_node); }
     };
 
     class RamConfigurator
@@ -76,6 +82,8 @@ namespace Xml
         virtual ~RamConfigurator() {}
         inline virtual word                size()      const { return m_size; }
         inline virtual const Glib::ustring &filename() const { return m_filename; }
+        static Memory::Configurator *memory_configurator_factory(const xmlpp::Node *p_node)
+            { return new RamConfigurator(p_node); }
     };
 
     class RomConfigurator
@@ -103,6 +111,8 @@ namespace Xml
         virtual ~RomConfigurator() {}
         inline virtual const Glib::ustring &filename() const { return m_filename; }
         inline virtual word                size()      const { return m_size; }
+        static Memory::Configurator *memory_configurator_factory(const xmlpp::Node *p_node)
+            { return new RomConfigurator(p_node); }
     };
 
     class PpiaConfigurator
@@ -119,6 +129,8 @@ namespace Xml
                 catch (xmlpp::exception e) { /* Do Nothing */ }
             }
         virtual ~PpiaConfigurator() {}
+        static Memory::Configurator *memory_configurator_factory(const xmlpp::Node *p_node)
+            { return new PpiaConfigurator(p_node); }
     };
 
     class AddressSpaceConfigurator
@@ -153,18 +165,7 @@ namespace Xml
                         const xmlpp::NodeSet ns(child_elm->find("ram|rom|ppia|address_space|memory"));
                         assert (ns.size() == 1);
                         const xmlpp::Node *memory_node(ns[0]);
-                        map->memory = (
-                            (memory_node->get_name() == "ram")
-                            ? static_cast<const Memory::Configurator *>(new RamConfigurator(memory_node))
-                            : (memory_node->get_name() == "rom")
-                            ? static_cast<const Memory::Configurator *>(new RomConfigurator(memory_node))
-                            : (memory_node->get_name() == "ppia")
-                            ? static_cast<const Memory::Configurator *>(new PpiaConfigurator(memory_node))
-                            : (memory_node->get_name() == "address_space")
-                            ? static_cast<const Memory::Configurator *>(new AddressSpaceConfigurator(memory_node))
-                            : (memory_node->get_name() == "memory")
-                            ? static_cast<const Memory::Configurator *>(new MemoryRefConfigurator(memory_node))
-                            : 0 );
+                        map->memory = memory_configurator_factory(memory_node);
                         // FIXME: Should I do anything about size?
                         m_memory.push_back(*map);
                     }
@@ -179,7 +180,27 @@ namespace Xml
         inline virtual word size() const { return m_size; }
         inline virtual const AddressSpace::Configurator::Mapping &mapping(int i) const
             { return (i < int(m_memory.size())) ? m_memory[i] : m_last_memory; }
+        static Memory::Configurator *memory_configurator_factory(const xmlpp::Node *p_node)
+            { return new AddressSpaceConfigurator(p_node); }
     };
+
+    Memory::Configurator *memory_configurator_factory(const xmlpp::Node *p_node)
+    {
+        static std::map<std::string, Memory::Configurator * (*)(const xmlpp::Node *p_node)> factory_map;
+        if (factory_map.size() == 0)
+        {
+            factory_map["memory"]        = MemoryRefConfigurator::memory_configurator_factory;
+            factory_map["ram"]           = RamConfigurator::memory_configurator_factory;
+            factory_map["rom"]           = RomConfigurator::memory_configurator_factory;
+            factory_map["ppia"]          = PpiaConfigurator::memory_configurator_factory;
+            factory_map["address_space"] = AddressSpaceConfigurator::memory_configurator_factory;
+        }
+        Memory::Configurator *result(0);
+        Memory::Configurator *(*factory)(const xmlpp::Node *p_node) = factory_map[p_node->get_name()];
+        if (factory)
+            result = factory(p_node);
+        return result;
+    }
 
     class DeviceRefConfigurator
         : public PartConfigurator
@@ -190,6 +211,8 @@ namespace Xml
             : PartConfigurator(p_node->eval_to_string("@name"))
             {}
         virtual ~DeviceRefConfigurator() {}
+        static Device::Configurator *device_configurator_factory(const xmlpp::Node *p_node)
+            { return new DeviceRefConfigurator(p_node); }
     };
 
     class MCS6502Configurator
@@ -234,6 +257,8 @@ namespace Xml
         virtual ~MCS6502Configurator() {}
         virtual const Memory::id_type memory_id() const
             { return m_memory_id; }
+        static Device::Configurator *device_configurator_factory(const xmlpp::Node *p_node)
+            { return new MCS6502Configurator(p_node); }
     };
 
     class ComputerConfigurator
@@ -241,7 +266,7 @@ namespace Xml
         , public Computer::Configurator
     {
     private:
-        std::vector<const Device::Configurator *>m_parts;
+        std::vector<const Device::Configurator *>m_devices;
     public:
         explicit ComputerConfigurator(const xmlpp::Node *p_node)
             : PartConfigurator("computer")
@@ -255,33 +280,37 @@ namespace Xml
                     const xmlpp::Element *child_elm(dynamic_cast<xmlpp::Element *>(child));
                     if (child_elm)
                     {
-                        const Glib::ustring child_elm_name(child_elm->get_name());
-                        if (child_elm_name == "device")
-                            m_parts.push_back(new DeviceRefConfigurator(child_elm));
-                        else if (child_elm_name == "computer")
-                            m_parts.push_back(new ComputerConfigurator(child_elm));
-                        else if (child_elm_name == "mcs6502")
-                            m_parts.push_back(new MCS6502Configurator(child_elm));
-                        else if (child_elm_name == "memory")
-                            m_parts.push_back(new MemoryRefConfigurator(child_elm));
-                        else if (child_elm_name == "address_space")
-                            m_parts.push_back(new AddressSpaceConfigurator(child_elm));
-                        else if (child_elm_name == "ram")
-                            m_parts.push_back(new RamConfigurator(child_elm));
-                        else if (child_elm_name == "rom")
-                            m_parts.push_back(new RomConfigurator(child_elm));
-                        else if (child_elm_name == "ppia")
-                            m_parts.push_back(new PpiaConfigurator(child_elm));
-                        else
-                            ;  // Do Nothing
+                        Device::Configurator *child_cfgr = device_configurator_factory(child_elm);
+                        if (child_cfgr)
+                            m_devices.push_back(child_cfgr);
                     }
                 }
             }
         virtual ~ComputerConfigurator() {}  // FIXME
         virtual const Device::Configurator *device(int i) const
-            { return (i < int(m_parts.size())) ? m_parts[i] : 0; }
+            { return (i < int(m_devices.size())) ? m_devices[i] : 0; }
+        static Device::Configurator *device_configurator_factory(const xmlpp::Node *p_node)
+            { return new ComputerConfigurator(p_node); }
 
     };
+
+    Device::Configurator *device_configurator_factory(const xmlpp::Node *p_node)
+    {
+        static std::map<std::string, Device::Configurator * (*)(const xmlpp::Node *p_node)> factory_map;
+        if (factory_map.size() == 0)
+        {
+            factory_map["device"]        = DeviceRefConfigurator::device_configurator_factory;
+            factory_map["mcs6502"]       = MCS6502Configurator::device_configurator_factory;
+            factory_map["computer"]      = ComputerConfigurator::device_configurator_factory;
+        }
+        Device::Configurator *result(0);
+        Device::Configurator *(*factory)(const xmlpp::Node *p_node) = factory_map[p_node->get_name()];
+        if (factory)
+            result = factory(p_node);
+        else
+            result = memory_configurator_factory(p_node);
+        return result;
+    }
 
     class KeyboardControllerConfigurator
         : public KeyboardController::Configurator
@@ -355,7 +384,25 @@ namespace Xml
         const Part::id_type                      &controller_id()       const { return m_controller_id; }
         const KeyboardController::Configurator   &keyboard_controller() const { return *m_keyboard_controller; }
         const MonitorView::Configurator          &monitor_view()        const { return *m_monitor_view; }
+        static Part::Configurator *part_configurator_factory(const xmlpp::Node *p_node)
+            { return new TerminalConfigurator(p_node); }
     };
+
+    Part::Configurator *part_configurator_factory(const xmlpp::Node *p_node)
+    {
+        static std::map<std::string, Part::Configurator * (*)(const xmlpp::Node *p_node)> factory_map;
+        if (factory_map.size() == 0)
+        {
+            factory_map["terminal"] = TerminalConfigurator::part_configurator_factory;
+        }
+        Part::Configurator *result(0);
+        Part::Configurator *(*factory)(const xmlpp::Node *p_node) = factory_map[p_node->get_name()];
+        if (factory)
+            result = factory(p_node);
+        else
+            result = device_configurator_factory(p_node);
+        return result;
+    }
 
     void Configurator::process_command_line(int argc, char *argv[])
     {
@@ -407,27 +454,9 @@ namespace Xml
                 const xmlpp::Element *child_elm(dynamic_cast<xmlpp::Element *>(child));
                 if (child_elm)
                 {
-                    const Glib::ustring child_elm_name(child_elm->get_name());
-                    if (child_elm_name == "device")
-                        m_parts.push_back(new DeviceRefConfigurator(child_elm));
-                    else if (child_elm_name == "computer")
-                        m_parts.push_back(new ComputerConfigurator(child_elm));
-                    else if (child_elm_name == "mcs6502")
-                        m_parts.push_back(new MCS6502Configurator(child_elm));
-                    else if (child_elm_name == "memory")
-                        m_parts.push_back(new MemoryRefConfigurator(child_elm));
-                    else if (child_elm_name == "address_space")
-                        m_parts.push_back(new AddressSpaceConfigurator(child_elm));
-                    else if (child_elm_name == "ram")
-                        m_parts.push_back(new RamConfigurator(child_elm));
-                    else if (child_elm_name == "rom")
-                        m_parts.push_back(new RomConfigurator(child_elm));
-                    else if (child_elm_name == "ppia")
-                        m_parts.push_back(new PpiaConfigurator(child_elm));
-                    else if (child_elm_name == "terminal")
-                        m_parts.push_back(new TerminalConfigurator(child_elm));
-                    else
-                        ; // Do Nothing
+                    Part::Configurator *child_cfgr = part_configurator_factory(child_elm);
+                    if (child_cfgr)
+                        m_parts.push_back(child_cfgr);
                 }
             }
         }
