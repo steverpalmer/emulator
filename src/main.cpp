@@ -38,7 +38,7 @@ public:
             const int rv = SDL_Init( SDL_INIT_VIDEO | SDL_INIT_TIMER );
             assert (!rv);
 
-            const Configurator *cfg = new Xml::Configurator(argc, argv);
+            const Configurator *cfg = new Xml::Configurator(argc, argv);  // FIXME: delete Xml::
             LOG4CXX_INFO(cpptrace_log(), cfg);
             assert (cfg);
 

@@ -6,18 +6,16 @@
 #include <stdarg.h>
 #include <unistd.h>
 
+#include <ostream>
 #include <cassert>
+
 #include <log4cxx/logger.h>
 #include <libxml++/libxml++.h>
-
-#include <ostream>
-#include <string>
-
 #include <glibmm/ustring.h>
-#include <libxml++/libxml++.h>
+
+#include "config_xml.hpp"
 
 #include "common.hpp"
-#include "config_xml.hpp"
 #include "device.hpp"
 #include "memory.hpp"
 #include "ppia.hpp"
@@ -40,7 +38,7 @@ namespace Xml
         Part::id_type m_id;
         explicit PartConfigurator(Part::id_type p_id) : m_id(p_id) {}
     public:
-        virtual ~PartConfigurator();
+        virtual ~PartConfigurator() {}
         inline virtual const Part::id_type &id() const { return m_id; }
     };
 
@@ -52,7 +50,7 @@ namespace Xml
         explicit MemoryRefConfigurator(const xmlpp::Node *p_node)
             : PartConfigurator(p_node->eval_to_string("@name"))
             {}
-        virtual ~MemoryRefConfigurator();
+        virtual ~MemoryRefConfigurator() {}
     };
 
     class RamConfigurator
@@ -75,7 +73,7 @@ namespace Xml
                 try { m_filename = p_node->eval_to_string("filename"); }
                 catch (xmlpp::exception e) { /* Do Nothing */ }
             }
-        virtual ~RamConfigurator();
+        virtual ~RamConfigurator() {}
         inline virtual word                size()      const { return m_size; }
         inline virtual const Glib::ustring &filename() const { return m_filename; }
     };
@@ -102,7 +100,7 @@ namespace Xml
                     assert (0); // get the size of the file
                 }
             }
-        virtual ~RomConfigurator();
+        virtual ~RomConfigurator() {}
         inline virtual const Glib::ustring &filename() const { return m_filename; }
         inline virtual word                size()      const { return m_size; }
     };
@@ -120,7 +118,7 @@ namespace Xml
                 try { m_id = p_node->eval_to_string("@name"); }
                 catch (xmlpp::exception e) { /* Do Nothing */ }
             }
-        virtual ~PpiaConfigurator();
+        virtual ~PpiaConfigurator() {}
     };
 
     class AddressSpaceConfigurator
@@ -191,7 +189,7 @@ namespace Xml
         explicit DeviceRefConfigurator(const xmlpp::Node *p_node)
             : PartConfigurator(p_node->eval_to_string("@name"))
             {}
-        virtual ~DeviceRefConfigurator();
+        virtual ~DeviceRefConfigurator() {}
     };
 
     class MCS6502Configurator
@@ -214,7 +212,7 @@ namespace Xml
                     catch (xmlpp::exception e) { /* Do Nothing */ }
                 }
             }
-        virtual ~MCS6502Configurator();
+        virtual ~MCS6502Configurator() {}
         virtual const Memory::id_type memory_id() const
             { return m_memory_id; }
     };
@@ -260,7 +258,7 @@ namespace Xml
                     }
                 }
             }
-        virtual ~ComputerConfigurator();
+        virtual ~ComputerConfigurator() {}  // FIXME
         virtual const Device::Configurator *device(int i) const
             { return (i < int(m_parts.size())) ? m_parts[i] : 0; }
 
@@ -274,7 +272,7 @@ namespace Xml
             {
                 LOG4CXX_INFO(cpptrace_log(), "Xml::KeyboardControllerConfigurator::KeyboardControllerConfigurator(" << p_node << ")");
             }
-        virtual ~KeyboardControllerConfigurator();
+        virtual ~KeyboardControllerConfigurator() {}
     };
 
     class MonitorViewConfigurator
@@ -301,7 +299,7 @@ namespace Xml
                     catch (xmlpp::exception e) { /* Do Nothing */ }
                 }
             }
-        virtual ~MonitorViewConfigurator();
+        virtual ~MonitorViewConfigurator() {}
         float               scale()         const { return m_scale; }
         const Glib::ustring &fontfilename() const { return m_fontfilename; }
         const Glib::ustring &window_title() const { return m_window_title; }
@@ -333,7 +331,7 @@ namespace Xml
                 m_monitor_view = new MonitorViewConfigurator(p_node);
                 assert (m_monitor_view);
             }
-        virtual ~TerminalConfigurator();
+        virtual ~TerminalConfigurator() {}
         const Part::id_type                      &memory_id()           const { return m_memory_id; }
         const Part::id_type                      &controller_id()       const { return m_controller_id; }
         const KeyboardController::Configurator   &keyboard_controller() const { return *m_keyboard_controller; }
@@ -487,4 +485,9 @@ namespace Xml
         LOG4CXX_INFO(cpptrace_log(), "Position 1 => " << *this);
     }
 
+
+    Configurator::~Configurator()
+    {
+        // FIXME: need a tidy clean up
+    }
 }

@@ -80,12 +80,20 @@ public:
     typedef std::pair<const key_type, mapped_type> value_type;
 private:
     bin_type m_bin;
-    PartsBin();
-    static PartsBin *s_instance;
+    PartsBin() {}
     int self_check() const;
 public:
     virtual ~PartsBin() {}
-    static PartsBin &instance();
+    static PartsBin &instance()
+        {
+            static PartsBin *s_instance;
+            if (!s_instance)
+            {
+                s_instance = new PartsBin;
+                assert (s_instance);
+            }
+            return *s_instance;
+        }
     void build(const Configurator &p_cfg)
         {
             for (int i(0); const auto &p = p_cfg.part(i); i++)

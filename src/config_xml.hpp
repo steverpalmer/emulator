@@ -4,9 +4,11 @@
 #define CONFIG_XML_HPP_
 
 #include <ostream>
+#include <vector>
 
 #include <glibmm/ustring.h>
 
+#include "part.hpp"
 #include "config.hpp"
 
 namespace Xml

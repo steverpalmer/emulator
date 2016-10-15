@@ -1,6 +1,5 @@
 // terminal.cpp
 
-#include "part.hpp"
 #include "terminal.hpp"
 
 Terminal::Terminal(const Configurator &p_cfgr)

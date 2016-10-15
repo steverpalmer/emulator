@@ -83,14 +83,6 @@ std::unique_ptr<Part::id_type> Part::canonical_id(const id_type &p_s)
     return result;
 }
 
-PartsBin &PartsBin::instance()
-{
-    LOG4CXX_INFO(cpptrace_log(), "PartsBin::instance()");
-    if (!s_instance)
-        s_instance = new PartsBin;
-    return *s_instance;
-}
-
 int PartsBin::self_check() const
 {
     LOG4CXX_INFO(cpptrace_log(), "PartsBin::self_check()");

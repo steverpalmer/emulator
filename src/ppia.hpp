@@ -55,14 +55,15 @@ public:
     virtual ~Ppia();
 
     // Device
-    
+public:
     virtual word size() const { return 4; }
     virtual void reset();
+protected:
     virtual byte _get_byte(word p_addr, AccessType p_at = AT_UNKNOWN);
     virtual void _set_byte(word p_addr, byte p_byte, AccessType p_at = AT_UNKNOWN);
 
     // TerminalInterface
-
+public:
     virtual Part::id_type id() const { return Part::id(); }
     virtual VDGMode vdg_mode() const;
     virtual void    set_keypress(int p_key);

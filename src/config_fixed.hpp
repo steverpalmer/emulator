@@ -3,6 +3,9 @@
 #ifndef CONFIG_FIXED_HPP_
 #define CONFIG_FIXED_HPP_
 
+#include <vector>
+
+#include "part.hpp"
 #include "config.hpp"
 
 namespace Fixed
@@ -15,7 +18,7 @@ namespace Fixed
         std::vector<const Part::Configurator *>m_parts;
     public:
         explicit Configurator(int argc, char *argv[]);
-        virtual ~Configurator();
+        virtual ~Configurator() {}
         virtual const Part::Configurator *part(int i) const
             { return (i < int(m_parts.size())) ? m_parts[i] : 0; }
     };

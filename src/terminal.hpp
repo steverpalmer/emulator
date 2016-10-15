@@ -8,6 +8,8 @@
 #include <SDL.h>
 
 #include "part.hpp"
+#include "memory.hpp"
+#include "terminal_interface.hpp"
 #include "monitor_view.hpp"
 #include "keyboard_controller.hpp"
 

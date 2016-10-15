@@ -73,8 +73,8 @@ protected:
 protected:
     explicit Memory(const Configurator &);
 protected:
-    virtual byte _get_byte(word p_addr, AccessType p_at = AT_UNKNOWN);
-    virtual void _set_byte(word p_addr, byte p_byte, AccessType p_at = AT_UNKNOWN);
+    virtual byte _get_byte(word p_addr, AccessType p_at = AT_UNKNOWN) = 0;
+    virtual void _set_byte(word p_addr, byte p_byte, AccessType p_at = AT_UNKNOWN) = 0;
 public:
     virtual word size() const = 0;
 

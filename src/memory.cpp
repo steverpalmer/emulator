@@ -167,6 +167,13 @@ void AddressSpace::add_child(word p_base, Memory *p_memory, word p_size)
     }
 }
 
+void AddressSpace::remove_child(Memory *p_memory)
+{
+    assert (p_memory);
+    LOG4CXX_INFO(cpptrace_log(), "[" << id() << "].AddressSpace::remove_child([" << p_memory->id() << "])");
+    m_children.erase(p_memory);
+}
+
 void AddressSpace::clear()
 {
     LOG4CXX_INFO(cpptrace_log(), "[" << id() << "].AddressSpace::clear()");

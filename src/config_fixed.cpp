@@ -33,7 +33,7 @@ namespace Fixed
         Part::id_type m_id;
         explicit PartConfigurator(Part::id_type p_id) : m_id(p_id) {}
     public:
-        virtual ~PartConfigurator();
+        virtual ~PartConfigurator() {}
         inline virtual const Part::id_type &id() const { return m_id; }
     };
 
@@ -50,7 +50,7 @@ namespace Fixed
             , m_size(p_size)
             , m_filename("")
             {}
-        virtual ~RamConfigurator();
+        virtual ~RamConfigurator() {}
         inline virtual word                size()      const { return m_size; }
         inline virtual const Glib::ustring &filename() const { return m_filename; }
     };
@@ -68,7 +68,7 @@ namespace Fixed
             , m_filename(p_filename)
             , m_size(p_size)
             {}
-        virtual ~RomConfigurator();
+        virtual ~RomConfigurator() {}
         inline virtual const Glib::ustring &filename() const { return m_filename; }
         inline virtual word                size()      const { return m_size; }
     };
@@ -81,7 +81,7 @@ namespace Fixed
         explicit PpiaConfigurator(Part::id_type p_id)
             : PartConfigurator(p_id)
             {}
-        virtual ~PpiaConfigurator();
+        virtual ~PpiaConfigurator() {}
     };
 
     class AddressSpaceConfigurator
@@ -122,7 +122,7 @@ namespace Fixed
             : PartConfigurator(p_id)
             , m_memory_id(p_memory_id)
             {}
-        virtual ~MCS6502Configurator();
+        virtual ~MCS6502Configurator() {}
         virtual const Memory::id_type memory_id() const
             { return m_memory_id; }
     };
@@ -139,7 +139,7 @@ namespace Fixed
             {}
         void add(const Device::Configurator *p_device)
             { m_devices.push_back(p_device); }
-        virtual ~ComputerConfigurator();
+        virtual ~ComputerConfigurator() {}
         virtual const Device::Configurator *device(int i) const
             { return (i < int(m_devices.size())) ? m_devices[i] : 0; }
 
@@ -149,8 +149,8 @@ namespace Fixed
         : public KeyboardController::Configurator
     {
     public:
-        explicit KeyboardControllerConfigurator();
-        virtual ~KeyboardControllerConfigurator();
+        explicit KeyboardControllerConfigurator() {}
+        virtual ~KeyboardControllerConfigurator() {}
     };
 
     class MonitorViewConfigurator
@@ -171,7 +171,7 @@ namespace Fixed
             , m_window_title(p_window_title)
             , m_icon_title(p_icon_title)
             {}
-        virtual ~MonitorViewConfigurator();
+        virtual ~MonitorViewConfigurator() {}
         float               scale()         const { return m_scale; }
         const Glib::ustring &fontfilename() const { return m_fontfilename; }
         const Glib::ustring &window_title() const { return m_window_title; }
@@ -198,7 +198,7 @@ namespace Fixed
                 m_keyboard_controller = new KeyboardControllerConfigurator;
                 m_monitor_view = new MonitorViewConfigurator;
             }
-        virtual ~TerminalConfigurator();
+        virtual ~TerminalConfigurator() {}
         const Part::id_type                      &memory_id()           const { return m_memory_id; }
         const Part::id_type                      &controller_id()       const { return m_controller_id; }
         const KeyboardController::Configurator   &keyboard_controller() const { return *m_keyboard_controller; }
