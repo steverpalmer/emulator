@@ -11,9 +11,6 @@
 #include "common.hpp"
 #include "device.hpp"
 
-enum AccessType {AT_UNKNOWN, AT_INSTRUCTION, AT_OPERAND, AT_DATA, AT_LAST};
-extern std::ostream &operator<<(std::ostream &, const AccessType);
-
 /// Model of all memory mapped devices.
 ///
 /// This is the interface that must be supported by all memory mapped devices.
@@ -37,13 +34,15 @@ class Memory
 {
     // Types
 public:
+    enum AccessType {AT_UNKNOWN, AT_INSTRUCTION, AT_OPERAND, AT_DATA, AT_LAST};
+    friend std::ostream &::operator<<(std::ostream &, const AccessType);
     /// The Device Observer is an interface to allow
     /// other classes to observe resets, get_bytes and set_bytes
     class Observer
         : NonCopyable
     {
     protected:
-        Observer();
+        Observer() {}
     public:
         virtual void get_byte_update(Device *p_device, word p_addr, AccessType p_at, byte result) {};
         virtual void set_byte_update(Device *p_device, word p_addr, byte p_byte, AccessType p_at) {};
@@ -56,16 +55,16 @@ public:
         : public Device::Configurator
     {
     protected:
-        Configurator();
+        Configurator() {}
     public:
-        ~Configurator();
+        virtual ~Configurator() {}
     	/// 1. Constructor Information - Name only at this level
     	/// 2. Factory Method
         virtual Memory *memory_factory() const { return 0; }
         virtual Device *device_factory() const
             { return memory_factory(); }
 
-        friend std::ostream &::operator <<(std::ostream &, const Configurator &);
+        friend std::ostream &::operator<<(std::ostream &, const Configurator &);
     };
     // Attributes
 protected:
@@ -119,11 +118,12 @@ class Storage
     std::vector<byte> m_storage;
 public:
     Storage(int size) : m_storage(size, 0) {}
+    virtual ~Storage() {}
     inline word size() const
         { return m_storage.size(); }
-    inline byte get_byte(word p_addr, AccessType p_at)
+    inline byte get_byte(word p_addr, Memory::AccessType p_at)
         { return m_storage[p_addr]; }
-    inline void set_byte(word p_addr, byte p_byte, AccessType p_at)
+    inline void set_byte(word p_addr, byte p_byte, Memory::AccessType p_at)
         { m_storage[p_addr] = p_byte; }
     bool load(const Glib::ustring &p_filename);
     bool save(const Glib::ustring &p_filename) const;
@@ -144,9 +144,9 @@ public:
         : public Memory::Configurator
     {
     protected:
-        Configurator();
+        Configurator() {}
     public:
-        ~Configurator();
+        virtual ~Configurator() {}
     	/// 1. Constructor Information
     	virtual word size() const = 0;
         virtual const Glib::ustring &filename() const = 0;
@@ -154,7 +154,7 @@ public:
         virtual Memory *memory_factory() const
             { return new Ram(*this); }
 
-        friend std::ostream &::operator <<(std::ostream &, const Configurator &);
+        friend std::ostream &::operator<<(std::ostream &, const Configurator &);
     };
     // Attributes
 private:
@@ -189,9 +189,9 @@ public:
         : public Memory::Configurator
     {
     protected:
-        Configurator();
+        Configurator() {}
     public:
-        ~Configurator();
+        virtual ~Configurator() {}
     	/// 1. Constructor Information
         virtual const Glib::ustring &filename() const = 0;
     	virtual word size() const = 0;
@@ -199,7 +199,7 @@ public:
         virtual Memory *memory_factory() const
             { return new Rom(*this); }
 
-        friend std::ostream &::operator <<(std::ostream &, const Configurator &);
+        friend std::ostream &::operator<<(std::ostream &, const Configurator &);
     };
     // Attributes
 private:
@@ -234,9 +234,9 @@ public:
         : public Memory::Configurator
     {
     protected:
-        Configurator();
+        Configurator() {}
     public:
-        ~Configurator();
+        virtual ~Configurator() {}
     	/// 1. Constructor Information
         virtual word size() const { return 0; }
         struct Mapping {
@@ -249,7 +249,7 @@ public:
         virtual Memory *memory_factory() const
             { return new AddressSpace(*this); }
 
-        friend std::ostream &::operator <<(std::ostream &, const Configurator &);
+        friend std::ostream &::operator<<(std::ostream &, const Configurator &);
     };
     // Attributes
 private:

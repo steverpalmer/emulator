@@ -38,10 +38,10 @@ public:
     class Configurator : public Device::Configurator
     {
     protected:
-        Configurator();
+        Configurator() {}
     public:
-        ~Configurator();
-        friend std::ostream &::operator <<(std::ostream &, const Configurator &);
+        virtual ~Configurator() {}
+        friend std::ostream &::operator<<(std::ostream &, const Configurator &);
     };
     // Attributes
 private:
@@ -75,16 +75,13 @@ public:
     class Configurator : public Cpu::Configurator
     {
     protected:
-        Configurator();
-    private:
-        Configurator(const Configurator &);
-        Configurator &operator=(const Configurator &);
+        Configurator() {}
     public:
-        ~Configurator();
+        virtual ~Configurator() {}
         virtual const Memory::id_type memory_id() const = 0;
         virtual Device *device_factory() const
             { return new MCS6502(*this); }
-        friend std::ostream &::operator <<(std::ostream &, const Configurator &);
+        friend std::ostream &::operator<<(std::ostream &, const Configurator &);
     };
     class Instruction; // Forward declaration
     // Attributes

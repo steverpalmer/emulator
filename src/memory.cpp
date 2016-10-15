@@ -243,10 +243,10 @@ std::ostream &operator<<(std::ostream &p_s, const AddressSpace::Configurator &p_
     return p_s;
 }
 
-std::ostream &operator<<(std::ostream &p_s, const AccessType p_at)
+std::ostream &operator<<(std::ostream &p_s, const Memory::AccessType p_at)
 {
-    if (p_at >= 0 && p_at < AT_LAST) {
-        static const char *name[AT_LAST] = {
+    if (p_at >= 0 && p_at < Memory::AT_LAST) {
+        static const char *name[Memory::AT_LAST] = {
             "unknown",
             "instruction",
             "operand",

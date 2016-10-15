@@ -273,12 +273,12 @@ MonitorView::~MonitorView()
     SDL_FreeSurface(m_screen);
 }
 
-void MonitorView::vdg_mode_update(TerminalInterface *p_terminal, VDGMode p_mode)
+void MonitorView::vdg_mode_update(TerminalInterface *p_terminal, TerminalInterface::VDGMode p_mode)
 {
     LOG4CXX_INFO(cpptrace_log(), "MonitorView::vdg_mode_update(" << p_mode << ")");
     switch (p_mode)
     {
-    case VDG_MODE0:
+    case TerminalInterface::VDG_MODE0:
         m_mode = &m_mode0;
     default:
         assert (false);  // TODO: render graphics modes

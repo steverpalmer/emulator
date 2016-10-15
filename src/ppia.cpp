@@ -394,11 +394,11 @@ void Ppia::reset()
     pthread_mutex_unlock(&m_terminal.mutex);
 }
 
-VDGMode Ppia::vdg_mode() const
+TerminalInterface::VDGMode Ppia::vdg_mode() const
 {
     LOG4CXX_INFO(cpptrace_log(), "[" << id() << "].Ppia::vdg_mode()");
     pthread_mutex_lock(&m_terminal.mutex);
-    const VDGMode result(m_terminal.vdg_mode);
+    const TerminalInterface::VDGMode result(m_terminal.vdg_mode);
     pthread_mutex_unlock(&m_terminal.mutex);
     return result;
 }

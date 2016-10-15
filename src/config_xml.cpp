@@ -130,7 +130,7 @@ namespace Xml
     private:
         word m_size;
         const AddressSpace::Configurator::Mapping m_last_memory;
-        std::vector<const AddressSpace::Configurator::Mapping> m_memory;
+        std::vector<AddressSpace::Configurator::Mapping> m_memory;
     public:
         explicit AddressSpaceConfigurator(const xmlpp::Node *p_node)
             : PartConfigurator("address_space")

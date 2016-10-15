@@ -20,9 +20,9 @@ public:
         : public virtual Part::Configurator
     {
     protected:
-        Configurator();
+        Configurator() {}
 	public:
-        ~Configurator();
+        virtual ~Configurator() {}
     public:
         virtual const Part::id_type                    &memory_id() const = 0;
         virtual const Part::id_type                    &controller_id() const = 0;
@@ -31,7 +31,7 @@ public:
         virtual Part *part_factory() const
             { return new Terminal(*this); }
         
-        friend std::ostream &::operator <<(std::ostream &, const Configurator &);
+        friend std::ostream &::operator<<(std::ostream &, const Configurator &);
     };
     // Attributes
 private:
@@ -42,6 +42,7 @@ private:
     // Methods
 public:
     explicit Terminal(const Configurator &);
+    virtual ~Terminal() {}
     void update(SDL_Event *event) { m_keyboard_controller.update(&event->key); }
 
     friend std::ostream &::operator<<(std::ostream &, const Terminal &);

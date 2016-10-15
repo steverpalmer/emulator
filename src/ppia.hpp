@@ -18,18 +18,19 @@ class Ppia
     , public TerminalInterface
 {
 public:
-    class Configurator : public Memory::Configurator
+    class Configurator
+        : public Memory::Configurator
     {
     protected:
-        Configurator();
+        Configurator() {}
     public:
-        ~Configurator();
+        virtual ~Configurator() {}
         /// 1. Constructor Information - Name only
         /// 2. Factory Method
-        virtual Memory* memory_factory() const
+        virtual Memory *memory_factory() const
             { return new Ppia(*this); }
 
-        friend std::ostream &::operator <<(std::ostream &, const Configurator &);
+        friend std::ostream &::operator<<(std::ostream &, const Configurator &);
     };
     // Attributes
 private:
@@ -61,7 +62,8 @@ public:
     virtual void _set_byte(word p_addr, byte p_byte, AccessType p_at = AT_UNKNOWN);
 
     // TerminalInterface
-    
+
+    virtual Part::id_type id() const { return Part::id(); }
     virtual VDGMode vdg_mode() const;
     virtual void    set_keypress(int p_key);
     virtual void    set_is_shift_pressed(bool p_flag);

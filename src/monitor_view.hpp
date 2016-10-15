@@ -22,15 +22,15 @@ public:
         : public NonCopyable
     {
     protected:
-        Configurator();
+        Configurator() {}
 	public:
-        ~Configurator();
+        virtual ~Configurator() {}
         virtual float scale() const = 0;
         virtual const Glib::ustring &fontfilename() const = 0;
         virtual const Glib::ustring &window_title() const = 0;
         virtual const Glib::ustring &icon_title() const = 0;
 
-        friend std::ostream &::operator <<(std::ostream &, const Configurator &);
+        friend std::ostream &::operator<<(std::ostream &, const Configurator &);
     };
 
     class Mode
@@ -42,8 +42,9 @@ public:
         Mode(MonitorView &p_state)
             : m_state(p_state) {}
     public:
-        virtual void render();
-        virtual void set_byte_update(word p_addr, byte p_byte);
+        virtual ~Mode() {}
+        virtual void render() = 0;
+        virtual void set_byte_update(word p_addr, byte p_byte) = 0;
     };
 
     class Mode0
@@ -54,9 +55,9 @@ public:
         std::array<int, 512>           m_rendered;
     public:
         Mode0(MonitorView &p_state, const MonitorView::Configurator &p_cfgr);
-        ~Mode0();
-        virtual void set_byte_update(word p_addr, byte p_byte);
+        virtual ~Mode0();
         virtual void render();
+        virtual void set_byte_update(word p_addr, byte p_byte);
     };
 
 private:
@@ -68,9 +69,9 @@ private:
 private:
     SDL_Surface *scale_and_convert_surface(SDL_Surface *src);
     inline void render() { if (m_mode) m_mode->render(); }
-    virtual void set_byte_update(Memory *p_memory, word p_addr, byte p_byte, AccessType p_at)
+    virtual void set_byte_update(Memory *p_memory, word p_addr, byte p_byte, Memory::AccessType p_at)
         { if (m_mode) m_mode->set_byte_update(p_addr, p_byte); }
-    virtual void vdg_mode_update(TerminalInterface *p_terminal, VDGMode p_mode);
+    virtual void vdg_mode_update(TerminalInterface *p_terminal, TerminalInterface::VDGMode p_mode);
 public:
     MonitorView(TerminalInterface *, Memory *, const Configurator &);
     virtual ~MonitorView();
@@ -79,4 +80,4 @@ public:
 };
 
 
-#endif /* MONITOR_VIEW_HPP_ */
+#endif

@@ -41,4 +41,4 @@ public:
 	}
 };
 
-#endif /* COMMON_HPP_ */
+#endif

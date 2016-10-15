@@ -25,15 +25,15 @@ public:
         : public virtual Part::Configurator
     {
     protected:
-        Configurator();
+        Configurator() {}
     public:
-        ~Configurator();
+        virtual ~Configurator() {}
     	/// 1. Constructor Information - Name only at this level
     	/// 2. Factory Method
         virtual Device *device_factory() const {return 0; }
         virtual Part *part_factory() const { return device_factory(); }
 
-        friend std::ostream &::operator <<(std::ostream &, const Configurator &);
+        friend std::ostream &::operator<<(std::ostream &, const Configurator &);
     };
     // Attributes
 protected:
@@ -67,16 +67,16 @@ public:
         : public Device::Configurator
     {
     protected:
-        Configurator();
+        Configurator() {}
     public:
-        ~Configurator();
+        virtual ~Configurator() {}
     	/// 1. Constructor Information
         virtual const Device::Configurator *device(int i) const = 0;
         /// 2. Factory Method
         virtual Device *device_factory() const
             { return new Computer(*this); }
 
-        friend std::ostream &::operator <<(std::ostream &, const Configurator &);
+        friend std::ostream &::operator<<(std::ostream &, const Configurator &);
     };
     // Attributes
 private:

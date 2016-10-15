@@ -31,4 +31,4 @@ namespace Xml
 
 }
 
-#endif /* CONFIG_XML_HPP_ */
+#endif

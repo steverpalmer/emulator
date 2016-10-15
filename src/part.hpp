@@ -30,13 +30,13 @@ public:
         : public NonCopyable
 	{
     protected:
-        Configurator();
+        Configurator() {}
 	public:
-        virtual ~Configurator();
+        virtual ~Configurator() {}
 		virtual const id_type &id() const = 0;
         virtual Part *part_factory() const { return 0; }
 
-		friend std::ostream &::operator <<(std::ostream &, const Configurator &);
+		friend std::ostream &::operator<<(std::ostream &, const Configurator &);
 	};
 private:
 	const id_type m_id; // Not necessarily Canonical!
@@ -61,9 +61,9 @@ public:
         : public NonCopyable
     {
     protected:
-        Configurator();
+        Configurator() {}
     public:
-        ~Configurator();
+        virtual ~Configurator() {}
         virtual const Part::Configurator *part(int i) const = 0;
 
         friend std::ostream &::operator<<(std::ostream &, const Configurator &);
@@ -84,7 +84,7 @@ private:
     static PartsBin *s_instance;
     int self_check() const;
 public:
-    virtual ~PartsBin();
+    virtual ~PartsBin() {}
     static PartsBin &instance();
     void build(const Configurator &p_cfg)
         {

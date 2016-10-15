@@ -18,11 +18,11 @@ public:
         : public NonCopyable
     {
     protected:
-        Configurator();
+        Configurator() {}
 	public:
-        ~Configurator();
+        virtual ~Configurator() {}
 
-        friend std::ostream &::operator <<(std::ostream &, const Configurator &);
+        friend std::ostream &::operator<<(std::ostream &, const Configurator &);
     };
 private:
     TerminalInterface *m_terminal_interface;
@@ -33,4 +33,4 @@ public:
     friend std::ostream &::operator<<(std::ostream&, const KeyboardController &);
 };
 
-#endif /* KEYBOARD_CONTROLLER_HPP_ */
+#endif

@@ -91,7 +91,7 @@ namespace Fixed
     private:
         word m_size;
         const AddressSpace::Configurator::Mapping m_last_memory;
-        std::vector<const AddressSpace::Configurator::Mapping> m_memories;
+        std::vector<AddressSpace::Configurator::Mapping> m_memories;
     public:
         explicit AddressSpaceConfigurator(Part::id_type p_id, word p_size=0)
             : PartConfigurator(p_id)
@@ -99,7 +99,7 @@ namespace Fixed
             , m_last_memory( { 0, 0, 0 } )
             {}
         void add(word p_base, const Memory::Configurator *p_memory, word p_size=0)
-            { m_memories.push_back(new Memory::Configurator::Mapping(p_base, p_memory, p_size)); }
+            { m_memories.push_back(new AddressSpace::Configurator::Mapping(p_base, p_memory, p_size)); }
         virtual ~AddressSpaceConfigurator()
             {
                 for (auto &m : m_memories)

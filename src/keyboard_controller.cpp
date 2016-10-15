@@ -86,7 +86,7 @@ void KeyboardController::update(SDL_KeyboardEvent *p_key_event)
             m_terminal_interface->set_is_rept_pressed(false);
             break;
         case SDLK_CAPSLOCK:
-            m_terminal_interface->set_keypress(KBD_LOCK);
+            m_terminal_interface->set_keypress(TerminalInterface::KBD_LOCK);
             break;
         case SDLK_NUMLOCK:
         case SDLK_SCROLLOCK:
@@ -104,7 +104,7 @@ void KeyboardController::update(SDL_KeyboardEvent *p_key_event)
             // Do Nothing
             break;
         default:
-            m_terminal_interface->set_keypress(KBD_NO_KEYPRESS);
+            m_terminal_interface->set_keypress(TerminalInterface::KBD_NO_KEYPRESS);
             break;
         }
         break;
@@ -141,22 +141,22 @@ void KeyboardController::update(SDL_KeyboardEvent *p_key_event)
                 m_terminal_interface->set_keypress(0);
                 break;
             case SDLK_LEFT:
-                m_terminal_interface->set_keypress(KBD_LEFT);
+                m_terminal_interface->set_keypress(TerminalInterface::KBD_LEFT);
                 break;
             case SDLK_UP:
-                m_terminal_interface->set_keypress(KBD_UP);
+                m_terminal_interface->set_keypress(TerminalInterface::KBD_UP);
                 break;
             case SDLK_RIGHT:
-                m_terminal_interface->set_keypress(KBD_RIGHT);
+                m_terminal_interface->set_keypress(TerminalInterface::KBD_RIGHT);
                 break;
             case SDLK_DOWN:
-                m_terminal_interface->set_keypress(KBD_DOWN);
+                m_terminal_interface->set_keypress(TerminalInterface::KBD_DOWN);
                 break;
             case SDLK_CAPSLOCK:
-                m_terminal_interface->set_keypress(KBD_LOCK);
+                m_terminal_interface->set_keypress(TerminalInterface::KBD_LOCK);
                 break;
             case SDLK_F1:
-                m_terminal_interface->set_keypress(KBD_COPY);
+                m_terminal_interface->set_keypress(TerminalInterface::KBD_COPY);
                 break;
 #if 0
             case SDLK_F12:
@@ -179,7 +179,7 @@ void KeyboardController::update(SDL_KeyboardEvent *p_key_event)
                 // Do Nothing
                 break;
             default:
-                m_terminal_interface->set_keypress(KBD_NO_KEYPRESS);
+                m_terminal_interface->set_keypress(TerminalInterface::KBD_NO_KEYPRESS);
                 break;
             }
         }
