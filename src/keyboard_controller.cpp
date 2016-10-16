@@ -60,10 +60,12 @@ static log4cxx::LoggerPtr cpptrace_log()
     return result;
 }
 
-KeyboardController::KeyboardController(TerminalInterface *p_terminal_interface, const Configurator &p_cfg)
+KeyboardController::KeyboardController(TerminalInterface *p_terminal_interface, const Configurator &p_cfgr)
     : m_terminal_interface(p_terminal_interface)
 {
-    LOG4CXX_INFO(cpptrace_log(), "KeyboardController::KeyboardController(" << p_cfg << ")");
+    LOG4CXX_INFO(cpptrace_log(), "KeyboardController::KeyboardController("
+                 << "<controller name=\"" << p_terminal_interface->id() << "\"/>"
+                 << p_cfgr << ")");
     (void)SDL_EnableUNICODE(1);
 }
 

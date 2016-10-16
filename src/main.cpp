@@ -44,7 +44,7 @@ public:
 
             PartsBin::instance().build(*cfg);
             delete cfg;
-
+#if 0
             Terminal *terminal = dynamic_cast<Terminal *>(PartsBin::instance()["terminal"]);
             assert (terminal);
 
@@ -69,6 +69,7 @@ public:
                 }
             LOG4CXX_INFO(cpptrace_log(), "Atom is about to stop ...");
             atom->pause();
+#endif
         }
 
     virtual ~Main()

@@ -250,7 +250,11 @@ MonitorView::MonitorView(TerminalInterface *p_terminal_interface,
     , m_mode(0)
     , m_mode0(*this, p_cfgr)
 {
-    LOG4CXX_INFO(cpptrace_log(), "MonitorView::MonitorView(" << p_cfgr << ")");
+    LOG4CXX_INFO(cpptrace_log(),
+                 "MonitorView::MonitorView("
+                 << "<controller name=\"" << p_terminal_interface->id() << "\"/>"
+                 << "<memory name=\"" << p_memory->id() << "\"/>"
+                 << p_cfgr << ")");
     assert (p_terminal_interface);
     assert (p_memory);
     assert (p_cfgr.scale() >= 1.0);

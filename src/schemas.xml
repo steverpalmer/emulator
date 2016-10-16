@@ -3,7 +3,6 @@
   <uri resource="systemrc.xml" uri="emulator.rnc"/>
   <uri resource="minimalrc.xml" uri="emulator.rnc"/>
   <uri resource="nominalrc.xml" uri="emulator.rnc"/>
-  <uri resource="atomrc_errs.xml" uri="atom.rnc"/>
-  <uri resource="atomrc.xml" uri="atom.rnc"/>
+  <uri resource="atomrc.xml" uri="emulator.rnc"/>
   <uri resource="relaxng.rng" uri="relaxng.rnc"/>
 </locatingRules>

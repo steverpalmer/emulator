@@ -21,7 +21,7 @@ Part::Part(const Part::Configurator &p_cfgr)
 
 Part::~Part()
 {
-    LOG4CXX_INFO(cpptrace_log(), "Part::~Part(" << id() << ")");
+    LOG4CXX_INFO(cpptrace_log(), "Part::~Part([" << id() << "])");
     (void) PartsBin::instance().erase(m_id);
 }
 
@@ -31,6 +31,7 @@ const Part::id_type Part::id_up   = "..";
     
 std::unique_ptr<Part::id_type> Part::canonical_id(const id_type &p_s)
 {
+#if 0
     LOG4CXX_INFO(cpptrace_log(), "Part::canonical_id(" << p_s << ")");
     std::list<Glib::ustring> l;
     const Glib::ustring s(p_s.normalize());
@@ -81,17 +82,23 @@ std::unique_ptr<Part::id_type> Part::canonical_id(const id_type &p_s)
     if (*result == "")
         *result += Part::id_delimiter;
     return result;
+#else
+    return std::unique_ptr<Glib::ustring>(new Glib::ustring(p_s));
+#endif
 }
 
 int PartsBin::self_check() const
 {
+#if 0
     LOG4CXX_INFO(cpptrace_log(), "PartsBin::self_check()");
     for (const auto &i : m_bin)
     {
         const std::unique_ptr<Part::id_type> s(Part::canonical_id(i.first));
         if (i.first != *s) return 1;
     }
+#endif
     return 0;
+    
 }
 
 

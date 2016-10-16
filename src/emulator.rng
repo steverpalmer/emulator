@@ -268,7 +268,6 @@
   <rng:define name="base_elm">
     <rng:element name="base">
       <rng:choice>
-        <rng:data type="int"/>
         <rng:ref name="hex16_type"/>
       </rng:choice>
       </rng:element>
@@ -277,7 +276,6 @@
   <rng:define name="size_elm">
     <rng:element name="size">
       <rng:choice>
-        <rng:data type="int"/>
         <rng:ref name="hex16_type"/>
       </rng:choice>
     </rng:element>
@@ -285,7 +283,7 @@
 
   <rng:define name="hex16_type">
     <rng:data type="token">
-      <rng:param name="pattern">0x[a-fA-f0-9]{4}</rng:param>
+      <rng:param name="pattern">(#[a-fA-f0-9]{1,4})|([0-9]+)</rng:param>
     </rng:data>
   </rng:define>
 
