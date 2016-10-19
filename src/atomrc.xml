@@ -1,6 +1,5 @@
 <?xml version="1.0" ?>
-<!-- emulator xmlns="http://www.srpalmer.me.uk/ns/emulator" version="0.05" -->
-<emulator version="0.05">
+<emulator xmlns="http://www.srpalmer.me.uk/ns/emulator" version="0.05">
 
   <computer name="atom">
     <address_space>

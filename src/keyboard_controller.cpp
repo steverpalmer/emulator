@@ -191,14 +191,13 @@ void KeyboardController::update(SDL_KeyboardEvent *p_key_event)
     }
 }
 
-std::ostream &operator<<(std::ostream &p_s, const KeyboardController::Configurator &p_cfgr)
+
+void KeyboardController::Configurator::serialize(std::ostream &p_s) const
 {
-    return p_s;
 }
 
-std::ostream &operator<<(std::ostream &p_s, const KeyboardController &p_kc)
+void KeyboardController::serialize(std::ostream &p_s) const
 {
-    return p_s << "KeyboardController("
-               << p_kc.m_terminal_interface
-               << ")";
+    p_s << "KeyboardController("
+        << ")";
 }

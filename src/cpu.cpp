@@ -2357,7 +2357,7 @@ MCS6502::MCS6502(const Configurator &p_cfgr)
     , m_InterruptSource(NO_INTERRUPT)
 {
     LOG4CXX_INFO(cpptrace_log(), "MCS6502::MCS6502(" << p_cfgr << ")");
-    m_memory = dynamic_cast<Memory *>(PartsBin::instance()[p_cfgr.memory_id()]);
+    m_memory = p_cfgr.memory()->memory_factory();
     assert (m_memory);
     m_memory->add_parent(this);
     assert (SIZE(m_memory->size()) == 65536);
@@ -2690,16 +2690,13 @@ void MCS6502::trace_finish()
 #endif
 
 
-std::ostream &operator<<(std::ostream &p_s, const Cpu::Configurator &p_cfgr)
+void MCS6502::Configurator::serialize(std::ostream&p_s) const
 {
-    return p_s << static_cast<const Part::Configurator &>(p_cfgr);
-}
-
-std::ostream &operator<<(std::ostream &p_s, const MCS6502::Configurator &p_cfgr)
-{
-    return p_s << "<mcs6502 " << static_cast<const Cpu::Configurator &>(p_cfgr) << ">"
-               << "<memory name=\"" << p_cfgr.memory_id() << "\"/>"
-               << "</mcs6502>";
+    p_s << "<mcs6502";
+    Cpu::Configurator::serialize(p_s);
+    p_s << ">";
+    memory()->serialize(p_s);
+    p_s << "</mcs6502>";
 }
 
 std::ostream &operator<<(std::ostream &p_s, const InterruptState &p_is)
@@ -2717,11 +2714,11 @@ std::ostream &operator<<(std::ostream &p_s, const InterruptState &p_is)
     return p_s;
 }
 
-std::ostream &operator<<(std::ostream &p_s, const Cpu &p_cpu)
+void Cpu::serialize(std::ostream &p_s) const
 {
-    return p_s << static_cast<const Part &>(p_cpu)
-               << ", Running("   << !pthread_equal(p_cpu.m_thread, pthread_self()) << ")"
-               << ", StepsToGo(" << p_cpu.m_steps_to_go << ")";
+    Device::serialize(p_s);
+    p_s << ", Running("   << !pthread_equal(m_thread, pthread_self()) << ")"
+        << ", StepsToGo(" << m_steps_to_go << ")";
 }
 
 std::ostream &operator<<(std::ostream &p_s, const InterruptSource &p_is)
@@ -2770,16 +2767,16 @@ std::ostream &operator<<(std::ostream &p_s, const MCS6502::Instruction &p_i)
     return p_s << std::endl;
 }
 
-std::ostream &operator<<(std::ostream &p_s, const MCS6502 &p_mcs6502)
+void MCS6502::serialize(std::ostream &p_s) const
 {
-    return p_s << "MCS6502("
-               << static_cast<const Cpu &>(p_mcs6502)
-               << ", Memory("  << p_mcs6502.m_memory->id() << ")"
-               << ", PC(" << Hex(p_mcs6502.m_register.PC) << ")"
-               << ", A("  << Hex(p_mcs6502.m_register.A) << ")"
-               << ", X("  << Hex(p_mcs6502.m_register.X) << ")"
-               << ", Y("  << Hex(p_mcs6502.m_register.Y) << ")"
-               << ", S("  << Hex(p_mcs6502.m_register.S) << ")"
-               << ", P("  << Hex(p_mcs6502.m_register.P) << ")"
-               << ", IntrSrc(" << p_mcs6502.m_InterruptSource << ")";
+    p_s << "MCS6502(";
+    Cpu::serialize(p_s);
+    p_s << ", MemoryRef("  << m_memory->id() << ")"
+        << ", PC(" << Hex(m_register.PC) << ")"
+        << ", A("  << Hex(m_register.A) << ")"
+        << ", X("  << Hex(m_register.X) << ")"
+        << ", Y("  << Hex(m_register.Y) << ")"
+        << ", S("  << Hex(m_register.S) << ")"
+        << ", P("  << Hex(m_register.P) << ")"
+        << ", IntrSrc(" << m_InterruptSource << ")";
 }

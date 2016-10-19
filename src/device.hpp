@@ -33,7 +33,8 @@ public:
         virtual Device *device_factory() const {return 0; }
         virtual Part *part_factory() const { return device_factory(); }
 
-        friend std::ostream &::operator<<(std::ostream &, const Configurator &);
+        virtual void serialize(std::ostream &p_s) const
+            { Part::Configurator::serialize(p_s); }
     };
     // Attributes
 protected:
@@ -51,7 +52,8 @@ public:
     virtual void pause() {};
     virtual void resume() {};
 
-    friend std::ostream &::operator<<(std::ostream &, const Device &);
+    virtual void serialize(std::ostream &p_s) const
+        { Part::serialize(p_s); }
 };
 
 
@@ -76,7 +78,7 @@ public:
         virtual Device *device_factory() const
             { return new Computer(*this); }
 
-        friend std::ostream &::operator<<(std::ostream &, const Configurator &);
+        virtual void serialize(std::ostream &) const;
     };
     // Attributes
 private:
@@ -94,7 +96,7 @@ public:
     virtual void pause();
     virtual void resume();
 
-    friend std::ostream &::operator<<(std::ostream &, const Computer &);
+    virtual void serialize(std::ostream &) const;
 };
 
 

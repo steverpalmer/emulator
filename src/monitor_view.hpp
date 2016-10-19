@@ -30,7 +30,9 @@ public:
         virtual const Glib::ustring &window_title() const = 0;
         virtual const Glib::ustring &icon_title() const = 0;
 
-        friend std::ostream &::operator<<(std::ostream &, const Configurator &);
+        virtual void serialize(std::ostream &) const;
+        friend std::ostream &::operator<<(std::ostream &p_s, const Configurator &p_cfgr)
+            { p_cfgr.serialize(p_s); return p_s; }
     };
 
     class Mode
@@ -76,7 +78,9 @@ public:
     MonitorView(TerminalInterface *, Memory *, const Configurator &);
     virtual ~MonitorView();
 
-    friend std::ostream &::operator<<(std::ostream&, const MonitorView &);
+    virtual void serialize(std::ostream &) const;
+    friend std::ostream &::operator<<(std::ostream &p_s, const MonitorView &p_mv)
+        { p_mv.serialize(p_s); return p_s; }
 };
 
 

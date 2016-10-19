@@ -36,6 +36,7 @@ class Memory
 public:
     enum AccessType {AT_UNKNOWN, AT_INSTRUCTION, AT_OPERAND, AT_DATA, AT_LAST};
     friend std::ostream &::operator<<(std::ostream &, const AccessType);
+
     /// The Device Observer is an interface to allow
     /// other classes to observe resets, get_bytes and set_bytes
     class Observer
@@ -64,7 +65,8 @@ public:
         virtual Device *device_factory() const
             { return memory_factory(); }
 
-        friend std::ostream &::operator<<(std::ostream &, const Configurator &);
+        virtual void serialize(std::ostream &p_s) const
+            { Device::Configurator::serialize(p_s); }
     };
     // Attributes
 protected:
@@ -100,8 +102,9 @@ public:
     void set_word(word p_addr, word p_word, AccessType p_at = AT_UNKNOWN);
 
     friend class Observer;
-    
-    friend std::ostream &::operator<<(std::ostream &, const Memory &);
+
+    virtual void serialize(std::ostream &p_s) const
+        { Device::serialize(p_s); }
 };
 
 
@@ -154,7 +157,7 @@ public:
         virtual Memory *memory_factory() const
             { return new Ram(*this); }
 
-        friend std::ostream &::operator<<(std::ostream &, const Configurator &);
+        virtual void serialize(std::ostream &) const;
     };
     // Attributes
 private:
@@ -172,7 +175,7 @@ protected:
     virtual void _set_byte(word p_addr, byte p_byte, AccessType p_at = AT_UNKNOWN)
         { m_storage.set_byte(p_addr, p_byte, p_at); }
 
-    friend std::ostream &::operator<<(std::ostream &, const Ram &);
+    virtual void serialize(std::ostream &) const;
 };
 
 
@@ -199,7 +202,7 @@ public:
         virtual Memory *memory_factory() const
             { return new Rom(*this); }
 
-        friend std::ostream &::operator<<(std::ostream &, const Configurator &);
+        virtual void serialize(std::ostream &) const;
     };
     // Attributes
 private:
@@ -216,7 +219,7 @@ protected:
     virtual void _set_byte(word p_addr, byte p_byte, AccessType p_at = AT_UNKNOWN)
         { /* Do Nothing! */ }
 
-    friend std::ostream &::operator<<(std::ostream &, const Rom &);
+    virtual void serialize(std::ostream &) const;
 };
 
 
@@ -249,7 +252,7 @@ public:
         virtual Memory *memory_factory() const
             { return new AddressSpace(*this); }
 
-        friend std::ostream &::operator<<(std::ostream &, const Configurator &);
+        virtual void serialize(std::ostream &) const;
     };
     // Attributes
 private:
@@ -272,7 +275,7 @@ public:
     virtual void pause();
     virtual void resume();
 
-    friend std::ostream &::operator<<(std::ostream &, const AddressSpace &);
+    virtual void serialize(std::ostream &) const;
 };
 
 

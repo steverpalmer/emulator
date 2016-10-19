@@ -23,23 +23,24 @@ Terminal::Terminal(const Configurator &p_cfgr)
 }
 
 
-std::ostream &operator<<(std::ostream &p_s, const Terminal::Configurator &p_cfgr)
+void Terminal::Configurator::serialize(std::ostream &p_s) const
 {
-    return p_s << "<terminal " << static_cast<const Part::Configurator &>(p_cfgr) << ">"
-               << "<memory name=\"" << p_cfgr.memory_id() << "\"/>"
-               << "<controller name=\"" << p_cfgr.controller_id() << "\"/>"
-               << p_cfgr.monitor_view()
-               << p_cfgr.keyboard_controller()
-               << "</terminal>";
+    p_s << "<terminal";
+    Part::Configurator::serialize(p_s);
+    p_s << "<memory name=\"" << memory_id() << "\"/>"
+        << "<controller name=\"" << controller_id() << "\"/>"
+        << monitor_view()
+        << keyboard_controller()
+        << "</terminal>";
 }
 
-std::ostream &operator<<(std::ostream &p_s, const Terminal &p_t)
+void Terminal::serialize(std::ostream &p_s) const
 {
-    return p_s << "Terminal("
-               << static_cast<const Part &>(p_t)
-               << "Memory(" << p_t.m_memory->id() << ")"
-               << "TerminalInterface(" << p_t.m_terminal_interface->id() << ")"
-               << p_t.m_monitor_view
-               << p_t.m_keyboard_controller
-               << ")";
+    p_s << "Terminal(";
+    Part::serialize(p_s);
+    p_s << "Memory(" << m_memory->id() << ")"
+        << "TerminalInterface(" << m_terminal_interface->id() << ")"
+        << m_monitor_view
+        << m_keyboard_controller
+        << ")";
 }

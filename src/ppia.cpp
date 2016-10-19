@@ -436,24 +436,26 @@ void Ppia::set_is_rept_pressed(bool p_is_rept_pressed)
 }
 
 
-std::ostream &operator<<(std::ostream &p_s, const Ppia::Configurator &p_cfgr)
+void Ppia::Configurator::serialize(std::ostream &p_s) const
 {
-    return p_s << "<ppia " << static_cast<const Memory::Configurator &>(p_cfgr) << "/>";
+    p_s << "<ppia";
+    Memory::Configurator::serialize(p_s);
+    p_s << "/>";
 }
 
-std::ostream &operator<<(std::ostream &p_s, const Ppia &p_ppia)
+void Ppia::serialize(std::ostream &p_s) const
 {
-    pthread_mutex_lock(&p_ppia.m_terminal.mutex);
-    p_s << "Ppia("
-        << static_cast<const Memory &>(p_ppia)
-        << ", PortA("   << Hex(p_ppia.m_register[PortA]) << ")"
-        << ", PortB("   << Hex(p_ppia.m_register[PortB]) << ")"
-        << ", PortC("   << Hex(p_ppia.m_register[PortC]) << ")"
-        << ", Control(" << Hex(p_ppia.m_register[ControlPort]) << ")"
-        << ", Key("     << p_ppia.m_terminal.pressed_key << ")"
-        << ", Shift("   << p_ppia.m_terminal.is_shift_pressed << ")"
-        << ", Ctrl("    << p_ppia.m_terminal.is_ctrl_pressed << ")"
-        << ", Alt("     << p_ppia.m_terminal.is_rept_pressed << ")";
-    pthread_mutex_unlock(&p_ppia.m_terminal.mutex);
-    return p_s << ")";
+    p_s << "Ppia(";
+    Memory::serialize(p_s);
+    pthread_mutex_lock(&m_terminal.mutex);
+    p_s << ", PortA("   << Hex(m_register[PortA]) << ")"
+        << ", PortB("   << Hex(m_register[PortB]) << ")"
+        << ", PortC("   << Hex(m_register[PortC]) << ")"
+        << ", Control(" << Hex(m_register[ControlPort]) << ")"
+        << ", Key("     << m_terminal.pressed_key << ")"
+        << ", Shift("   << m_terminal.is_shift_pressed << ")"
+        << ", Ctrl("    << m_terminal.is_ctrl_pressed << ")"
+        << ", Alt("     << m_terminal.is_rept_pressed << ")";
+    pthread_mutex_unlock(&m_terminal.mutex);
+    p_s << ")";
 }

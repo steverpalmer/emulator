@@ -30,7 +30,7 @@ public:
         virtual Memory *memory_factory() const
             { return new Ppia(*this); }
 
-        friend std::ostream &::operator<<(std::ostream &, const Configurator &);
+        virtual void serialize(std::ostream &) const;
     };
     // Attributes
 private:
@@ -70,8 +70,8 @@ public:
     virtual void    set_is_shift_pressed(bool p_flag);
     virtual void    set_is_ctrl_pressed(bool p_flag);
     virtual void    set_is_rept_pressed(bool p_flag);
-    
-    friend std::ostream &::operator<<(std::ostream&, const Ppia &);
+
+    virtual void serialize(std::ostream &) const;
 };
 
 #endif

@@ -35,8 +35,9 @@ public:
         virtual ~Configurator() {}
 		virtual const id_type &id() const = 0;
         virtual Part *part_factory() const { return 0; }
-
-		friend std::ostream &::operator<<(std::ostream &, const Configurator &);
+        virtual void serialize(std::ostream &) const;
+		friend std::ostream &::operator<<(std::ostream &p_s, const Configurator &p_cfgr)
+            { p_cfgr.serialize(p_s); return p_s; }
 	};
 private:
 	const id_type m_id; // Not necessarily Canonical!
@@ -48,7 +49,9 @@ protected:
 public:
     virtual ~Part();
 
-	friend std::ostream &::operator<<(std::ostream &, const Part &);
+    virtual void serialize(std::ostream &) const;
+	friend std::ostream &::operator<<(std::ostream &p_s, const Part &p_p)
+        { p_p.serialize(p_s); return p_s; }
 };
 
 
@@ -66,7 +69,9 @@ public:
         virtual ~Configurator() {}
         virtual const Part::Configurator *part(int i) const = 0;
 
-        friend std::ostream &::operator<<(std::ostream &, const Configurator &);
+        virtual void serialize(std::ostream &) const;
+        friend std::ostream &::operator<<(std::ostream &p_s, const Configurator &p_cfgr)
+            { p_cfgr.serialize(p_s); return p_s; }
     };
 public: // Types
     typedef Part::id_type                          key_type;
@@ -237,6 +242,10 @@ public:
             assert (self_check() == 0);
             return m_bin.find(*Part::canonical_id(key));
         }
+    virtual void serialize(std::ostream &) const;
+    friend std::ostream &::operator<<(std::ostream &p_s, const PartsBin &p_pb)
+        { p_pb.serialize(p_s); return p_s; }
+
 };
 
 #endif

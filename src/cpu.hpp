@@ -41,7 +41,8 @@ public:
         Configurator() {}
     public:
         virtual ~Configurator() {}
-        friend std::ostream &::operator<<(std::ostream &, const Configurator &);
+        virtual void serialize(std::ostream &p_s) const
+            { Device::Configurator::serialize(p_s); }
     };
     // Attributes
 private:
@@ -65,7 +66,7 @@ public:
     virtual void NMI(InterruptState p_is = INTERRUPT_PULSE) = 0;
     virtual void IRQ(InterruptState p_is = INTERRUPT_PULSE) = 0;
 
-    friend std::ostream &::operator<<(std::ostream&, const Cpu&);
+    virtual void serialize(std::ostream &) const;
 };
 
 class MCS6502
@@ -78,10 +79,10 @@ public:
         Configurator() {}
     public:
         virtual ~Configurator() {}
-        virtual const Memory::id_type memory_id() const = 0;
+        virtual const Memory::Configurator *memory() const = 0;
         virtual Device *device_factory() const
             { return new MCS6502(*this); }
-        friend std::ostream &::operator<<(std::ostream &, const Configurator &);
+        virtual void serialize(std::ostream &) const;
     };
     class Instruction; // Forward declaration
     // Attributes
@@ -124,7 +125,7 @@ public:
     void trace_finish();
 #endif
 
-    friend std::ostream &::operator<<(std::ostream&, const MCS6502&);
+    virtual void serialize(std::ostream &) const;
 };
 
 #endif

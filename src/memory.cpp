@@ -225,40 +225,42 @@ void AddressSpace::resume()
 
 // Streaming Output
 
-std::ostream &operator<<(std::ostream &p_s, const Memory::Configurator &p_cfgr)
+void Ram::Configurator::serialize(std::ostream &p_s) const
 {
-    return p_s << static_cast<const Device::Configurator &>(p_cfgr);
+    p_s << "<ram ";
+    Memory::Configurator::serialize(p_s);
+    p_s << ">"
+        << "<size>" << Hex(size()) << "</size>"
+        << "<filename>" << filename() << "</filename>"
+        << "</ram>";
 }
 
-std::ostream &operator<<(std::ostream &p_s, const Ram::Configurator &p_cfgr)
+void Rom::Configurator::serialize(std::ostream &p_s) const
 {
-    return p_s << "<ram " << static_cast<const Device::Configurator &>(p_cfgr) << ">"
-               << "<size>" << Hex(p_cfgr.size()) << "</size>"
-               << "<filename>" << p_cfgr.filename() << "</filename>"
-               << "</ram>";
+    p_s << "<rom ";
+    Memory::Configurator::serialize(p_s);
+    p_s << ">"
+        << "<filename>" << filename() << "</filename>"
+        << "<size>" << Hex(size()) << "</size>"
+        << "</rom>";
 }
 
-std::ostream &operator<<(std::ostream &p_s, const Rom::Configurator &p_cfgr)
+void AddressSpace::Configurator::serialize(std::ostream &p_s) const
 {
-    return p_s << "<rom " << static_cast<const Device::Configurator &>(p_cfgr) << ">"
-               << "<filename>" << p_cfgr.filename() << "</filename>"
-               << "<size>" << Hex(p_cfgr.size()) << "</size>"
-               << "</rom>";
-}
-
-std::ostream &operator<<(std::ostream &p_s, const AddressSpace::Configurator &p_cfgr)
-{
-    p_s << "<address_space " << static_cast<const Memory::Configurator &>(p_cfgr) << ">"
-        << "<size>" << Hex(p_cfgr.size()) << "</size>";
-    AddressSpace::Configurator::Mapping mapping;
-    for (int i(0); (mapping = p_cfgr.mapping(i), mapping.memory); i++)
+    p_s << "<address_space ";
+    Memory::Configurator::serialize(p_s);
+    p_s << ">"
+        << "<size>" << Hex(size()) << "</size>";
+    AddressSpace::Configurator::Mapping map;
+    for (int i(0); (map = mapping(i), map.memory); i++)
+    {
         p_s << "<map>"
-            << "<base>" << Hex(mapping.base) << "</base>"
-            << *mapping.memory
-            << "<size>" << Hex(mapping.size) << "</size>"
+            << "<base>" << Hex(map.base) << "</base>";
+        map.memory->serialize(p_s);
+        p_s << "<size>" << Hex(map.size) << "</size>"
             << "</map>";
+    }
     p_s << "</address_space";
-    return p_s;
 }
 
 std::ostream &operator<<(std::ostream &p_s, const Memory::AccessType p_at)
@@ -277,14 +279,9 @@ std::ostream &operator<<(std::ostream &p_s, const Memory::AccessType p_at)
     return p_s;
 }
 
-std::ostream &operator<<(std::ostream &p_s, const Memory &p_memory)
-{
-    return p_s << static_cast<const Device &>(p_memory)
-               << ", size(" << Hex(p_memory.size()) << ")";
-}
-
 std::ostream &operator<<(std::ostream &p_s, const Storage &p_storage)
 {
+    p_s << "Storage(";
     if (p_storage.size() >= 0x20)
         p_s << std::endl;
     for (word addr(0); addr < p_storage.size();) {
@@ -296,42 +293,42 @@ std::ostream &operator<<(std::ostream &p_s, const Storage &p_storage)
         while (addr & 0x1F);
         p_s << std::endl;
     }
-    return p_s;
-}
-
-std::ostream &operator<<(std::ostream &p_s, const Ram &p_ram)
-{
-    p_s << "Ram("
-        << static_cast<const Memory &>(p_ram)
-        << ", memory(" << p_ram.m_storage << ")";
-    if (!p_ram.m_filename.empty())
-        p_s << ", filename(" << p_ram.m_filename << ")";
     return p_s << ")";
 }
 
-std::ostream &operator<<(std::ostream &p_s, const Rom &p_rom)
+void Ram::serialize(std::ostream &p_s) const
 {
-    p_s << "Rom("
-        << static_cast<const Memory &>(p_rom)
-        << ", memory(" << p_rom.m_storage << ")";
-    return p_s << ")";
+    p_s << "Ram(";
+    Memory::serialize(p_s);
+    p_s << ", " << m_storage;
+    if (!m_filename.empty())
+        p_s << ", filename(\"" << m_filename << "\")";
+    p_s << ")";
 }
 
-std::ostream &operator<<(std::ostream &p_s, const AddressSpace &p_address_space)
+void Rom::serialize(std::ostream &p_s) const
 {
-    p_s << "AddressSpace("
-        << static_cast<const Memory &>(p_address_space);
+    p_s << "Rom(";
+    Memory::serialize(p_s);
+    p_s << ", " << m_storage;
+    p_s << ")";
+}
+
+void AddressSpace::serialize(std::ostream &p_s) const
+{
+    p_s << "AddressSpace(";
+    Memory::serialize(p_s);
     Memory *previous_memory;
-    for (int addr=0; addr<0x10000; addr++) {
-        Memory *cell(p_address_space.m_map[addr]);
+    for (int addr=0; m_map.size(); addr++) {
+        Memory *cell(m_map[addr]);
         if (cell != previous_memory) {
             p_s << Hex(word(addr))
                 << ": ***********************************************************************************************"
                 << std::endl;
             previous_memory = cell;
             if (previous_memory)
-                p_s << *previous_memory;
+                previous_memory->serialize(p_s);
         }
     }
-    return p_s << ")";
+    p_s << ")";
 }

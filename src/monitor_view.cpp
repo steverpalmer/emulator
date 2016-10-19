@@ -290,19 +290,16 @@ void MonitorView::vdg_mode_update(TerminalInterface *p_terminal, TerminalInterfa
     render();
 }
 
-std::ostream &operator<<(std::ostream &p_s, const MonitorView::Configurator &p_cfgr)
+void MonitorView::Configurator::serialize(std::ostream &p_s) const
 {
-    return p_s << "<scale>"        << p_cfgr.scale() << "</scale>"
-               << "<fontfilename>" << p_cfgr.fontfilename() << "</fontfilename>"
-               << "<windowtitle>"  << p_cfgr.window_title() << "</windowtitle>"
-               << "<icontitle>"    << p_cfgr.icon_title()   << "</icontitle>";
+    p_s << "<scale>"        << scale() << "</scale>"
+        << "<fontfilename>" << fontfilename() << "</fontfilename>"
+        << "<windowtitle>"  << window_title() << "</windowtitle>"
+        << "<icontitle>"    << icon_title()   << "</icontitle>";
 }
 
-std::ostream &operator<<(std::ostream &p_s, const MonitorView &p_mv)
+void MonitorView::serialize(std::ostream &p_s) const
 {
-    return p_s << "MonitorView("
-               << p_mv.m_terminal_interface->id()
-               << ", " << p_mv.m_memory->id()
-               << ", Screen(" << p_mv.m_screen << ")"
-               << ")";
+    p_s << "MonitorView("
+        << ")";
 }

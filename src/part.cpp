@@ -102,12 +102,32 @@ int PartsBin::self_check() const
 }
 
 
-std::ostream &operator<<(std::ostream &p_s, const Part::Configurator &p_cfgr)
+void Part::Configurator::serialize(std::ostream &p_s) const
 {
-    return p_s << "name=\"" << p_cfgr.id() << "\" ";
+    p_s << " name=\"" << id() << "\"";
 }
 
-std::ostream &operator<<(std::ostream &p_s, const Part& p_p)
+void PartsBin::Configurator::serialize(std::ostream &p_s) const
 {
-    return p_s << "Part(" << p_p.m_id << ")";
+    p_s << "<parts_bin>>";
+    for (int i(0); const Part::Configurator *p = part(i); i++)
+        p->serialize(p_s);
+    p_s << "</parts_bin>>";
+}
+
+void Part::serialize(std::ostream &p_s) const
+{
+    p_s << "id(\"" << m_id << "\")";
+}
+
+void PartsBin::serialize(std::ostream &p_s) const
+{
+    p_s << "PartsBin(";
+    for (auto &pair : m_bin )
+    {
+        p_s << "[\"" << pair.first << "\":";
+        pair.second->serialize(p_s);
+        p_s << "], ";
+    }
+    p_s << ")";
 }

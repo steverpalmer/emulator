@@ -88,28 +88,21 @@ void Computer::resume()
 
 // Streaming Output
 
-std::ostream &operator<<(std::ostream &p_s, const Device::Configurator &p_cfgr)
+void Computer::Configurator::serialize(std::ostream &p_s) const
 {
-    return p_s << static_cast<const Part::Configurator &>(p_cfgr);
+    p_s << "<computer ";
+    Part::Configurator::serialize(p_s);
+    p_s << ">";
+    for (int i(0); const Device::Configurator *cfgr = device(i); i++)
+        cfgr->serialize(p_s);
+    p_s << "</computer>";
 }
 
-std::ostream &operator<<(std::ostream &p_s, const Computer::Configurator &p_cfgr)
-{
-    p_s << "<computer " << static_cast<const Device::Configurator &>(p_cfgr) << ">";
-    for (int i(0); const Device::Configurator *cfgr = p_cfgr.device(i); i++)
-        p_s << *cfgr;
-    return p_s << "</computer>";
-}
-
-std::ostream &operator<<(std::ostream &p_s, const Device &p_device)
-{
-    return p_s << static_cast<const Part &>(p_device);
-}
-
-std::ostream &operator<<(std::ostream &p_s, const Computer &p_computer)
+void Computer::serialize(std::ostream &p_s) const
 {
     p_s << "Computer(";
-    for (const auto &device : p_computer.m_children)
-        p_s << device;
-    return p_s << ")";
+    Part::serialize(p_s);
+    for (auto *device : m_children)
+        device->serialize(p_s);
+    p_s << ")";
 }

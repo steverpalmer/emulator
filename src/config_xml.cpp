@@ -30,6 +30,8 @@ static log4cxx::LoggerPtr cpptrace_log()
 
 namespace Xml
 {
+    // Helper Stuff for processing the XML
+    
     class XpathNotFound
         : public std::exception
     {
@@ -65,11 +67,12 @@ namespace Xml
             { return "XPath did not return an integer"; }
     } xpath_not_an_integer;
 
+    static xmlpp::Node::PrefixNsMap namespaces = { { "e", "http://www.srpalmer.me.uk/ns/emulator" } };
+
     Glib::ustring eval_to_string(const xmlpp::Node *p_node, const Glib::ustring &p_xpath)
     {
-        LOG4CXX_INFO(cpptrace_log(), "Xml::eval_to_string(" << p_node << ", \"" << p_xpath << "\")");
         Glib::ustring result("");
-        auto ns(p_node->find(p_xpath));
+        auto ns(p_node->find(p_xpath, namespaces));
         switch (ns.size())
         {
         case 0:
@@ -102,21 +105,17 @@ namespace Xml
             throw xpath_ambiguous;
         }
         }
-        LOG4CXX_DEBUG(cpptrace_log(), "Xml::eval_to_string(" << p_node << ", \"" << p_xpath << "\") => \"" << result << "\"");
         return result;
     }
 
     float eval_to_float(const xmlpp::Node *p_node, const Glib::ustring &p_xpath)
     {
-        LOG4CXX_INFO(cpptrace_log(), "Xml::eval_to_float(" << p_node << ", \"" << p_xpath << "\")");
         float result(atof(eval_to_string(p_node, p_xpath).c_str()));
-        LOG4CXX_DEBUG(cpptrace_log(), "Xml::eval_to_float(" << p_node << ", \"" << p_xpath << "\") => " << result);
         return result;
     }
     
     float eval_to_int(const xmlpp::Node *p_node, const Glib::ustring &p_xpath)
     {
-        LOG4CXX_INFO(cpptrace_log(), "Xml::eval_to_int(" << p_node << ", \"" << p_xpath << "\")");
         int result;
         const Glib::ustring str(eval_to_string(p_node, p_xpath));
         if (!str.empty())
@@ -126,9 +125,13 @@ namespace Xml
             else
                 result = std::atoi(str.c_str());
         }
-        LOG4CXX_DEBUG(cpptrace_log(), "Xml::eval_to_int(" << p_node << ", \"" << p_xpath << "\") => " << result);
         return result;
     }
+
+    // Concrete Configurators for the various types of objects
+    // deriving their configuration from the XML file
+
+    // Memory first
     
     class PartConfigurator
         : public virtual Part::Configurator
@@ -149,11 +152,20 @@ namespace Xml
         : public PartConfigurator
         , public Memory::Configurator
     {
+    private:
+        Part::id_type m_ref_id;
     public:
         explicit MemoryRefConfigurator(const xmlpp::Node *p_node)
-            : PartConfigurator(eval_to_string(p_node, "@name"))
+            : PartConfigurator("memory_reference")
+            , m_ref_id(eval_to_string(p_node, "@name"))
+            {}
+        explicit MemoryRefConfigurator(Glib::ustring p_ref_name)
+            : PartConfigurator("memory_reference")
+            , m_ref_id(p_ref_name)
             {}
         virtual ~MemoryRefConfigurator() {}
+        virtual Memory *memory_factory() const
+            { return dynamic_cast<Memory *>(PartsBin::instance()[m_ref_id]); }
         static Memory::Configurator *_memory_configurator_factory(const xmlpp::Node *p_node)
             { return new MemoryRefConfigurator(p_node); }
     };
@@ -174,8 +186,8 @@ namespace Xml
                 assert (p_node);
                 try { m_id = eval_to_string(p_node, "@name"); }
                 catch (XpathNotFound e) {}
-                m_size = eval_to_int(p_node, "size");
-                try { m_filename = eval_to_string(p_node, "filename"); }
+                m_size = eval_to_int(p_node, "e:size");
+                try { m_filename = eval_to_string(p_node, "e:filename"); }
                 catch (XpathNotFound e) {}
             }
         virtual ~RamConfigurator() {}
@@ -201,8 +213,8 @@ namespace Xml
                 assert (p_node);
                 try { m_id = eval_to_string(p_node, "@name"); }
                 catch (XpathNotFound e) {}
-                m_filename = eval_to_string(p_node, "filename");
-                try { m_size = eval_to_int(p_node, "size"); }
+                m_filename = eval_to_string(p_node, "e:filename");
+                try { m_size = eval_to_int(p_node, "e:size"); }
                 catch(XpathNotFound::exception e) {}
             }
         virtual ~RomConfigurator() {}
@@ -248,7 +260,7 @@ namespace Xml
                 assert (p_node);
                 try { m_id = eval_to_string(p_node, "@name"); }
                 catch (XpathNotFound e) {}
-                try { m_size = eval_to_int(p_node, "size"); }
+                try { m_size = eval_to_int(p_node, "e:size"); }
                 catch(XpathNotFound e) {}
                 for (auto *child: p_node->get_children())
                 {
@@ -256,10 +268,10 @@ namespace Xml
                     if (child_elm && child_elm->get_name() == "map")
                     {
                         AddressSpace::Configurator::Mapping *map = new AddressSpace::Configurator::Mapping(m_last_memory);
-                        map->base = eval_to_int(child_elm, "base");
-                        try { map->size = eval_to_int(child_elm, "size"); }
+                        map->base = eval_to_int(child_elm, "e:base");
+                        try { map->size = eval_to_int(child_elm, "e:size"); }
                         catch (XpathNotFound e) { map->size = 0; }
-                        const xmlpp::NodeSet ns(child_elm->find("ram|rom|ppia|address_space|memory"));
+                        const xmlpp::NodeSet ns(child_elm->find("e:ram|e:rom|e:ppia|e:address_space|e:memory", namespaces));
                         assert (ns.size() == 1);
                         const xmlpp::Node *memory_node(ns[0]);
                         map->memory = memory_configurator_factory(memory_node);
@@ -299,15 +311,26 @@ namespace Xml
         return result;
     }
 
+    // Devices Second
+    
     class DeviceRefConfigurator
         : public PartConfigurator
         , public Device::Configurator
     {
+    private:
+        Part::id_type m_ref_id;
     public:
         explicit DeviceRefConfigurator(const xmlpp::Node *p_node)
-            : PartConfigurator(p_node->eval_to_string("@name"))
+            : PartConfigurator("device_reference")
+            , m_ref_id(p_node->eval_to_string("@name"))
+            {}
+        explicit DeviceRefConfigurator(Glib::ustring p_ref_name)
+            : PartConfigurator("memory_reference")
+            , m_ref_id(p_ref_name)
             {}
         virtual ~DeviceRefConfigurator() {}
+        virtual Device *device_factory() const
+            { return dynamic_cast<Device *>(PartsBin::instance()[m_ref_id]); }
         static Device::Configurator *_device_configurator_factory(const xmlpp::Node *p_node)
             { return new DeviceRefConfigurator(p_node); }
     };
@@ -317,43 +340,29 @@ namespace Xml
         , public MCS6502::Configurator
     {
     private:
-        Memory::id_type m_memory_id;
+        Memory::Configurator *m_memory;
     public:
         explicit MCS6502Configurator(const xmlpp::Node *p_node = 0)
             : PartConfigurator("mcs6502")
-            , m_memory_id("address_space")
             {
                 LOG4CXX_INFO(cpptrace_log(), "Xml::MCS6502Configurator::MCS6502Configurator(" << p_node << ")");
                 if (p_node)
                 {
-                    try
+                    try { m_id = eval_to_string(p_node, "@name"); }
+                    catch (XpathNotFound e) {}
+                    const xmlpp::NodeSet ns(p_node->find("e:ram|e:rom|e:ppia|e:address_space|e:memory", namespaces));
+                    switch (ns.size())
                     {
-                        LOG4CXX_INFO(cpptrace_log(), "reading processor name");
-                        m_id = eval_to_string(p_node, "@name");
-                        LOG4CXX_INFO(cpptrace_log(), "read processor name: " << m_id);
-                    }
-                    catch (XpathNotFound e)
-                    {
-                        LOG4CXX_INFO(cpptrace_log(), "failed to read processor name");
-                        /* Do Nothing */
-                    }
-                    try
-                    {
-                        LOG4CXX_INFO(cpptrace_log(), "reading memory name");
-                        m_memory_id = eval_to_string(p_node, "memory/@name");
-                        LOG4CXX_INFO(cpptrace_log(), "read memory name: " << m_memory_id);
-                    }
-                    catch (XpathNotFound e)
-                    {
-                        LOG4CXX_INFO(cpptrace_log(), "failed to read memory name");
-                        /* Do Nothing */
+                    case 0: { m_memory = new MemoryRefConfigurator("address_space"); break; }
+                    case 1: { m_memory = memory_configurator_factory(ns[0]); break; }
+                    default: { assert (false); }
                     }
                 }
                 LOG4CXX_INFO(cpptrace_log(), "Xml::MCS6502Configurator::MCS6502Configurator(" << p_node << ") =>" << *this);
             }
         virtual ~MCS6502Configurator() {}
-        virtual const Memory::id_type memory_id() const
-            { return m_memory_id; }
+        virtual const Memory::Configurator *memory() const
+            { return m_memory; }
         static Device::Configurator *_device_configurator_factory(const xmlpp::Node *p_node)
             { return new MCS6502Configurator(p_node); }
     };
@@ -410,6 +419,8 @@ namespace Xml
         return result;
     }
 
+    // Other Parts last
+
     class KeyboardControllerConfigurator
         : public KeyboardController::Configurator
     {
@@ -439,9 +450,9 @@ namespace Xml
                 LOG4CXX_INFO(cpptrace_log(), "Xml::MonitorViewConfigurator::MonitorViewConfigurator(" << p_node << ")");
                 if (p_node)
                 {
-                    try { m_scale = eval_to_float(p_node, "scale"); }
+                    try { m_scale = eval_to_float(p_node, "e:scale"); }
                     catch (XpathNotFound e) {}
-                    try { m_fontfilename = eval_to_string(p_node, "fontfilename"); }
+                    try { m_fontfilename = eval_to_string(p_node, "e:fontfilename"); }
                     catch (XpathNotFound e) {}
                 }
             }
@@ -468,9 +479,9 @@ namespace Xml
             , m_controller_id("ppia")
             {
                 LOG4CXX_INFO(cpptrace_log(), "Xml::TerminalConfigurator::TerminalConfigurator(" << p_node << ")");
-                try { m_memory_id = eval_to_string(p_node, "memory/@name"); }
+                try { m_memory_id = eval_to_string(p_node, "e:memory/@name"); }
                 catch (XpathNotFound e) {}
-                try { m_controller_id = eval_to_string(p_node, "controller/@name"); }
+                try { m_controller_id = eval_to_string(p_node, "e:controller/@name"); }
                 catch (XpathNotFound e) {}
                 m_keyboard_controller = new KeyboardControllerConfigurator(p_node);
                 assert (m_keyboard_controller);
@@ -502,6 +513,8 @@ namespace Xml
             result = device_configurator_factory(p_node);
         return result;
     }
+
+    // Highest level functions
 
     void Configurator::process_command_line(int argc, char *argv[])
     {
@@ -638,3 +651,4 @@ namespace Xml
         // FIXME: need a tidy clean up
     }
 }
+

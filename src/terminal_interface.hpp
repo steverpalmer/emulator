@@ -87,8 +87,11 @@ public:
 
     virtual ~TerminalInterface() { m_observers.clear(); }
 
+#if 0
+    virtual void serialize(std::ostream &) const;
     friend std::ostream &::operator<<(std::ostream &p_s, const TerminalInterface &p_ti)
-        { return p_s << "TerminalInterface(" << p_ti.id() << ")"; }
+        { p_ti.serialize(p_s); return p_s; }
+#endif
 };
 
 #endif

@@ -33,7 +33,7 @@ public:
         virtual Part *part_factory() const
             { return new Terminal(*this); }
         
-        friend std::ostream &::operator<<(std::ostream &, const Configurator &);
+        virtual void serialize(std::ostream &) const;
     };
     // Attributes
 private:
@@ -47,7 +47,7 @@ public:
     virtual ~Terminal() {}
     void update(SDL_Event *event) { m_keyboard_controller.update(&event->key); }
 
-    friend std::ostream &::operator<<(std::ostream &, const Terminal &);
+    virtual void serialize(std::ostream &) const;
 };
 
 #endif
