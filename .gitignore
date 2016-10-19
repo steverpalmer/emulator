@@ -9,14 +9,8 @@
 /src/plot.bmp
 /src/ctrace.log
 /src/ctrace.log.1
-/src/atom
-/src/libatom.a
+/src/emulator
+/src/libparts.a
 /src/**/*.o
-/src/atom.rnc
-/src/atom.xsd
-/src/relaxng.rnc
-/src/relaxng.xsd
 /src/emulator.rnc
-/src/emulator.xsd
-/src/local.xsd
 /src/html
