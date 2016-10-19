@@ -1,8 +1,5 @@
 <?xml version="1.0"?>
 <locatingRules xmlns="http://thaiopensource.com/ns/locating-rules/1.0">
-  <uri resource="systemrc.xml" uri="emulator.rnc"/>
-  <uri resource="minimalrc.xml" uri="emulator.rnc"/>
-  <uri resource="nominalrc.xml" uri="emulator.rnc"/>
-  <uri resource="atomrc.xml" uri="emulator.rnc"/>
-  <uri resource="relaxng.rng" uri="relaxng.rnc"/>
+  <namespace ns="http://www.srpalmer.me.uk/ns/emulator" typeId="EMULATOR"/>
+  <typeId id="EMULATOR" uri="emulator.rnc"/>
 </locatingRules>
