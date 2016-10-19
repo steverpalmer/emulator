@@ -260,7 +260,7 @@ void AddressSpace::Configurator::serialize(std::ostream &p_s) const
         p_s << "<size>" << Hex(map.size) << "</size>"
             << "</map>";
     }
-    p_s << "</address_space";
+    p_s << "</address_space>";
 }
 
 std::ostream &operator<<(std::ostream &p_s, const Memory::AccessType p_at)
@@ -319,15 +319,21 @@ void AddressSpace::serialize(std::ostream &p_s) const
     p_s << "AddressSpace(";
     Memory::serialize(p_s);
     Memory *previous_memory;
-    for (int addr=0; m_map.size(); addr++) {
+    for (int addr=0; addr < int(m_map.size()); addr++) {
         Memory *cell(m_map[addr]);
         if (cell != previous_memory) {
-            p_s << Hex(word(addr))
+#if 0
+            p_s << std::endl << Hex(word(addr))
                 << ": ***********************************************************************************************"
                 << std::endl;
             previous_memory = cell;
             if (previous_memory)
                 previous_memory->serialize(p_s);
+#else
+            if (cell)
+                p_s << Hex(word(addr)) << ":MemoryRef(" << cell->id() << ")";
+            previous_memory = cell;
+#endif
         }
     }
     p_s << ")";

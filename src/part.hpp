@@ -40,7 +40,7 @@ public:
             { p_cfgr.serialize(p_s); return p_s; }
 	};
 private:
-	const id_type m_id; // Not necessarily Canonical!
+	id_type m_id; // Not necessarily Canonical!
 public:
 	const id_type &id() const { return m_id; }
     static std::unique_ptr<id_type> canonical_id(const id_type &);

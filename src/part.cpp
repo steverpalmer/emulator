@@ -1,5 +1,6 @@
 // part.cpp
 
+#include <string>
 #include <list>
 
 #include <log4cxx/logger.h>
@@ -15,7 +16,12 @@ static log4cxx::LoggerPtr cpptrace_log()
 Part::Part(const Part::Configurator &p_cfgr)
     : m_id(p_cfgr.id())
 {
+    static int anonymous_id_counter = 1000;
     LOG4CXX_INFO(cpptrace_log(), "Part::Part(" << p_cfgr << ")");
+    if (m_id.empty())
+    {
+        m_id = std::to_string(++anonymous_id_counter);
+    }
     PartsBin::instance()[m_id] = this;
 }
 
@@ -104,15 +110,15 @@ int PartsBin::self_check() const
 
 void Part::Configurator::serialize(std::ostream &p_s) const
 {
-    p_s << " name=\"" << id() << "\"";
+    p_s << "name=\"" << id() << "\"";
 }
 
 void PartsBin::Configurator::serialize(std::ostream &p_s) const
 {
-    p_s << "<parts_bin>>";
+    p_s << "<parts_bin>";
     for (int i(0); const Part::Configurator *p = part(i); i++)
         p->serialize(p_s);
-    p_s << "</parts_bin>>";
+    p_s << "</parts_bin>";
 }
 
 void Part::serialize(std::ostream &p_s) const
@@ -126,7 +132,10 @@ void PartsBin::serialize(std::ostream &p_s) const
     for (auto &pair : m_bin )
     {
         p_s << "[\"" << pair.first << "\":";
-        pair.second->serialize(p_s);
+        if (pair.second)
+            p_s << *pair.second;
+        else
+            p_s << "NULL";
         p_s << "], ";
     }
     p_s << ")";

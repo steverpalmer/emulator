@@ -25,9 +25,10 @@ Terminal::Terminal(const Configurator &p_cfgr)
 
 void Terminal::Configurator::serialize(std::ostream &p_s) const
 {
-    p_s << "<terminal";
+    p_s << "<terminal ";
     Part::Configurator::serialize(p_s);
-    p_s << "<memory name=\"" << memory_id() << "\"/>"
+    p_s << ">"
+        << "<memory name=\"" << memory_id() << "\"/>"
         << "<controller name=\"" << controller_id() << "\"/>"
         << monitor_view()
         << keyboard_controller()

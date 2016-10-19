@@ -2692,11 +2692,9 @@ void MCS6502::trace_finish()
 
 void MCS6502::Configurator::serialize(std::ostream&p_s) const
 {
-    p_s << "<mcs6502";
+    p_s << "<mcs6502 ";
     Cpu::Configurator::serialize(p_s);
-    p_s << ">";
-    memory()->serialize(p_s);
-    p_s << "</mcs6502>";
+    p_s << ">" << *memory() << "</mcs6502>";
 }
 
 std::ostream &operator<<(std::ostream &p_s, const InterruptState &p_is)

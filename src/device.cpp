@@ -103,6 +103,10 @@ void Computer::serialize(std::ostream &p_s) const
     p_s << "Computer(";
     Part::serialize(p_s);
     for (auto *device : m_children)
+#if 0
         device->serialize(p_s);
+#else
+        p_s << "Device(" << device->id() << ")";
+#endif
     p_s << ")";
 }

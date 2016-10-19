@@ -6,6 +6,8 @@
 #include <stdio.h>
 #include <pthread.h>
 
+#include <iostream>
+
 #include <SDL.h>
 
 #include <log4cxx/logger.h>
@@ -38,13 +40,12 @@ public:
             const int rv = SDL_Init( SDL_INIT_VIDEO | SDL_INIT_TIMER );
             assert (!rv);
 
-            const Configurator *cfg = new Xml::Configurator(argc, argv);  // FIXME: delete Xml::
-            LOG4CXX_INFO(cpptrace_log(), cfg);
+            const Configurator *cfg = new Xml::Configurator(argc, argv);  // FIXME: remove Xml::
             assert (cfg);
 
             PartsBin::instance().build(*cfg);
             delete cfg;
-#if 0
+
             Terminal *terminal = dynamic_cast<Terminal *>(PartsBin::instance()["terminal"]);
             assert (terminal);
 
@@ -69,7 +70,7 @@ public:
                 }
             LOG4CXX_INFO(cpptrace_log(), "Atom is about to stop ...");
             atom->pause();
-#endif
+
         }
 
     virtual ~Main()

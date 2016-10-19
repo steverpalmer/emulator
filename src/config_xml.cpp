@@ -156,11 +156,11 @@ namespace Xml
         Part::id_type m_ref_id;
     public:
         explicit MemoryRefConfigurator(const xmlpp::Node *p_node)
-            : PartConfigurator("memory_reference")
+            : PartConfigurator("")
             , m_ref_id(eval_to_string(p_node, "@name"))
             {}
         explicit MemoryRefConfigurator(Glib::ustring p_ref_name)
-            : PartConfigurator("memory_reference")
+            : PartConfigurator("")
             , m_ref_id(p_ref_name)
             {}
         virtual ~MemoryRefConfigurator() {}
@@ -168,6 +168,11 @@ namespace Xml
             { return dynamic_cast<Memory *>(PartsBin::instance()[m_ref_id]); }
         static Memory::Configurator *_memory_configurator_factory(const xmlpp::Node *p_node)
             { return new MemoryRefConfigurator(p_node); }
+
+        virtual void serialize(std::ostream &p_s) const
+            {
+                p_s << "<memory name=\"" << m_ref_id << "\"/>";
+            }
     };
 
     class RamConfigurator
@@ -179,7 +184,7 @@ namespace Xml
         Glib::ustring m_filename;
     public:
         explicit RamConfigurator(const xmlpp::Node *p_node)
-            : PartConfigurator("ram")
+            : PartConfigurator("")
             , m_filename("")
             {
                 LOG4CXX_INFO(cpptrace_log(), "Xml::RamConfigurator::RamConfigurator(" << p_node << ")");
@@ -206,7 +211,7 @@ namespace Xml
         Glib::ustring m_filename;
     public:
         explicit RomConfigurator(const xmlpp::Node *p_node)
-            : PartConfigurator("rom")
+            : PartConfigurator("")
             , m_size(0)
             {
                 LOG4CXX_INFO(cpptrace_log(), "Xml::RomConfigurator::RomConfigurator(" << p_node << ")");
@@ -321,11 +326,11 @@ namespace Xml
         Part::id_type m_ref_id;
     public:
         explicit DeviceRefConfigurator(const xmlpp::Node *p_node)
-            : PartConfigurator("device_reference")
+            : PartConfigurator("")
             , m_ref_id(p_node->eval_to_string("@name"))
             {}
         explicit DeviceRefConfigurator(Glib::ustring p_ref_name)
-            : PartConfigurator("memory_reference")
+            : PartConfigurator("")
             , m_ref_id(p_ref_name)
             {}
         virtual ~DeviceRefConfigurator() {}
@@ -333,6 +338,11 @@ namespace Xml
             { return dynamic_cast<Device *>(PartsBin::instance()[m_ref_id]); }
         static Device::Configurator *_device_configurator_factory(const xmlpp::Node *p_node)
             { return new DeviceRefConfigurator(p_node); }
+
+        virtual void serialize(std::ostream &p_s) const
+            {
+                p_s << "<device name=\"" << m_ref_id << "\"/>";
+            }
     };
 
     class MCS6502Configurator
@@ -343,7 +353,7 @@ namespace Xml
         Memory::Configurator *m_memory;
     public:
         explicit MCS6502Configurator(const xmlpp::Node *p_node = 0)
-            : PartConfigurator("mcs6502")
+            : PartConfigurator("")
             {
                 LOG4CXX_INFO(cpptrace_log(), "Xml::MCS6502Configurator::MCS6502Configurator(" << p_node << ")");
                 if (p_node)
@@ -358,7 +368,6 @@ namespace Xml
                     default: { assert (false); }
                     }
                 }
-                LOG4CXX_INFO(cpptrace_log(), "Xml::MCS6502Configurator::MCS6502Configurator(" << p_node << ") =>" << *this);
             }
         virtual ~MCS6502Configurator() {}
         virtual const Memory::Configurator *memory() const
@@ -375,7 +384,7 @@ namespace Xml
         std::vector<const Device::Configurator *>m_devices;
     public:
         explicit ComputerConfigurator(const xmlpp::Node *p_node)
-            : PartConfigurator("computer")
+            : PartConfigurator("")
             {
                 LOG4CXX_INFO(cpptrace_log(), "Xml::ComputerConfigurator::ComputerConfigurator(" << p_node << ")");
                 assert(p_node);
@@ -444,8 +453,8 @@ namespace Xml
         explicit MonitorViewConfigurator(const xmlpp::Node *p_node = 0)
             : m_scale(2.0)
             , m_fontfilename("mc6847.bmp")
-            , m_window_title("Acorn Atom")
-            , m_icon_title("Acorn Atom")
+            , m_window_title("Emulator")
+            , m_icon_title("Emulator")
             {
                 LOG4CXX_INFO(cpptrace_log(), "Xml::MonitorViewConfigurator::MonitorViewConfigurator(" << p_node << ")");
                 if (p_node)
@@ -474,11 +483,13 @@ namespace Xml
         MonitorViewConfigurator *m_monitor_view;
     public:
         explicit TerminalConfigurator(const xmlpp::Node *p_node = 0)
-            : PartConfigurator("terminal")
+            : PartConfigurator("")
             , m_memory_id("video")
             , m_controller_id("ppia")
             {
                 LOG4CXX_INFO(cpptrace_log(), "Xml::TerminalConfigurator::TerminalConfigurator(" << p_node << ")");
+                try { m_id = eval_to_string(p_node, "@name"); }
+                catch (XpathNotFound e) {}
                 try { m_memory_id = eval_to_string(p_node, "e:memory/@name"); }
                 catch (XpathNotFound e) {}
                 try { m_controller_id = eval_to_string(p_node, "e:controller/@name"); }
@@ -642,7 +653,6 @@ namespace Xml
         process_XML();
         if (!check_and_complete_params())
             exit(1);
-        LOG4CXX_INFO(cpptrace_log(), "Position 1 => " << *this);
     }
 
 

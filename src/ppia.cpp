@@ -438,7 +438,7 @@ void Ppia::set_is_rept_pressed(bool p_is_rept_pressed)
 
 void Ppia::Configurator::serialize(std::ostream &p_s) const
 {
-    p_s << "<ppia";
+    p_s << "<ppia ";
     Memory::Configurator::serialize(p_s);
     p_s << "/>";
 }

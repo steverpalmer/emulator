@@ -2,101 +2,101 @@
 <emulator xmlns="http://www.srpalmer.me.uk/ns/emulator" version="0.05">
 
   <computer name="atom">
-    <address_space>
-      <map>
-        <base>#0000</base>
-        <ram name="block0">
+    <mcs6502 name="mcs6502">
+      <address_space>
+        <map>
+          <base>#0000</base>
+          <ram name="block0">
+            <size>#0400</size>
+          </ram>
+        </map>
+        <!-- map>
+             <base>#0400</base>
+             <ram name="teletext">
+             <size>#0400</size>
+             </ram>
+             </map -->
+        <!-- map>
+             <base>#0800</base>
+             <vdu_crt_controller/>
+             <size>#0100</size>
+             </map -->
+        <!-- #0900 to #09FF: undefined -->
+        <!-- map>
+             <base>#0A00</base>
+             <floppy_disk_controller/>
+             <size>#0080</size>
+             </map -->
+        <!-- #0A80 to #0FFF: undefined -->
+        <!-- map>
+             <base>#1000</base>
+             <peripherals_space/>
+             <size>#1000</size>
+             </map -->
+        <!-- map>
+             <base>#2000</base>
+             <ram name="disk buffer">
+             <size>#0800</size>
+             </ram>
+             </map -->
+        <!-- map>
+          <base>#2800</base>
+          <ram name="lower">
+            <size>#1400</size>
+          </ram>
+        </map -->
+        <map>
+          <base>#8000</base>
+          <ram name="video">
+            <size>#0400</size>
+            <!-- size>#1800</size -->
+          </ram>
+        </map>
+        <!-- #9800 to #9FFF: undefined -->
+        <!-- map>
+             <base>40960<hex>#A000</hex></base>
+             <rom name="toolkit">
+             <filename>toolkit.rom</filename>
+             </rom>
+             </map -->
+        <map>
+          <base>#B000</base>
+          <ppia/>
           <size>#0400</size>
-        </ram>
-      </map>
-      <!-- map>
-        <base>#0400</base>
-        <ram name="teletext">
-          <size>#0400</size>
-        </ram>
-      </map -->
-      <!-- map>
-        <base>#0800</base>
-        <vdu_crt_controller/>
-        <size>#0100</size>
-      </map -->
-      <!-- #0900 to #09FF: undefined -->
-      <!-- map>
-        <base>#0A00</base>
-        <floppy_disk_controller/>
-        <size>#0080</size>
-      </map -->
-      <!-- #0A80 to #0FFF: undefined -->
-      <!-- map>
-        <base>#1000</base>
-        <peripherals_space/>
-        <size>#1000</size>
-      </map -->
-      <!-- map>
-        <base>#2000</base>
-        <ram name="disk buffer">
-          <size>#0800</size>
-        </ram>
-      </map -->
-      <map>
-        <base>#2800</base>
-        <ram name="lower">
-          <size>#1400</size>
-          <!-- size>#5800</size -->
-        </ram>
-      </map>
-      <map>
-        <base>#8000</base>
-        <ram name="video">
-          <size>#0400</size>
-          <!-- size>#1800</size -->
-        </ram>
-      </map>
-      <!-- #9800 to #9FFF: undefined -->
-      <!-- map>
-        <base>40960<hex>#A000</hex></base>
-        <rom name="toolkit">
-          <filename>toolkit.rom</filename>
-        </rom>
-      </map -->
-      <map>
-        <base>#B000</base>
-        <ppia/>
-        <size>#0400</size>
-      </map>
-      <!-- #B400 to #B7FF: undefined -->
-      <!-- map>
-        <base>47104<hex>#B800</hex></base>
-        <via/>
-        <size>1024<hex>#0400</hex></size>
-      </map -->
-      <!-- #BC00 to #BFFF: undefined -->
-      <map>
-        <base>#C000</base>
-        <rom name="interpreter">
-          <filename>basic.rom</filename>
-        </rom>
-      </map>
-      <!-- map>
-        <base>#D000</base>
-        <rom name="float">
-          <filename>float.rom</filename>
-        </rom>
-      </map -->
-      <!-- map>
-        <base>#E000</base>
-        <rom name="disk">
-          <filename>disk.rom</filename>
-        </rom>
-      </map -->
-      <map>
-        <base>#F000</base>
-        <rom name="kernel">
-          <filename>kernel.rom</filename>
-        </rom>
-      </map>
-    </address_space>
-    <mcs6502 name="mcs6502"/>
+        </map>
+        <!-- #B400 to #B7FF: undefined -->
+        <!-- map>
+             <base>47104<hex>#B800</hex></base>
+             <via/>
+             <size>1024<hex>#0400</hex></size>
+             </map -->
+        <!-- #BC00 to #BFFF: undefined -->
+        <map>
+          <base>#C000</base>
+          <rom name="interpreter">
+            <filename>basic.rom</filename>
+          </rom>
+        </map>
+        <!-- map>
+             <base>#D000</base>
+             <rom name="float">
+             <filename>float.rom</filename>
+             </rom>
+             </map -->
+        <!-- map>
+             <base>#E000</base>
+             <rom name="disk">
+             <filename>disk.rom</filename>
+             </rom>
+             </map -->
+        <map>
+          <base>#F000</base>
+          <rom name="kernel">
+            <filename>kernel.rom</filename>
+          </rom>
+        </map>
+      </address_space>
+    </mcs6502>
   </computer>
 
   <terminal name="terminal">
