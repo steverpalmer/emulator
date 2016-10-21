@@ -31,7 +31,7 @@ static log4cxx::LoggerPtr cpptrace_log()
 namespace Xml
 {
     // Helper Stuff for processing the XML
-    
+
     class XpathNotFound
         : public std::exception
     {
@@ -113,7 +113,7 @@ namespace Xml
         float result(atof(eval_to_string(p_node, p_xpath).c_str()));
         return result;
     }
-    
+
     float eval_to_int(const xmlpp::Node *p_node, const Glib::ustring &p_xpath)
     {
         int result;
@@ -132,16 +132,47 @@ namespace Xml
     // deriving their configuration from the XML file
 
     // Memory first
-    
+
     class PartConfigurator
         : public virtual Part::Configurator
     {
     protected:
         Part::id_type m_id;
-        explicit PartConfigurator(Part::id_type p_id) : m_id(p_id) {}
+        explicit PartConfigurator(Part::id_type p_id, const xmlpp::Node *p_node=0)
+            : m_id(p_id)
+            {
+                LOG4CXX_INFO(cpptrace_log(), "Xml::PartConfigurator::PartConfigurator(" << p_id << ", " << p_node << ")");
+                if (p_node)
+                    try { m_id = eval_to_string(p_node, "@name"); }
+                    catch (XpathNotFound e) {}
+            }
     public:
-        virtual ~PartConfigurator() {}
+        virtual ~PartConfigurator() = default;
         inline virtual const Part::id_type &id() const { return m_id; }
+    };
+
+    class DeviceConfigurator
+        : public virtual Device::Configurator
+        , private PartConfigurator
+    {
+    protected:
+        explicit DeviceConfigurator(Part::id_type p_id, const xmlpp::Node *p_node=0)
+            : PartConfigurator(p_id, p_node)
+            {}
+    public:
+        virtual ~DeviceConfigurator() = default;
+    };
+
+    class MemoryConfigurator
+        : public virtual Memory::Configurator
+        , private DeviceConfigurator
+    {
+    protected:
+        explicit MemoryConfigurator(Part::id_type p_id, const xmlpp::Node *p_node=0)
+            : DeviceConfigurator(p_id, p_node)
+            {}
+    public:
+        virtual ~MemoryConfigurator() = default;
     };
 
     Part::Configurator *part_configurator_factory(const xmlpp::Node *p_node);
@@ -149,21 +180,21 @@ namespace Xml
     Memory::Configurator *memory_configurator_factory(const xmlpp::Node *p_node);
 
     class MemoryRefConfigurator
-        : public PartConfigurator
-        , public Memory::Configurator
+        : public virtual Memory::Configurator
+        , private MemoryConfigurator
     {
     private:
         Part::id_type m_ref_id;
     public:
         explicit MemoryRefConfigurator(const xmlpp::Node *p_node)
-            : PartConfigurator("")
+            : MemoryConfigurator("")
             , m_ref_id(eval_to_string(p_node, "@name"))
             {}
         explicit MemoryRefConfigurator(Glib::ustring p_ref_name)
-            : PartConfigurator("")
+            : MemoryConfigurator("")
             , m_ref_id(p_ref_name)
             {}
-        virtual ~MemoryRefConfigurator() {}
+        virtual ~MemoryRefConfigurator() = default;
         virtual Memory *memory_factory() const
             { return dynamic_cast<Memory *>(PartsBin::instance()[m_ref_id]); }
         static Memory::Configurator *_memory_configurator_factory(const xmlpp::Node *p_node)
@@ -176,26 +207,24 @@ namespace Xml
     };
 
     class RamConfigurator
-        : public PartConfigurator
-        , public Ram::Configurator
+        : public virtual Ram::Configurator
+        , private MemoryConfigurator
     {
     private:
         word          m_size;
         Glib::ustring m_filename;
     public:
         explicit RamConfigurator(const xmlpp::Node *p_node)
-            : PartConfigurator("")
+            : MemoryConfigurator("", p_node)
             , m_filename("")
             {
                 LOG4CXX_INFO(cpptrace_log(), "Xml::RamConfigurator::RamConfigurator(" << p_node << ")");
                 assert (p_node);
-                try { m_id = eval_to_string(p_node, "@name"); }
-                catch (XpathNotFound e) {}
                 m_size = eval_to_int(p_node, "e:size");
                 try { m_filename = eval_to_string(p_node, "e:filename"); }
                 catch (XpathNotFound e) {}
             }
-        virtual ~RamConfigurator() {}
+        virtual ~RamConfigurator() = default;
         inline virtual word                size()      const { return m_size; }
         inline virtual const Glib::ustring &filename() const { return m_filename; }
         static Memory::Configurator *_memory_configurator_factory(const xmlpp::Node *p_node)
@@ -203,26 +232,24 @@ namespace Xml
     };
 
     class RomConfigurator
-        : public PartConfigurator
-        , public Rom::Configurator
+        : public virtual Rom::Configurator
+        , private MemoryConfigurator
     {
     private:
         word          m_size;
         Glib::ustring m_filename;
     public:
         explicit RomConfigurator(const xmlpp::Node *p_node)
-            : PartConfigurator("")
+            : MemoryConfigurator("", p_node)
             , m_size(0)
             {
                 LOG4CXX_INFO(cpptrace_log(), "Xml::RomConfigurator::RomConfigurator(" << p_node << ")");
                 assert (p_node);
-                try { m_id = eval_to_string(p_node, "@name"); }
-                catch (XpathNotFound e) {}
                 m_filename = eval_to_string(p_node, "e:filename");
                 try { m_size = eval_to_int(p_node, "e:size"); }
                 catch(XpathNotFound::exception e) {}
             }
-        virtual ~RomConfigurator() {}
+        virtual ~RomConfigurator() = default;
         inline virtual const Glib::ustring &filename() const { return m_filename; }
         inline virtual word                size()      const { return m_size; }
         static Memory::Configurator *_memory_configurator_factory(const xmlpp::Node *p_node)
@@ -230,26 +257,24 @@ namespace Xml
     };
 
     class PpiaConfigurator
-        : public PartConfigurator
-        , public Ppia::Configurator
+        : public virtual Ppia::Configurator
+        , private MemoryConfigurator
     {
     public:
         explicit PpiaConfigurator(const xmlpp::Node *p_node)
-            : PartConfigurator("ppia")
+            : MemoryConfigurator("ppia", p_node)
             {
                 LOG4CXX_INFO(cpptrace_log(), "Xml::PpiaConfigurator::PpiaConfigurator(" << p_node << ")");
                 assert (p_node);
-                try { m_id = eval_to_string(p_node, "@name"); }
-                catch (XpathNotFound e) {}
             }
-        virtual ~PpiaConfigurator() {}
+        virtual ~PpiaConfigurator() = default;
         static Memory::Configurator *_memory_configurator_factory(const xmlpp::Node *p_node)
             { return new PpiaConfigurator(p_node); }
     };
 
     class AddressSpaceConfigurator
-        : public PartConfigurator
-        , public AddressSpace::Configurator
+        : public virtual AddressSpace::Configurator
+        , private MemoryConfigurator
     {
     private:
         word m_size;
@@ -257,14 +282,12 @@ namespace Xml
         std::vector<AddressSpace::Configurator::Mapping> m_memory;
     public:
         explicit AddressSpaceConfigurator(const xmlpp::Node *p_node)
-            : PartConfigurator("address_space")
+            : MemoryConfigurator("address_space", p_node)
             , m_size(0)
             , m_last_memory( { 0, 0, 0 } )
             {
                 LOG4CXX_INFO(cpptrace_log(), "Xml::AddressSpaceConfigurator::AddressSpaceConfigurator(" << p_node << ")");
                 assert (p_node);
-                try { m_id = eval_to_string(p_node, "@name"); }
-                catch (XpathNotFound e) {}
                 try { m_size = eval_to_int(p_node, "e:size"); }
                 catch(XpathNotFound e) {}
                 for (auto *child: p_node->get_children())
@@ -317,23 +340,23 @@ namespace Xml
     }
 
     // Devices Second
-    
+
     class DeviceRefConfigurator
-        : public PartConfigurator
-        , public Device::Configurator
+        : public virtual Device::Configurator
+        , private DeviceConfigurator
     {
     private:
         Part::id_type m_ref_id;
     public:
         explicit DeviceRefConfigurator(const xmlpp::Node *p_node)
-            : PartConfigurator("")
+            : DeviceConfigurator("")
             , m_ref_id(p_node->eval_to_string("@name"))
             {}
         explicit DeviceRefConfigurator(Glib::ustring p_ref_name)
-            : PartConfigurator("")
+            : DeviceConfigurator("")
             , m_ref_id(p_ref_name)
             {}
-        virtual ~DeviceRefConfigurator() {}
+        virtual ~DeviceRefConfigurator() = default;
         virtual Device *device_factory() const
             { return dynamic_cast<Device *>(PartsBin::instance()[m_ref_id]); }
         static Device::Configurator *_device_configurator_factory(const xmlpp::Node *p_node)
@@ -346,20 +369,18 @@ namespace Xml
     };
 
     class MCS6502Configurator
-        : public PartConfigurator
-        , public MCS6502::Configurator
+        : public virtual MCS6502::Configurator
+        , private DeviceConfigurator
     {
     private:
         Memory::Configurator *m_memory;
     public:
         explicit MCS6502Configurator(const xmlpp::Node *p_node = 0)
-            : PartConfigurator("")
+            : DeviceConfigurator("", p_node)
             {
                 LOG4CXX_INFO(cpptrace_log(), "Xml::MCS6502Configurator::MCS6502Configurator(" << p_node << ")");
                 if (p_node)
                 {
-                    try { m_id = eval_to_string(p_node, "@name"); }
-                    catch (XpathNotFound e) {}
                     const xmlpp::NodeSet ns(p_node->find("e:ram|e:rom|e:ppia|e:address_space|e:memory", namespaces));
                     switch (ns.size())
                     {
@@ -369,7 +390,7 @@ namespace Xml
                     }
                 }
             }
-        virtual ~MCS6502Configurator() {}
+        virtual ~MCS6502Configurator() = default;
         virtual const Memory::Configurator *memory() const
             { return m_memory; }
         static Device::Configurator *_device_configurator_factory(const xmlpp::Node *p_node)
@@ -377,19 +398,17 @@ namespace Xml
     };
 
     class ComputerConfigurator
-        : public PartConfigurator
-        , public Computer::Configurator
+        : public virtual Computer::Configurator
+        , private DeviceConfigurator
     {
     private:
         std::vector<const Device::Configurator *>m_devices;
     public:
         explicit ComputerConfigurator(const xmlpp::Node *p_node)
-            : PartConfigurator("")
+            : DeviceConfigurator("", p_node)
             {
                 LOG4CXX_INFO(cpptrace_log(), "Xml::ComputerConfigurator::ComputerConfigurator(" << p_node << ")");
                 assert(p_node);
-                try { m_id = eval_to_string(p_node, "@name"); }
-                catch (XpathNotFound e) {}
                 for (auto *child : p_node->get_children())
                 {
                     const xmlpp::Element *child_elm(dynamic_cast<xmlpp::Element *>(child));
@@ -401,7 +420,7 @@ namespace Xml
                     }
                 }
             }
-        virtual ~ComputerConfigurator() {}  // FIXME
+        virtual ~ComputerConfigurator() = default;  // FIXME
         virtual const Device::Configurator *device(int i) const
             { return (i < int(m_devices.size())) ? m_devices[i] : 0; }
         static Device::Configurator *_device_configurator_factory(const xmlpp::Node *p_node)
@@ -431,18 +450,18 @@ namespace Xml
     // Other Parts last
 
     class KeyboardControllerConfigurator
-        : public KeyboardController::Configurator
+        : public virtual KeyboardController::Configurator
     {
     public:
         explicit KeyboardControllerConfigurator(const xmlpp::Node *p_node = 0)
             {
                 LOG4CXX_INFO(cpptrace_log(), "Xml::KeyboardControllerConfigurator::KeyboardControllerConfigurator(" << p_node << ")");
             }
-        virtual ~KeyboardControllerConfigurator() {}
+        virtual ~KeyboardControllerConfigurator() = default;
     };
 
     class MonitorViewConfigurator
-        : public MonitorView::Configurator
+        : public virtual MonitorView::Configurator
     {
     private:
         float         m_scale;
@@ -465,7 +484,7 @@ namespace Xml
                     catch (XpathNotFound e) {}
                 }
             }
-        virtual ~MonitorViewConfigurator() {}
+        virtual ~MonitorViewConfigurator() = default;
         float               scale()         const { return m_scale; }
         const Glib::ustring &fontfilename() const { return m_fontfilename; }
         const Glib::ustring &window_title() const { return m_window_title; }
@@ -473,8 +492,8 @@ namespace Xml
     };
 
     class TerminalConfigurator
-        : public PartConfigurator
-        , public Terminal::Configurator
+        : public virtual Terminal::Configurator
+        , private PartConfigurator
     {
     private:
         Part::id_type m_memory_id;
@@ -483,13 +502,11 @@ namespace Xml
         MonitorViewConfigurator *m_monitor_view;
     public:
         explicit TerminalConfigurator(const xmlpp::Node *p_node = 0)
-            : PartConfigurator("")
+            : PartConfigurator("", p_node)
             , m_memory_id("video")
             , m_controller_id("ppia")
             {
                 LOG4CXX_INFO(cpptrace_log(), "Xml::TerminalConfigurator::TerminalConfigurator(" << p_node << ")");
-                try { m_id = eval_to_string(p_node, "@name"); }
-                catch (XpathNotFound e) {}
                 try { m_memory_id = eval_to_string(p_node, "e:memory/@name"); }
                 catch (XpathNotFound e) {}
                 try { m_controller_id = eval_to_string(p_node, "e:controller/@name"); }
@@ -499,7 +516,7 @@ namespace Xml
                 m_monitor_view = new MonitorViewConfigurator(p_node);
                 assert (m_monitor_view);
             }
-        virtual ~TerminalConfigurator() {}
+        virtual ~TerminalConfigurator() = default;
         const Part::id_type                      &memory_id()           const { return m_memory_id; }
         const Part::id_type                      &controller_id()       const { return m_controller_id; }
         const KeyboardController::Configurator   &keyboard_controller() const { return *m_keyboard_controller; }
@@ -661,4 +678,3 @@ namespace Xml
         // FIXME: need a tidy clean up
     }
 }
-

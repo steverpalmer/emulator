@@ -11,7 +11,7 @@
 #include "part.hpp"
 
 class TerminalInterface
-    : public NonCopyable
+    : protected NonCopyable
 {
 public:
     enum VDGMode {
@@ -59,18 +59,19 @@ public:
     };
 
     class Observer
-        : public NonCopyable
+        : protected NonCopyable
     {
     protected:
-        Observer() {}
+        Observer() = default;
     public:
+        virtual ~Observer() = default;
         virtual void vdg_mode_update(TerminalInterface *p_terminal, VDGMode p_mode) = 0;
     };
 
 private:
     std::set<Observer *> m_observers;
 protected:
-    TerminalInterface() {}
+    TerminalInterface() = default;
 public:
     virtual Part::id_type id() const = 0;
     virtual VDGMode vdg_mode() const = 0;
@@ -87,11 +88,6 @@ public:
 
     virtual ~TerminalInterface() { m_observers.clear(); }
 
-#if 0
-    virtual void serialize(std::ostream &) const;
-    friend std::ostream &::operator<<(std::ostream &p_s, const TerminalInterface &p_ti)
-        { p_ti.serialize(p_s); return p_s; }
-#endif
 };
 
 #endif

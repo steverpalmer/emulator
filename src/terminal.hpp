@@ -15,16 +15,16 @@
 
 
 class Terminal
-    : public virtual Part
+    : public Part
 {
 public:
     class Configurator
         : public virtual Part::Configurator
     {
     protected:
-        Configurator() {}
+        Configurator() = default;
 	public:
-        virtual ~Configurator() {}
+        virtual ~Configurator() = default;
     public:
         virtual const Part::id_type                    &memory_id() const = 0;
         virtual const Part::id_type                    &controller_id() const = 0;
@@ -44,7 +44,7 @@ private:
     // Methods
 public:
     explicit Terminal(const Configurator &);
-    virtual ~Terminal() {}
+    virtual ~Terminal() = default;
     void update(SDL_Event *event) { m_keyboard_controller.update(&event->key); }
 
     virtual void serialize(std::ostream &) const;

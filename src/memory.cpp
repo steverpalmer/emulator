@@ -18,8 +18,7 @@ static log4cxx::LoggerPtr cpptrace_log()
 // Memory
 
 Memory::Memory(const Configurator &p_cfgr)
-    : Part(p_cfgr)
-    , Device(p_cfgr)
+    : Device(p_cfgr)
 {
     LOG4CXX_INFO(cpptrace_log(), "Memory::Memory(" << p_cfgr << ")");
 }
@@ -88,9 +87,7 @@ bool Storage::save(const Glib::ustring &p_filename) const
 // Ram Methods
 
 Ram::Ram(const Configurator &p_cfgr)
-    : Part(p_cfgr)
-    , Device(p_cfgr)
-    , Memory(p_cfgr)
+    : Memory(p_cfgr)
     , m_storage(p_cfgr.size())
     , m_filename(p_cfgr.filename())
 {
@@ -107,9 +104,7 @@ Ram::~Ram()
 // Rom Methods
 
 Rom::Rom(const Configurator &p_cfgr)
-    : Part(p_cfgr)
-    , Device(p_cfgr)
-    , Memory(p_cfgr)
+    : Memory(p_cfgr)
     , m_storage(p_cfgr.size())
 {
     LOG4CXX_INFO(cpptrace_log(), "Rom::Rom(" << p_cfgr << ")");
@@ -125,9 +120,7 @@ Rom::~Rom()
 // AddressSpace Methods
 
 AddressSpace::AddressSpace(const Configurator &p_cfgr)
-    : Part(p_cfgr)
-    , Device(p_cfgr)
-    , Memory(p_cfgr)
+    : Memory(p_cfgr)
     , m_base(SIZE(p_cfgr.size()), 0)
     , m_map(SIZE(p_cfgr.size()), 0)
 {
@@ -224,28 +217,50 @@ void AddressSpace::resume()
 
 // Streaming Output
 
+void Memory::Configurator::serialize(std::ostream &p_s) const
+{
+    p_s << id() << " [color=green];\n";
+}
+
 void Ram::Configurator::serialize(std::ostream &p_s) const
 {
+#if SERIALIZE_TO_DOT
+    Memory::Configurator::serialize(p_s);
+#else
     p_s << "<ram ";
     Memory::Configurator::serialize(p_s);
     p_s << ">"
         << "<size>" << Hex(size()) << "</size>"
         << "<filename>" << filename() << "</filename>"
         << "</ram>";
+#endif
 }
 
 void Rom::Configurator::serialize(std::ostream &p_s) const
 {
+#if SERIALIZE_TO_DOT
+    Memory::Configurator::serialize(p_s);
+#else
     p_s << "<rom ";
     Memory::Configurator::serialize(p_s);
     p_s << ">"
         << "<filename>" << filename() << "</filename>"
         << "<size>" << Hex(size()) << "</size>"
         << "</rom>";
+#endif
 }
 
 void AddressSpace::Configurator::serialize(std::ostream &p_s) const
 {
+#if SERIALIZE_TO_DOT
+    Memory::Configurator::serialize(p_s);
+    AddressSpace::Configurator::Mapping map;
+    for (int i(0); (map = mapping(i), map.memory); i++)
+    {
+        p_s << id() << " -> " << map.memory->id() << ";\n";
+        map.memory->serialize(p_s);
+    }
+#else
     p_s << "<address_space ";
     Memory::Configurator::serialize(p_s);
     p_s << ">"
@@ -260,6 +275,13 @@ void AddressSpace::Configurator::serialize(std::ostream &p_s) const
             << "</map>";
     }
     p_s << "</address_space>";
+#endif
+}
+
+void Memory::serialize(std::ostream &p_s) const
+{
+    p_s << id() << " [color=green];\n";
+    serialize_parents(p_s);
 }
 
 std::ostream &operator<<(std::ostream &p_s, const Memory::AccessType p_at)
@@ -297,43 +319,51 @@ std::ostream &operator<<(std::ostream &p_s, const Storage &p_storage)
 
 void Ram::serialize(std::ostream &p_s) const
 {
+#if SERIALIZE_TO_DOT
+    Memory::serialize(p_s);
+#else
     p_s << "Ram(";
     Memory::serialize(p_s);
     // p_s << ", " << m_storage;
     if (!m_filename.empty())
         p_s << ", filename(\"" << m_filename << "\")";
     p_s << ")";
+#endif
 }
 
 void Rom::serialize(std::ostream &p_s) const
 {
+#if SERIALIZE_TO_DOT
+    Memory::serialize(p_s);
+#else
     p_s << "Rom(";
     Memory::serialize(p_s);
     // p_s << ", " << m_storage;
     p_s << ")";
+#endif
 }
 
 void AddressSpace::serialize(std::ostream &p_s) const
 {
+#if SERIALIZE_TO_DOT
+    Memory::serialize(p_s);
+    for (auto *device : m_children)
+        p_s << id() << " -> " << device->id() << ";\n";
+#else
     p_s << "AddressSpace(";
     Memory::serialize(p_s);
     Memory *previous_memory;
     for (int addr=0; addr < int(m_map.size()); addr++) {
         Memory *cell(m_map[addr]);
         if (cell != previous_memory) {
-#if 0
             p_s << std::endl << Hex(word(addr))
                 << ": ***********************************************************************************************"
                 << std::endl;
             previous_memory = cell;
             if (previous_memory)
                 previous_memory->serialize(p_s);
-#else
-            if (cell)
-                p_s << Hex(word(addr)) << ":MemoryRef(" << cell->id() << ")";
-            previous_memory = cell;
-#endif
         }
     }
     p_s << ")";
+#endif
 }

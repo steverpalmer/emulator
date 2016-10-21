@@ -30,7 +30,7 @@
 /// combinations of getting and putting words (Low Endian).
 
 class Memory
-    : public virtual Device
+    : public Device
 {
     // Types
 public:
@@ -40,11 +40,12 @@ public:
     /// The Device Observer is an interface to allow
     /// other classes to observe resets, get_bytes and set_bytes
     class Observer
-        : NonCopyable
+        : protected NonCopyable
     {
     protected:
-        Observer() {}
+        Observer() = default;
     public:
+        virtual ~Observer() = default;
         virtual void get_byte_update(Device *p_device, word p_addr, AccessType p_at, byte result) {};
         virtual void set_byte_update(Device *p_device, word p_addr, byte p_byte, AccessType p_at) {};
     };
@@ -53,20 +54,20 @@ public:
 	/// 1. the information needed by the device to construct an instance
 	/// 2. a factory method that builds the instance of the device
     class Configurator
-        : public Device::Configurator
+        : public virtual Device::Configurator
     {
     protected:
-        Configurator() {}
+        Configurator() = default;
     public:
-        virtual ~Configurator() {}
+        virtual ~Configurator() = default;
     	/// 1. Constructor Information - Name only at this level
     	/// 2. Factory Method
-        virtual Memory *memory_factory() const { return 0; }
+        virtual Memory *memory_factory() const
+            { return 0; }
         virtual Device *device_factory() const
             { return memory_factory(); }
 
-        virtual void serialize(std::ostream &p_s) const
-            { Device::Configurator::serialize(p_s); }
+        virtual void serialize(std::ostream &) const;
     };
     // Attributes
 protected:
@@ -103,8 +104,7 @@ public:
 
     friend class Observer;
 
-    virtual void serialize(std::ostream &p_s) const
-        { Device::serialize(p_s); }
+    virtual void serialize(std::ostream &) const;
 };
 
 
@@ -121,7 +121,7 @@ class Storage
     std::vector<byte> m_storage;
 public:
     Storage(int size) : m_storage(size, 0) {}
-    virtual ~Storage() {}
+    virtual ~Storage() = default;
     inline word size() const
         { return m_storage.size(); }
     inline byte get_byte(word p_addr, Memory::AccessType p_at)
@@ -144,12 +144,12 @@ class Ram
 {
 public:
     class Configurator
-        : public Memory::Configurator
+        : public virtual Memory::Configurator
     {
     protected:
-        Configurator() {}
+        Configurator() = default;
     public:
-        virtual ~Configurator() {}
+        virtual ~Configurator() = default;
     	/// 1. Constructor Information
     	virtual word size() const = 0;
         virtual const Glib::ustring &filename() const = 0;
@@ -189,12 +189,12 @@ class Rom
 {
 public:
     class Configurator
-        : public Memory::Configurator
+        : public virtual Memory::Configurator
     {
     protected:
-        Configurator() {}
+        Configurator() = default;
     public:
-        virtual ~Configurator() {}
+        virtual ~Configurator() = default;
     	/// 1. Constructor Information
         virtual const Glib::ustring &filename() const = 0;
     	virtual word size() const = 0;
@@ -234,12 +234,12 @@ class AddressSpace
 {
 public:
     class Configurator
-        : public Memory::Configurator
+        : public virtual Memory::Configurator
     {
     protected:
-        Configurator() {}
+        Configurator() = default;
     public:
-        virtual ~Configurator() {}
+        virtual ~Configurator() = default;
     	/// 1. Constructor Information
         virtual word size() const { return 0; }
         struct Mapping {

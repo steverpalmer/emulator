@@ -6,10 +6,10 @@
 #include <cassert>
 #include <ostream>
 
-#include <string>
-#include <map>
-#include <unordered_set>
-#include <memory>
+#include <set>  // Used by Part
+#include <string>  // User by PartsBin
+#include <map>  // Used by PartsBin
+// #include <memory>
 
 #include <glibmm/ustring.h>
 
@@ -17,37 +17,49 @@
 
 // Part is the base class for all key objects in the emulated computer.
 class Part
-    : public NonCopyable
+    : protected NonCopyable
 {
 public:
     typedef Glib::ustring id_type;
-    
+
     static const char    id_delimiter;
     static const id_type id_here;
     static const id_type id_up;
 
 	class Configurator
-        : public NonCopyable
+        : protected NonCopyable
 	{
     protected:
-        Configurator() {}
+        Configurator() = default;
 	public:
-        virtual ~Configurator() {}
+        virtual ~Configurator() = default;
 		virtual const id_type &id() const = 0;
-        virtual Part *part_factory() const { return 0; }
+        virtual Part *part_factory() const
+            { return 0; }
         virtual void serialize(std::ostream &) const;
 		friend std::ostream &::operator<<(std::ostream &p_s, const Configurator &p_cfgr)
             { p_cfgr.serialize(p_s); return p_s; }
 	};
 private:
 	id_type m_id; // Not necessarily Canonical!
+protected:
+    std::set<Part *> m_parents;
+#if SERIALIZE_TO_DOT
+    void serialize_parents(std::ostream &) const;
+#endif
 public:
 	const id_type &id() const { return m_id; }
     static std::unique_ptr<id_type> canonical_id(const id_type &);
 protected:
-	explicit Part(const Configurator &p_cfgr);
+	explicit Part(const Configurator &);
 public:
     virtual ~Part();
+
+    void add_parent(Part *p_parent)
+        { (void) m_parents.insert(p_parent); }
+    void remove_parent(Part *p_parent)
+        { (void) m_parents.erase(p_parent); }
+    virtual void remove_child(Part *) {}
 
     virtual void serialize(std::ostream &) const;
 	friend std::ostream &::operator<<(std::ostream &p_s, const Part &p_p)
@@ -57,16 +69,16 @@ public:
 
 // PartsBin is a singleton map wrapper mapping Glib::ustring to Part pointers
 class PartsBin
-    : public NonCopyable
+    : protected NonCopyable
 {
 public:
     class Configurator
-        : public NonCopyable
+        : protected NonCopyable
     {
     protected:
-        Configurator() {}
+        Configurator() = default;
     public:
-        virtual ~Configurator() {}
+        virtual ~Configurator() = default;
         virtual const Part::Configurator *part(int i) const = 0;
 
         virtual void serialize(std::ostream &) const;
@@ -85,10 +97,10 @@ public:
     typedef std::pair<const key_type, mapped_type> value_type;
 private:
     bin_type m_bin;
-    PartsBin() {}
+    PartsBin() = default;
     int self_check() const;
 public:
-    virtual ~PartsBin() {}
+    virtual ~PartsBin() = default;
     static PartsBin &instance()
         {
             static PartsBin *s_instance;

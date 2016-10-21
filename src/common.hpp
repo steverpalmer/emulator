@@ -21,8 +21,8 @@ typedef int16_t  signed_word;
 class NonCopyable
 {
 protected:
-    NonCopyable() {}
-    virtual ~NonCopyable() {}
+    NonCopyable() = default;
+    virtual ~NonCopyable() = default;
 private:
     NonCopyable(const NonCopyable &) = delete;
     const NonCopyable &operator=(const NonCopyable &) = delete;

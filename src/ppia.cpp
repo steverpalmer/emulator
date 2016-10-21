@@ -72,9 +72,7 @@ enum Ports {
 ///****************************************************************************
 
 Ppia::Ppia(const Configurator &p_cfgr)
-    : Part(p_cfgr)
-    , Device(p_cfgr)
-    , Memory(p_cfgr)
+    : Memory(p_cfgr)
     , m_register( { 0, 0, 0, 0 } )
 {
     LOG4CXX_INFO(cpptrace_log(), "Ppia::Ppia(" << p_cfgr << ")");
@@ -438,13 +436,20 @@ void Ppia::set_is_rept_pressed(bool p_is_rept_pressed)
 
 void Ppia::Configurator::serialize(std::ostream &p_s) const
 {
+#if SERIALIZE_TO_DOT
+    Memory::Configurator::serialize(p_s);
+#else
     p_s << "<ppia ";
     Memory::Configurator::serialize(p_s);
     p_s << "/>";
+#endif
 }
 
 void Ppia::serialize(std::ostream &p_s) const
 {
+#if SERIALIZE_TO_DOT
+    Memory::serialize(p_s);
+#else
     p_s << "Ppia(";
     Memory::serialize(p_s);
     pthread_mutex_lock(&m_terminal.mutex);
@@ -458,4 +463,5 @@ void Ppia::serialize(std::ostream &p_s) const
         << ", Alt("     << m_terminal.is_rept_pressed << ")";
     pthread_mutex_unlock(&m_terminal.mutex);
     p_s << ")";
+#endif
 }

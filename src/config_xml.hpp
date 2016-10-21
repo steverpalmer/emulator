@@ -15,7 +15,7 @@ namespace Xml
 {
 
     class Configurator
-        : public ::Configurator
+        : public virtual ::Configurator
     {
     private:
         Glib::ustring m_XMLfilename;

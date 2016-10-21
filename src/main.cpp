@@ -27,7 +27,7 @@ static log4cxx::LoggerPtr cpptrace_log()
 }
 
 class Main
-    : public NonCopyable
+    : protected NonCopyable
 {
 private:
     Main();
@@ -42,12 +42,14 @@ public:
 
             const Configurator *cfg = new Xml::Configurator(argc, argv);  // FIXME: remove Xml::
             assert (cfg);
+            std::cout << *cfg;
 
             PartsBin::instance().build(*cfg);
             delete cfg;
 
-            std::cout << PartsBin::instance();
+            PartsBin::instance().clear();
 #if 0
+
             Terminal *terminal = dynamic_cast<Terminal *>(PartsBin::instance()["terminal"]);
             assert (terminal);
 

@@ -10,17 +10,17 @@
 #include "terminal_interface.hpp"
 
 class KeyboardController
-    : public NonCopyable
+    : protected NonCopyable
 {
     // Types
 public:
     class Configurator
-        : public NonCopyable
+        : protected NonCopyable
     {
     protected:
-        Configurator() {}
+        Configurator() = default;
 	public:
-        virtual ~Configurator() {}
+        virtual ~Configurator() = default;
 
         virtual void serialize(std::ostream &) const;
         friend std::ostream &::operator<<(std::ostream &p_s, const Configurator &p_cfgr)
@@ -30,6 +30,7 @@ private:
     TerminalInterface *m_terminal_interface;
 public:
     KeyboardController(TerminalInterface *, const Configurator &);
+    virtual ~KeyboardController() = default;
     void update(SDL_KeyboardEvent *);
 
     virtual void serialize(std::ostream &) const;

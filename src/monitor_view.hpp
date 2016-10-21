@@ -19,12 +19,12 @@ class MonitorView
     // Types
 public:
     class Configurator
-        : public NonCopyable
+        : protected NonCopyable
     {
     protected:
-        Configurator() {}
+        Configurator() = default;
 	public:
-        virtual ~Configurator() {}
+        virtual ~Configurator() = default;
         virtual float scale() const = 0;
         virtual const Glib::ustring &fontfilename() const = 0;
         virtual const Glib::ustring &window_title() const = 0;
@@ -36,7 +36,7 @@ public:
     };
 
     class Mode
-        : public NonCopyable
+        : protected NonCopyable
     {
     protected:
         MonitorView &m_state;
@@ -44,7 +44,7 @@ public:
         Mode(MonitorView &p_state)
             : m_state(p_state) {}
     public:
-        virtual ~Mode() {}
+        virtual ~Mode() = default;
         virtual void render() = 0;
         virtual void set_byte_update(word p_addr, byte p_byte) = 0;
     };

@@ -3,6 +3,7 @@
 #include <string>
 #include <list>
 
+#include <iostream>
 #include <log4cxx/logger.h>
 
 #include "part.hpp"
@@ -28,7 +29,11 @@ Part::Part(const Part::Configurator &p_cfgr)
 Part::~Part()
 {
     LOG4CXX_INFO(cpptrace_log(), "Part::~Part([" << id() << "])");
-    (void) PartsBin::instance().erase(m_id);
+    for (auto *p: m_parents)
+    {
+        p->remove_child(this);
+    }
+    m_parents.clear();
 }
 
 const char Part::id_delimiter     = '.';
@@ -95,12 +100,13 @@ std::unique_ptr<Part::id_type> Part::canonical_id(const id_type &p_s)
 
 int PartsBin::self_check() const
 {
+    LOG4CXX_DEBUG(cpptrace_log(), "PartsBin::self_check()");
 #if 0
-    LOG4CXX_INFO(cpptrace_log(), "PartsBin::self_check()");
     for (const auto &i : m_bin)
     {
         const std::unique_ptr<Part::id_type> s(Part::canonical_id(i.first));
         if (i.first != *s) return 1;
+        if (!i.second) return 2;
     }
 #endif
     return 0;
@@ -110,44 +116,75 @@ void PartsBin::clear()
 {
     assert (self_check() == 0);
     LOG4CXX_INFO(cpptrace_log(), "PartsBin::clear()");
-    LOG4CXX_DEBUG(cpptrace_log(), *this);
-    for (auto it = m_bin.begin(); it != m_bin.end(); ++it)
+    for (auto it = m_bin.begin(); it != m_bin.end(); it = m_bin.erase(it))
     {
-        LOG4CXX_DEBUG(cpptrace_log(), "==== DELETING:" << it->first << " ====");
-        LOG4CXX_DEBUG(cpptrace_log(), it->second);
-        if (it->second)
-        {
-            LOG4CXX_DEBUG(cpptrace_log(), *it->second);
-            delete it->second;
-            it->second = 0;
-        }
-        LOG4CXX_DEBUG(cpptrace_log(), *this);
+        std::cout << *this;
+        std::cout << "// Deleting:" << it->first << std::endl;
+        Part * const p(it->second);
+        it->second = 0;
+        delete p;
     }
-    m_bin.clear();
+    std::cout << *this;
+    assert (m_bin.empty());
     assert (self_check() == 0);
 }
 
 
 void Part::Configurator::serialize(std::ostream &p_s) const
 {
+#if SERIALIZE_TO_DOT
+    p_s << id() << ";\n";
+#else
     p_s << "name=\"" << id() << "\"";
+#endif
 }
 
 void PartsBin::Configurator::serialize(std::ostream &p_s) const
 {
+#if SERIALIZE_TO_DOT
+    p_s << "digraph partsbin_configurator {\n";
+    for (int i(0); const Part::Configurator *p = part(i); i++)
+        p->serialize(p_s);
+    p_s << "}\n";
+#else
     p_s << "<parts_bin>";
     for (int i(0); const Part::Configurator *p = part(i); i++)
         p->serialize(p_s);
     p_s << "</parts_bin>";
+#endif
 }
+
+#if SERIALIZE_TO_DOT
+void Part::serialize_parents(std::ostream &p_s) const
+{
+    for (auto *device : m_parents)
+        p_s << id() << " -> " << device->id() << " [style=dashed];\n";
+}
+#endif
 
 void Part::serialize(std::ostream &p_s) const
 {
+#if SERIALIZE_TO_DOT
+    p_s << m_id << ";\n";
+    serialize_parents(p_s);
+#else
     p_s << "id(\"" << m_id << "\")";
+#endif
 }
 
 void PartsBin::serialize(std::ostream &p_s) const
 {
+#if SERIALIZE_TO_DOT
+    p_s << "digraph partsbin {\n";
+    p_s << "partsbin [color=blue];\n";
+    for (auto &pair : m_bin )
+    {
+        p_s << "partsbin -> " << pair.first << ";\n";
+        if (pair.second)
+            p_s << *pair.second;
+    }
+    p_s << "}\n";
+#else
     p_s << "PartsBin(";
     for (auto &pair : m_bin )
     {
@@ -159,4 +196,5 @@ void PartsBin::serialize(std::ostream &p_s) const
         p_s << "], ";
     }
     p_s << ")";
+#endif
 }

@@ -31,18 +31,18 @@ enum  InterruptSource { NO_INTERRUPT          = 0,
 extern std::ostream &operator<<(std::ostream&, const InterruptSource&);
 
 class Cpu
-    : public virtual Device
+    : public Device
 {
     // Types
 public:
-    class Configurator : public Device::Configurator
+    class Configurator
+        : public virtual Device::Configurator
     {
     protected:
-        Configurator() {}
+        Configurator() = default;
     public:
-        virtual ~Configurator() {}
-        virtual void serialize(std::ostream &p_s) const
-            { Device::Configurator::serialize(p_s); }
+        virtual ~Configurator() = default;
+        virtual void serialize(std::ostream &) const;
     };
     // Attributes
 private:
@@ -73,12 +73,13 @@ class MCS6502
     : public Cpu
 {
 public:
-    class Configurator : public Cpu::Configurator
+    class Configurator
+        : public virtual Cpu::Configurator
     {
     protected:
-        Configurator() {}
+        Configurator() = default;
     public:
-        virtual ~Configurator() {}
+        virtual ~Configurator() = default;
         virtual const Memory::Configurator *memory() const = 0;
         virtual Device *device_factory() const
             { return new MCS6502(*this); }

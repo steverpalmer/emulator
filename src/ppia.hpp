@@ -19,12 +19,12 @@ class Ppia
 {
 public:
     class Configurator
-        : public Memory::Configurator
+        : public virtual Memory::Configurator
     {
     protected:
-        Configurator() {}
+        Configurator() = default;
     public:
-        virtual ~Configurator() {}
+        virtual ~Configurator() = default;
         /// 1. Constructor Information - Name only
         /// 2. Factory Method
         virtual Memory *memory_factory() const

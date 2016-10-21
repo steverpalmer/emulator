@@ -26,19 +26,12 @@ Device::Device(const Configurator &p_cfg)
 Device::~Device()
 {
     LOG4CXX_INFO(cpptrace_log(), "Device::~Device([" << id() << "])");
-    for (auto *p: m_parents)
-    {
-        LOG4CXX_DEBUG(cpptrace_log(), "[" << p->id() << "].remove_child([" << id() << "])");
-        p->remove_child(this);
-    }
-    m_parents.clear();
 }
 
 // Computer Methods
 
 Computer::Computer(const Configurator &p_cfgr)
-    : Part(p_cfgr)
-    , Device(p_cfgr)
+    : Device(p_cfgr)
 {
     LOG4CXX_INFO(cpptrace_log(), "Computer::Computer(" << p_cfgr << ")");
     for (int i(0); const Device::Configurator *cfgr = p_cfgr.device(i); i++)
@@ -99,34 +92,55 @@ void Computer::resume()
 
 // Streaming Output
 
-void Device::serialize(std::ostream &p_s) const
+void Device::Configurator::serialize(std::ostream &p_s) const
 {
-    Part::serialize(p_s);
-    p_s << "Parents(";
-    for (auto *d : m_parents)
-        p_s << d->id() << ", ";
-    p_s << ")";
+    p_s << id() << " [color=red];\n";
 }
 
 void Computer::Configurator::serialize(std::ostream &p_s) const
 {
+#if SERIALIZE_TO_DOT
+    Device::Configurator::serialize(p_s);
+    for (int i(0); const Device::Configurator *cfgr = device(i); i++)
+    {
+        p_s << id() << " -> " << cfgr->id() << ";\n";
+        cfgr->serialize(p_s);
+    }
+#else
     p_s << "<computer ";
     Device::Configurator::serialize(p_s);
     p_s << ">";
     for (int i(0); const Device::Configurator *cfgr = device(i); i++)
         cfgr->serialize(p_s);
     p_s << "</computer>";
+#endif
+}
+
+void Device::serialize(std::ostream &p_s) const
+{
+#if SERIALIZE_TO_DOT
+    p_s << id() << " [color=red];\n";
+    serialize_parents(p_s);
+#else
+    Part::serialize(p_s);
+    p_s << "Parents(";
+    for (auto *d : m_parents)
+        p_s << d->id() << ", ";
+    p_s << ")";
+#endif
 }
 
 void Computer::serialize(std::ostream &p_s) const
 {
+#if SERIALIZE_TO_DOT
+    Device::serialize(p_s);
+    for (auto *device : m_children)
+        p_s << id() << " -> " << device->id() << ";\n";
+#else
     p_s << "Computer(";
     Device::serialize(p_s);
     for (auto *device : m_children)
-#if 0
         device->serialize(p_s);
-#else
-        p_s << "Device(" << device->id() << ")";
-#endif
     p_s << ")";
+#endif
 }

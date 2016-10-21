@@ -30,8 +30,7 @@ static log4cxx::LoggerPtr cpptrace_log()
 #define INFINITE_STEPS_TO_GO static_cast<unsigned int>(-1)
 
 Cpu::Cpu(const Configurator &p_cfgr)
-    : Part(p_cfgr)
-    , Device(p_cfgr)
+    : Device(p_cfgr)
     , m_thread(pthread_self())
     , m_steps_to_go(0)
     , m_cycles(0)
@@ -354,7 +353,7 @@ inline void PUSH_WORD(MCS6502 &p_6502, word p_word)
 ///****************************************************************************
 
 class MCS6502::Instruction
-    : public NonCopyable
+    : protected NonCopyable
 {
     // Attributes
 private:
@@ -2351,9 +2350,7 @@ public:
 /// F0: BEQ SBC  -   -   -  SBC INC  -  SED SBC  -   -   -  SBC INC  -
 ///*****************************************************************************
 MCS6502::MCS6502(const Configurator &p_cfgr)
-    : Part(p_cfgr)
-    , Device(p_cfgr)
-    , Cpu(p_cfgr)
+    : Cpu(p_cfgr)
     , m_InterruptSource(NO_INTERRUPT)
 {
     LOG4CXX_INFO(cpptrace_log(), "MCS6502::MCS6502(" << p_cfgr << ")");
@@ -2700,11 +2697,25 @@ void MCS6502::trace_finish()
 #endif
 
 
+void Cpu::Configurator::serialize(std::ostream &p_s) const
+{
+    Device::Configurator::serialize(p_s);
+}
+
 void MCS6502::Configurator::serialize(std::ostream&p_s) const
 {
+#if SERIALIZE_TO_DOT
+    Cpu::Configurator::serialize(p_s);
+    if (memory())
+    {
+        p_s << id() << " -> " << memory()->id() << ";\n";
+        memory()->serialize(p_s);
+    }
+#else
     p_s << "<mcs6502 ";
     Cpu::Configurator::serialize(p_s);
     p_s << ">" << *memory() << "</mcs6502>";
+#endif
 }
 
 std::ostream &operator<<(std::ostream &p_s, const InterruptState &p_is)
@@ -2724,9 +2735,13 @@ std::ostream &operator<<(std::ostream &p_s, const InterruptState &p_is)
 
 void Cpu::serialize(std::ostream &p_s) const
 {
+#if SERIALIZE_TO_DOT
+    Device::serialize(p_s);
+#else
     Device::serialize(p_s);
     p_s << ", Running("   << bool(!pthread_equal(m_thread, pthread_self())) << ")"
         << ", StepsToGo(" << m_steps_to_go << ")";
+#endif
 }
 
 std::ostream &operator<<(std::ostream &p_s, const InterruptSource &p_is)
@@ -2777,6 +2792,11 @@ std::ostream &operator<<(std::ostream &p_s, const MCS6502::Instruction &p_i)
 
 void MCS6502::serialize(std::ostream &p_s) const
 {
+#if SERIALIZE_TO_DOT
+    Device::serialize(p_s);
+    if (m_memory)
+        p_s << id() << " -> " << m_memory->id() << ";\n";
+#else
     p_s << "MCS6502(";
     Cpu::serialize(p_s);
     p_s << ", MemoryRef(" << (m_memory?m_memory->id():"") << ")"
@@ -2787,4 +2807,5 @@ void MCS6502::serialize(std::ostream &p_s) const
         << ", S("  << Hex(m_register.S) << ")"
         << ", P("  << Hex(m_register.P) << ")"
         << ", IntrSrc(" << m_InterruptSource << "))";
+#endif
 }

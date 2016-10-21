@@ -8,12 +8,12 @@
 #include "part.hpp"
 
 class Configurator
-    : public PartsBin::Configurator
+    : public virtual PartsBin::Configurator
 {
 protected:
     Configurator(int argc, char *argv[]) {}
 public:
-    virtual ~Configurator() {}
+    virtual ~Configurator() = default;
 };
 
 #endif
