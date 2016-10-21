@@ -147,14 +147,7 @@ public:
             return m_bin.max_size();
         }
     // Modifiers
-    inline void clear()
-        {
-            assert (self_check() == 0);
-            for (auto &v: m_bin)
-                delete v.second;
-            m_bin.clear();
-            assert (self_check() == 0);
-        }
+    void clear();
     inline std::pair<iterator,bool> insert( const value_type& value )
         {
             assert (self_check() == 0);

@@ -47,13 +47,13 @@ public:
         { (void) m_parents.insert(p_parent); }
     void remove_parent(Device *p_parent)
         { (void) m_parents.erase(p_parent); }
+    virtual void remove_child(Device *) {}
     virtual ~Device();
     virtual void reset() {};
     virtual void pause() {};
     virtual void resume() {};
 
-    virtual void serialize(std::ostream &p_s) const
-        { Part::serialize(p_s); }
+    virtual void serialize(std::ostream &) const;
 };
 
 
@@ -88,8 +88,8 @@ public:
     explicit Computer(const Configurator &);
     virtual ~Computer();
 public:
-    void add_child(Device *p_device) { (void) m_children.insert(p_device); }
-    void remove_child(Device *p_device)  { (void) m_children.erase(p_device); }
+    void add_child(Device *);
+    virtual void remove_child(Device *);
     void clear();
 
     virtual void reset();

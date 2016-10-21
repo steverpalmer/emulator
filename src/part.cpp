@@ -104,7 +104,27 @@ int PartsBin::self_check() const
     }
 #endif
     return 0;
-    
+}
+
+void PartsBin::clear()
+{
+    assert (self_check() == 0);
+    LOG4CXX_INFO(cpptrace_log(), "PartsBin::clear()");
+    LOG4CXX_DEBUG(cpptrace_log(), *this);
+    for (auto it = m_bin.begin(); it != m_bin.end(); ++it)
+    {
+        LOG4CXX_DEBUG(cpptrace_log(), "==== DELETING:" << it->first << " ====");
+        LOG4CXX_DEBUG(cpptrace_log(), it->second);
+        if (it->second)
+        {
+            LOG4CXX_DEBUG(cpptrace_log(), *it->second);
+            delete it->second;
+            it->second = 0;
+        }
+        LOG4CXX_DEBUG(cpptrace_log(), *this);
+    }
+    m_bin.clear();
+    assert (self_check() == 0);
 }
 
 

@@ -2519,7 +2519,17 @@ MCS6502::MCS6502(const Configurator &p_cfgr)
 MCS6502::~MCS6502()
 {
     LOG4CXX_INFO(cpptrace_log(), "[" << id() << "].~MCS6502::MCS6502()");
-    m_memory->remove_parent(this);
+    if (m_memory)
+        m_memory->remove_parent(this);
+}
+
+void MCS6502::remove_child(Device *p_child)
+{
+    LOG4CXX_INFO(cpptrace_log(), "[" << id() << "].~MCS6502::remove_child([" << p_child->id() << "])");
+    if (p_child == m_memory)
+    {
+        m_memory = 0;
+    }
 }
 
 void MCS6502::single_step()
@@ -2715,7 +2725,7 @@ std::ostream &operator<<(std::ostream &p_s, const InterruptState &p_is)
 void Cpu::serialize(std::ostream &p_s) const
 {
     Device::serialize(p_s);
-    p_s << ", Running("   << !pthread_equal(m_thread, pthread_self()) << ")"
+    p_s << ", Running("   << bool(!pthread_equal(m_thread, pthread_self())) << ")"
         << ", StepsToGo(" << m_steps_to_go << ")";
 }
 
@@ -2769,12 +2779,12 @@ void MCS6502::serialize(std::ostream &p_s) const
 {
     p_s << "MCS6502(";
     Cpu::serialize(p_s);
-    p_s << ", MemoryRef("  << m_memory->id() << ")"
+    p_s << ", MemoryRef(" << (m_memory?m_memory->id():"") << ")"
         << ", PC(" << Hex(m_register.PC) << ")"
         << ", A("  << Hex(m_register.A) << ")"
         << ", X("  << Hex(m_register.X) << ")"
         << ", Y("  << Hex(m_register.Y) << ")"
         << ", S("  << Hex(m_register.S) << ")"
         << ", P("  << Hex(m_register.P) << ")"
-        << ", IntrSrc(" << m_InterruptSource << ")";
+        << ", IntrSrc(" << m_InterruptSource << "))";
 }

@@ -268,7 +268,7 @@ protected:
     virtual void _set_byte  (word p_addr, byte p_byte, AccessType p_at = AT_UNKNOWN);
 public:
     void add_child(word p_base, Memory *p_memory, word p_size = 0);
-    void remove_child(Memory *p_memory);
+    virtual void remove_child(Memory *p_memory);
     void clear();
     virtual ~AddressSpace();
     virtual void reset();

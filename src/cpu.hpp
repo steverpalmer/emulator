@@ -116,6 +116,7 @@ public:
 public:
     explicit MCS6502(const Configurator &);
     virtual ~MCS6502();
+    virtual void remove_child(Device *);
     virtual void reset(InterruptState p_is = INTERRUPT_PULSE);
     virtual void NMI  (InterruptState p_is = INTERRUPT_PULSE);
     virtual void IRQ  (InterruptState p_is = INTERRUPT_PULSE);

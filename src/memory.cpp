@@ -26,14 +26,6 @@ Memory::Memory(const Configurator &p_cfgr)
 
 Memory::~Memory()
 {
-    for (auto *p: m_parents)
-    {
-        AddressSpace *as(dynamic_cast<AddressSpace *>(p));
-        Computer *comp(dynamic_cast<Computer *>(p));
-        if (as)   as->remove_child(this);
-        if (comp) comp->remove_child(this);
-    }
-    m_parents.clear();
     m_observers.clear();
 }
 
@@ -145,7 +137,6 @@ AddressSpace::AddressSpace(const Configurator &p_cfgr)
     {
         Memory * const memory(mapping.memory->memory_factory());
         add_child(mapping.base, memory, mapping.size);
-        memory->add_parent(this);
     }
 }
 
@@ -166,7 +157,10 @@ void AddressSpace::add_child(word p_base, Memory *p_memory, word p_size)
 {
     assert (p_memory);
     LOG4CXX_INFO(cpptrace_log(), "[" << id() << "].AddressSpace::add_child(" << Hex(p_base) << ", [" << p_memory->id() << "], " << Hex(p_size) << ")");
-    m_children.insert(p_memory);
+    {  // These two statements should occur together
+        m_children.insert(p_memory);
+        p_memory->add_parent(this);
+    }
     const int memory_size(SIZE(p_memory->size()));
     assert (memory_size > 0);
     assert (!p_size || (p_size % memory_size == 0));
@@ -182,17 +176,22 @@ void AddressSpace::remove_child(Memory *p_memory)
 {
     assert (p_memory);
     LOG4CXX_INFO(cpptrace_log(), "[" << id() << "].AddressSpace::remove_child([" << p_memory->id() << "])");
-    m_children.erase(p_memory);
+    {  // These two statements should occur together
+        m_children.erase(p_memory);
+        p_memory->remove_parent(this);
+    }
 }
 
 void AddressSpace::clear()
 {
     LOG4CXX_INFO(cpptrace_log(), "[" << id() << "].AddressSpace::clear()");
-    m_map.clear();
-    m_base.clear();
+    for (auto &m: m_map)
+        m = 0;
+    for (auto &b: m_base)
+        b = 0;
     for (auto *m : m_children)
-        m->remove_parent(this);
-    m_children.clear();
+        remove_child(m);
+    assert (m_children.empty());
 }
 
 AddressSpace::~AddressSpace()
@@ -300,7 +299,7 @@ void Ram::serialize(std::ostream &p_s) const
 {
     p_s << "Ram(";
     Memory::serialize(p_s);
-    p_s << ", " << m_storage;
+    // p_s << ", " << m_storage;
     if (!m_filename.empty())
         p_s << ", filename(\"" << m_filename << "\")";
     p_s << ")";
@@ -310,7 +309,7 @@ void Rom::serialize(std::ostream &p_s) const
 {
     p_s << "Rom(";
     Memory::serialize(p_s);
-    p_s << ", " << m_storage;
+    // p_s << ", " << m_storage;
     p_s << ")";
 }
 
