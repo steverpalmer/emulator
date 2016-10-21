@@ -101,7 +101,7 @@
 
   <terminal name="terminal">
     <memory name="video"/>
-    <controller name="ppia"/>
+    <!-- controller name="ppia"/ -->
     <scale>2.0</scale>
     <fontfilename>mc6847.bmp</fontfilename>
     <!-- refreshrate>10</refreshrate -->

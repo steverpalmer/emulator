@@ -181,7 +181,7 @@
           <rng:ref name="memory"/>
         </rng:optional>
         <rng:optional>
-          <rng:ref name="controller_elm"/>
+          <rng:ref name="ppia_elm"/>
         </rng:optional>
         <rng:optional>
           <rng:ref name="scale_elm"/>
@@ -195,11 +195,11 @@
     </rng:element>
   </rng:define>
 
-  <rng:define name="controller_elm">
+  <!-- rng:define name="controller_elm">
     <rng:element name="controller">
       <rng:ref name="name_att"/>
     </rng:element>
-  </rng:define>
+  </rng:define -->
 
   <rng:define name="scale_elm">
     <rng:element name="scale">

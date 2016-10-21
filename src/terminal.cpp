@@ -14,12 +14,33 @@ static log4cxx::LoggerPtr cpptrace_log()
 
 Terminal::Terminal(const Configurator &p_cfgr)
     : Part(p_cfgr)
-    , m_memory(dynamic_cast<Memory *>(PartsBin::instance()[p_cfgr.memory_id()]))
-    , m_terminal_interface(dynamic_cast<TerminalInterface *>(PartsBin::instance()[p_cfgr.controller_id()]))
-    , m_monitor_view(m_terminal_interface, m_memory, p_cfgr.monitor_view())
-    , m_keyboard_controller(m_terminal_interface, p_cfgr.keyboard_controller())
+    , m_memory(p_cfgr.memory()->memory_factory())
+    , m_ppia(dynamic_cast<Ppia *>(p_cfgr.ppia()->memory_factory()))
+    , m_monitor_view(m_ppia, m_memory, p_cfgr.monitor_view())
+    , m_keyboard_controller(m_ppia, p_cfgr.keyboard_controller())
 {
     LOG4CXX_INFO(cpptrace_log(), "Terminal::Terminal(" << p_cfgr << ")");
+    assert (m_memory);
+    m_memory->add_parent(this);
+    assert (m_ppia);
+    m_ppia->add_parent(this);
+}
+
+Terminal::~Terminal()
+{
+    LOG4CXX_INFO(cpptrace_log(), "[" << id() << "].Terminal::~Terminal()");
+    if (m_memory)
+        m_memory->remove_parent(this);
+    if (m_ppia)
+        m_ppia->remove_parent(this);
+}
+
+void Terminal::remove_child(Part *p_child)
+{
+    if (p_child == m_memory)
+        m_memory = 0;
+    if (p_child == m_ppia)
+        m_ppia = 0;
 }
 
 
@@ -27,16 +48,16 @@ void Terminal::Configurator::serialize(std::ostream &p_s) const
 {
 #if SERIALIZE_TO_DOT
     Part::Configurator::serialize(p_s);
-    if (!memory_id().empty())
-        p_s << id() << " -> " << memory_id() << ";\n";
-    if (!controller_id().empty())
-        p_s << id() << " -> " << controller_id() << ";\n";
+    if (memory())
+        p_s << id() << " -> " << memory()->id() << ";\n";
+    if (ppia())
+        p_s << id() << " -> " << ppia()->id() << ";\n";
 #else
     p_s << "<terminal ";
     Part::Configurator::serialize(p_s);
     p_s << ">"
-        << "<memory name=\"" << memory_id() << "\"/>"
-        << "<controller name=\"" << controller_id() << "\"/>"
+        << "<memory name=\"" << memory()->id() << "\"/>"
+        << "<controller name=\"" << ppia()->id() << "\"/>"
         << monitor_view()
         << keyboard_controller()
         << "</terminal>";
@@ -49,13 +70,13 @@ void Terminal::serialize(std::ostream &p_s) const
     Part::serialize(p_s);
     if (m_memory)
         p_s << id() << " -> " << m_memory->id() << ";\n";
-    if (m_terminal_interface)
-        p_s << id() << " -> " << m_terminal_interface->id() << ";\n";
+    if (m_ppia)
+        p_s << id() << " -> " << m_ppia->id() << ";\n";
 #else
     p_s << "Terminal(";
     Part::serialize(p_s);
     p_s << "Memory(" << m_memory->id() << ")"
-        << "TerminalInterface(" << m_terminal_interface->id() << ")"
+        << "Ppia(" << m_ppia->id() << ")"
         << m_monitor_view
         << m_keyboard_controller
         << ")";

@@ -153,7 +153,7 @@ namespace Xml
 
     class DeviceConfigurator
         : public virtual Device::Configurator
-        , private PartConfigurator
+        , protected PartConfigurator
     {
     protected:
         explicit DeviceConfigurator(Part::id_type p_id, const xmlpp::Node *p_node=0)
@@ -165,7 +165,7 @@ namespace Xml
 
     class MemoryConfigurator
         : public virtual Memory::Configurator
-        , private DeviceConfigurator
+        , protected DeviceConfigurator
     {
     protected:
         explicit MemoryConfigurator(Part::id_type p_id, const xmlpp::Node *p_node=0)
@@ -183,26 +183,22 @@ namespace Xml
         : public virtual Memory::Configurator
         , private MemoryConfigurator
     {
-    private:
-        Part::id_type m_ref_id;
     public:
         explicit MemoryRefConfigurator(const xmlpp::Node *p_node)
-            : MemoryConfigurator("")
-            , m_ref_id(eval_to_string(p_node, "@name"))
+            : MemoryConfigurator("", p_node)
             {}
-        explicit MemoryRefConfigurator(Glib::ustring p_ref_name)
-            : MemoryConfigurator("")
-            , m_ref_id(p_ref_name)
+        explicit MemoryRefConfigurator(Glib::ustring p_name)
+            : MemoryConfigurator(p_name)
             {}
         virtual ~MemoryRefConfigurator() = default;
         virtual Memory *memory_factory() const
-            { return dynamic_cast<Memory *>(PartsBin::instance()[m_ref_id]); }
+            { return dynamic_cast<Memory *>(PartsBin::instance()[m_id]); }
         static Memory::Configurator *_memory_configurator_factory(const xmlpp::Node *p_node)
             { return new MemoryRefConfigurator(p_node); }
 
         virtual void serialize(std::ostream &p_s) const
             {
-                p_s << "<memory name=\"" << m_ref_id << "\"/>";
+                p_s << "<memory name=\"" << m_id << "\"/>";
             }
     };
 
@@ -345,26 +341,22 @@ namespace Xml
         : public virtual Device::Configurator
         , private DeviceConfigurator
     {
-    private:
-        Part::id_type m_ref_id;
     public:
         explicit DeviceRefConfigurator(const xmlpp::Node *p_node)
-            : DeviceConfigurator("")
-            , m_ref_id(p_node->eval_to_string("@name"))
+            : DeviceConfigurator("", p_node)
             {}
-        explicit DeviceRefConfigurator(Glib::ustring p_ref_name)
-            : DeviceConfigurator("")
-            , m_ref_id(p_ref_name)
+        explicit DeviceRefConfigurator(Glib::ustring p_name)
+            : DeviceConfigurator(p_name)
             {}
         virtual ~DeviceRefConfigurator() = default;
         virtual Device *device_factory() const
-            { return dynamic_cast<Device *>(PartsBin::instance()[m_ref_id]); }
+            { return dynamic_cast<Device *>(PartsBin::instance()[m_id]); }
         static Device::Configurator *_device_configurator_factory(const xmlpp::Node *p_node)
             { return new DeviceRefConfigurator(p_node); }
 
         virtual void serialize(std::ostream &p_s) const
             {
-                p_s << "<device name=\"" << m_ref_id << "\"/>";
+                p_s << "<device name=\"" << m_id << "\"/>";
             }
     };
 
@@ -496,29 +488,40 @@ namespace Xml
         , private PartConfigurator
     {
     private:
-        Part::id_type m_memory_id;
-        Part::id_type m_controller_id;
+        Memory::Configurator *m_memory;
+        Memory::Configurator *m_ppia;
         KeyboardControllerConfigurator *m_keyboard_controller;
         MonitorViewConfigurator *m_monitor_view;
     public:
         explicit TerminalConfigurator(const xmlpp::Node *p_node = 0)
             : PartConfigurator("", p_node)
-            , m_memory_id("video")
-            , m_controller_id("ppia")
             {
                 LOG4CXX_INFO(cpptrace_log(), "Xml::TerminalConfigurator::TerminalConfigurator(" << p_node << ")");
-                try { m_memory_id = eval_to_string(p_node, "e:memory/@name"); }
-                catch (XpathNotFound e) {}
-                try { m_controller_id = eval_to_string(p_node, "e:controller/@name"); }
-                catch (XpathNotFound e) {}
+                if (p_node)
+                {
+                    const xmlpp::NodeSet memory_ns(p_node->find("e:ram|e:rom|e:address_space|e:memory", namespaces));
+                    switch (memory_ns.size())
+                    {
+                    case 0: { m_memory = new MemoryRefConfigurator("video"); break; }
+                    case 1: { m_memory = memory_configurator_factory(memory_ns[0]); break; }
+                    default: { assert (false); }
+                    }
+                    const xmlpp::NodeSet ppia_ns(p_node->find("e:ppia", namespaces));
+                    switch (ppia_ns.size())
+                    {
+                    case 0: { m_ppia = new MemoryRefConfigurator("ppia"); break; }
+                    case 1: { m_ppia = memory_configurator_factory(ppia_ns[0]); break; }
+                    default: { assert (false); }
+                    }
+                }
                 m_keyboard_controller = new KeyboardControllerConfigurator(p_node);
                 assert (m_keyboard_controller);
                 m_monitor_view = new MonitorViewConfigurator(p_node);
                 assert (m_monitor_view);
             }
         virtual ~TerminalConfigurator() = default;
-        const Part::id_type                      &memory_id()           const { return m_memory_id; }
-        const Part::id_type                      &controller_id()       const { return m_controller_id; }
+        const Memory::Configurator               *memory()              const { return m_memory; }
+        const Memory::Configurator               *ppia()                const { return m_ppia; }
         const KeyboardController::Configurator   &keyboard_controller() const { return *m_keyboard_controller; }
         const MonitorView::Configurator          &monitor_view()        const { return *m_monitor_view; }
         static Part::Configurator *_part_configurator_factory(const xmlpp::Node *p_node)
