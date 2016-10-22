@@ -5,18 +5,13 @@ Import('common_env')
 common_env['BUILDERS']['rng2rnc'] = rng2rnc
 common_env.rng2rnc('emulator')
 
-#common_env['BUILDERS']['rng2xsd'] = rng2xsd
-#common_env.rng2xsd('emulator')
-
 common_env.Command(r'plot.bmp', r'build_plot_bmp.py', "python3 $SOURCE $TARGET")
 
 # Main Build
 
 common_env['CCFLAGS']   = r'-Wall -g -pipe -std=c++11 -pthread -O0 -DSERIALIZE_TO_DOT=1'
 common_env['LINKFLAGS'] = r'-pthread'
-
-add_library(common_env, 'liblog4cxx')
-add_library(common_env, 'glibmm-2.4')
+common_env.ParseConfig("pkg-config --cflags --libs liblog4cxx glibmm-2.4")
 
 partslib_env = common_env.Clone()
 PARTSLIB = partslib_env.StaticLibrary(r'parts', [ r'part.cpp'
@@ -27,9 +22,7 @@ PARTSLIB = partslib_env.StaticLibrary(r'parts', [ r'part.cpp'
                                                 ])
 
 emulator_gui_sdl_env = common_env.Clone()
-add_library(emulator_gui_sdl_env, 'sdl')
-add_library(emulator_gui_sdl_env, 'libxml++-2.6')
-
+emulator_gui_sdl_env.ParseConfig("pkg-config --cflags --libs sdl libxml++-2.6")
 emulator_gui_sdl_env.Program('emulator', [ r'monitor_view.cpp'
                                          , r'keyboard_controller.cpp'
                                          , r'terminal.cpp'
