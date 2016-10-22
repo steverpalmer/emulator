@@ -21,26 +21,41 @@ Terminal::Terminal(const Configurator &p_cfgr)
 {
     LOG4CXX_INFO(cpptrace_log(), "Terminal::Terminal(" << p_cfgr << ")");
     assert (m_memory);
+    LOG4CXX_INFO(Part::log(), "making [" << m_memory->id() << "] child of [" << id() << "]");
     m_memory->add_parent(this);
     assert (m_ppia);
     m_ppia->add_parent(this);
+    LOG4CXX_INFO(Part::log(), "making [" << m_ppia->id() << "] child of [" << id() << "]");
 }
 
 Terminal::~Terminal()
 {
     LOG4CXX_INFO(cpptrace_log(), "[" << id() << "].Terminal::~Terminal()");
     if (m_memory)
+    {
         m_memory->remove_parent(this);
+        remove_child(m_memory);
+    }
     if (m_ppia)
+    {
         m_ppia->remove_parent(this);
+        remove_child(m_ppia);
+    }
 }
 
 void Terminal::remove_child(Part *p_child)
 {
     if (p_child == m_memory)
+    {
+        LOG4CXX_INFO(Part::log(), "removing [" << m_memory->id() << "] as child of [" << id() << "]");
         m_memory = 0;
+    }
     if (p_child == m_ppia)
+    {
+        // LOG4CXX_INFO(Part::log(), "removing [" << m_ppia->id() << "] as child of [" << id() << "]");
+        LOG4CXX_INFO(Part::log(), "removing [ppia] as child of [terminal]");
         m_ppia = 0;
+    }
 }
 
 

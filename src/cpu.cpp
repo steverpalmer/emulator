@@ -2356,6 +2356,7 @@ MCS6502::MCS6502(const Configurator &p_cfgr)
     LOG4CXX_INFO(cpptrace_log(), "MCS6502::MCS6502(" << p_cfgr << ")");
     m_memory = p_cfgr.memory()->memory_factory();
     assert (m_memory);
+    LOG4CXX_INFO(Part::log(), "making [" << m_memory->id() << "] child of [" << id() << "]");
     m_memory->add_parent(this);
     assert (SIZE(m_memory->size()) == 65536);
     m_opcode_mapping.fill(new Instr_Undefined(*this));
@@ -2517,14 +2518,18 @@ MCS6502::~MCS6502()
 {
     LOG4CXX_INFO(cpptrace_log(), "[" << id() << "].~MCS6502::MCS6502()");
     if (m_memory)
+    {
         m_memory->remove_parent(this);
+        remove_child(m_memory);
+    }
 }
 
-void MCS6502::remove_child(Device *p_child)
+void MCS6502::remove_child(Part *p_child)
 {
     LOG4CXX_INFO(cpptrace_log(), "[" << id() << "].~MCS6502::remove_child([" << p_child->id() << "])");
     if (p_child == m_memory)
     {
+        LOG4CXX_INFO(Part::log(), "removing [" << m_memory->id() << "] as child of [" << id() << "]");
         m_memory = 0;
     }
 }

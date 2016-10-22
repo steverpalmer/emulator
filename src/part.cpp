@@ -19,6 +19,7 @@ Part::Part(const Part::Configurator &p_cfgr)
 {
     static int anonymous_id_counter = 1000;
     LOG4CXX_INFO(cpptrace_log(), "Part::Part(" << p_cfgr << ")");
+    LOG4CXX_INFO(Part::log(), "created [" << m_id << "]");
     if (m_id.empty())
     {
         m_id = std::to_string(++anonymous_id_counter);
@@ -32,8 +33,10 @@ Part::~Part()
     for (auto *p: m_parents)
     {
         p->remove_child(this);
+        LOG4CXX_INFO(Part::log(), "removing [" << p->id() << "] as parent of [" << id() << "]");
     }
     m_parents.clear();
+    LOG4CXX_INFO(Part::log(), "destructed [" << m_id << "]");
 }
 
 const char Part::id_delimiter     = '.';
@@ -98,6 +101,19 @@ std::unique_ptr<Part::id_type> Part::canonical_id(const id_type &p_s)
 #endif
 }
 
+void Part::add_parent(Part *p_parent)
+{
+    LOG4CXX_INFO(Part::log(), "making [" << p_parent->id() << "] parent of [" << id() << "]");
+    (void) m_parents.insert(p_parent);
+}
+
+void Part::remove_parent(Part *p_parent)
+{
+    LOG4CXX_INFO(Part::log(), "removing [" << p_parent->id() << "] as parent of [" << id() << "]");
+    (void) m_parents.erase(p_parent);
+}
+
+
 int PartsBin::self_check() const
 {
     LOG4CXX_DEBUG(cpptrace_log(), "PartsBin::self_check()");
@@ -118,13 +134,13 @@ void PartsBin::clear()
     LOG4CXX_INFO(cpptrace_log(), "PartsBin::clear()");
     for (auto it = m_bin.begin(); it != m_bin.end(); it = m_bin.erase(it))
     {
-        std::cout << *this;
-        std::cout << "// Deleting:" << it->first << std::endl;
+        LOG4CXX_DEBUG(Part::log(), *this);
+        LOG4CXX_DEBUG(Part::log(), "// Deleting:" << it->first);
         Part * const p(it->second);
         it->second = 0;
         delete p;
     }
-    std::cout << *this;
+    LOG4CXX_DEBUG(Part::log(), *this);
     assert (m_bin.empty());
     assert (self_check() == 0);
 }

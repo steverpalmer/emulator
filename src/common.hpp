@@ -3,21 +3,21 @@
 #ifndef COMMON_HPP_
 #define COMMON_HPP_
 
+// Logger Names
 #define CTRACE_PREFIX "ctrace"
+#define PART_LOGGER "part"
 
+// Types used through out the emulator
 #include <cstdint>
-
 typedef uint8_t  byte;
 typedef int8_t   signed_byte;
 typedef uint16_t word;
 typedef int16_t  signed_word;
 
-#include <string>
-#include <ostream>
-#include <iomanip>
-
+// Utility function
 #define SIZE(n) (word((n)-word(1))+1)
 
+// Utility class
 class NonCopyable
 {
 protected:
@@ -28,6 +28,10 @@ private:
     const NonCopyable &operator=(const NonCopyable &) = delete;
 };
 
+// Streaming Utilitiy
+#include <string>
+#include <ostream>
+#include <iomanip>
 class Hex
 {
 	unsigned int m_v;

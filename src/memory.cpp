@@ -150,6 +150,7 @@ void AddressSpace::add_child(word p_base, Memory *p_memory, word p_size)
 {
     assert (p_memory);
     LOG4CXX_INFO(cpptrace_log(), "[" << id() << "].AddressSpace::add_child(" << Hex(p_base) << ", [" << p_memory->id() << "], " << Hex(p_size) << ")");
+    LOG4CXX_INFO(Part::log(), "making [" << p_memory->id() << "] child of [" << id() << "]");
     {  // These two statements should occur together
         m_children.insert(p_memory);
         p_memory->add_parent(this);
@@ -165,12 +166,14 @@ void AddressSpace::add_child(word p_base, Memory *p_memory, word p_size)
     }
 }
 
-void AddressSpace::remove_child(Memory *p_memory)
+void AddressSpace::remove_child(Memory *p_memory, bool do_erase)
 {
     assert (p_memory);
     LOG4CXX_INFO(cpptrace_log(), "[" << id() << "].AddressSpace::remove_child([" << p_memory->id() << "])");
+    LOG4CXX_INFO(Part::log(), "removing [" << p_memory->id() << "] as child of [" << id() << "]");
     {  // These two statements should occur together
-        m_children.erase(p_memory);
+        if (do_erase)
+            m_children.erase(p_memory);
         p_memory->remove_parent(this);
     }
 }
@@ -182,8 +185,8 @@ void AddressSpace::clear()
         m = 0;
     for (auto &b: m_base)
         b = 0;
-    for (auto *m : m_children)
-        remove_child(m);
+    for (auto it = m_children.begin(); it != m_children.end(); it = m_children.erase(it))
+        remove_child(*it, false);
     assert (m_children.empty());
 }
 

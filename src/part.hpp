@@ -26,6 +26,12 @@ public:
     static const id_type id_here;
     static const id_type id_up;
 
+    static log4cxx::LoggerPtr log()
+        {
+            static log4cxx::LoggerPtr result(log4cxx::Logger::getLogger(PART_LOGGER));
+            return result;
+        }
+    
 	class Configurator
         : protected NonCopyable
 	{
@@ -55,10 +61,8 @@ protected:
 public:
     virtual ~Part();
 
-    void add_parent(Part *p_parent)
-        { (void) m_parents.insert(p_parent); }
-    void remove_parent(Part *p_parent)
-        { (void) m_parents.erase(p_parent); }
+    void add_parent(Part *);
+    void remove_parent(Part *p_parent);
     virtual void remove_child(Part *) {}
 
     virtual void serialize(std::ostream &) const;

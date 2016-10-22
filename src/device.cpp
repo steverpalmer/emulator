@@ -43,22 +43,25 @@ Computer::Computer(const Configurator &p_cfgr)
 
 void Computer::add_child(Device *p_device)
 {
+    LOG4CXX_INFO(Part::log(), "making [" << p_device->id() << "] child of [" << id() << "]");
     (void) m_children.insert(p_device);
     p_device->add_parent(this);
 }
 
-void Computer::remove_child(Device *p_device)
+void Computer::remove_child(Device *p_device, bool do_erase)
 {
     LOG4CXX_INFO(cpptrace_log(), "[" << id() << "].Computer::remove_child([" << p_device->id() << "])");
-    (void) m_children.erase(p_device);
+    LOG4CXX_INFO(Part::log(), "removing [" << p_device->id() << "] as child of [" << id() << "]");
+    if (do_erase)
+        m_children.erase(p_device);
     p_device->remove_parent(this);
 }
 
 void Computer::clear()
 {
     LOG4CXX_INFO(cpptrace_log(), "[" << id() << "].Computer::clear()");
-    for (auto *device: m_children)
-        remove_child(device);
+    for (auto it = m_children.begin(); it != m_children.end(); it = m_children.erase(it))
+        remove_child(*it, false);
     assert (m_children.empty());
 }
 

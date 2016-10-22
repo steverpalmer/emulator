@@ -42,7 +42,6 @@ public:
 
             const Configurator *cfg = new Xml::Configurator(argc, argv);  // FIXME: remove Xml::
             assert (cfg);
-            std::cout << *cfg;
 
             PartsBin::instance().build(*cfg);
             delete cfg;

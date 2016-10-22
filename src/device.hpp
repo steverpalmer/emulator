@@ -82,7 +82,9 @@ public:
     virtual ~Computer();
 public:
     void add_child(Device *);
-    virtual void remove_child(Device *);
+    void remove_child(Device *, bool do_erase);
+    virtual void remove_child(Device *p_device)
+        { remove_child(p_device, true); }
     void clear();
 
     virtual void reset();
