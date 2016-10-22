@@ -284,8 +284,10 @@ void MonitorView::vdg_mode_update(TerminalInterface *p_terminal, TerminalInterfa
     {
     case TerminalInterface::VDG_MODE0:
         m_mode = &m_mode0;
+        break;
     default:
-        assert (false);  // TODO: render graphics modes
+        LOG4CXX_ERROR(cpptrace_log(), "Unknown graphics mode: " << p_mode);
+        // assert (false);  // TODO: render graphics modes
     }
     render();
 }

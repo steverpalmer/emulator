@@ -13,8 +13,8 @@
 #include "memory.hpp"
 
 class MonitorView
-    : public TerminalInterface::Observer
-    , public Memory::Observer
+    : public virtual TerminalInterface::Observer
+    , public virtual Memory::Observer
 {
     // Types
 public:

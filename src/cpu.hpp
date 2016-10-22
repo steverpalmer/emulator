@@ -58,9 +58,9 @@ protected:
     void stop();
 public:
     virtual ~Cpu();
-    void resume();
-    void pause();
-    void step(int cnt = 1);
+    virtual void resume();
+    virtual void pause();
+    virtual void step(int cnt = 1);
     virtual void single_step() = 0;
     virtual void reset(InterruptState p_is = INTERRUPT_PULSE) = 0;
     virtual void NMI(InterruptState p_is = INTERRUPT_PULSE) = 0;
@@ -92,19 +92,13 @@ public:
 private:
     std::array<Instruction *, 256> m_opcode_mapping;
 public:
-#if EXEC_TRACE
-    log4c_category_t *m_6502tracelog;
-    log4c_appender_t *m_6502traceapp;
-    log4c_layout_t   *m_6502tracelay;
-#endif
-#if JUMP_TRACE
-    log4c_category_t *m_jumptracelog;
-private:
-    int               m_trace_finish_priority;
-    unsigned int      m_trace_start_count;
-#endif
+    static log4cxx::LoggerPtr log()
+        {
+            static log4cxx::LoggerPtr result(log4cxx::Logger::getLogger(INSTRUCTION_PREFIX ".mcs6502"));
+            return result;
+        }
 public:
-    volatile int      m_InterruptSource;
+    volatile int m_InterruptSource;
     struct {
         word PC;
         byte A;
@@ -118,14 +112,17 @@ public:
     explicit MCS6502(const Configurator &);
     virtual ~MCS6502();
     virtual void remove_child(Part *);
-    virtual void reset(InterruptState p_is = INTERRUPT_PULSE);
-    virtual void NMI  (InterruptState p_is = INTERRUPT_PULSE);
-    virtual void IRQ  (InterruptState p_is = INTERRUPT_PULSE);
+
+    virtual void reset(InterruptState p_is);
+    virtual void reset()
+        { reset(INTERRUPT_PULSE); }
+    virtual void NMI  (InterruptState p_is);
+    virtual void NMI()
+        { NMI(INTERRUPT_PULSE); }
+    virtual void IRQ  (InterruptState p_is);
+    virtual void IRQ()
+        { IRQ(INTERRUPT_PULSE); }
     virtual void single_step();
-#if 0
-    void trace_start();
-    void trace_finish();
-#endif
 
     virtual void serialize(std::ostream &) const;
 };

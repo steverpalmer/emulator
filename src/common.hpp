@@ -6,6 +6,7 @@
 // Logger Names
 #define CTRACE_PREFIX "ctrace"
 #define PART_LOGGER "part"
+#define INSTRUCTION_PREFIX "instruction"
 
 // Types used through out the emulator
 #include <cstdint>

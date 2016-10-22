@@ -9,7 +9,7 @@ common_env.Command(r'plot.bmp', r'build_plot_bmp.py', "python3 $SOURCE $TARGET")
 
 # Main Build
 
-common_env['CCFLAGS']   = r'-Wall -g -pipe -std=c++11 -pthread -O0 -DSERIALIZE_TO_DOT=1'
+common_env['CCFLAGS']   = r'-Wall -g -pipe -std=c++11 -pthread -O0 -DSERIALIZE_TO_DOT=0'
 common_env['LINKFLAGS'] = r'-pthread'
 common_env.ParseConfig("pkg-config --cflags --libs liblog4cxx glibmm-2.4")
 

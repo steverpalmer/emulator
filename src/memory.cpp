@@ -284,7 +284,9 @@ void AddressSpace::Configurator::serialize(std::ostream &p_s) const
 void Memory::serialize(std::ostream &p_s) const
 {
     p_s << id() << " [color=green];\n";
+#if SERIALIZE_TO_DOT
     serialize_parents(p_s);
+#endif
 }
 
 std::ostream &operator<<(std::ostream &p_s, const Memory::AccessType p_at)

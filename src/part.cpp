@@ -130,8 +130,8 @@ int PartsBin::self_check() const
 
 void PartsBin::clear()
 {
-    assert (self_check() == 0);
     LOG4CXX_INFO(cpptrace_log(), "PartsBin::clear()");
+    assert (self_check() == 0);
     for (auto it = m_bin.begin(); it != m_bin.end(); it = m_bin.erase(it))
     {
         LOG4CXX_DEBUG(Part::log(), *this);
