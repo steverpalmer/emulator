@@ -94,8 +94,6 @@ public:
     word get_word(word p_addr, AccessType p_at = AT_UNKNOWN);
     void set_word(word p_addr, word p_word, AccessType p_at = AT_UNKNOWN);
 
-    friend class Observer;
-
     virtual void serialize(std::ostream &) const;
 };
 
