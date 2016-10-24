@@ -46,13 +46,12 @@ public:
         Observer() = default;
     public:
         virtual ~Observer() = default;
-        virtual void get_byte_update(Device *p_device, word p_addr, AccessType p_at, byte result) {};
-        virtual void set_byte_update(Device *p_device, word p_addr, byte p_byte, AccessType p_at) {};
+        virtual void set_byte_update(Memory *p_memory, word p_addr, byte p_byte, AccessType p_at) = 0;
     };
 
-	/// The Device Configurator is an interface to two key items
-	/// 1. the information needed by the device to construct an instance
-	/// 2. a factory method that builds the instance of the device
+	/// The Memory Configurator is an interface to two key items
+	/// 1. the information needed by the memory to construct an instance
+	/// 2. a factory method that builds the instance of the memory
     class Configurator
         : public virtual Device::Configurator
     {
@@ -76,7 +75,6 @@ protected:
 protected:
     explicit Memory(const Configurator &);
 protected:
-    virtual byte _get_byte(word p_addr, AccessType p_at = AT_UNKNOWN) = 0;
     virtual void _set_byte(word p_addr, byte p_byte, AccessType p_at = AT_UNKNOWN) = 0;
 public:
     virtual word size() const = 0;
@@ -86,13 +84,7 @@ public:
 
     virtual ~Memory();
     
-    inline byte get_byte(word p_addr, AccessType p_at = AT_UNKNOWN)
-        {
-            const byte result(_get_byte(p_addr, p_at));
-            for ( auto *obs : m_observers )
-                obs->get_byte_update(this, p_addr, p_at, result);
-            return result;
-        }
+    virtual byte get_byte(word p_addr, AccessType p_at = AT_UNKNOWN) = 0;
     inline void set_byte(word p_addr, byte p_byte, AccessType p_at = AT_UNKNOWN)
         {
             _set_byte(p_addr, p_byte, p_at);
@@ -169,12 +161,13 @@ public:
     virtual ~Ram();
     virtual word size() const
         { return m_storage.size(); }
-protected:
-    virtual byte _get_byte(word p_addr, AccessType p_at = AT_UNKNOWN)
+    virtual byte get_byte(word p_addr, AccessType p_at = AT_UNKNOWN)
         { return m_storage.get_byte(p_addr, p_at); }
+protected:
     virtual void _set_byte(word p_addr, byte p_byte, AccessType p_at = AT_UNKNOWN)
         { m_storage.set_byte(p_addr, p_byte, p_at); }
 
+public:
     virtual void serialize(std::ostream &) const;
 };
 
@@ -213,12 +206,13 @@ public:
     virtual ~Rom();
     virtual word size() const
         { return m_storage.size(); }
-protected:
-    virtual byte _get_byte(word p_addr, AccessType p_at = AT_UNKNOWN)
+    virtual byte get_byte(word p_addr, AccessType p_at = AT_UNKNOWN)
         { return m_storage.get_byte(p_addr, p_at); }
+protected:
     virtual void _set_byte(word p_addr, byte p_byte, AccessType p_at = AT_UNKNOWN)
         { /* Do Nothing! */ }
 
+public:
     virtual void serialize(std::ostream &) const;
 };
 
@@ -263,8 +257,8 @@ private:
 public:
     explicit AddressSpace(const Configurator &);
     virtual word size() const { return m_map.size(); }
+    virtual byte get_byte  (word p_addr, AccessType p_at = AT_UNKNOWN);
 protected:
-    virtual byte _get_byte  (word p_addr, AccessType p_at = AT_UNKNOWN);
     virtual void _set_byte  (word p_addr, byte p_byte, AccessType p_at = AT_UNKNOWN);
 public:
     void add_child(word p_base, Memory *p_memory, word p_size = 0);

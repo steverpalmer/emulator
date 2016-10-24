@@ -201,16 +201,16 @@ void PartsBin::serialize(std::ostream &p_s) const
     }
     p_s << "}\n";
 #else
-    p_s << "PartsBin(";
+    p_s << "PartsBin([";
     for (auto &pair : m_bin )
     {
-        p_s << "[\"" << pair.first << "\":";
+        p_s << "(\"" << pair.first << "\":";
         if (pair.second)
             p_s << *pair.second;
         else
-            p_s << "NULL";
-        p_s << "], ";
+            p_s << "_";
+        p_s << "), ";
     }
-    p_s << ")";
+    p_s << "])";
 #endif
 }

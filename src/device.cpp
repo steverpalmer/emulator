@@ -97,7 +97,11 @@ void Computer::resume()
 
 void Device::Configurator::serialize(std::ostream &p_s) const
 {
+#if SERIALIZE_TO_DOT
     p_s << id() << " [color=red];\n";
+#else
+    Part::Configurator::serialize(p_s);
+#endif
 }
 
 void Computer::Configurator::serialize(std::ostream &p_s) const
@@ -126,10 +130,6 @@ void Device::serialize(std::ostream &p_s) const
     serialize_parents(p_s);
 #else
     Part::serialize(p_s);
-    p_s << "Parents(";
-    for (auto *d : m_parents)
-        p_s << d->id() << ", ";
-    p_s << ")";
 #endif
 }
 
@@ -143,7 +143,7 @@ void Computer::serialize(std::ostream &p_s) const
     p_s << "Computer(";
     Device::serialize(p_s);
     for (auto *device : m_children)
-        device->serialize(p_s);
+        p_s << device->id() << ", ";
     p_s << ")";
 #endif
 }

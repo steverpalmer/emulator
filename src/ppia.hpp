@@ -58,8 +58,8 @@ public:
 public:
     virtual word size() const { return 4; }
     virtual void reset();
+    virtual byte get_byte(word p_addr, AccessType p_at = AT_UNKNOWN);
 protected:
-    virtual byte _get_byte(word p_addr, AccessType p_at = AT_UNKNOWN);
     virtual void _set_byte(word p_addr, byte p_byte, AccessType p_at = AT_UNKNOWN);
 
     // TerminalInterface

@@ -133,9 +133,9 @@ AddressSpace::AddressSpace(const Configurator &p_cfgr)
     }
 }
 
-byte AddressSpace::_get_byte(word p_addr, AccessType p_at)
+byte AddressSpace::get_byte(word p_addr, AccessType p_at)
 {
-    LOG4CXX_INFO(cpptrace_log(), "[" << id() << "].AddressSpace::_get_byte(" << Hex(p_addr) << ", " << p_at << ")");
+    LOG4CXX_INFO(cpptrace_log(), "[" << id() << "].AddressSpace::get_byte(" << Hex(p_addr) << ", " << p_at << ")");
     return m_map[p_addr] ? m_map[p_addr]->get_byte(p_addr-m_base[p_addr], p_at) : 0;
 }
 
@@ -222,7 +222,11 @@ void AddressSpace::resume()
 
 void Memory::Configurator::serialize(std::ostream &p_s) const
 {
+#if SERIALIZE_TO_DOT
     p_s << id() << " [color=green];\n";
+#else
+    Device::Configurator::serialize(p_s);
+#endif
 }
 
 void Ram::Configurator::serialize(std::ostream &p_s) const
@@ -233,9 +237,10 @@ void Ram::Configurator::serialize(std::ostream &p_s) const
     p_s << "<ram ";
     Memory::Configurator::serialize(p_s);
     p_s << ">"
-        << "<size>" << Hex(size()) << "</size>"
-        << "<filename>" << filename() << "</filename>"
-        << "</ram>";
+        << "<size>" << Hex(size()) << "</size>";
+    if (!filename().empty())
+        p_s << "<filename>" << filename() << "</filename>";
+    p_s << "</ram>";
 #endif
 }
 
@@ -247,9 +252,10 @@ void Rom::Configurator::serialize(std::ostream &p_s) const
     p_s << "<rom ";
     Memory::Configurator::serialize(p_s);
     p_s << ">"
-        << "<filename>" << filename() << "</filename>"
-        << "<size>" << Hex(size()) << "</size>"
-        << "</rom>";
+        << "<filename>" << filename() << "</filename>";
+    if (size())
+        p_s << "<size>" << Hex(size()) << "</size>";
+    p_s << "</rom>";
 #endif
 }
 
@@ -266,26 +272,30 @@ void AddressSpace::Configurator::serialize(std::ostream &p_s) const
 #else
     p_s << "<address_space ";
     Memory::Configurator::serialize(p_s);
-    p_s << ">"
-        << "<size>" << Hex(size()) << "</size>";
+    p_s << ">";
     AddressSpace::Configurator::Mapping map;
     for (int i(0); (map = mapping(i), map.memory); i++)
     {
         p_s << "<map>"
             << "<base>" << Hex(map.base) << "</base>";
         map.memory->serialize(p_s);
-        p_s << "<size>" << Hex(map.size) << "</size>"
-            << "</map>";
+        if (map.size)
+            p_s << "<size>" << Hex(map.size) << "</size>";
+        p_s << "</map>";
     }
+    if (size())
+        p_s << "<size>" << Hex(size()) << "</size>";
     p_s << "</address_space>";
 #endif
 }
 
 void Memory::serialize(std::ostream &p_s) const
 {
-    p_s << id() << " [color=green];\n";
 #if SERIALIZE_TO_DOT
+    p_s << id() << " [color=green];\n";
     serialize_parents(p_s);
+#else
+    Device::serialize(p_s);
 #endif
 }
 
@@ -355,20 +365,26 @@ void AddressSpace::serialize(std::ostream &p_s) const
     for (auto *device : m_children)
         p_s << id() << " -> " << device->id() << ";\n";
 #else
-    p_s << "AddressSpace(";
+    p_s << "AddressSpace([";
     Memory::serialize(p_s);
-    Memory *previous_memory;
+    Memory *previous_memory = 0;
     for (int addr=0; addr < int(m_map.size()); addr++) {
         Memory *cell(m_map[addr]);
         if (cell != previous_memory) {
+#if 0
             p_s << std::endl << Hex(word(addr))
                 << ": ***********************************************************************************************"
                 << std::endl;
             previous_memory = cell;
             if (previous_memory)
                 previous_memory->serialize(p_s);
+#else
+            if (cell)
+                p_s << "(" << Hex(word(addr)) << ":" << *cell << ")";
+            previous_memory = cell;
+#endif
         }
     }
-    p_s << ")";
+    p_s << ")]";
 #endif
 }

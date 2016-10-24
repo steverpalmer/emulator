@@ -283,7 +283,7 @@ byte Ppia::get_PortC(byte p_previous)
     return result;
 }
 
-byte Ppia::_get_byte(word p_addr, AccessType p_at)
+byte Ppia::get_byte(word p_addr, AccessType p_at)
 {
     LOG4CXX_INFO(cpptrace_log(), "[" << id() << "].Ppia::_get_byte(" << Hex(p_addr) << ", " << p_at << ")");
     assert (p_addr < 4);
