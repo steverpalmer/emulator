@@ -32,7 +32,7 @@ public:
     inline int  key() const { return m_key; }
     inline void update() { SDL_UpdateRect(m_array, m_pos.x, m_pos.y, m_pos.w, m_pos.h); }
 
-    SurfaceArray( SDL_Surface *p_surface, int x_range = 1, int y_range = 1, int p_key = 0 )
+    explicit SurfaceArray( SDL_Surface *p_surface, int x_range = 1, int y_range = 1, int p_key = 0 )
         : m_array(p_surface)
         , m_x_range(x_range)
         , m_key(p_key)
@@ -64,7 +64,6 @@ public:
             }
             return *this;
         }
-#if 0
     SurfaceArray  &operator--()
         {
             LOG4CXX_INFO(cpptrace_log(), "operator--()");
@@ -77,21 +76,18 @@ public:
             m_key--;
             return *this;
         }
-#endif
     operator bool() const
         {
             LOG4CXX_INFO(cpptrace_log(), "operator bool()");
             return (0 <= m_pos.x && m_pos.x + m_pos.w <= m_array->w) &&
                 (0 <= m_pos.y && m_pos.y + m_pos.h <= m_array->h);
         }
-#if 0
     bool fill(Uint32 color)
         {
             LOG4CXX_INFO(cpptrace_log(), "fill(" << color << ")");
             const int rv = SDL_FillRect(m_array, &m_pos, color);
             return rv == 0;
         }
-#endif
     SDL_Rect at(int p_key) const
         {
             LOG4CXX_INFO(cpptrace_log(), "at(" << p_key << ")");
@@ -101,13 +97,10 @@ public:
             result.y = y * result.h;
             return result;
         }
-    void set(const SurfaceArray &other, int p_key = -1)
+    void set(SDL_Surface *other, int p_key = -1)
         {
             LOG4CXX_INFO(cpptrace_log(), "set(" << p_key << ")");
-            SDL_Rect tmp(other.m_pos); // Nasty Kludge because of SDL typing
-            if (p_key >= 0)
-                m_pos = at(p_key);
-            const int rv = SDL_BlitSurface(other.m_array, &tmp, m_array, &m_pos);
+            const int rv = SDL_BlitSurface(other, NULL, m_array, &m_pos);
             assert (!rv);
             update();
         }
@@ -210,7 +203,9 @@ MonitorView::Mode0::Mode0(MonitorView *p_state, const MonitorView::Configurator 
           mc6847 && mc6847.key() < 256;
           ++mc6847) {
         SDL_Surface *tmp(mc6847.get(character_w, character_h));
-        m_glyph[mc6847.key()] = SDL_DisplayFormat(tmp);
+        SDL_Surface *tmp2 = SDL_DisplayFormat(tmp);
+        m_glyph[mc6847.key()] = tmp2;
+        assert (tmp2);
         SDL_FreeSurface(tmp);
     }
     SDL_FreeSurface(fontfile);
@@ -239,13 +234,11 @@ void MonitorView::Mode0::set_byte_update(word p_addr, byte p_byte)
 void MonitorView::Mode0::render()
 {
     LOG4CXX_INFO(cpptrace_log(), "MonitorView::Mode0::render()");
-    assert (m_state);
     SurfaceArray si(m_state->m_screen, 32, 16);
     for (int addr = 0; addr < 512; addr++, ++si)
     {
         const byte ch = m_state->m_memory->get_byte(addr);
-        SDL_Surface * const glyph(m_glyph[ch]);
-        si.set(glyph);
+        si.set(m_glyph[ch]);
         m_state->m_rendered[addr] = ch;
     }
 }
@@ -299,7 +292,6 @@ void MonitorView::set_byte_update(Memory *p_memory, word p_addr, byte p_byte, Me
 void MonitorView::vdg_mode_update(TerminalInterface *p_terminal, TerminalInterface::VDGMode p_mode)
 {
     LOG4CXX_INFO(cpptrace_log(), "MonitorView::vdg_mode_update(" << p_mode << ")");
-    assert (m_screen);
     switch (p_mode)
     {
     case TerminalInterface::VDG_MODE0:
