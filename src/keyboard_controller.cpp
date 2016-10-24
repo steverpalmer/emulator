@@ -66,12 +66,11 @@ KeyboardController::KeyboardController(TerminalInterface *p_terminal_interface, 
     LOG4CXX_INFO(cpptrace_log(), "KeyboardController::KeyboardController("
                  << "<controller name=\"" << p_terminal_interface->id() << "\"/>"
                  << p_cfgr << ")");
-    (void)SDL_EnableUNICODE(1);
 }
 
 void KeyboardController::update(SDL_KeyboardEvent *p_key_event)
 {
-    LOG4CXX_INFO(cpptrace_log(), "update((" << Hex(p_key_event->type) << ", " << int(p_key_event->keysym.sym) << ", ...))");
+    LOG4CXX_INFO(cpptrace_log(), "update((" << p_key_event->type << ", " << int(p_key_event->keysym.sym) << ", ...))");
     switch (p_key_event->type) {
     case SDL_KEYUP:                                                   // Release
         switch (p_key_event->keysym.sym) {
@@ -90,17 +89,19 @@ void KeyboardController::update(SDL_KeyboardEvent *p_key_event)
         case SDLK_CAPSLOCK:
             m_terminal_interface->set_keypress(TerminalInterface::KBD_LOCK);
             break;
+#if 0
         case SDLK_NUMLOCK:
         case SDLK_SCROLLOCK:
         case SDLK_RMETA:
         case SDLK_LMETA:
         case SDLK_LSUPER:
         case SDLK_RSUPER:
+        case SDLK_PRINT:
+        case SDLK_BREAK:
+#endif
         case SDLK_MODE:
         case SDLK_HELP:
-        case SDLK_PRINT:
         case SDLK_SYSREQ:
-        case SDLK_BREAK:
         case SDLK_MENU:
         case SDLK_POWER:
             // Do Nothing
@@ -111,8 +112,8 @@ void KeyboardController::update(SDL_KeyboardEvent *p_key_event)
         }
         break;
     case SDL_KEYDOWN:                                                   // Press
-        if (p_key_event->keysym.unicode) {
-            int key = p_key_event->keysym.unicode;
+        if (p_key_event->keysym.sym) {
+            int key = p_key_event->keysym.sym;
             if (key < 0x80) {     // Invert the Upper/Lower case'ness of the key
                 if (std::islower(key))
                     key = std::toupper(key);
@@ -165,17 +166,19 @@ void KeyboardController::update(SDL_KeyboardEvent *p_key_event)
                 m_terminal_interface->reset();
                 break;
 #endif
+#if 0
             case SDLK_NUMLOCK:
             case SDLK_SCROLLOCK:
             case SDLK_RMETA:
             case SDLK_LMETA:
             case SDLK_LSUPER:
             case SDLK_RSUPER:
+            case SDLK_PRINT:
+            case SDLK_BREAK:
+#endif
             case SDLK_MODE:
             case SDLK_HELP:
-            case SDLK_PRINT:
             case SDLK_SYSREQ:
-            case SDLK_BREAK:
             case SDLK_MENU:
             case SDLK_POWER:
                 // Do Nothing

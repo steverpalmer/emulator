@@ -86,7 +86,7 @@ void Cpu::step(int p_cnt)
 void Cpu::resume()
 {
     LOG4CXX_INFO(cpptrace_log(), "[" << id() << "].Cpu::resume()");
-    m_steps_to_go = 1000; // INFINITE_STEPS_TO_GO;
+    m_steps_to_go = INFINITE_STEPS_TO_GO;
     start();
 }
 

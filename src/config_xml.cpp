@@ -456,31 +456,23 @@ namespace Xml
         : public virtual MonitorView::Configurator
     {
     private:
-        float         m_scale;
         Glib::ustring m_fontfilename;
         Glib::ustring m_window_title;
-        Glib::ustring m_icon_title;
     public:
         explicit MonitorViewConfigurator(const xmlpp::Node *p_node = 0)
-            : m_scale(2.0)
-            , m_fontfilename("mc6847.bmp")
+            : m_fontfilename("mc6847.bmp")
             , m_window_title("Emulator")
-            , m_icon_title("Emulator")
             {
                 LOG4CXX_INFO(cpptrace_log(), "Xml::MonitorViewConfigurator::MonitorViewConfigurator(" << p_node << ")");
                 if (p_node)
                 {
-                    try { m_scale = eval_to_float(p_node, "e:scale"); }
-                    catch (XpathNotFound e) {}
                     try { m_fontfilename = eval_to_string(p_node, "e:fontfilename"); }
                     catch (XpathNotFound e) {}
                 }
             }
         virtual ~MonitorViewConfigurator() = default;
-        float               scale()         const { return m_scale; }
         const Glib::ustring &fontfilename() const { return m_fontfilename; }
         const Glib::ustring &window_title() const { return m_window_title; }
-        const Glib::ustring &icon_title()   const { return m_icon_title; }
     };
 
     class TerminalConfigurator

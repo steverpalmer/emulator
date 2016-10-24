@@ -184,9 +184,6 @@
           <rng:ref name="ppia_elm"/>
         </rng:optional>
         <rng:optional>
-          <rng:ref name="scale_elm"/>
-        </rng:optional>
-        <rng:optional>
           <rng:ref name="fontfile_elm"/>
         </rng:optional>
         <!-- rng:ref name="refreshrate_elm"/ -->
@@ -200,12 +197,6 @@
       <rng:ref name="name_att"/>
     </rng:element>
   </rng:define -->
-
-  <rng:define name="scale_elm">
-    <rng:element name="scale">
-      <rng:data type="float"/>
-    </rng:element>
-  </rng:define>
 
   <rng:define name="fontfile_elm">
     <rng:element name="fontfilename">

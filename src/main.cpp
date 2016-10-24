@@ -36,7 +36,7 @@ public:
             LOG4CXX_INFO(cpptrace_log(), "Main::Main(" << argc << ", " << argv << ")");
 
             LOG4CXX_INFO(cpptrace_log(), "SDL_Init");
-            const int rv = SDL_Init( SDL_INIT_VIDEO | SDL_INIT_TIMER );
+            const int rv = SDL_Init( SDL_INIT_VIDEO );
             assert (!rv);
 
             const Configurator *cfg = new Xml::Configurator(argc, argv);  // FIXME: remove Xml::
