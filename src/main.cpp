@@ -4,9 +4,8 @@
 
 #include <assert.h>
 #include <stdio.h>
-#include <pthread.h>
-
-#include <iostream>
+#include <libgen.h>
+#include <stdlib.h>
 
 #include <SDL.h>
 
@@ -83,11 +82,26 @@ public:
 };
 
 
-/******************************************************************************/
-int main (int argc, char *argv[])
-/******************************************************************************/
+void configure_logging(const char *command)
 {
-    log4cxx::PropertyConfigurator::configure("log4cxx.properties");
+    // copy command since dirname may modify it!
+    char * const command_copy = (char *)malloc(strlen(command));
+    (void) sprintf(command_copy, "%s", command);
+    const char * const command_dir = dirname(command_copy);
+    // build the path to the properties file
+    const char * const filename = "log4cxx.properties";
+    const int pathname_length(strlen(command_dir) + 1 + strlen(filename) + 1);
+    char * const pathname = (char *)malloc(pathname_length);
+    (void) sprintf(pathname, "%s/%s", command_dir, filename);
+    log4cxx::PropertyConfigurator::configure(pathname);
+    // Tidy up
+    free(pathname);
+    free(command_copy);
+}
+
+int main (int argc, char *argv[])
+{
+    configure_logging(*argv);
     LOG4CXX_INFO(cpptrace_log(), "main(" << argc << ", " << argv << ")");
     Main(argc, argv);
     return EXIT_SUCCESS;

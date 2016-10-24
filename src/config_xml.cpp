@@ -550,6 +550,8 @@ namespace Xml
     void Configurator::process_command_line(int argc, char *argv[])
     {
         LOG4CXX_INFO(cpptrace_log(), "Xml::Configurator::process_command_line(" << argc << ", " << argv << ")");
+        for (int i(0); i < argc; i++)
+            LOG4CXX_INFO(cpptrace_log(), "Arg " << i << ":\"" << argv[i] << "\"");
         opterr = 0;
         int c;
         while ((c = getopt(argc, argv, "f:")) != -1)
