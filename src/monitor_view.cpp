@@ -64,6 +64,7 @@ public:
             }
             return *this;
         }
+#if 0
     SurfaceArray  &operator--()
         {
             LOG4CXX_INFO(cpptrace_log(), "operator--()");
@@ -76,18 +77,21 @@ public:
             m_key--;
             return *this;
         }
+#endif
     operator bool() const
         {
             LOG4CXX_INFO(cpptrace_log(), "operator bool()");
             return (0 <= m_pos.x && m_pos.x + m_pos.w <= m_array->w) &&
                 (0 <= m_pos.y && m_pos.y + m_pos.h <= m_array->h);
         }
+#if 0
     bool fill(Uint32 color)
         {
             LOG4CXX_INFO(cpptrace_log(), "fill(" << color << ")");
             const int rv = SDL_FillRect(m_array, &m_pos, color);
             return rv == 0;
         }
+#endif
     SDL_Rect at(int p_key) const
         {
             LOG4CXX_INFO(cpptrace_log(), "at(" << p_key << ")");
@@ -103,7 +107,7 @@ public:
             SDL_Rect tmp(other.m_pos); // Nasty Kludge because of SDL typing
             if (p_key >= 0)
                 m_pos = at(p_key);
-            const int rv =SDL_BlitSurface(other.m_array, &tmp, m_array, &m_pos);
+            const int rv = SDL_BlitSurface(other.m_array, &tmp, m_array, &m_pos);
             assert (!rv);
             update();
         }
@@ -188,10 +192,17 @@ static int scale2character_height(float p_scale)
     return std::floor(12 * p_scale);
 }
 
-MonitorView::Mode0::Mode0(MonitorView &p_state, const MonitorView::Configurator &p_cfgr)
+MonitorView::Mode::Mode(MonitorView *p_state)
+    : m_state(p_state)
+{
+    LOG4CXX_INFO(cpptrace_log(), "MonitorView::Mode::Mode(" << p_state << ")");
+    assert (m_state);
+}
+
+MonitorView::Mode0::Mode0(MonitorView *p_state, const MonitorView::Configurator &p_cfgr)
     : Mode(p_state)
 {
-    LOG4CXX_INFO(cpptrace_log(), "MonitorView::Mode0::Mode0(" << p_cfgr << ")");
+    LOG4CXX_INFO(cpptrace_log(), "MonitorView::Mode0::Mode0(" << &p_state << ", " << p_cfgr << ")");
     const int character_w = scale2character_width(p_cfgr.scale());
     const int character_h = scale2character_height(p_cfgr.scale());
     SDL_Surface *fontfile(SDL_LoadBMP(p_cfgr.fontfilename().c_str()));
@@ -203,7 +214,6 @@ MonitorView::Mode0::Mode0(MonitorView &p_state, const MonitorView::Configurator 
         SDL_FreeSurface(tmp);
     }
     SDL_FreeSurface(fontfile);
-    std::fill(m_rendered.begin(), m_rendered.end(), -1); // (un)Initialise cache
 }
 
 MonitorView::Mode0::~Mode0()
@@ -222,23 +232,21 @@ void MonitorView::Mode0::set_byte_update(word p_addr, byte p_byte)
                  << ", "
                  << Hex(p_byte)
                  << ")");
-    if (p_byte != m_rendered[p_addr]) {
-        SurfaceArray si(m_state.m_screen, 32, 16, p_addr);
-        si.set(m_glyph[p_byte]);
-        m_rendered[p_addr] = p_byte;
-    }
+    SurfaceArray(m_state->m_screen, 32, 16, p_addr).set(m_glyph[p_byte]);
+    m_state->m_rendered[p_addr] = p_byte;
 }
 
 void MonitorView::Mode0::render()
 {
     LOG4CXX_INFO(cpptrace_log(), "MonitorView::Mode0::render()");
-    SurfaceArray si(m_state.m_screen, 32, 16);
-    for (int addr = 0; addr < 512; addr++, ++si) {
-        const byte ch = m_state.m_memory->get_byte(addr);
-        if (ch != m_rendered[addr]) {
-            si.set(m_glyph[ch]);
-            m_rendered[addr] = ch;
-        }
+    assert (m_state);
+    SurfaceArray si(m_state->m_screen, 32, 16);
+    for (int addr = 0; addr < 512; addr++, ++si)
+    {
+        const byte ch = m_state->m_memory->get_byte(addr);
+        SDL_Surface * const glyph(m_glyph[ch]);
+        si.set(glyph);
+        m_state->m_rendered[addr] = ch;
     }
 }
 
@@ -247,8 +255,9 @@ MonitorView::MonitorView(TerminalInterface *p_terminal_interface,
                          const Configurator &p_cfgr)
     : m_terminal_interface(p_terminal_interface)
     , m_memory(p_memory)
+    , m_rendered(m_memory->size())
     , m_mode(0)
-    , m_mode0(*this, p_cfgr)
+    , m_mode0(this, p_cfgr)
 {
     LOG4CXX_INFO(cpptrace_log(),
                  "MonitorView::MonitorView("
@@ -264,6 +273,7 @@ MonitorView::MonitorView(TerminalInterface *p_terminal_interface,
                                  SDL_SWSURFACE | SDL_ANYFORMAT );
     assert (m_screen);
     SDL_WM_SetCaption(p_cfgr.window_title().c_str(), p_cfgr.icon_title().c_str());
+    std::fill(m_rendered.begin(), m_rendered.end(), -1); // (un)Initialise cache
     m_terminal_interface->attach(*this);
     m_memory->attach(*this);
 }
@@ -277,19 +287,31 @@ MonitorView::~MonitorView()
     SDL_FreeSurface(m_screen);
 }
 
+void MonitorView::set_byte_update(Memory *p_memory, word p_addr, byte p_byte, Memory::AccessType p_at)
+{
+    if (m_mode)
+    {
+        if (p_byte != m_rendered[p_addr])
+            m_mode->set_byte_update(p_addr, p_byte);
+    }
+}
+
 void MonitorView::vdg_mode_update(TerminalInterface *p_terminal, TerminalInterface::VDGMode p_mode)
 {
     LOG4CXX_INFO(cpptrace_log(), "MonitorView::vdg_mode_update(" << p_mode << ")");
+    assert (m_screen);
     switch (p_mode)
     {
     case TerminalInterface::VDG_MODE0:
         m_mode = &m_mode0;
         break;
     default:
-        LOG4CXX_ERROR(cpptrace_log(), "Unknown graphics mode: " << p_mode);
+        LOG4CXX_ERROR(cpptrace_log(), "Can't render graphics mode " << p_mode);
+        m_mode = 0;
         // assert (false);  // TODO: render graphics modes
     }
-    render();
+    if (m_mode)
+        m_mode->render();
 }
 
 void MonitorView::Configurator::serialize(std::ostream &p_s) const

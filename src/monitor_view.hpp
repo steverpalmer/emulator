@@ -39,10 +39,9 @@ public:
         : protected NonCopyable
     {
     protected:
-        MonitorView &m_state;
+        MonitorView *m_state;
     protected:
-        Mode(MonitorView &p_state)
-            : m_state(p_state) {}
+        Mode(MonitorView *p_state);
     public:
         virtual ~Mode() = default;
         virtual void render() = 0;
@@ -54,26 +53,26 @@ public:
     {
     private:
         std::array<SDL_Surface *, 256> m_glyph;
-        std::array<int, 512>           m_rendered;
     public:
-        Mode0(MonitorView &p_state, const MonitorView::Configurator &p_cfgr);
+        Mode0(MonitorView *p_state, const MonitorView::Configurator &p_cfgr);
         virtual ~Mode0();
         virtual void render();
         virtual void set_byte_update(word p_addr, byte p_byte);
     };
 
 private:
-    TerminalInterface *m_terminal_interface;  // FIXME: should be const
+    TerminalInterface  *m_terminal_interface;  // FIXME: should be const
     Memory             *m_memory;  // FIXME: should be const
     SDL_Surface        *m_screen;
+    std::vector<int>   m_rendered;
     MonitorView::Mode  *m_mode;
     MonitorView::Mode0 m_mode0;
 private:
-    SDL_Surface *scale_and_convert_surface(SDL_Surface *src);
-    inline void render() { if (m_mode) m_mode->render(); }
-    virtual void set_byte_update(Memory *p_memory, word p_addr, byte p_byte, Memory::AccessType p_at)
-        { if (m_mode) m_mode->set_byte_update(p_addr, p_byte); }
-    virtual void vdg_mode_update(TerminalInterface *p_terminal, TerminalInterface::VDGMode p_mode);
+    // SDL_Surface *scale_and_convert_surface(SDL_Surface *src);
+    // Memory Observer implementation
+    virtual void set_byte_update(Memory *, word, byte, Memory::AccessType);
+    // TerminalInterface Observer implementation
+    virtual void vdg_mode_update(TerminalInterface *, TerminalInterface::VDGMode);
 public:
     MonitorView(TerminalInterface *, Memory *, const Configurator &);
     virtual ~MonitorView();
