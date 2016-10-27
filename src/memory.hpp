@@ -3,7 +3,6 @@
 #ifndef MEMORY_HPP_
 #define MEMORY_HPP_
 
-#include <ostream>
 #include <set>     // Used by Device observers and parents
 #include <vector>  // Used by Ram and Rom storage
 #include <memory>  // Used be Memory

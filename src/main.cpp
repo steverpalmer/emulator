@@ -56,11 +56,11 @@ public:
             atom->resume();
             SDL_Event event;
             bool more = true;
-            while( more && SDL_WaitEvent( &event ) )
+            while( more && SDL_WaitEvent(&event) )
                 switch( event.type ){
                 case SDL_KEYDOWN:
                 case SDL_KEYUP:
-                    terminal->update(&event);
+                    terminal->update(event);
                     break;
                 case SDL_QUIT:
                     more = false;

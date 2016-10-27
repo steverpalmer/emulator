@@ -3,10 +3,9 @@
 #ifndef TERMINAL_HPP_
 #define TERMINAL_HPP_
 
-#include <ostream>
-
 #include <SDL.h>
 
+#include "common.hpp"
 #include "part.hpp"
 #include "memory.hpp"
 #include "ppia.hpp"
@@ -46,7 +45,7 @@ public:
     explicit Terminal(const Configurator &);
     virtual ~Terminal();
     virtual void remove_child(Part *);
-    void update(SDL_Event *event) { m_keyboard_controller.update(&event->key); }
+    void update(SDL_Event &event) { m_keyboard_controller.update(event.key); }
 
     virtual void serialize(std::ostream &) const;
 };

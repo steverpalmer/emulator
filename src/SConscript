@@ -19,6 +19,7 @@ PARTSLIB = partslib_env.StaticLibrary(r'parts', [ r'part.cpp'
                                                 , r'memory.cpp'
                                                 , r'ppia.cpp'
                                                 , r'cpu.cpp'
+                                                , r'terminal_interface.cpp'
                                                 ])
 
 emulator_gui_sdl_env = common_env.Clone()
@@ -31,3 +32,4 @@ emulator_gui_sdl_env.Program('emulator', [ r'monitor_view.cpp'
                                          , PARTSLIB
                                          ])
 
+emulator_gui_sdl_env.Program('key', 'key.cpp')

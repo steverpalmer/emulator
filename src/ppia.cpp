@@ -1,10 +1,7 @@
 // ppia.cpp
 
 #include <cassert>
-#include <ostream>
 #include <iomanip>
-
-#include <log4cxx/logger.h>
 
 #include "ppia.hpp"
 
@@ -77,195 +74,170 @@ Ppia::Ppia(const Configurator &p_cfgr)
 {
     LOG4CXX_INFO(cpptrace_log(), "Ppia::Ppia(" << p_cfgr << ")");
     m_terminal.mutex = PTHREAD_RECURSIVE_MUTEX_INITIALIZER_NP;
+    key_mapping[0x00] = new Scanpair(7, SCANCODE(3, CONTROL)); // <Ctrl> @ (nul)
+    key_mapping[0x01] = new Scanpair(6, SCANCODE(3, CONTROL)); // <Ctrl> A (soh)
+    key_mapping[0x02] = new Scanpair(5, SCANCODE(3, CONTROL)); // <Ctrl> B (stx) start printer
+    key_mapping[0x03] = new Scanpair(4, SCANCODE(3, CONTROL)); // <Ctrl> C (etx) end printer
+    key_mapping[0x04] = new Scanpair(3, SCANCODE(3, CONTROL)); // <Ctrl> D (eot)
+    key_mapping[0x05] = new Scanpair(2, SCANCODE(3, CONTROL)); // <Ctrl> E (enq)
+    key_mapping[0x06] = new Scanpair(1, SCANCODE(3, CONTROL)); // <Ctrl> F (ack) start screen
+    key_mapping[0x07] = new Scanpair(0, SCANCODE(3, CONTROL)); // <Ctrl> G (bel) bleep
+    key_mapping[0x08] = new Scanpair(9, SCANCODE(4, CONTROL)); // <Ctrl> H (bs)  backspace
+    key_mapping[0x09] = new Scanpair(8, SCANCODE(4, CONTROL)); // <Ctrl> I (tab) horizontal tab
+    key_mapping[0x0A] = new Scanpair(7, SCANCODE(4, CONTROL)); // <Ctrl> J (lf)  linefeed
+    key_mapping[0x0B] = new Scanpair(6, SCANCODE(4, CONTROL)); // <Ctrl> K (vt)  vertical tab
+    key_mapping[0x0C] = new Scanpair(5, SCANCODE(4, CONTROL)); // <Ctrl> L (ff)  formfeed
+    key_mapping[0x0D] = new Scanpair(4, SCANCODE(4, CONTROL)); // <Ctrl> M (cr)  return
+    key_mapping[0x0E] = new Scanpair(3, SCANCODE(4, CONTROL)); // <Ctrl> N (so)  page mode on
+    key_mapping[0x0F] = new Scanpair(2, SCANCODE(4, CONTROL)); // <Ctrl> O (si)  page mode off
+    key_mapping[0x10] = new Scanpair(1, SCANCODE(4, CONTROL)); // <Ctrl> P (dle)
+    key_mapping[0x11] = new Scanpair(0, SCANCODE(4, CONTROL)); // <Ctrl> Q (dc1)
+    key_mapping[0x12] = new Scanpair(9, SCANCODE(5, CONTROL)); // <Ctrl> R (dc2)
+    key_mapping[0x13] = new Scanpair(8, SCANCODE(5, CONTROL)); // <Ctrl> S (dc3)
+    key_mapping[0x14] = new Scanpair(7, SCANCODE(5, CONTROL)); // <Ctrl> T (dc4)
+    key_mapping[0x15] = new Scanpair(6, SCANCODE(5, CONTROL)); // <Ctrl> U (nak) end screen
+    key_mapping[0x16] = new Scanpair(5, SCANCODE(5, CONTROL)); // <Ctrl> V (syn)
+    key_mapping[0x17] = new Scanpair(4, SCANCODE(5, CONTROL)); // <Ctrl> W (etb)
+    key_mapping[0x18] = new Scanpair(3, SCANCODE(5, CONTROL)); // <Ctrl> X (can) cancel
+    key_mapping[0x19] = new Scanpair(2, SCANCODE(5, CONTROL)); // <Ctrl> Y (em)
+    key_mapping[0x1A] = new Scanpair(1, SCANCODE(5, CONTROL)); // <Ctrl> Z (sub)
+    key_mapping[0x1B] = new Scanpair(0, SCANCODE(5, CONTROL)); // <Ctrl> [ (esc) escape
+    key_mapping[0x1C] = new Scanpair(7, SCANCODE(0, CONTROL)); // <Ctrl> \ (fs)
+    key_mapping[0x1D] = new Scanpair(6, SCANCODE(0, CONTROL)); // <Ctrl> ] (gs)
+    key_mapping[0x1E] = new Scanpair(5, SCANCODE(0, CONTROL)); // <Ctrl> ^ (rs) home cursor
+    // 0x1F <Ctrl> _ (us) is not possible
+    key_mapping[' ']  = new Scanpair(9, SCANCODE(0, 0));
+    key_mapping['!']  = new Scanpair(2, SCANCODE(1, SHIFT));
+    key_mapping['"']  = new Scanpair(1, SCANCODE(1, SHIFT));
+    key_mapping['#']  = new Scanpair(0, SCANCODE(1, SHIFT));
+    key_mapping['$']  = new Scanpair(9, SCANCODE(2, SHIFT));
+    key_mapping['%']  = new Scanpair(8, SCANCODE(2, SHIFT));
+    key_mapping['&']  = new Scanpair(7, SCANCODE(2, SHIFT));
+    key_mapping['\''] = new Scanpair(6, SCANCODE(2, SHIFT));
+    key_mapping['(']  = new Scanpair(5, SCANCODE(2, SHIFT));
+    key_mapping[')']  = new Scanpair(4, SCANCODE(2, SHIFT));
+    key_mapping['*']  = new Scanpair(3, SCANCODE(2, SHIFT));
+    key_mapping['+']  = new Scanpair(2, SCANCODE(2, SHIFT));
+    key_mapping[',']  = new Scanpair(1, SCANCODE(2, 0));
+    key_mapping['-']  = new Scanpair(0, SCANCODE(2, 0));
+    key_mapping['.']  = new Scanpair(9, SCANCODE(3, 0));
+    key_mapping['/']  = new Scanpair(8, SCANCODE(3, 0));
+    key_mapping['0']  = new Scanpair(3, SCANCODE(1, 0));
+    key_mapping['1']  = new Scanpair(2, SCANCODE(1, 0));
+    key_mapping['2']  = new Scanpair(1, SCANCODE(1, 0));
+    key_mapping['3']  = new Scanpair(0, SCANCODE(1, 0));
+    key_mapping['4']  = new Scanpair(9, SCANCODE(2, 0));
+    key_mapping['5']  = new Scanpair(8, SCANCODE(2, 0));
+    key_mapping['6']  = new Scanpair(7, SCANCODE(2, 0));
+    key_mapping['7']  = new Scanpair(6, SCANCODE(2, 0));
+    key_mapping['8']  = new Scanpair(5, SCANCODE(2, 0));
+    key_mapping['9']  = new Scanpair(4, SCANCODE(2, 0));
+    key_mapping[':']  = new Scanpair(3, SCANCODE(2, 0));
+    key_mapping[';']  = new Scanpair(2, SCANCODE(2, 0));
+    key_mapping['<']  = new Scanpair(1, SCANCODE(2, SHIFT));
+    key_mapping['=']  = new Scanpair(0, SCANCODE(2, SHIFT));
+    key_mapping['>']  = new Scanpair(9, SCANCODE(3, SHIFT));
+    key_mapping['?']  = new Scanpair(8, SCANCODE(3, SHIFT));
+    key_mapping['@']  = new Scanpair(7, SCANCODE(3, 0));
+    key_mapping['A']  = new Scanpair(6, SCANCODE(3, 0));
+    key_mapping['B']  = new Scanpair(5, SCANCODE(3, 0));
+    key_mapping['C']  = new Scanpair(4, SCANCODE(3, 0));
+    key_mapping['D']  = new Scanpair(3, SCANCODE(3, 0));
+    key_mapping['E']  = new Scanpair(2, SCANCODE(3, 0));
+    key_mapping['F']  = new Scanpair(1, SCANCODE(3, 0));
+    key_mapping['G']  = new Scanpair(0, SCANCODE(3, 0));
+    key_mapping['H']  = new Scanpair(9, SCANCODE(4, 0));
+    key_mapping['I']  = new Scanpair(8, SCANCODE(4, 0));
+    key_mapping['J']  = new Scanpair(7, SCANCODE(4, 0));
+    key_mapping['K']  = new Scanpair(6, SCANCODE(4, 0));
+    key_mapping['L']  = new Scanpair(5, SCANCODE(4, 0));
+    key_mapping['M']  = new Scanpair(4, SCANCODE(4, 0));
+    key_mapping['N']  = new Scanpair(3, SCANCODE(4, 0));
+    key_mapping['O']  = new Scanpair(2, SCANCODE(4, 0));
+    key_mapping['P']  = new Scanpair(1, SCANCODE(4, 0));
+    key_mapping['Q']  = new Scanpair(0, SCANCODE(4, 0));
+    key_mapping['R']  = new Scanpair(9, SCANCODE(5, 0));
+    key_mapping['S']  = new Scanpair(8, SCANCODE(5, 0));
+    key_mapping['T']  = new Scanpair(7, SCANCODE(5, 0));
+    key_mapping['U']  = new Scanpair(6, SCANCODE(5, 0));
+    key_mapping['V']  = new Scanpair(5, SCANCODE(5, 0));
+    key_mapping['W']  = new Scanpair(4, SCANCODE(5, 0));
+    key_mapping['X']  = new Scanpair(3, SCANCODE(5, 0));
+    key_mapping['Y']  = new Scanpair(2, SCANCODE(5, 0));
+    key_mapping['Z']  = new Scanpair(1, SCANCODE(5, 0));
+    key_mapping['[']  = new Scanpair(8, SCANCODE(1, 0));
+    key_mapping['\\'] = new Scanpair(7, SCANCODE(1, 0));
+    key_mapping[']']  = new Scanpair(6, SCANCODE(1, 0));
+    key_mapping['^']  = new Scanpair(5, SCANCODE(1, 0));
+    // '_' is not possible
+    // '`' is not possible
+    key_mapping['a']  = new Scanpair(6, SCANCODE(3, SHIFT));
+    key_mapping['b']  = new Scanpair(5, SCANCODE(3, SHIFT));
+    key_mapping['c']  = new Scanpair(4, SCANCODE(3, SHIFT));
+    key_mapping['d']  = new Scanpair(3, SCANCODE(3, SHIFT));
+    key_mapping['e']  = new Scanpair(2, SCANCODE(3, SHIFT));
+    key_mapping['f']  = new Scanpair(1, SCANCODE(3, SHIFT));
+    key_mapping['g']  = new Scanpair(0, SCANCODE(3, SHIFT));
+    key_mapping['h']  = new Scanpair(9, SCANCODE(4, SHIFT));
+    key_mapping['i']  = new Scanpair(8, SCANCODE(4, SHIFT));
+    key_mapping['j']  = new Scanpair(7, SCANCODE(4, SHIFT));
+    key_mapping['k']  = new Scanpair(6, SCANCODE(4, SHIFT));
+    key_mapping['l']  = new Scanpair(5, SCANCODE(4, SHIFT));
+    key_mapping['m']  = new Scanpair(4, SCANCODE(4, SHIFT));
+    key_mapping['n']  = new Scanpair(3, SCANCODE(4, SHIFT));
+    key_mapping['o']  = new Scanpair(2, SCANCODE(4, SHIFT));
+    key_mapping['p']  = new Scanpair(1, SCANCODE(4, SHIFT));
+    key_mapping['q']  = new Scanpair(0, SCANCODE(4, SHIFT));
+    key_mapping['r']  = new Scanpair(9, SCANCODE(5, SHIFT));
+    key_mapping['s']  = new Scanpair(8, SCANCODE(5, SHIFT));
+    key_mapping['t']  = new Scanpair(7, SCANCODE(5, SHIFT));
+    key_mapping['u']  = new Scanpair(6, SCANCODE(5, SHIFT));
+    key_mapping['v']  = new Scanpair(5, SCANCODE(5, SHIFT));
+    key_mapping['w']  = new Scanpair(4, SCANCODE(5, SHIFT));
+    key_mapping['x']  = new Scanpair(3, SCANCODE(5, SHIFT));
+    key_mapping['y']  = new Scanpair(2, SCANCODE(5, SHIFT));
+    key_mapping['z']  = new Scanpair(1, SCANCODE(5, SHIFT));
+    // '{' '|' '}' '~' are not possible
+    key_mapping[0x7F] = new Scanpair(4, SCANCODE(1, 0));
+
+    key_mapping[KBD_LEFT]  = new Scanpair(3, SCANCODE(0, SHIFT));
+    key_mapping[KBD_UP]    = new Scanpair(2, SCANCODE(0, SHIFT));
+    key_mapping[KBD_RIGHT] = new Scanpair(3, SCANCODE(0, 0));
+    key_mapping[KBD_DOWN]  = new Scanpair(2, SCANCODE(0, 0));
+    key_mapping[KBD_LOCK]  = new Scanpair(4, SCANCODE(0, 0));
+    key_mapping[KBD_COPY]  = new Scanpair(5, SCANCODE(1, 0));
+
+    key_mapping[KBD_NO_KEYPRESS] = 0;
     reset();
 }
 
 Ppia::~Ppia()
 {
     LOG4CXX_INFO(cpptrace_log(), "Ppia::~Ppia([" << id() << "])");
+    for (auto &sp : key_mapping)
+        delete sp.second;
+    key_mapping.clear();
 }
 
 byte Ppia::get_PortB(int p_row)
 {
     LOG4CXX_INFO(cpptrace_log(), "[" << id() << "].Ppia::get_PortB(" << p_row << ")");
     byte result(0xFF); // Active Low, so start with all high
-    static const struct KeyData {
-        byte row;
-        byte scan;
-    } key_mapping[128] = {
-        { 7, SCANCODE(3, CONTROL) }, // 00 - <Ctrl> @ (nul)
-        { 6, SCANCODE(3, CONTROL) }, // 01 - <Ctrl> A (soh)
-        { 5, SCANCODE(3, CONTROL) }, // 02 - <Ctrl> B (stx) start printer
-        { 4, SCANCODE(3, CONTROL) }, // 03 - <Ctrl> C (etx) end printer
-        { 3, SCANCODE(3, CONTROL) }, // 04 - <Ctrl> D (eot)
-        { 2, SCANCODE(3, CONTROL) }, // 05 - <Ctrl> E (enq)
-        { 1, SCANCODE(3, CONTROL) }, // 06 - <Ctrl> F (ack) start screen
-        { 0, SCANCODE(3, CONTROL) }, // 07 - <Ctrl> G (bel) bleep
-        { 9, SCANCODE(4, CONTROL) }, // 08 - <Ctrl> H (bs)  backspace
-        { 8, SCANCODE(4, CONTROL) }, // 09 - <Ctrl> I (tab) horizontal tab
-        { 6, SCANCODE(1, CONTROL) }, // 0A - <Ctrl> J (lf)  linefeed
-        { 6, SCANCODE(4, CONTROL) }, // 0B - <Ctrl> K (vt)  vertical tab
-        { 5, SCANCODE(4, CONTROL) }, // 0C - <Ctrl> L (ff)  formfeed
-        { 4, SCANCODE(4, CONTROL) }, // 0D - <Ctrl> M (cr)  return
-        { 3, SCANCODE(4, CONTROL) }, // 0E - <Ctrl> N (so)  page mode on
-        { 2, SCANCODE(4, CONTROL) }, // 0F - <Ctrl> O (si)  page mode off
-        { 1, SCANCODE(4, CONTROL) }, // 10 - <Ctrl> P (dle)
-        { 0, SCANCODE(4, CONTROL) }, // 11 - <Ctrl> Q (dc1)
-        { 9, SCANCODE(5, CONTROL) }, // 12 - <Ctrl> R (dc2)
-        { 8, SCANCODE(5, CONTROL) }, // 13 - <Ctrl> S (dc3)
-        { 7, SCANCODE(5, CONTROL) }, // 14 - <Ctrl> T (dc4)
-        { 6, SCANCODE(5, CONTROL) }, // 15 - <Ctrl> U (nak) end screen
-        { 5, SCANCODE(5, CONTROL) }, // 16 - <Ctrl> V (syn)
-        { 4, SCANCODE(5, CONTROL) }, // 17 - <Ctrl> W (etb)
-        { 3, SCANCODE(5, CONTROL) }, // 18 - <Ctrl> X (can) cancel
-        { 2, SCANCODE(5, CONTROL) }, // 19 - <Ctrl> Y (em)
-        { 1, SCANCODE(5, CONTROL) }, // 1A - <Ctrl> Z (sub)
-        { 8, SCANCODE(0, CONTROL) }, // 1B - <Ctrl> [ (esc) escape
-        { 7, SCANCODE(0, CONTROL) }, // 1C - <Ctrl> \ (fs)
-        { 6, SCANCODE(0, CONTROL) }, // 1D - <Ctrl> ] (gs)
-        { 5, SCANCODE(0, CONTROL) }, // 1E - <Ctrl> <Up> (rs) home cursor
-        { 4, SCANCODE(0, CONTROL) }, // 1F - <Ctrl> <Left> (us)
-        { 9, SCANCODE(0, 0      ) }, // 20 - <Space>
-        { 2, SCANCODE(1, SHIFT  ) }, // 21 - '!'
-        { 1, SCANCODE(1, SHIFT  ) }, // 22 - '"'
-        { 0, SCANCODE(1, SHIFT  ) }, // 23 - '#'
-        { 9, SCANCODE(2, SHIFT  ) }, // 24 - '$'
-        { 8, SCANCODE(2, SHIFT  ) }, // 25 - '%'
-        { 7, SCANCODE(2, SHIFT  ) }, // 26 - '&'
-        { 6, SCANCODE(2, SHIFT  ) }, // 27 - '''
-        { 5, SCANCODE(2, SHIFT  ) }, // 28 - '('
-        { 4, SCANCODE(2, SHIFT  ) }, // 29 - ')'
-        { 3, SCANCODE(2, SHIFT  ) }, // 2A - '*'
-        { 2, SCANCODE(2, SHIFT  ) }, // 2B - '+'
-        { 1, SCANCODE(2, 0      ) }, // 2C - ','
-        { 0, SCANCODE(2, 0      ) }, // 2D - '-'
-        { 9, SCANCODE(3, 0      ) }, // 2E - '.'
-        { 8, SCANCODE(3, 0      ) }, // 2F - '/'
-        { 3, SCANCODE(1, 0      ) }, // 30 - '0'
-        { 2, SCANCODE(1, 0      ) }, // 31 - '1'
-        { 1, SCANCODE(1, 0      ) }, // 32 - '2'
-        { 0, SCANCODE(1, 0      ) }, // 33 - '3'
-        { 9, SCANCODE(2, 0      ) }, // 34 - '4'
-        { 8, SCANCODE(2, 0      ) }, // 35 - '5'
-        { 7, SCANCODE(2, 0      ) }, // 36 - '6'
-        { 6, SCANCODE(2, 0      ) }, // 37 - '7'
-        { 5, SCANCODE(2, 0      ) }, // 38 - '8'
-        { 4, SCANCODE(2, 0      ) }, // 39 - '9'
-        { 3, SCANCODE(2, 0      ) }, // 3A - ':'
-        { 2, SCANCODE(2, 0      ) }, // 3B - ';'
-        { 1, SCANCODE(2, SHIFT  ) }, // 3C - '<'
-        { 0, SCANCODE(2, SHIFT  ) }, // 3D - '='
-        { 9, SCANCODE(3, SHIFT  ) }, // 3E - '>'
-        { 8, SCANCODE(3, SHIFT  ) }, // 3F - '?'
-        { 7, SCANCODE(3, 0      ) }, // 40 - '@'
-        { 6, SCANCODE(3, 0      ) }, // 41 - 'A'
-        { 5, SCANCODE(3, 0      ) }, // 42 - 'B'
-        { 4, SCANCODE(3, 0      ) }, // 43 - 'C'
-        { 3, SCANCODE(3, 0      ) }, // 44 - 'D'
-        { 2, SCANCODE(3, 0      ) }, // 45 - 'E'
-        { 1, SCANCODE(3, 0      ) }, // 46 - 'F'
-        { 0, SCANCODE(3, 0      ) }, // 47 - 'G'
-        { 9, SCANCODE(4, 0      ) }, // 48 - 'H'
-        { 8, SCANCODE(4, 0      ) }, // 49 - 'I'
-        { 7, SCANCODE(4, 0      ) }, // 4A - 'J'
-        { 6, SCANCODE(4, 0      ) }, // 4B - 'K'
-        { 5, SCANCODE(4, 0      ) }, // 4C - 'L'
-        { 4, SCANCODE(4, 0      ) }, // 4D - 'M,
-        { 3, SCANCODE(4, 0      ) }, // 4E - 'N'
-        { 2, SCANCODE(4, 0      ) }, // 4F - 'O'
-        { 1, SCANCODE(4, 0      ) }, // 50 - 'P'
-        { 0, SCANCODE(4, 0      ) }, // 51 - 'Q'
-        { 9, SCANCODE(5, 0      ) }, // 52 - 'R'
-        { 8, SCANCODE(5, 0      ) }, // 53 - 'S'
-        { 7, SCANCODE(5, 0      ) }, // 54 - 'T'
-        { 6, SCANCODE(5, 0      ) }, // 55 - 'U'
-        { 5, SCANCODE(5, 0      ) }, // 56 - 'V'
-        { 4, SCANCODE(5, 0      ) }, // 57 - 'W'
-        { 3, SCANCODE(5, 0      ) }, // 58 - 'X'
-        { 2, SCANCODE(5, 0      ) }, // 59 - 'Y'
-        { 1, SCANCODE(5, 0      ) }, // 5A - 'Z'
-        { 8, SCANCODE(0, 0      ) }, // 5B - '['
-        { 7, SCANCODE(0, 0      ) }, // 5C - '\'
-        { 6, SCANCODE(0, 0      ) }, // 5D - ']'
-        { 5, SCANCODE(0, 0      ) }, // 5E - '^'
-        { 4, SCANCODE(0, 0      ) }, // 5F - '_'
-        { 0, SCANCODE(5, 0      ) }, // 60 - '`' mapped to <Esc>
-        { 6, SCANCODE(3, SHIFT  ) }, // 61 - 'a'
-        { 5, SCANCODE(3, SHIFT  ) }, // 62 - 'b'
-        { 4, SCANCODE(3, SHIFT  ) }, // 63 - 'c'
-        { 3, SCANCODE(3, SHIFT  ) }, // 64 - 'd'
-        { 2, SCANCODE(3, SHIFT  ) }, // 65 - 'e'
-        { 1, SCANCODE(3, SHIFT  ) }, // 66 - 'f'
-        { 0, SCANCODE(3, SHIFT  ) }, // 67 - 'g'
-        { 9, SCANCODE(4, SHIFT  ) }, // 68 - 'h'
-        { 8, SCANCODE(4, SHIFT  ) }, // 69 - 'i'
-        { 7, SCANCODE(4, SHIFT  ) }, // 6A - 'j'
-        { 6, SCANCODE(4, SHIFT  ) }, // 6B - 'k'
-        { 5, SCANCODE(4, SHIFT  ) }, // 6C - 'l'
-        { 4, SCANCODE(4, SHIFT  ) }, // 6D - 'm'
-        { 3, SCANCODE(4, SHIFT  ) }, // 6E - 'n'
-        { 2, SCANCODE(4, SHIFT  ) }, // 6F - 'o'
-        { 1, SCANCODE(4, SHIFT  ) }, // 70 - 'p'
-        { 0, SCANCODE(4, SHIFT  ) }, // 71 - 'q'
-        { 9, SCANCODE(5, SHIFT  ) }, // 72 - 'r'
-        { 8, SCANCODE(5, SHIFT  ) }, // 73 - 's'
-        { 7, SCANCODE(5, SHIFT  ) }, // 74 - 't'
-        { 6, SCANCODE(5, SHIFT  ) }, // 75 - 'u'
-        { 5, SCANCODE(5, SHIFT  ) }, // 76 - 'v'
-        { 4, SCANCODE(5, SHIFT  ) }, // 77 - 'w'
-        { 3, SCANCODE(5, SHIFT  ) }, // 78 - 'x'
-        { 2, SCANCODE(5, SHIFT  ) }, // 79 - 'y'
-        { 1, SCANCODE(5, SHIFT  ) }, // 7A - 'z'
-        { 8, SCANCODE(0, SHIFT  ) }, // 7B - '{'
-        { 7, SCANCODE(0, SHIFT  ) }, // 7C - '|'
-        { 6, SCANCODE(0, SHIFT  ) }, // 7D - '}'
-        { 5, SCANCODE(0, SHIFT  ) }, // 7E - '~'
-        { 4, SCANCODE(1, 0      ) }  // 7F - <del>
-    };
     pthread_mutex_lock(&m_terminal.mutex);
-    if (m_terminal.pressed_key >= 0 && m_terminal.pressed_key < 128) { // ASCII 'normal' Key
-        const KeyData &key_data(key_mapping[m_terminal.pressed_key]);
-        result = key_data.scan;
-        if (p_row != key_data.row)
-            result |= ~(SHIFT | CONTROL);
-    }
-    else switch (m_terminal.pressed_key) {                           // Special keys
-        default:                                       // Warn of unknown keypresses
-            assert (false);                               // but otherwise ignore it
-        case KBD_NO_KEYPRESS:
-            // simply model the PC SHIFT and CTRL keys
-            if (m_terminal.is_shift_pressed) result &= ~SHIFT;
-            if (m_terminal.is_ctrl_pressed)  result &= ~CONTROL;
-            break;
-        case KBD_LEFT:
-            if (p_row == 3)
-                result = SCANCODE(0, SHIFT);
-            else
-                result = byte(~SHIFT);
-            break;
-        case KBD_UP:
-            if (p_row == 2)
-                result = SCANCODE(0, SHIFT);
-            break;
-        case KBD_RIGHT:
-            if (p_row == 3)
-                result = SCANCODE(0, 0);
-            break;
-        case KBD_DOWN:
-            if (p_row == 2)
-                result = SCANCODE(0, SHIFT);
-            else
-                result = byte(~SHIFT);
-            break;
-        case KBD_LOCK:
-            if (p_row == 4)
-                result = SCANCODE(0, 0);
-            break;
-        case KBD_COPY:
-            if (p_row == 5)
-                result = SCANCODE(1, 0);
-            break;
+    try
+    {
+        Scanpair *sp = key_mapping.at(m_terminal.pressed_key);
+        if (sp)
+        {
+            result = sp->second;
+            if (p_row != sp->first)
+                result |= ~(SHIFT | CONTROL);
         }
+    }
+    catch (std::out_of_range &e)
+    {
+        LOG4CXX_WARN(cpptrace_log(), "[" << id() << "] unexpected key: " << m_terminal.pressed_key);
+    }
     pthread_mutex_unlock(&m_terminal.mutex);
     return result;
 }
@@ -275,7 +247,7 @@ byte Ppia::get_PortC(byte p_previous)
     LOG4CXX_INFO(cpptrace_log(), "[" << id() << "].Ppia::get_PortC(" << Hex(p_previous) << ")");
     byte result(p_previous & 0xBF);          // clear REPT and FLYBACK signals
     pthread_mutex_lock(&m_terminal.mutex);
-    if (!m_terminal.is_rept_pressed)
+    if (!m_terminal.repeat)
         result |= 0x40;
     result ^= 0x80;                                // Flip Terminal Refresh bit
     result ^= 0x30;                                      // Flip Tape input bits
@@ -376,9 +348,6 @@ void Ppia::reset()
     pthread_mutex_lock(&m_terminal.mutex);
     m_terminal.notified_vdg_mode = VDG_LAST; // force a notification
     m_terminal.pressed_key       = KBD_NO_KEYPRESS;
-    m_terminal.is_shift_pressed  = false;
-    m_terminal.is_ctrl_pressed   = false;
-    m_terminal.is_rept_pressed   = false;
 
     // reset "Control" port first
     m_register[ControlPort] = 0x8A;
@@ -396,43 +365,26 @@ TerminalInterface::VDGMode Ppia::vdg_mode() const
 {
     LOG4CXX_INFO(cpptrace_log(), "[" << id() << "].Ppia::vdg_mode()");
     pthread_mutex_lock(&m_terminal.mutex);
-    const TerminalInterface::VDGMode result(m_terminal.vdg_mode);
+    const VDGMode result(m_terminal.vdg_mode);
     pthread_mutex_unlock(&m_terminal.mutex);
     return result;
 }
 
-void Ppia::set_keypress(int p_key)
+void Ppia::set_keypress(gunichar p_key, bool p_repeat)
 {
     LOG4CXX_INFO(cpptrace_log(), "[" << id() << "].Ppia::set_keypress(" << p_key << ")");
-    pthread_mutex_lock(&m_terminal.mutex);
-    m_terminal.pressed_key = p_key;
-    pthread_mutex_unlock(&m_terminal.mutex);
+    if (key_mapping.find(p_key) == key_mapping.end())
+    {
+        LOG4CXX_WARN(cpptrace_log(), "[" << id() << "].Ppia::set_keypress: Unknown key: " << p_key);
+    }
+    else
+    {
+        pthread_mutex_lock(&m_terminal.mutex);
+        m_terminal.pressed_key = p_key;
+        m_terminal.repeat      = p_repeat;
+        pthread_mutex_unlock(&m_terminal.mutex);
+    }
 }
-
-void Ppia::set_is_shift_pressed(bool p_is_shift_pressed)
-{
-    LOG4CXX_INFO(cpptrace_log(), "[" << id() << "].Ppia::set_is_shift_pressed(" << p_is_shift_pressed << ")");
-    pthread_mutex_lock(&m_terminal.mutex);
-    m_terminal.is_shift_pressed = p_is_shift_pressed;
-    pthread_mutex_unlock(&m_terminal.mutex);
-}
-
-void Ppia::set_is_ctrl_pressed(bool p_is_ctrl_pressed)
-{
-    LOG4CXX_INFO(cpptrace_log(), "[" << id() << "].Ppia::set_is_ctrl_pressed(" << p_is_ctrl_pressed << ")");
-    pthread_mutex_lock(&m_terminal.mutex);
-    m_terminal.is_ctrl_pressed = p_is_ctrl_pressed;
-    pthread_mutex_unlock(&m_terminal.mutex);
-}
-
-void Ppia::set_is_rept_pressed(bool p_is_rept_pressed)
-{
-    LOG4CXX_INFO(cpptrace_log(), "[" << id() << "].Ppia::set_is_rept_pressed(" << p_is_rept_pressed << ")");
-    pthread_mutex_lock(&m_terminal.mutex);
-    m_terminal.is_rept_pressed = p_is_rept_pressed;
-    pthread_mutex_unlock(&m_terminal.mutex);
-}
-
 
 void Ppia::Configurator::serialize(std::ostream &p_s) const
 {
@@ -457,10 +409,7 @@ void Ppia::serialize(std::ostream &p_s) const
         << ", PortB("   << Hex(m_register[PortB]) << ")"
         << ", PortC("   << Hex(m_register[PortC]) << ")"
         << ", Control(" << Hex(m_register[ControlPort]) << ")"
-        << ", Key("     << m_terminal.pressed_key << ")"
-        << ", Shift("   << m_terminal.is_shift_pressed << ")"
-        << ", Ctrl("    << m_terminal.is_ctrl_pressed << ")"
-        << ", Alt("     << m_terminal.is_rept_pressed << ")";
+        << ", Key("     << m_terminal.pressed_key << ")";
     pthread_mutex_unlock(&m_terminal.mutex);
     p_s << ")";
 #endif

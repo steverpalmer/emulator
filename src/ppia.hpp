@@ -5,7 +5,6 @@
 
 #include <pthread.h>
 
-#include <ostream>
 #include <array>
 
 #include "common.hpp"
@@ -38,13 +37,13 @@ private:
     struct
     {
         mutable pthread_mutex_t mutex;
-        VDGMode vdg_mode;
-        VDGMode notified_vdg_mode;
-        int     pressed_key;
-        bool    is_shift_pressed;
-        bool    is_ctrl_pressed;
-        bool    is_rept_pressed;
+        VDGMode  vdg_mode;
+        VDGMode  notified_vdg_mode;
+        gunichar pressed_key;
+        bool     repeat;
     } m_terminal;
+    typedef std::pair<int, byte> Scanpair;
+    std::map<gunichar, Scanpair *> key_mapping;
     // Methods
 private:
     byte get_PortB(int p_row);
@@ -64,12 +63,9 @@ protected:
 
     // TerminalInterface
 public:
-    virtual Part::id_type id() const { return Part::id(); }
+    virtual Part::id_type id() const { return Device::id(); }
     virtual VDGMode vdg_mode() const;
-    virtual void    set_keypress(int p_key);
-    virtual void    set_is_shift_pressed(bool p_flag);
-    virtual void    set_is_ctrl_pressed(bool p_flag);
-    virtual void    set_is_rept_pressed(bool p_flag);
+    virtual void set_keypress(gunichar, bool p_repeat=false);
 
     virtual void serialize(std::ostream &) const;
 };

@@ -3,11 +3,9 @@
 #ifndef CONFIG_XML_HPP_
 #define CONFIG_XML_HPP_
 
-#include <ostream>
 #include <vector>
 
-#include <glibmm/ustring.h>
-
+#include "common.hpp"
 #include "part.hpp"
 #include "config.hpp"
 

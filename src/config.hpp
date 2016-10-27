@@ -6,8 +6,7 @@
 #include <string.h>
 #include <libgen.h>
 
-#include <ostream>
-
+#include "common.hpp"
 #include "part.hpp"
 
 class Configurator

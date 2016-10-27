@@ -4,10 +4,7 @@
 #include <cmath>
 #include <string>
 
-#include <ostream>
 #include <iomanip>
-
-#include <log4cxx/logger.h>
 
 #include "monitor_view.hpp"
 

@@ -1,9 +1,5 @@
 // terminal.cpp
 
-#include <ostream>
-
-#include <log4cxx/logger.h>
-
 #include "terminal.hpp"
 
 static log4cxx::LoggerPtr cpptrace_log()

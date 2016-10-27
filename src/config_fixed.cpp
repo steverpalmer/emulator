@@ -9,13 +9,8 @@
 #include <cassert>
 #include <libxml++/libxml++.h>
 
-#include <ostream>
 #include <string>
 
-#include <glibmm/ustring.h>
-#include <libxml++/libxml++.h>
-
-#include "common.hpp"
 #include "config_fixed.hpp"
 #include "device.hpp"
 #include "memory.hpp"

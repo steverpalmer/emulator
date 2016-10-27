@@ -6,9 +6,6 @@
 #include <iostream>
 #include <iomanip>
 
-#include <log4cxx/logger.h>
-#include <glibmm/ustring.h>
-
 #include "cpu.hpp"
 
 #if 0

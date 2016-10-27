@@ -4,7 +4,6 @@
 #include <list>
 
 #include <iostream>
-#include <log4cxx/logger.h>
 
 #include "part.hpp"
 

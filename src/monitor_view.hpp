@@ -3,12 +3,11 @@
 #ifndef MONITOR_VIEW_HPP_
 #define MONITOR_VIEW_HPP_
 
-#include <ostream>
 #include <array>
 
 #include <SDL.h>
-#include <glibmm/ustring.h>
 
+#include "common.hpp"
 #include "terminal_interface.hpp"
 #include "memory.hpp"
 

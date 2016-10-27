@@ -4,14 +4,10 @@
 #define PART_HPP_
 
 #include <cassert>
-#include <ostream>
 
 #include <set>  // Used by Part
 #include <string>  // User by PartsBin
 #include <map>  // Used by PartsBin
-// #include <memory>
-
-#include <glibmm/ustring.h>
 
 #include "common.hpp"
 

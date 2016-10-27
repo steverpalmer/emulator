@@ -4,18 +4,14 @@
 
 #include <unistd.h>
 
-#include <ostream>
 #include <cassert>
 #include <exception>
 #include <cstdlib>
 
-#include <log4cxx/logger.h>
 #include <libxml++/libxml++.h>
-#include <glibmm/ustring.h>
 
 #include "config_xml.hpp"
 
-#include "common.hpp"
 #include "device.hpp"
 #include "memory.hpp"
 #include "ppia.hpp"

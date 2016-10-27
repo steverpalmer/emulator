@@ -3,7 +3,6 @@
 #ifndef DEVICE_HPP_
 #define DEVICE_HPP_
 
-#include <ostream>
 #include <set>  // Used by Computer
 
 #include "common.hpp"

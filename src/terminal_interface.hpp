@@ -3,8 +3,6 @@
 #ifndef TERMINAL_INTERFACE_HPP_
 #define TERMINAL_INTERFACE_HPP_
 
-#include <ostream>
-
 #include <set>
 
 #include "common.hpp"
@@ -48,15 +46,15 @@ public:
             return p_s;
         }
 
-    enum KBDSpecials {
-        KBD_NO_KEYPRESS = 0xFFFF,
-        KBD_LEFT        = 0x2190,
-        KBD_UP          = 0x2191,
-        KBD_RIGHT       = 0x2192,
-        KBD_DOWN        = 0x2193,
-        KBD_LOCK        = 0x21EC,
-        KBD_COPY        = 0x2298,
-    };
+    static const gunichar KBD_NO_KEYPRESS;
+    static const gunichar KBD_LEFT;
+    static const gunichar KBD_UP;
+    static const gunichar KBD_RIGHT;
+    static const gunichar KBD_DOWN;
+    static const gunichar KBD_SHIFT;
+    static const gunichar KBD_LOCK;
+    static const gunichar KBD_CTRL;
+    static const gunichar KBD_COPY;
 
     class Observer
         : protected NonCopyable
@@ -75,10 +73,7 @@ protected:
 public:
     virtual Part::id_type id() const = 0;
     virtual VDGMode vdg_mode() const = 0;
-    virtual void    set_keypress(int p_key) = 0;
-    virtual void    set_is_shift_pressed(bool p_flag) = 0;
-    virtual void    set_is_ctrl_pressed(bool p_flag) = 0;
-    virtual void    set_is_rept_pressed(bool p_flag) = 0;
+    virtual void set_keypress(gunichar, bool p_repeat=false) = 0;
 protected:
     inline void vdg_mode_notify(VDGMode p_mode)
         { for (Observer * obs : m_observers) obs->vdg_mode_update(this, p_mode); }

@@ -3,6 +3,12 @@
 #ifndef COMMON_HPP_
 #define COMMON_HPP_
 
+// Includes used everywhere
+
+#include <ostream>  // part of the serialize pattern
+#include <glibmm/ustring.h>  // Glib::ustring used everywhere
+#include <log4cxx/logger.h>
+
 // Logger Names
 #define CTRACE_PREFIX "ctrace"
 #define PART_LOGGER "part"

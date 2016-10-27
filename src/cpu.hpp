@@ -5,7 +5,6 @@
 
 #include <pthread.h>
 
-#include <ostream>
 #include <atomic>
 #include <array>
 

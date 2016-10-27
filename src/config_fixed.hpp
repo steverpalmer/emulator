@@ -5,8 +5,9 @@
 
 #include <vector>
 
-#include "part.hpp"
+#include "common.hpp"
 #include "config.hpp"
+#include "part.hpp"
 
 namespace Fixed
 {

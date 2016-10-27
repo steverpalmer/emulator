@@ -1,11 +1,8 @@
 // memory.cpp
 
 #include <cassert>
-#include <ostream>
 #include <fstream>
 #include <iomanip>
-
-#include <log4cxx/logger.h>
 
 #include "memory.hpp"
 
