@@ -109,13 +109,15 @@ MonitorView::MonitorView(TerminalInterface *p_terminal_interface,
     assert (p_memory);
     m_window = SDL_CreateWindow(p_cfgr.window_title().c_str(),
                                 SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
-                                256, 192,
+                                512, 384,
                                 SDL_WINDOW_RESIZABLE);
     assert (m_window);
     m_renderer = SDL_CreateRenderer(m_window,
                                     -1,
                                     SDL_RENDERER_ACCELERATED);
     assert (m_renderer);
+    const int rv = SDL_RenderSetLogicalSize(m_renderer, 256, 192);
+    assert (!rv);
     std::fill(m_rendered.begin(), m_rendered.end(), -1); // (un)Initialise cache
     m_mode0 = new Mode0(this, p_cfgr);
     m_terminal_interface->attach(*this);

@@ -318,27 +318,27 @@ void Ppia::_set_byte(word p_addr, byte p_byte, AccessType p_at)
     case PortA :
         set_PortA(p_byte);
         break;
-    case PortB :                                               // Do Nothing
+    case PortB :
         break;
     case PortC :
-        p_byte &= 0x0F;                              // Remember the outputs
-        p_byte |= (m_register[PortC] & 0xF0);            // Remember last inputs
+        p_byte &= 0x0F;
+        p_byte |= (m_register[PortC] & 0xF0);
         break;
     case ControlPort :
         switch (p_byte)
         {
-        case 0x8A:                      // Normal condition - Do Nothing
+        case 0x8A:
             break;
         case 0x04:
-        case 0x05:                                         // Error bell
+        case 0x05:  // Error bell
             // TODO: beep (#7)
             break;
-        default:                                     // TODO: Unexpected
+        default:  // Unexpected
             assert (false);
         }
         break;
     }
-    m_register[p_addr] = p_byte;                            // Remember byte written
+    m_register[p_addr] = p_byte;
 }
 
 void Ppia::reset()
