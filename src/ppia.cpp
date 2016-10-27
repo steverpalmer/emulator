@@ -201,9 +201,9 @@ Ppia::Ppia(const Configurator &p_cfgr)
     key_mapping[0x7F] = new Scanpair(4, SCANCODE(1, 0));
 
     key_mapping[KBD_LEFT]  = new Scanpair(3, SCANCODE(0, SHIFT));
-    key_mapping[KBD_UP]    = new Scanpair(2, SCANCODE(0, SHIFT));
+    key_mapping[KBD_UP]    = new Scanpair(2, SCANCODE(0, 0));
     key_mapping[KBD_RIGHT] = new Scanpair(3, SCANCODE(0, 0));
-    key_mapping[KBD_DOWN]  = new Scanpair(2, SCANCODE(0, 0));
+    key_mapping[KBD_DOWN]  = new Scanpair(2, SCANCODE(0, SHIFT));
     key_mapping[KBD_LOCK]  = new Scanpair(4, SCANCODE(0, 0));
     key_mapping[KBD_COPY]  = new Scanpair(5, SCANCODE(1, 0));
 
