@@ -18,11 +18,9 @@ enum Ports {
     ControlPort = 3
 };
 
-#define SCANCODE(CLMN, SHFT_CTRL) (byte(~((1 << (CLMN)) | (SHFT_CTRL))))
-
 #define SHIFT   byte(0x80)
 #define CONTROL byte(0x40)
-
+#define SCANCODE(CLMN, SHFT_CTRL) (byte(~((1 << (CLMN)) | (SHFT_CTRL))))
 
 ///****************************************************************************
 /// PPIA

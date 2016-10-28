@@ -63,7 +63,7 @@ public:
         Observer() = default;
     public:
         virtual ~Observer() = default;
-        virtual void vdg_mode_update(TerminalInterface &p_terminal, VDGMode p_mode) = 0;
+        virtual void vdg_mode_update(const TerminalInterface &, VDGMode) = 0;
     };
 
 private:
