@@ -60,7 +60,7 @@ bool Storage::load(const Glib::ustring &p_filename)
                 m_storage.resize(end-begin);
                 file.seekg(0, ios::beg);
             }
-            for (byte &b : m_storage)
+            for (auto &b : m_storage)
                 b = file.get();
         }
     }
@@ -75,7 +75,7 @@ bool Storage::save(const Glib::ustring &p_filename) const
         using namespace std;
         ofstream file(p_filename, ofstream::out | ofstream::binary | ofstream::trunc);
         if ((result = file.good()))
-            for (const byte b : m_storage)
+            for (const auto b : m_storage)
                 file.put(b);
     }
     return result;
@@ -199,21 +199,21 @@ AddressSpace::~AddressSpace()
 void AddressSpace::reset()
 {
     LOG4CXX_INFO(cpptrace_log(), "[" << id() << "].AddressSpace::reset()");
-    for (auto &mem : m_children)
+    for (auto mem : m_children)
         mem->reset();
 }
 
 void AddressSpace::pause()
 {
     LOG4CXX_INFO(cpptrace_log(), "[" << id() << "].AddressSpace::pause()");
-    for (auto &mem : m_children)
+    for (auto mem : m_children)
         mem->pause();
 }
 
 void AddressSpace::resume()
 {
     LOG4CXX_INFO(cpptrace_log(), "[" << id() << "].AddressSpace::resume()");
-    for (auto &mem : m_children)
+    for (auto mem : m_children)
         mem->resume();
 }
 

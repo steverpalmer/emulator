@@ -117,7 +117,7 @@ int PartsBin::self_check() const
 {
     LOG4CXX_DEBUG(cpptrace_log(), "PartsBin::self_check()");
 #if 0
-    for (auto i : m_bin)
+    for (auto &i : m_bin)
     {
         const std::unique_ptr<Part::id_type> s(Part::canonical_id(i.first));
         if (i.first != *s) return 1;
