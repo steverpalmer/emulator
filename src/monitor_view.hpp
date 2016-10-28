@@ -32,30 +32,8 @@ public:
             { p_cfgr.serialize(p_s); return p_s; }
     };
 
-    class Mode
-        : protected NonCopyable
-    {
-    protected:
-        MonitorView *m_state;
-    protected:
-        Mode(MonitorView *p_state);
-    public:
-        virtual ~Mode() = default;
-        virtual void render() = 0;
-        virtual void set_byte_update(word p_addr, byte p_byte) = 0;
-    };
-
-    class Mode0
-        : public Mode
-    {
-    private:
-        SDL_Texture * m_font;
-    public:
-        Mode0(MonitorView *p_state, const MonitorView::Configurator &p_cfgr);
-        virtual ~Mode0();
-        virtual void render();
-        virtual void set_byte_update(word p_addr, byte p_byte);
-    };
+    class Mode;
+    class Mode0;
 
 private:
     TerminalInterface  *m_terminal_interface;
