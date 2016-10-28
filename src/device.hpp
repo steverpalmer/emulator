@@ -64,7 +64,7 @@ public:
     public:
         virtual ~Configurator() = default;
     	/// 1. Constructor Information
-        virtual const Device::Configurator *device(int i) const = 0;
+        virtual const Device::Configurator *device(int) const = 0;
         /// 2. Factory Method
         virtual Device *device_factory() const
             { return new Computer(*this); }
@@ -80,7 +80,7 @@ public:
     virtual ~Computer();
 public:
     void add_child(Device *);
-    void remove_child(Device *, bool do_erase);
+    void remove_child(Device *, bool);
     virtual void remove_child(Device *p_device)
         { remove_child(p_device, true); }
     void clear();
