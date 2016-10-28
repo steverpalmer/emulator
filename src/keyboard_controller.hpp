@@ -51,7 +51,7 @@ public:
     KeyboardController(TerminalInterface *, const Configurator &);
     virtual ~KeyboardController() = default;
 
-    void update(SDL_KeyboardEvent &);
+    void handle_event(SDL_KeyboardEvent &);
 
     virtual void serialize(std::ostream &) const;
     friend std::ostream &::operator<<(std::ostream &p_s, const KeyboardController &p_kc)

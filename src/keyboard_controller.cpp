@@ -210,9 +210,9 @@ KeyboardController::KeyboardController(TerminalInterface *p_terminal_interface, 
     keys[SDLK_RSHIFT]       = new KeyModifier(*this, is_shift_pressed);
 }
 
-void KeyboardController::update(SDL_KeyboardEvent &p_key_event)
+void KeyboardController::handle_event(SDL_KeyboardEvent &p_key_event)
 {
-    LOG4CXX_INFO(cpptrace_log(), "update((" << p_key_event.type << ", " << int(p_key_event.keysym.sym) << ", ...))");
+    LOG4CXX_INFO(cpptrace_log(), "handle_event((" << p_key_event.type << ", " << int(p_key_event.keysym.sym) << ", ...))");
     try
     {
         const KeyCommand *key_cmd = keys.at(p_key_event.keysym.sym);

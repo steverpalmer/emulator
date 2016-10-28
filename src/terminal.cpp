@@ -54,6 +54,25 @@ void Terminal::remove_child(Part *p_child)
     }
 }
 
+bool Terminal::handle_event(SDL_Event &event)
+{
+    bool result(true);
+    switch (event.type)
+    {
+    case SDL_KEYDOWN:
+    case SDL_KEYUP:
+        m_keyboard_controller.handle_event(event.key);
+        break;
+    case SDL_WINDOWEVENT:
+        m_monitor_view.handle_event(event.window);
+        break;
+    default:
+        result=false;
+        break;
+    }
+    return result;
+}
+
 
 void Terminal::Configurator::serialize(std::ostream &p_s) const
 {

@@ -45,7 +45,7 @@ public:
     explicit Terminal(const Configurator &);
     virtual ~Terminal();
     virtual void remove_child(Part *);
-    void update(SDL_Event &event) { m_keyboard_controller.update(event.key); }
+    bool handle_event(SDL_Event &event);
 
     virtual void serialize(std::ostream &) const;
 };

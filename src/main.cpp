@@ -58,14 +58,16 @@ public:
             bool more = true;
             while( more && SDL_WaitEvent(&event) )
                 switch( event.type ){
-                case SDL_KEYDOWN:
-                case SDL_KEYUP:
-                    terminal->update(event);
-                    break;
                 case SDL_QUIT:
                     more = false;
                     break;
+                case SDL_KEYDOWN:
+                case SDL_KEYUP:
+                case SDL_WINDOWEVENT:
+                    (void) terminal->handle_event(event);
+                    break;
                 default:
+                    LOG4CXX_WARN(cpptrace_log(), "Unhandled event:" << event.type);
                     break;
                 }
             LOG4CXX_INFO(cpptrace_log(), "Atom is about to stop ...");

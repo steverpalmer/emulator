@@ -147,6 +147,21 @@ MonitorView::~MonitorView()
     }
 }
 
+void MonitorView::handle_event(SDL_WindowEvent &p_window_event)
+{
+    LOG4CXX_INFO(cpptrace_log(), "MonitorView::handle_event(" << p_window_event.event << ")");
+    switch (p_window_event.event)
+    {
+    case SDL_WINDOWEVENT_SIZE_CHANGED:
+        if (m_mode)
+            m_mode->render();
+        break;
+    default:
+        break;
+    }
+}
+
+
 void MonitorView::set_byte_update(Memory *p_memory, word p_addr, byte p_byte, Memory::AccessType p_at)
 {
     if (m_mode)
