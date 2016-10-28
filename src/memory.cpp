@@ -125,8 +125,9 @@ AddressSpace::AddressSpace(const Configurator &p_cfgr)
     AddressSpace::Configurator::Mapping mapping;
     for (int i(0); (mapping = p_cfgr.mapping(i), mapping.memory); i++)
     {
-        Memory * const memory(mapping.memory->memory_factory());
-        add_child(mapping.base, memory, mapping.size);
+        auto memory = mapping.memory->memory_factory();
+        assert (memory);
+        add_child(mapping.base, *memory, mapping.size);
     }
 }
 
@@ -143,35 +144,37 @@ void AddressSpace::_set_byte(word p_addr, byte p_byte, AccessType p_at)
     	m_map[p_addr]->set_byte(p_addr-m_base[p_addr], p_byte, p_at);
 }
 
-void AddressSpace::add_child(word p_base, Memory *p_memory, word p_size)
+void AddressSpace::add_child(word p_base, Memory &p_memory, word p_size)
 {
-    assert (p_memory);
-    LOG4CXX_INFO(cpptrace_log(), "[" << id() << "].AddressSpace::add_child(" << Hex(p_base) << ", [" << p_memory->id() << "], " << Hex(p_size) << ")");
-    LOG4CXX_INFO(Part::log(), "making [" << p_memory->id() << "] child of [" << id() << "]");
+    LOG4CXX_INFO(cpptrace_log(), "[" << id() << "].AddressSpace::add_child(" << Hex(p_base) << ", [" << p_memory.id() << "], " << Hex(p_size) << ")");
+    LOG4CXX_INFO(Part::log(), "making [" << p_memory.id() << "] child of [" << id() << "]");
     {  // These two statements should occur together
-        m_children.insert(p_memory);
-        p_memory->add_parent(this);
+        m_children.insert(&p_memory);
+        p_memory.add_parent(*this);
     }
-    const int memory_size(SIZE(p_memory->size()));
+    const int memory_size(SIZE(p_memory.size()));
     assert (memory_size > 0);
     assert (!p_size || (p_size % memory_size == 0));
     const int memory_space(p_size?p_size:memory_size);
     for (int offset = 0; offset < memory_space; offset++)
     {
         m_base[p_base + offset] = p_base + (offset / memory_size) * memory_size;
-        m_map[p_base + offset] = p_memory;
+        m_map[p_base + offset] = &p_memory;
     }
 }
 
-void AddressSpace::remove_child(Memory *p_memory, bool do_erase)
+void AddressSpace::remove_child(Part &p_part, bool do_erase)
 {
-    assert (p_memory);
-    LOG4CXX_INFO(cpptrace_log(), "[" << id() << "].AddressSpace::remove_child([" << p_memory->id() << "])");
-    LOG4CXX_INFO(Part::log(), "removing [" << p_memory->id() << "] as child of [" << id() << "]");
+    LOG4CXX_INFO(cpptrace_log(), "[" << id() << "].AddressSpace::remove_child([" << p_part.id() << "])");
+    LOG4CXX_INFO(Part::log(), "removing [" << p_part.id() << "] as child of [" << id() << "]");
     {  // These two statements should occur together
         if (do_erase)
-            m_children.erase(p_memory);
-        p_memory->remove_parent(this);
+        {
+            auto memory = dynamic_cast<Memory *>(&p_part);
+            if (memory)
+                m_children.erase(memory);
+        }
+        p_part.remove_parent(*this);
     }
 }
 
@@ -183,7 +186,7 @@ void AddressSpace::clear()
     for (auto &b: m_base)
         b = 0;
     for (auto it = m_children.begin(); it != m_children.end(); it = m_children.erase(it))
-        remove_child(*it, false);
+        remove_child(**it, false);
     assert (m_children.empty());
 }
 

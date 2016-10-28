@@ -56,9 +56,9 @@ protected:
 public:
     virtual ~Part();
 
-    void add_parent(Part *);
-    void remove_parent(Part *p_parent);
-    virtual void remove_child(Part *) {}
+    void add_parent(Part &);
+    void remove_parent(Part &);
+    virtual void remove_child(Part &) {}
 
     virtual void serialize(std::ostream &) const;
 	friend std::ostream &::operator<<(std::ostream &p_s, const Part &p_p)

@@ -257,10 +257,10 @@ public:
 protected:
     virtual void _set_byte  (word p_addr, byte p_byte, AccessType p_at = AT_UNKNOWN);
 public:
-    void add_child(word p_base, Memory *p_memory, word p_size = 0);
-    void remove_child(Memory *p_memory, bool do_erase);
-    virtual void remove_child(Memory *p_memory)
-        { remove_child(p_memory, true); }
+    void add_child(word p_base, Memory &p_memory, word p_size = 0);
+    void remove_child(Part &p_part, bool);
+    virtual void remove_child(Part &p_part)
+        { remove_child(p_part, true); }
     void clear();
     virtual ~AddressSpace();
     virtual void reset();

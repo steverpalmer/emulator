@@ -79,10 +79,10 @@ public:
     explicit Computer(const Configurator &);
     virtual ~Computer();
 public:
-    void add_child(Device *);
-    void remove_child(Device *, bool);
-    virtual void remove_child(Device *p_device)
-        { remove_child(p_device, true); }
+    void add_child(Device &);
+    void remove_child(Part &, bool);
+    virtual void remove_child(Part &p_part)
+        { remove_child(p_part, true); }
     void clear();
 
     virtual void reset();

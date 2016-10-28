@@ -32,30 +32,38 @@ Computer::Computer(const Configurator &p_cfgr)
 {
     LOG4CXX_INFO(cpptrace_log(), "Computer::Computer(" << p_cfgr << ")");
     for (int i(0); auto cfgr = p_cfgr.device(i); i++)
-        add_child(cfgr->device_factory());
+    {
+        auto device = cfgr->device_factory();
+        assert (device);
+        add_child(*device);
+    }
 }
 
-void Computer::add_child(Device *p_device)
+void Computer::add_child(Device &p_device)
 {
-    LOG4CXX_INFO(Part::log(), "making [" << p_device->id() << "] child of [" << id() << "]");
-    (void) m_children.insert(p_device);
-    p_device->add_parent(this);
+    LOG4CXX_INFO(Part::log(), "making [" << p_device.id() << "] child of [" << id() << "]");
+    (void) m_children.insert(&p_device);
+    p_device.add_parent(*this);
 }
 
-void Computer::remove_child(Device *p_device, bool do_erase)
+void Computer::remove_child(Part &p_part, bool do_erase)
 {
-    LOG4CXX_INFO(cpptrace_log(), "[" << id() << "].Computer::remove_child([" << p_device->id() << "])");
-    LOG4CXX_INFO(Part::log(), "removing [" << p_device->id() << "] as child of [" << id() << "]");
+    LOG4CXX_INFO(cpptrace_log(), "[" << id() << "].Computer::remove_child([" << p_part.id() << "])");
+    LOG4CXX_INFO(Part::log(), "removing [" << p_part.id() << "] as child of [" << id() << "]");
     if (do_erase)
-        m_children.erase(p_device);
-    p_device->remove_parent(this);
+    {
+        auto device = dynamic_cast<Device *>(&p_part);
+        if (device)
+            m_children.erase(device);
+    }
+    p_part.remove_parent(*this);
 }
 
 void Computer::clear()
 {
     LOG4CXX_INFO(cpptrace_log(), "[" << id() << "].Computer::clear()");
     for (auto it = m_children.begin(); it != m_children.end(); it = m_children.erase(it))
-        remove_child(*it, false);
+        remove_child(**it, false);
     assert (m_children.empty());
 }
 

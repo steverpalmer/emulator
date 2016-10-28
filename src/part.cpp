@@ -31,7 +31,7 @@ Part::~Part()
     LOG4CXX_INFO(cpptrace_log(), "Part::~Part([" << id() << "])");
     for (auto p: m_parents)
     {
-        p->remove_child(this);
+        p->remove_child(*this);
         LOG4CXX_INFO(Part::log(), "removing [" << p->id() << "] as parent of [" << id() << "]");
     }
     m_parents.clear();
@@ -100,16 +100,16 @@ std::unique_ptr<Part::id_type> Part::canonical_id(const id_type &p_s)
 #endif
 }
 
-void Part::add_parent(Part *p_parent)
+void Part::add_parent(Part &p_parent)
 {
-    LOG4CXX_INFO(Part::log(), "making [" << p_parent->id() << "] parent of [" << id() << "]");
-    (void) m_parents.insert(p_parent);
+    LOG4CXX_INFO(Part::log(), "making [" << p_parent.id() << "] parent of [" << id() << "]");
+    (void) m_parents.insert(&p_parent);
 }
 
-void Part::remove_parent(Part *p_parent)
+void Part::remove_parent(Part &p_parent)
 {
-    LOG4CXX_INFO(Part::log(), "removing [" << p_parent->id() << "] as parent of [" << id() << "]");
-    (void) m_parents.erase(p_parent);
+    LOG4CXX_INFO(Part::log(), "removing [" << p_parent.id() << "] as parent of [" << id() << "]");
+    (void) m_parents.erase(&p_parent);
 }
 
 

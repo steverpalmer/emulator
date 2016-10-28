@@ -18,9 +18,9 @@ Terminal::Terminal(const Configurator &p_cfgr)
     LOG4CXX_INFO(cpptrace_log(), "Terminal::Terminal(" << p_cfgr << ")");
     assert (m_memory);
     LOG4CXX_INFO(Part::log(), "making [" << m_memory->id() << "] child of [" << id() << "]");
-    m_memory->add_parent(this);
+    m_memory->add_parent(*this);
     assert (m_ppia);
-    m_ppia->add_parent(this);
+    m_ppia->add_parent(*this);
     LOG4CXX_INFO(Part::log(), "making [" << m_ppia->id() << "] child of [" << id() << "]");
 }
 
@@ -29,12 +29,12 @@ Terminal::~Terminal()
     LOG4CXX_INFO(cpptrace_log(), "[" << id() << "].Terminal::~Terminal()");
     if (m_memory)
     {
-        m_memory->remove_parent(this);
+        m_memory->remove_parent(*this);
         remove_child(m_memory);
     }
     if (m_ppia)
     {
-        m_ppia->remove_parent(this);
+        m_ppia->remove_parent(*this);
         remove_child(m_ppia);
     }
 }
