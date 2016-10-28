@@ -63,7 +63,7 @@ public:
         Observer() = default;
     public:
         virtual ~Observer() = default;
-        virtual void vdg_mode_update(TerminalInterface *p_terminal, VDGMode p_mode) = 0;
+        virtual void vdg_mode_update(TerminalInterface &p_terminal, VDGMode p_mode) = 0;
     };
 
 private:
@@ -76,7 +76,7 @@ public:
     virtual void set_keypress(gunichar, bool p_repeat=false) = 0;
 protected:
     inline void vdg_mode_notify(VDGMode p_mode)
-        { for (Observer * obs : m_observers) obs->vdg_mode_update(this, p_mode); }
+        { for (auto obs : m_observers) obs->vdg_mode_update(*this, p_mode); }
 public:
     inline void attach(Observer &p_observer) { m_observers.insert(&p_observer); }
     inline void detach(Observer &p_observer) { m_observers.erase(&p_observer); }

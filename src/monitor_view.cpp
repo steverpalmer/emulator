@@ -171,7 +171,7 @@ void MonitorView::set_byte_update(Memory &, word p_addr, byte p_byte, Memory::Ac
     }
 }
 
-void MonitorView::vdg_mode_update(TerminalInterface *p_terminal, TerminalInterface::VDGMode p_mode)
+void MonitorView::vdg_mode_update(TerminalInterface &, TerminalInterface::VDGMode p_mode)
 {
     LOG4CXX_INFO(cpptrace_log(), "MonitorView::vdg_mode_update(" << p_mode << ")");
     switch (p_mode)
