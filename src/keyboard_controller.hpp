@@ -26,20 +26,7 @@ public:
             { p_cfgr.serialize(p_s); return p_s; }
     };
     
-    class KeyCommand
-        : protected NonCopyable
-    {
-    protected:
-        KeyboardController &m_state;
-        explicit KeyCommand(KeyboardController &p_keyboard_controller)
-            : m_state(p_keyboard_controller)
-            {}
-    public:
-        virtual ~KeyCommand() = default;
-        virtual void down() const = 0;
-        virtual void up() const = 0;
-    };
-
+    class KeyCommand;
 public:
     TerminalInterface *m_terminal_interface;
     gunichar m_last_key_pressed;

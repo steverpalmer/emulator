@@ -3,7 +3,7 @@
 #ifndef MONITOR_VIEW_HPP_
 #define MONITOR_VIEW_HPP_
 
-#include <array>
+#include <vector>
 
 #include <SDL.h>
 
@@ -58,8 +58,8 @@ public:
     };
 
 private:
-    TerminalInterface  *m_terminal_interface;  // FIXME: should be const
-    Memory             *m_memory;  // FIXME: should be const
+    TerminalInterface  *m_terminal_interface;
+    Memory             *m_memory;
     SDL_Window         *m_window;
     SDL_Renderer       *m_renderer;
     std::vector<int>   m_rendered;

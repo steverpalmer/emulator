@@ -45,6 +45,20 @@ static log4cxx::LoggerPtr cpptrace_log()
     return result;
 }
 
+class KeyboardController::KeyCommand
+    : protected NonCopyable
+{
+protected:
+    KeyboardController &m_state;
+    explicit KeyCommand(KeyboardController &p_keyboard_controller)
+        : m_state(p_keyboard_controller)
+        {}
+public:
+    virtual ~KeyCommand() = default;
+    virtual void down() const = 0;
+    virtual void up() const = 0;
+};
+
 class KeySimple
     : public KeyboardController::KeyCommand
 {
@@ -71,13 +85,15 @@ public:
                 (m_state.is_control_pressed && m_control!=TerminalInterface::KBD_NO_KEYPRESS) ? m_control
                 : (m_state.is_shift_pressed && m_shift!=TerminalInterface::KBD_NO_KEYPRESS) ? m_shift
                 : m_unichar;
-            m_state.m_terminal_interface->set_keypress(key, m_state.m_last_key_pressed == key);
+            if (m_state.m_terminal_interface)
+                m_state.m_terminal_interface->set_keypress(key, m_state.m_last_key_pressed == key);
             m_state.m_last_key_pressed = key;
         }
     virtual void up() const
         {
             m_state.m_last_key_pressed = TerminalInterface::KBD_NO_KEYPRESS;
-            m_state.m_terminal_interface->set_keypress(TerminalInterface::KBD_NO_KEYPRESS);
+            if (m_state.m_terminal_interface)
+                m_state.m_terminal_interface->set_keypress(TerminalInterface::KBD_NO_KEYPRESS);
         }
 };
 
@@ -106,7 +122,7 @@ KeyboardController::KeyboardController(TerminalInterface *p_terminal_interface, 
     , is_control_pressed(false)
 {
     LOG4CXX_INFO(cpptrace_log(), "KeyboardController::KeyboardController("
-                 << "<controller name=\"" << p_terminal_interface->id() << "\"/>"
+                 << "<controller name=\"" << (p_terminal_interface?p_terminal_interface->id():"?") << "\"/>"
                  << p_cfgr << ")");
     keys[SDLK_RETURN]       = new KeySimple(*this, '\r');
     keys[SDLK_ESCAPE]       = new KeySimple(*this, 0x1B);
