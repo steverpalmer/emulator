@@ -6,8 +6,6 @@
 * Computer Configurator Destructor
 * Overall Configurator Destructor
 * Selection of XML Configurator in Main
-* Replace * by & to nested objects
-* Check const'ness
 * Make XML Configuration check input against schema
 * Testing
 * Test framework
