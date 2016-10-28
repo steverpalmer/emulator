@@ -103,7 +103,7 @@
     <memory name="video"/>
     <!-- controller name="ppia"/ -->
     <fontfilename>mc6847.bmp</fontfilename>
-    <!-- refreshrate>10</refreshrate -->
+    <window_title>Acorn Atom Emulator</window_title>
     <!-- key_copy>F1</key_copy -->
     <!-- key_reset>F12</key_reset -->
   </terminal>

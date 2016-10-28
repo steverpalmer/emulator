@@ -12,11 +12,11 @@
 class Configurator
     : public virtual PartsBin::Configurator
 {
-public:
-    std::string command;
+protected:
+    const std::string command;
 private:
     char * const command_copy;
-public:
+protected:
     std::string command_dir;
 protected:
     Configurator(int argc, char *argv[])

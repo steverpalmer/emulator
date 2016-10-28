@@ -186,6 +186,9 @@
         <rng:optional>
           <rng:ref name="fontfile_elm"/>
         </rng:optional>
+        <rng:optional>
+          <rng:ref name="window_title_elm"/>
+        </rng:optional>
         <!-- rng:ref name="refreshrate_elm"/ -->
         <!-- rng:ref name="foreign-elements"/ -->
       </rng:interleave>
@@ -201,6 +204,12 @@
   <rng:define name="fontfile_elm">
     <rng:element name="fontfilename">
       <rng:data type="token"/>
+    </rng:element>
+  </rng:define>
+
+  <rng:define name="window_title_elm">
+    <rng:element name="window_title">
+      <rng:text/>
     </rng:element>
   </rng:define>
 

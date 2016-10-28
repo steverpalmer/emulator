@@ -15,15 +15,15 @@ namespace Xml
     class Configurator
         : public virtual ::Configurator
     {
-    private:
+    private:  // Attributes
         Glib::ustring m_XMLfilename;
         std::vector<const Part::Configurator *>m_parts;
-    private:
+    private:  // Methods
         void process_command_line(int argc, char *argv[]);
         void process_XML();
         bool check_and_complete_params();
     public:
-        explicit Configurator(int argc, char *argv[]);
+        Configurator(int argc, char *argv[]);
         virtual ~Configurator();
         virtual const Part::Configurator *part(int i) const
             { return (i < int(m_parts.size())) ? m_parts[i] : 0; }
