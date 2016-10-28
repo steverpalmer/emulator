@@ -10,8 +10,8 @@
 #include <log4cxx/logger.h>
 
 // Logger Names
-#define CTRACE_PREFIX "ctrace"
-#define PART_LOGGER "part"
+#define CTRACE_PREFIX      "ctrace"
+#define PART_LOGGER        "part"
 #define INSTRUCTION_PREFIX "instruction"
 
 // Types used through out the emulator
@@ -21,10 +21,10 @@ typedef int8_t   signed_byte;
 typedef uint16_t word;
 typedef int16_t  signed_word;
 
-// Utility function
+// Utility macro
 #define SIZE(n) (word((n)-word(1))+1)
 
-// Utility class
+// Utility classes
 class NonCopyable
 {
 protected:
@@ -37,7 +37,6 @@ private:
 
 // Streaming Utilitiy
 #include <string>
-#include <ostream>
 #include <iomanip>
 class Hex
 {

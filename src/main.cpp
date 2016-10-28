@@ -67,7 +67,7 @@ public:
                     (void) terminal->handle_event(event);
                     break;
                 default:
-                    LOG4CXX_WARN(cpptrace_log(), "Unhandled event:" << event.type);
+                    LOG4CXX_DEBUG(cpptrace_log(), "Unhandled event:" << event.type);
                     break;
                 }
             LOG4CXX_INFO(cpptrace_log(), "Atom is about to stop ...");

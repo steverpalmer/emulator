@@ -29,8 +29,7 @@ public:
         virtual ~Configurator() = default;
     	/// 1. Constructor Information - Name only at this level
     	/// 2. Factory Method
-        virtual Device *device_factory() const
-            { return 0; }
+        virtual Device *device_factory() const = 0;
         virtual Part *part_factory() const
             { return device_factory(); }
 

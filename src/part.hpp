@@ -36,8 +36,7 @@ public:
 	public:
         virtual ~Configurator() = default;
 		virtual const id_type &id() const = 0;
-        virtual Part *part_factory() const
-            { return 0; }
+        virtual Part *part_factory() const = 0;
         virtual void serialize(std::ostream &) const;
 		friend std::ostream &::operator<<(std::ostream &p_s, const Configurator &p_cfgr)
             { p_cfgr.serialize(p_s); return p_s; }

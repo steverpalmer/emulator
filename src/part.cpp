@@ -29,7 +29,7 @@ Part::Part(const Part::Configurator &p_cfgr)
 Part::~Part()
 {
     LOG4CXX_INFO(cpptrace_log(), "Part::~Part([" << id() << "])");
-    for (auto *p: m_parents)
+    for (auto p: m_parents)
     {
         p->remove_child(this);
         LOG4CXX_INFO(Part::log(), "removing [" << p->id() << "] as parent of [" << id() << "]");
@@ -117,7 +117,7 @@ int PartsBin::self_check() const
 {
     LOG4CXX_DEBUG(cpptrace_log(), "PartsBin::self_check()");
 #if 0
-    for (const auto &i : m_bin)
+    for (auto i : m_bin)
     {
         const std::unique_ptr<Part::id_type> s(Part::canonical_id(i.first));
         if (i.first != *s) return 1;
@@ -135,7 +135,7 @@ void PartsBin::clear()
     {
         LOG4CXX_DEBUG(Part::log(), *this);
         LOG4CXX_DEBUG(Part::log(), "// Deleting:" << it->first);
-        Part * const p(it->second);
+        auto p(it->second);
         it->second = 0;
         delete p;
     }
@@ -172,7 +172,7 @@ void PartsBin::Configurator::serialize(std::ostream &p_s) const
 #if SERIALIZE_TO_DOT
 void Part::serialize_parents(std::ostream &p_s) const
 {
-    for (auto *device : m_parents)
+    for (auto device : m_parents)
         p_s << id() << " -> " << device->id() << " [style=dashed];\n";
 }
 #endif
