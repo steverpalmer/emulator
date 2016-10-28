@@ -43,7 +43,7 @@ private:
         bool     repeat;
     } m_terminal;
     typedef std::pair<int, byte> Scanpair;
-    std::map<gunichar, Scanpair *> key_mapping;
+    std::map<gunichar, const Scanpair *> key_mapping;
     // Methods
 private:
     byte get_PortB(int p_row);

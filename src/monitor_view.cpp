@@ -162,7 +162,7 @@ void MonitorView::handle_event(SDL_WindowEvent &p_window_event)
 }
 
 
-void MonitorView::set_byte_update(Memory *p_memory, word p_addr, byte p_byte, Memory::AccessType p_at)
+void MonitorView::set_byte_update(Memory &, word p_addr, byte p_byte, Memory::AccessType p_at)
 {
     if (m_mode)
     {

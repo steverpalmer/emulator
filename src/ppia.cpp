@@ -226,7 +226,7 @@ byte Ppia::get_PortB(int p_row)
     pthread_mutex_lock(&m_terminal.mutex);
     try
     {
-        Scanpair *sp = key_mapping.at(m_terminal.pressed_key);
+        auto sp = key_mapping.at(m_terminal.pressed_key);
         if (sp)
         {
             result = sp->second;

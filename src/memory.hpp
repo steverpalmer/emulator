@@ -45,7 +45,7 @@ public:
         Observer() = default;
     public:
         virtual ~Observer() = default;
-        virtual void set_byte_update(Memory *p_memory, word p_addr, byte p_byte, AccessType p_at) = 0;
+        virtual void set_byte_update(Memory &p_memory, word p_addr, byte p_byte, AccessType p_at) = 0;
     };
 
 	/// The Memory Configurator is an interface to two key items
@@ -86,8 +86,8 @@ public:
     inline void set_byte(word p_addr, byte p_byte, AccessType p_at = AT_UNKNOWN)
         {
             _set_byte(p_addr, p_byte, p_at);
-            for ( auto *obs : m_observers )
-                obs->set_byte_update(this, p_addr, p_byte, p_at);
+            for ( auto obs : m_observers )
+                obs->set_byte_update(*this, p_addr, p_byte, p_at);
         }
     word get_word(word p_addr, AccessType p_at = AT_UNKNOWN);
     void set_word(word p_addr, word p_word, AccessType p_at = AT_UNKNOWN);
@@ -231,7 +231,7 @@ public:
     public:
         virtual ~Configurator() = default;
     	/// 1. Constructor Information
-        virtual word size() const { return 0; }
+        virtual word size() const = 0;
         struct Mapping {
             word                       base;
             const Memory::Configurator *memory;
@@ -253,9 +253,9 @@ private:
 public:
     explicit AddressSpace(const Configurator &);
     virtual word size() const { return m_map.size(); }
-    virtual byte get_byte  (word p_addr, AccessType p_at = AT_UNKNOWN);
+    virtual byte get_byte(word p_addr, AccessType p_at = AT_UNKNOWN);
 protected:
-    virtual void _set_byte  (word p_addr, byte p_byte, AccessType p_at = AT_UNKNOWN);
+    virtual void _set_byte(word p_addr, byte p_byte, AccessType p_at = AT_UNKNOWN);
 public:
     void add_child(word p_base, Memory &p_memory, word p_size = 0);
     void remove_child(Part &p_part, bool);

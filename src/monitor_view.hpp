@@ -67,7 +67,7 @@ private:
     MonitorView::Mode0 *m_mode0;
 private:
     // Memory Observer implementation
-    virtual void set_byte_update(Memory *, word, byte, Memory::AccessType);
+    virtual void set_byte_update(Memory &, word, byte, Memory::AccessType);
     // TerminalInterface Observer implementation
     virtual void vdg_mode_update(TerminalInterface *, TerminalInterface::VDGMode);
 public:
