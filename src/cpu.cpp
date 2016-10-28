@@ -46,14 +46,15 @@ Cpu::~Cpu()
 // Crude implementation of "cpu_loop" with a busy wait
 void *loop(void *p)
 {
-    Cpu *c(static_cast<Cpu *>(p));  // Nasty static cast
-    assert (c);
-    LOG4CXX_INFO(cpptrace_log(), "loop([" << c->id() << "]) started");
+    assert (p);
+    Cpu *cpu(static_cast<Cpu *>(p));  // Nasty static cast
+    LOG4CXX_INFO(cpptrace_log(), "loop([" << cpu->id() << "]) started");
     for(;;) {
-        if (c->m_steps_to_go) {
-            c->single_step();
-            if (c->m_steps_to_go != INFINITE_STEPS_TO_GO)
-                c->m_steps_to_go--;
+        if (cpu->m_steps_to_go)
+        {
+            cpu->single_step();
+            if (cpu->m_steps_to_go != INFINITE_STEPS_TO_GO)
+                cpu->m_steps_to_go--;
         }
     }
     return 0;
@@ -2524,16 +2525,16 @@ MCS6502::~MCS6502()
     if (m_memory)
     {
         m_memory->remove_parent(*this);
-        remove_child(m_memory);
+        remove_child(*m_memory);
     }
 }
 
-void MCS6502::remove_child(Part *p_child)
+void MCS6502::remove_child(Part &p_child)
 {
-    LOG4CXX_INFO(cpptrace_log(), "[" << id() << "].~MCS6502::remove_child([" << p_child->id() << "])");
-    if (p_child == m_memory)
+    LOG4CXX_INFO(cpptrace_log(), "[" << id() << "].~MCS6502::remove_child([" << p_child.id() << "])");
+    if (&p_child == m_memory)
     {
-        LOG4CXX_INFO(Part::log(), "removing [" << m_memory->id() << "] as child of [" << id() << "]");
+        LOG4CXX_INFO(Part::log(), "removing [" << p_child.id() << "] as child of [" << id() << "]");
         m_memory = 0;
     }
 }

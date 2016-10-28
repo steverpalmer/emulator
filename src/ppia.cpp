@@ -71,7 +71,7 @@ Ppia::Ppia(const Configurator &p_cfgr)
     , m_register( { 0, 0, 0, 0 } )
 {
     LOG4CXX_INFO(cpptrace_log(), "Ppia::Ppia(" << p_cfgr << ")");
-    m_terminal.mutex = PTHREAD_RECURSIVE_MUTEX_INITIALIZER_NP;
+    // m_terminal.mutex = PTHREAD_RECURSIVE_MUTEX_INITIALIZER_NP;
     key_mapping[0x00] = new Scanpair(7, SCANCODE(3, CONTROL)); // <Ctrl> @ (nul)
     key_mapping[0x01] = new Scanpair(6, SCANCODE(3, CONTROL)); // <Ctrl> A (soh)
     key_mapping[0x02] = new Scanpair(5, SCANCODE(3, CONTROL)); // <Ctrl> B (stx) start printer
@@ -221,7 +221,7 @@ byte Ppia::get_PortB(int p_row)
 {
     LOG4CXX_INFO(cpptrace_log(), "[" << id() << "].Ppia::get_PortB(" << p_row << ")");
     byte result(0xFF); // Active Low, so start with all high
-    pthread_mutex_lock(&m_terminal.mutex);
+    m_terminal.mutex.lock();
     try
     {
         auto sp = key_mapping.at(m_terminal.pressed_key);
@@ -236,7 +236,7 @@ byte Ppia::get_PortB(int p_row)
     {
         LOG4CXX_WARN(cpptrace_log(), "[" << id() << "] unexpected key: " << m_terminal.pressed_key);
     }
-    pthread_mutex_unlock(&m_terminal.mutex);
+    m_terminal.mutex.unlock();
     return result;
 }
 
@@ -244,12 +244,12 @@ byte Ppia::get_PortC(byte p_previous)
 {
     LOG4CXX_INFO(cpptrace_log(), "[" << id() << "].Ppia::get_PortC(" << Hex(p_previous) << ")");
     byte result(p_previous & 0xBF);          // clear REPT and FLYBACK signals
-    pthread_mutex_lock(&m_terminal.mutex);
+    m_terminal.mutex.lock();
     if (!m_terminal.repeat)
         result |= 0x40;
     result ^= 0x80;                                // Flip Terminal Refresh bit
     result ^= 0x30;                                      // Flip Tape input bits
-    pthread_mutex_unlock(&m_terminal.mutex);
+    m_terminal.mutex.unlock();
     return result;
 }
 
@@ -297,14 +297,14 @@ void Ppia::set_PortA(byte p_byte)
             VDG_MODE0,  // 0xE
             VDG_MODE4,  // 0xF
         };
-    pthread_mutex_lock(&m_terminal.mutex);
+    m_terminal.mutex.lock();
     m_terminal.vdg_mode = mode_mapping[p_byte >> 4 & 0x0F];
     if (m_terminal.vdg_mode != m_terminal.notified_vdg_mode)
     {
         vdg_mode_notify(m_terminal.vdg_mode);
         m_terminal.notified_vdg_mode = m_terminal.vdg_mode;
     }
-    pthread_mutex_unlock(&m_terminal.mutex);
+    m_terminal.mutex.unlock();
 }
 
 void Ppia::_set_byte(word p_addr, byte p_byte, AccessType p_at)
@@ -343,7 +343,7 @@ void Ppia::reset()
 {
     LOG4CXX_INFO(cpptrace_log(), "[" << id() << "].Ppia::reset()");
     // reset the IO Model Inputs first
-    pthread_mutex_lock(&m_terminal.mutex);
+    m_terminal.mutex.lock();
     m_terminal.notified_vdg_mode = VDG_LAST; // force a notification
     m_terminal.pressed_key       = KBD_NO_KEYPRESS;
 
@@ -356,15 +356,15 @@ void Ppia::reset()
 
     // Finally reset the IO Model outputs
     set_PortA(m_register[PortA]);
-    pthread_mutex_unlock(&m_terminal.mutex);
+    m_terminal.mutex.unlock();
 }
 
 TerminalInterface::VDGMode Ppia::vdg_mode() const
 {
     LOG4CXX_INFO(cpptrace_log(), "[" << id() << "].Ppia::vdg_mode()");
-    pthread_mutex_lock(&m_terminal.mutex);
+    m_terminal.mutex.lock();
     const VDGMode result(m_terminal.vdg_mode);
-    pthread_mutex_unlock(&m_terminal.mutex);
+    m_terminal.mutex.unlock();
     return result;
 }
 
@@ -377,10 +377,10 @@ void Ppia::set_keypress(gunichar p_key, bool p_repeat)
     }
     else
     {
-        pthread_mutex_lock(&m_terminal.mutex);
+        m_terminal.mutex.lock();
         m_terminal.pressed_key = p_key;
         m_terminal.repeat      = p_repeat;
-        pthread_mutex_unlock(&m_terminal.mutex);
+        m_terminal.mutex.unlock();
     }
 }
 
@@ -402,13 +402,13 @@ void Ppia::serialize(std::ostream &p_s) const
 #else
     p_s << "Ppia(";
     Memory::serialize(p_s);
-    pthread_mutex_lock(&m_terminal.mutex);
+    m_terminal.mutex.lock();
     p_s << ", PortA("   << Hex(m_register[PortA]) << ")"
         << ", PortB("   << Hex(m_register[PortB]) << ")"
         << ", PortC("   << Hex(m_register[PortC]) << ")"
         << ", Control(" << Hex(m_register[ControlPort]) << ")"
         << ", Key("     << m_terminal.pressed_key << ")";
-    pthread_mutex_unlock(&m_terminal.mutex);
+    m_terminal.mutex.unlock();
     p_s << ")";
 #endif
 }

@@ -87,7 +87,7 @@ public:
     class Instruction; // Forward declaration
     // Attributes
 public:
-    Memory           *m_memory;
+    Memory *m_memory;
 private:
     std::array<Instruction *, 256> m_opcode_mapping;
 public:
@@ -110,7 +110,7 @@ public:
 public:
     explicit MCS6502(const Configurator &);
     virtual ~MCS6502();
-    virtual void remove_child(Part *);
+    virtual void remove_child(Part &);
 
     virtual void reset(InterruptState p_is);
     virtual void reset()

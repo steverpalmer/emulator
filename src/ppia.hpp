@@ -3,9 +3,8 @@
 #ifndef PPIA_HPP_
 #define PPIA_HPP_
 
-#include <pthread.h>
-
 #include <array>
+#include <mutex>
 
 #include "common.hpp"
 #include "memory.hpp"
@@ -36,7 +35,7 @@ private:
     std::array<byte, 4> m_register;
     struct
     {
-        mutable pthread_mutex_t mutex;
+        mutable std::recursive_mutex mutex;
         VDGMode  vdg_mode;
         VDGMode  notified_vdg_mode;
         gunichar pressed_key;
