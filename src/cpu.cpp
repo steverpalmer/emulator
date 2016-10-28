@@ -24,19 +24,17 @@ static log4cxx::LoggerPtr cpptrace_log()
 
 #define INFINITE_STEPS_TO_GO static_cast<unsigned int>(-1)
 
-// Crude implementation of "cpu_loop" with a busy wait
-void cpu_thread(Cpu *cpu)
+void Cpu::thread_function()
 {
-    assert (cpu);
-    LOG4CXX_INFO(cpptrace_log(), "cpu_thread([" << cpu->id() << "]) started");
+    LOG4CXX_INFO(cpptrace_log(), "Cpu::thread_function([" << id() << "]) started");
     for(;;) {
-        if (cpu->m_thread_die)
+        if (m_thread_die)
             break;
-        else if (cpu->m_steps_to_go)
+        else if (m_steps_to_go)
         {
-            cpu->single_step();
-            if (cpu->m_steps_to_go != INFINITE_STEPS_TO_GO)
-                cpu->m_steps_to_go--;
+            single_step();
+            if (m_steps_to_go != INFINITE_STEPS_TO_GO)
+                m_steps_to_go--;
         }
         else
             std::this_thread::yield();
@@ -46,9 +44,8 @@ void cpu_thread(Cpu *cpu)
 Cpu::Cpu(const Configurator &p_cfgr)
     : Device(p_cfgr)
     , m_steps_to_go(0)
-    , m_cycles(0)
     , m_thread_die(false)
-    , m_thread(cpu_thread, this)
+    , m_thread(&Cpu::thread_function, this)
 {
     LOG4CXX_INFO(cpptrace_log(), "Cpu::Cpu(" << p_cfgr << ")");
 }
@@ -85,17 +82,10 @@ void Cpu::pause()
 
 /// Absolute Memory Addresses
 
-#if 0
-#define VECTOR_NMI       ( word(0xFFFA) )
-#define VECTOR_RESET     ( word(0xFFFC) )
-#define VECTOR_INTERRUPT ( word(0xFFFE) )
-#define STACK_ADDRESS    ( word(0x0100) )
-#else
 static const word VECTOR_NMI       (0xFFFA);
 static const word VECTOR_RESET     (0xFFFC);
 static const word VECTOR_INTERRUPT (0xFFFE);
 static const word STACK_ADDRESS    (0x0100);
-#endif
 
 static const byte CARRY   (1 << 0);
 static const byte ZERO    (1 << 1);
@@ -2317,6 +2307,7 @@ public:
     explicit Instr_Undefined(MCS6502 &p_6502) : MCS6502::Instruction(p_6502, -1, 0, "Undefined Instruction") {};
     virtual void execute() const
         {
+            LOG4CXX_FATAL(cpptrace_log(), "Undefined Instruction:" << *this);
             assert (false);
         };
 
@@ -2344,6 +2335,7 @@ public:
 ///*****************************************************************************
 MCS6502::MCS6502(const Configurator &p_cfgr)
     : Cpu(p_cfgr)
+    , m_cycles(0)
     , m_InterruptSource(NO_INTERRUPT)
 {
     LOG4CXX_INFO(cpptrace_log(), "MCS6502::MCS6502(" << p_cfgr << ")");
@@ -2530,6 +2522,7 @@ void MCS6502::remove_child(Part &p_child)
 void MCS6502::single_step()
 {
     LOG4CXX_INFO(cpptrace_log(), "[" << id() << "].MCS6502::single_step()");
+    assert (m_memory);
     if (m_InterruptSource != NO_INTERRUPT) { // Interrupt Pending
 #if JUMP_TRACE
         const word from(m_register.PC);

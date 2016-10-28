@@ -45,13 +45,12 @@ public:
     // Attributes
 private:
     std::atomic_uint m_steps_to_go;
-protected:
-    int              m_cycles;
 private:
     std::atomic_bool m_thread_die;
     std::thread      m_thread;
-    friend void      cpu_thread(Cpu *);
     // Methods
+private:
+    void thread_function();
 protected:
     explicit Cpu(const Configurator &);
 public:
@@ -88,15 +87,10 @@ public:
     class Instruction; // Forward declaration
     // Attributes
 public:
-    Memory *m_memory;
+    Memory                         *m_memory;
 private:
+    int                            m_cycles;
     std::array<Instruction *, 256> m_opcode_mapping;
-public:
-    static log4cxx::LoggerPtr log()
-        {
-            static log4cxx::LoggerPtr result(log4cxx::Logger::getLogger(INSTRUCTION_PREFIX ".mcs6502"));
-            return result;
-        }
 public:
     volatile int m_InterruptSource;
     struct {
@@ -109,6 +103,11 @@ public:
     } m_register;
     // Methods
 public:
+    static log4cxx::LoggerPtr log()
+        {
+            static log4cxx::LoggerPtr result(log4cxx::Logger::getLogger(INSTRUCTION_PREFIX ".mcs6502"));
+            return result;
+        }
     explicit MCS6502(const Configurator &);
     virtual ~MCS6502();
     virtual void remove_child(Part &);
