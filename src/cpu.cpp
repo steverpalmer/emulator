@@ -24,11 +24,31 @@ static log4cxx::LoggerPtr cpptrace_log()
 
 #define INFINITE_STEPS_TO_GO static_cast<unsigned int>(-1)
 
+// Crude implementation of "cpu_loop" with a busy wait
+void cpu_thread(Cpu *cpu)
+{
+    assert (cpu);
+    LOG4CXX_INFO(cpptrace_log(), "cpu_thread([" << cpu->id() << "]) started");
+    for(;;) {
+        if (cpu->m_thread_die)
+            break;
+        else if (cpu->m_steps_to_go)
+        {
+            cpu->single_step();
+            if (cpu->m_steps_to_go != INFINITE_STEPS_TO_GO)
+                cpu->m_steps_to_go--;
+        }
+        else
+            std::this_thread::yield();
+    }
+}
+
 Cpu::Cpu(const Configurator &p_cfgr)
     : Device(p_cfgr)
-    , m_thread(pthread_self())
     , m_steps_to_go(0)
     , m_cycles(0)
+    , m_thread_die(false)
+    , m_thread(cpu_thread, this)
 {
     LOG4CXX_INFO(cpptrace_log(), "Cpu::Cpu(" << p_cfgr << ")");
 }
@@ -36,37 +56,8 @@ Cpu::Cpu(const Configurator &p_cfgr)
 Cpu::~Cpu()
 {
     LOG4CXX_INFO(cpptrace_log(), "Cpu::~Cpu([" << id() << "])");
-    if (!pthread_equal(m_thread, pthread_self())) {
-        pthread_cancel(m_thread);
-        pthread_join(m_thread, 0); // Wait for thread to terminate
-        m_thread = pthread_self();
-    }
-}
-
-// Crude implementation of "cpu_loop" with a busy wait
-void *loop(void *p)
-{
-    assert (p);
-    Cpu *cpu(static_cast<Cpu *>(p));  // Nasty static cast
-    LOG4CXX_INFO(cpptrace_log(), "loop([" << cpu->id() << "]) started");
-    for(;;) {
-        if (cpu->m_steps_to_go)
-        {
-            cpu->single_step();
-            if (cpu->m_steps_to_go != INFINITE_STEPS_TO_GO)
-                cpu->m_steps_to_go--;
-        }
-    }
-    return 0;
-}
-
-void Cpu::start()
-{
-    LOG4CXX_INFO(cpptrace_log(), "[" << id() << "].Cpu::start()");
-    if (pthread_equal(m_thread, pthread_self())) {
-        const int rv = pthread_create(&m_thread, 0, loop, this);
-        assert (!rv);
-    }
+    m_thread_die = true;
+    m_thread.join();
 }
 
 void Cpu::step(int p_cnt)
@@ -78,21 +69,18 @@ void Cpu::step(int p_cnt)
     if (p_cnt < 1)
         p_cnt = 1;
     m_steps_to_go = p_cnt;
-    start();
 }
 
 void Cpu::resume()
 {
     LOG4CXX_INFO(cpptrace_log(), "[" << id() << "].Cpu::resume()");
     m_steps_to_go = INFINITE_STEPS_TO_GO;
-    start();
 }
 
 void Cpu::pause()
 {
     LOG4CXX_INFO(cpptrace_log(), "[" << id() << "].Cpu::pause()");
     m_steps_to_go = 0;
-    start();
 }
 
 /// Absolute Memory Addresses
@@ -2711,8 +2699,7 @@ void Cpu::serialize(std::ostream &p_s) const
     Device::serialize(p_s);
 #else
     Device::serialize(p_s);
-    p_s << ", Running("   << bool(!pthread_equal(m_thread, pthread_self())) << ")"
-        << ", StepsToGo(" << m_steps_to_go << ")";
+    p_s << ", StepsToGo(" << m_steps_to_go << ")";
 #endif
 }
 

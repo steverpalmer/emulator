@@ -3,9 +3,8 @@
 #ifndef CPU_HPP_
 #define CPU_HPP_
 
-#include <pthread.h>
-
 #include <atomic>
+#include <thread>
 #include <array>
 
 #include "common.hpp"
@@ -45,23 +44,25 @@ public:
     };
     // Attributes
 private:
-    pthread_t        m_thread;
-public:
-    friend void      *loop(void *);
     std::atomic_uint m_steps_to_go;
+protected:
     int              m_cycles;
+private:
+    std::atomic_bool m_thread_die;
+    std::thread      m_thread;
+    friend void      cpu_thread(Cpu *);
     // Methods
 protected:
     explicit Cpu(const Configurator &);
-    void start();
-    void stop();
 public:
     virtual ~Cpu();
     virtual void resume();
     virtual void pause();
     virtual void step(int cnt = 1);
     virtual void single_step() = 0;
-    virtual void reset(InterruptState p_is = INTERRUPT_PULSE) = 0;
+    virtual void reset(InterruptState) = 0;
+    virtual void reset()
+        { reset(INTERRUPT_PULSE); }
     virtual void NMI(InterruptState p_is = INTERRUPT_PULSE) = 0;
     virtual void IRQ(InterruptState p_is = INTERRUPT_PULSE) = 0;
 
@@ -113,14 +114,8 @@ public:
     virtual void remove_child(Part &);
 
     virtual void reset(InterruptState p_is);
-    virtual void reset()
-        { reset(INTERRUPT_PULSE); }
-    virtual void NMI  (InterruptState p_is);
-    virtual void NMI()
-        { NMI(INTERRUPT_PULSE); }
-    virtual void IRQ  (InterruptState p_is);
-    virtual void IRQ()
-        { IRQ(INTERRUPT_PULSE); }
+    virtual void NMI(InterruptState p_is = INTERRUPT_PULSE);
+    virtual void IRQ(InterruptState p_is = INTERRUPT_PULSE);
     virtual void single_step();
 
     virtual void serialize(std::ostream &) const;
