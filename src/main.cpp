@@ -7,9 +7,10 @@
 #include <libgen.h>
 #include <stdlib.h>
 
+#include <thread>
+
 #include <SDL.h>
 
-#include <log4cxx/logger.h>
 #include "log4cxx/propertyconfigurator.h"
 
 #include "common.hpp"
@@ -72,6 +73,8 @@ public:
                 }
             LOG4CXX_INFO(cpptrace_log(), "Atom is about to stop ...");
             atom->pause();
+            while (not atom->is_paused())
+                std::this_thread::yield();
         }
 
     virtual ~Main()

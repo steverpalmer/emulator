@@ -44,8 +44,8 @@ private:
 public:
     explicit Terminal(const Configurator &);
     virtual ~Terminal();
-    virtual void remove_child(Part *);
-    bool handle_event(SDL_Event &event);
+    virtual void remove_child(Part &);
+    bool handle_event(SDL_Event &);
 
     virtual void serialize(std::ostream &) const;
 };

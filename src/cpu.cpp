@@ -22,38 +22,57 @@ static log4cxx::LoggerPtr cpptrace_log()
 
 /// Cpu
 
-#define INFINITE_STEPS_TO_GO static_cast<unsigned int>(-1)
+const unsigned int Cpu::PAUSE      = 0;
+const unsigned int Cpu::THREAD_DIE = -1;
+const unsigned int Cpu::FOREVER    = -2;
 
 void Cpu::thread_function()
 {
-    LOG4CXX_INFO(cpptrace_log(), "Cpu::thread_function([" << id() << "]) started");
-    for(;;) {
-        if (m_thread_die)
-            break;
-        else if (m_steps_to_go)
+    LOG4CXX_INFO(cpptrace_log(), "[" << id() << "].Cpu::thread_function started");
+    assert (!m_is_stepping);
+    for (bool more=true; more; )
+    {
+        m_mutex.lock();
+        switch (m_steps_to_go)
         {
-            single_step();
-            if (m_steps_to_go != INFINITE_STEPS_TO_GO)
-                m_steps_to_go--;
-        }
-        else
+        case THREAD_DIE:
+            m_is_stepping = false;
+            m_mutex.unlock();
+            more = false;
+            break;
+        case PAUSE:
+            m_is_stepping = false;
+            m_mutex.unlock();
             std::this_thread::yield();
+            break;
+        default:
+            m_steps_to_go -= 1u;
+        case FOREVER:
+            m_is_stepping = true;
+            m_mutex.unlock();
+            single_step();
+            break;
+        }
     }
+    assert (!m_is_stepping);
+    LOG4CXX_INFO(cpptrace_log(), "[" << id() << "].Cpu::thread_function stopped");
 }
 
 Cpu::Cpu(const Configurator &p_cfgr)
     : Device(p_cfgr)
-    , m_steps_to_go(0)
-    , m_thread_die(false)
+    , m_steps_to_go(PAUSE)
+    , m_is_stepping(false)
     , m_thread(&Cpu::thread_function, this)
 {
     LOG4CXX_INFO(cpptrace_log(), "Cpu::Cpu(" << p_cfgr << ")");
 }
-
+                                            
 Cpu::~Cpu()
 {
     LOG4CXX_INFO(cpptrace_log(), "Cpu::~Cpu([" << id() << "])");
-    m_thread_die = true;
+    m_mutex.lock();
+    m_steps_to_go = THREAD_DIE;
+    m_mutex.unlock();
     m_thread.join();
 }
 
@@ -65,19 +84,34 @@ void Cpu::step(int p_cnt)
 #endif
     if (p_cnt < 1)
         p_cnt = 1;
+    m_mutex.lock();
     m_steps_to_go = p_cnt;
+    m_mutex.unlock();
 }
 
 void Cpu::resume()
 {
     LOG4CXX_INFO(cpptrace_log(), "[" << id() << "].Cpu::resume()");
-    m_steps_to_go = INFINITE_STEPS_TO_GO;
+    m_mutex.lock();
+    m_steps_to_go = FOREVER;
+    m_mutex.unlock();
 }
 
 void Cpu::pause()
 {
     LOG4CXX_INFO(cpptrace_log(), "[" << id() << "].Cpu::pause()");
+    m_mutex.lock();
     m_steps_to_go = 0;
+    m_mutex.unlock();
+}
+
+bool Cpu::is_paused() const
+{
+    LOG4CXX_INFO(cpptrace_log(), "[" << id() << "].Cpu::is_paused()");
+    m_mutex.lock();
+    const bool result (!m_is_stepping);
+    m_mutex.unlock();
+    return result;
 }
 
 /// Absolute Memory Addresses
@@ -348,11 +382,11 @@ public:
     // Method
 protected:
     Instruction( MCS6502 &p_6502
-               , int p_opcode
-               , int p_cycles
-               , const Glib::ustring p_prefix
-               , int p_args = 0
-               , const Glib::ustring p_suffix = "");
+                 , int p_opcode
+                 , int p_cycles
+                 , const Glib::ustring p_prefix
+                 , int p_args = 0
+                 , const Glib::ustring p_suffix = "");
 public:
     virtual void execute() const = 0;
 
@@ -360,11 +394,11 @@ public:
 };
 
 MCS6502::Instruction::Instruction( MCS6502 &p_6502
-                                 , int p_opcode
-                                 , int p_cycles
-                                 , const Glib::ustring p_prefix
-                                 , int p_args
-                                 , const Glib::ustring p_suffix)
+                                   , int p_opcode
+                                   , int p_cycles
+                                   , const Glib::ustring p_prefix
+                                   , int p_args
+                                   , const Glib::ustring p_suffix)
     : m_prefix(p_prefix)
     , m_args(p_args)
     , m_suffix(p_suffix)

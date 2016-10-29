@@ -175,7 +175,6 @@ namespace Xml
         static const Memory::Configurator *factory(const xmlpp::Node *);
     };
 
-
     class MemoryRefConfigurator
         : public virtual Memory::Configurator
         , private MemoryConfigurator
@@ -189,6 +188,7 @@ namespace Xml
             {}
         virtual ~MemoryRefConfigurator() = default;
         virtual Memory *memory_factory() const
+        // TODO: add a placeholder if part not yet defined
             { return dynamic_cast<Memory *>(PartsBin::instance()[m_id]); }
         static const Memory::Configurator *memory_configurator_factory(const xmlpp::Node *p_node)
             { return new MemoryRefConfigurator(p_node); }
@@ -301,8 +301,10 @@ namespace Xml
             }
         virtual ~AddressSpaceConfigurator()
             {
-                for (auto &m : m_memory)
-                    delete &m;
+                for (auto &map : m_memory)
+                {
+                    delete map.memory;
+                }
                 m_memory.clear();
             }
         inline virtual word size() const { return m_size; }
@@ -379,7 +381,8 @@ namespace Xml
                     }
                 }
             }
-        virtual ~MCS6502Configurator() = default;
+        virtual ~MCS6502Configurator()
+            { delete m_memory; }
         virtual const Memory::Configurator *memory() const
             { return m_memory; }
         static const Device::Configurator *device_configurator_factory(const xmlpp::Node *p_node)
@@ -409,7 +412,12 @@ namespace Xml
                     }
                 }
             }
-        virtual ~ComputerConfigurator() = default;  // FIXME
+        virtual ~ComputerConfigurator()
+            {
+                for (auto &device : m_devices)
+                    delete device;
+                m_devices.clear();
+            }
         virtual const Device::Configurator *device(int i) const
             { return (i < int(m_devices.size())) ? m_devices[i] : 0; }
         static const Device::Configurator *device_configurator_factory(const xmlpp::Node *p_node)
@@ -511,7 +519,13 @@ namespace Xml
                 m_monitor_view = new MonitorViewConfigurator(p_node);
                 assert (m_monitor_view);
             }
-        virtual ~TerminalConfigurator() = default;
+        virtual ~TerminalConfigurator()
+            {
+                delete m_memory;
+                delete m_ppia;
+                delete m_keyboard_controller;
+                delete m_monitor_view;
+            }
         const Memory::Configurator               *memory()              const { return m_memory; }
         const Memory::Configurator               *ppia()                const { return m_ppia; }
         const KeyboardController::Configurator   &keyboard_controller() const { return *m_keyboard_controller; }
@@ -673,6 +687,8 @@ namespace Xml
 
     Configurator::~Configurator()
     {
-        // FIXME: need a tidy clean up
+        for (auto &part : m_parts)
+            delete part;
+        m_parts.clear();
     }
 }

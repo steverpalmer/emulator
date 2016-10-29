@@ -3,7 +3,7 @@
 #ifndef CPU_HPP_
 #define CPU_HPP_
 
-#include <atomic>
+#include <mutex>
 #include <thread>
 #include <array>
 
@@ -44,10 +44,13 @@ public:
     };
     // Attributes
 private:
-    std::atomic_uint m_steps_to_go;
-private:
-    std::atomic_bool m_thread_die;
-    std::thread      m_thread;
+    static const unsigned int PAUSE;
+    static const unsigned int THREAD_DIE;
+    static const unsigned int FOREVER;
+    mutable std::recursive_mutex m_mutex;
+    unsigned int                 m_steps_to_go;
+    bool                         m_is_stepping;
+    std::thread                  m_thread;
     // Methods
 private:
     void thread_function();
@@ -57,6 +60,7 @@ public:
     virtual ~Cpu();
     virtual void resume();
     virtual void pause();
+    virtual bool is_paused() const;
     virtual void step(int cnt = 1);
     virtual void single_step() = 0;
     virtual void reset(InterruptState) = 0;

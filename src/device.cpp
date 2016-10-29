@@ -94,6 +94,15 @@ void Computer::resume()
         device->resume();
 }
 
+bool Computer::is_paused() const
+{
+    bool result = true;
+    LOG4CXX_DEBUG(cpptrace_log(), "[" << id() << "].Computer::is_paused()");
+    for (auto device : m_children)
+        result &= device->is_paused();
+    return result;
+}
+
 
 // Streaming Output
 

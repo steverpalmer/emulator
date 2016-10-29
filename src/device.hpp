@@ -43,6 +43,7 @@ public:
     virtual void reset() {};
     virtual void pause() {};
     virtual void resume() {};
+    virtual bool is_paused() const { return true; }
 
     virtual void serialize(std::ostream &) const;
 };
@@ -88,6 +89,7 @@ public:
     virtual void reset();
     virtual void pause();
     virtual void resume();
+    virtual bool is_paused() const;
 
     virtual void serialize(std::ostream &) const;
 };
