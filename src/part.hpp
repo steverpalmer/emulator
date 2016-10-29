@@ -27,7 +27,7 @@ public:
             static log4cxx::LoggerPtr result(log4cxx::Logger::getLogger(PART_LOGGER));
             return result;
         }
-    
+
 	class Configurator
         : protected NonCopyable
 	{

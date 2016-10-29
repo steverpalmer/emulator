@@ -41,7 +41,7 @@ Part::~Part()
 const char Part::id_delimiter     = '.';
 const Part::id_type Part::id_here = ".";
 const Part::id_type Part::id_up   = "..";
-    
+
 std::unique_ptr<Part::id_type> Part::canonical_id(const id_type &p_s)
 {
 #if 0

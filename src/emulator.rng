@@ -81,7 +81,7 @@
       </rng:optional>
     </rng:element>
   </rng:define>
-  
+
   <rng:define name="memory">
       <rng:choice>
         <rng:ref name="memory_ref"/>
@@ -178,10 +178,10 @@
       <rng:ref name="optional_name_att"/>
       <rng:interleave>
         <rng:optional>
-          <rng:ref name="memory"/>
+          <rng:ref name="video_memory_elm"/>
         </rng:optional>
         <rng:optional>
-          <rng:ref name="ppia_elm"/>
+          <rng:ref name="controller_elm"/>
         </rng:optional>
         <rng:optional>
           <rng:ref name="fontfile_elm"/>
@@ -189,17 +189,25 @@
         <rng:optional>
           <rng:ref name="window_title_elm"/>
         </rng:optional>
-        <!-- rng:ref name="refreshrate_elm"/ -->
+        <rng:optional>
+          <rng:ref name="reset_elm"/>
+        </rng:optional>
         <!-- rng:ref name="foreign-elements"/ -->
       </rng:interleave>
     </rng:element>
   </rng:define>
 
-  <!-- rng:define name="controller_elm">
-    <rng:element name="controller">
-      <rng:ref name="name_att"/>
+  <rng:define name="video_memory_elm">
+    <rng:element name="video_memory">
+      <rng:ref name="memory"/>
     </rng:element>
-  </rng:define -->
+  </rng:define>
+
+  <rng:define name="controller_elm">
+    <rng:element name="controller">
+      <rng:ref name="memory"/>
+    </rng:element>
+  </rng:define>
 
   <rng:define name="fontfile_elm">
     <rng:element name="fontfilename">
@@ -213,11 +221,11 @@
     </rng:element>
   </rng:define>
 
-  <!-- rng:define name="refreshrate_elm">
-    <rng:element name="refreshrate">
-      <rng:data type="float"/>
+  <rng:define name="reset_elm">
+    <rng:element name="reset">
+      <rng:ref name="device"/>
     </rng:element>
-  </rng:define -->
+  </rng:define>
 
   <!-- Hooks -->
 

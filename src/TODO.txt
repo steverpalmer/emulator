@@ -1,10 +1,7 @@
 * Do something better for mapping keys to unicode in KeyboardController
 * Do something sensible with XML version number
-* Handle Break Key / Reset properly
 * Model Video Flyback
 * Add back Hooks
-* Computer Configurator Destructor
-* Overall Configurator Destructor
 * Selection of XML Configurator in Main
 * Make XML Configuration check input against schema
 * Testing

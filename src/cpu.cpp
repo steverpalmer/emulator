@@ -66,7 +66,7 @@ Cpu::Cpu(const Configurator &p_cfgr)
 {
     LOG4CXX_INFO(cpptrace_log(), "Cpu::Cpu(" << p_cfgr << ")");
 }
-                                            
+
 Cpu::~Cpu()
 {
     LOG4CXX_INFO(cpptrace_log(), "Cpu::~Cpu([" << id() << "])");

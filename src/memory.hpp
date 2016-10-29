@@ -81,7 +81,7 @@ public:
     inline void detach(Observer &p_observer) { m_observers.erase(&p_observer); }
 
     virtual ~Memory();
-    
+
     virtual byte get_byte(word p_addr, AccessType p_at = AT_UNKNOWN) = 0;
     inline void set_byte(word p_addr, byte p_byte, AccessType p_at = AT_UNKNOWN)
         {

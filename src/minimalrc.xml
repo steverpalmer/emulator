@@ -36,7 +36,7 @@
     </address_space>
     <mcs6502 name="mcs6502"/>
   </computer>
-  
+
   <terminal name="terminal">
     <memory name="video"/>
     <controller name="ppia"/>

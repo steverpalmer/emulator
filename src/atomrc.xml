@@ -40,11 +40,11 @@
              </ram>
              </map -->
         <!-- map>
-          <base>#2800</base>
-          <ram name="lower">
-            <size>#1400</size>
-          </ram>
-        </map -->
+             <base>#2800</base>
+             <ram name="lower">
+             <size>#1400</size>
+             </ram>
+             </map -->
         <map>
           <base>#8000</base>
           <ram name="video">
@@ -100,12 +100,17 @@
   </computer>
 
   <terminal name="terminal">
-    <memory name="video"/>
-    <!-- controller name="ppia"/ -->
     <fontfilename>mc6847.bmp</fontfilename>
     <window_title>Acorn Atom Emulator</window_title>
-    <!-- key_copy>F1</key_copy -->
-    <!-- key_reset>F12</key_reset -->
+    <reset>
+      <device name="atom"/>
+    </reset>
+    <video_memory>
+      <memory name="video"/>
+    </video_memory>
+    <controller>
+      <memory name="ppia"/>
+      </controller>
   </terminal>
 
 </emulator>

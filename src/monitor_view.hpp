@@ -53,7 +53,7 @@ public:
     virtual ~MonitorView();
 
     void handle_event(SDL_WindowEvent &);
-    
+
     virtual void serialize(std::ostream &) const;
     friend std::ostream &::operator<<(std::ostream &p_s, const MonitorView &p_mv)
         { p_mv.serialize(p_s); return p_s; }

@@ -6,6 +6,7 @@
 #include <SDL.h>
 
 #include "common.hpp"
+#include "device.hpp"
 #include "terminal_interface.hpp"
 
 class KeyboardController
@@ -21,14 +22,17 @@ public:
 	public:
         virtual ~Configurator() = default;
 
+        virtual const Device::Configurator *reset_target() const = 0;
+
         virtual void serialize(std::ostream &) const;
         friend std::ostream &::operator<<(std::ostream &p_s, const Configurator &p_cfgr)
             { p_cfgr.serialize(p_s); return p_s; }
     };
-    
+
     class KeyCommand;
 public:
     TerminalInterface *m_terminal_interface;
+    Device *m_reset_target;
     gunichar m_last_key_pressed;
     bool is_shift_pressed;
     bool is_control_pressed;

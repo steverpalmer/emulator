@@ -73,9 +73,7 @@ namespace Xml
         switch (ns.size())
         {
         case 0:
-        {
             throw xpath_not_present;
-        }
         case 1:
         {
             auto att = dynamic_cast<const xmlpp::Attribute *>(ns[0]);
@@ -98,9 +96,7 @@ namespace Xml
             break;
         }
         default:
-        {
             throw xpath_ambiguous;
-        }
         }
         return result;
     }
@@ -375,9 +371,15 @@ namespace Xml
                     const xmlpp::NodeSet ns(p_node->find("e:ram|e:rom|e:ppia|e:address_space|e:memory", namespaces));
                     switch (ns.size())
                     {
-                    case 0: { m_memory = new MemoryRefConfigurator("address_space"); break; }
-                    case 1: { m_memory = MemoryConfigurator::factory(ns[0]); break; }
-                    default: { assert (false); }
+                    case 0:
+                        m_memory = new MemoryRefConfigurator("address_space");
+                        break;
+                    case 1:
+                        m_memory = MemoryConfigurator::factory(ns[0]);
+                        break;
+                    default:
+                        assert (false);
+                        break;
                     }
                 }
             }
@@ -450,12 +452,42 @@ namespace Xml
     class KeyboardControllerConfigurator
         : public virtual KeyboardController::Configurator
     {
+    private:
+        const Device::Configurator *m_reset_target;
     public:
         explicit KeyboardControllerConfigurator(const xmlpp::Node *p_node = 0)
+            : m_reset_target(0)
             {
                 LOG4CXX_INFO(cpptrace_log(), "Xml::KeyboardControllerConfigurator::KeyboardControllerConfigurator(" << p_node << ")");
+                if (p_node)
+                {
+                    const xmlpp::NodeSet device_ns(p_node->find("e:reset", namespaces));
+                    switch (device_ns.size())
+                    {
+                    case 0:
+                        break;
+                    case 1:
+                        for (auto child : device_ns.front()->get_children())
+                        {
+                            m_reset_target = DeviceConfigurator::factory(child);
+                            if (m_reset_target)
+                                break;
+                        }
+                        break;
+                    default:
+                        assert (false);
+                        break;
+                    }
+                }
+                if (!m_reset_target)
+                    m_reset_target = new DeviceRefConfigurator("atom");
             }
-        virtual ~KeyboardControllerConfigurator() = default;
+        virtual ~KeyboardControllerConfigurator()
+            {
+                delete m_reset_target;
+            }
+        virtual const Device::Configurator *reset_target() const
+            { return m_reset_target; }
     };
 
     class MonitorViewConfigurator
@@ -495,25 +527,51 @@ namespace Xml
     public:
         explicit TerminalConfigurator(const xmlpp::Node *p_node = 0)
             : PartConfigurator("", p_node)
+            , m_memory(0)
+            , m_ppia(0)
             {
                 LOG4CXX_INFO(cpptrace_log(), "Xml::TerminalConfigurator::TerminalConfigurator(" << p_node << ")");
                 if (p_node)
                 {
-                    const xmlpp::NodeSet memory_ns(p_node->find("e:ram|e:rom|e:address_space|e:memory", namespaces));
-                    switch (memory_ns.size())
+                    const xmlpp::NodeSet video_memory_ns(p_node->find("e:video_memory", namespaces));
+                    switch (video_memory_ns.size())
                     {
-                    case 0: { m_memory = new MemoryRefConfigurator("video"); break; }
-                    case 1: { m_memory = MemoryConfigurator::factory(memory_ns[0]); break; }
-                    default: { assert (false); }
+                    case 0:
+                        break;
+                    case 1:
+                        for (auto child : video_memory_ns.front()->get_children())
+                        {
+                            m_memory = MemoryConfigurator::factory(child);
+                            if (m_memory)
+                                break;
+                        }
+                        break;
+                    default:
+                        assert (false);
+                        break;
                     }
-                    const xmlpp::NodeSet ppia_ns(p_node->find("e:ppia", namespaces));
-                    switch (ppia_ns.size())
+                    const xmlpp::NodeSet controller_ns(p_node->find("e:controller", namespaces));
+                    switch (controller_ns.size())
                     {
-                    case 0: { m_ppia = new MemoryRefConfigurator("ppia"); break; }
-                    case 1: { m_ppia = MemoryConfigurator::factory(ppia_ns[0]); break; }
-                    default: { assert (false); }
+                    case 0:
+                        break;
+                    case 1:
+                        for (auto child : controller_ns.front()->get_children())
+                        {
+                            m_ppia = MemoryConfigurator::factory(child);
+                            if (m_ppia)
+                                break;
+                        }
+                        break;
+                    default:
+                        assert (false);
+                        break;
                     }
                 }
+                if (!m_memory)
+                    m_memory = new MemoryRefConfigurator("video");
+                if (!m_ppia)
+                    m_ppia = new MemoryRefConfigurator("ppia");
                 m_keyboard_controller = new KeyboardControllerConfigurator(p_node);
                 assert (m_keyboard_controller);
                 m_monitor_view = new MonitorViewConfigurator(p_node);

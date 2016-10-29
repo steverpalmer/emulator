@@ -85,8 +85,8 @@ void Terminal::Configurator::serialize(std::ostream &p_s) const
     p_s << "<terminal ";
     Part::Configurator::serialize(p_s);
     p_s << ">"
-        << "<memory name=\"" << memory()->id() << "\"/>"
-        << "<controller name=\"" << ppia()->id() << "\"/>"
+        << "<video_memory>" << *memory() << "</video_memory>"
+        << "<controller>" << *ppia() << "</controller>"
         << monitor_view()
         << keyboard_controller()
         << "</terminal>";

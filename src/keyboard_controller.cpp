@@ -114,13 +114,29 @@ public:
         { m_flag = false; }
 };
 
+class ResetKey
+    : public KeyboardController::KeyCommand
+{
+public:
+    ResetKey(KeyboardController &p_keyboard_controller)
+        : KeyCommand(p_keyboard_controller)
+        {}
+    virtual ~ResetKey() = default;
+    virtual void down() const
+        { m_state.m_reset_target->reset(); }
+    virtual void up() const
+        {}
+};
 
 KeyboardController::KeyboardController(TerminalInterface *p_terminal_interface, const Configurator &p_cfgr)
     : m_terminal_interface(p_terminal_interface)
+    , m_reset_target(p_cfgr.reset_target()->device_factory())
     , m_last_key_pressed(TerminalInterface::KBD_NO_KEYPRESS)
     , is_shift_pressed(false)
     , is_control_pressed(false)
 {
+    assert (m_terminal_interface);
+    assert (m_reset_target);
     LOG4CXX_INFO(cpptrace_log(), "KeyboardController::KeyboardController("
                  << "<controller name=\"" << (p_terminal_interface?p_terminal_interface->id():"?") << "\"/>"
                  << p_cfgr << ")");
@@ -224,6 +240,8 @@ KeyboardController::KeyboardController(TerminalInterface *p_terminal_interface, 
     keys[SDLK_LSHIFT]       = new KeyModifier(*this, is_shift_pressed);
     keys[SDLK_RCTRL]        = new KeyModifier(*this, is_control_pressed);
     keys[SDLK_RSHIFT]       = new KeyModifier(*this, is_shift_pressed);
+
+    keys[SDLK_PAUSE]        = new ResetKey(*this);
 }
 
 void KeyboardController::handle_event(SDL_KeyboardEvent &p_key_event)
@@ -254,6 +272,7 @@ void KeyboardController::handle_event(SDL_KeyboardEvent &p_key_event)
 
 void KeyboardController::Configurator::serialize(std::ostream &p_s) const
 {
+    p_s << "<reset>" << *reset_target() << "</reset>";
 }
 
 void KeyboardController::serialize(std::ostream &p_s) const

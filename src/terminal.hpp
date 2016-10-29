@@ -31,7 +31,7 @@ public:
         virtual const KeyboardController::Configurator &keyboard_controller() const = 0;
         virtual Part *part_factory() const
             { return new Terminal(*this); }
-        
+
         virtual void serialize(std::ostream &) const;
     };
     // Attributes
