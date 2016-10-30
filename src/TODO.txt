@@ -1,8 +1,0 @@
-* Do something better for mapping keys to unicode in KeyboardController
-* Do something sensible with XML version number
-* Model Video Flyback
-* Add back Hooks
-* Selection of XML Configurator in Main
-* Make XML Configuration check input against schema
-* Testing
-* Test framework
