@@ -2,8 +2,8 @@ Import('common_env')
 
 # Ancilliaries
 
-common_env.rng2rnc('emulator')
-common_env.rng2rnc('emulator_permissive', ['emulator_permissive', 'emulator'])
+common_env.rnc2rng('emulator')
+#common_env.rng2rnc('emulator_permissive', ['emulator_permissive', 'emulator'])
 
 common_env.Command(r'plot.bmp', r'build_plot_bmp.py', "python3 $SOURCE $TARGET")
 

@@ -12,5 +12,6 @@
 /src/emulator
 /src/libparts.a
 /src/**/*.o
-/src/emulator.rnc
+/src/emulator.rng
 /src/html
+/src/emulator_permissive.rng

@@ -1,0 +1,114 @@
+default namespace = "http://www.srpalmer.me.uk/ns/emulator"
+#namespace local = ""
+
+start = emulator
+
+div { # Structure
+
+     emulator = element emulator { emulator.attributes, emulator.content }
+     emulator.attributes = version
+     emulator.content = device*
+                        & terminal?
+
+     part = name?
+     part-reference = name-reference
+                          
+     device = device-reference
+              | computer
+              | cpu
+              | memory
+     device-reference = element device { part-reference, device-reference.attributes, device-reference.content }
+     device-reference.attributes = empty
+     device-reference.content = empty
+                                    
+     computer = element computer { part, computer.attributes, computer.content }
+     computer.attributes = empty
+                           | attribute instantiates { filename-type }
+                           | attribute extends { filename-type }
+                           | attribute clone { part-reference-type }
+     computer.content = device*
+                            
+     cpu = mcs6502
+     mcs6502 = element mcs6502 { part, mcs6502.attributes , mcs6502.content }
+     mcs6502.attributes = empty
+     mcs6502.content = memory?
+
+     memory = memory-reference
+              | address-space
+              | ram
+              | rom
+              | ppia
+     memory-reference = element memory { part-reference, memory-reference.attributes , memory-reference.content }
+     memory-reference.attributes = empty
+     memory-reference.content = empty
+                                    
+     address-space = element address_space { part, address-space.attributes, address-space.content }
+     address-space.attributes = empty
+     address-space.content = size?
+                             & address-space-map*
+     address-space-map = element map { address-space-map.attributes, address-space-map.content }
+     address-space-map.attributes = empty
+     address-space-map.content = base
+                                 & memory
+                                 & size?
+
+     ram = element ram { part, ram.attributes, ram.content }
+     ram.attributes = empty
+     ram.content = size
+                   & filename?
+     rom = element rom { part, rom.attributes, rom.content }
+     rom.attributes = empty
+     rom.content = rom-file.content
+                   | rom-inline.content
+     rom-inline.content = element content { xsd:hexBinary }
+     rom-file.content = filename
+                        & size?
+     ppia = element ppia { part, ppia.attributes, ppia.content }
+     ppia.attributes = empty
+     ppia.content = empty
+                        
+     terminal = element terminal { part, terminal.attributes, terminal.content }
+     terminal.attributes = empty
+     terminal.content = video-memory?
+                        & controller?
+                        & font?
+                        & window-title?
+                        & reset-target?
+     video-memory = element video_memory { video-memory.attributes, video-memory.content }
+     video-memory.attributes = empty
+     video-memory.content = memory
+     controller = element controller { controller.attributes, controller.content }
+     controller.attributes = empty
+     controller.content = memory
+     font = element font { font.attributes, font.content }
+     font.attributes = empty
+     font.content = filename
+     window-title = element window_title { window-title.attributes, window-title.content }
+     window-title.attributes = empty
+     window-title.content = text
+     reset-target = element reset { reset-target.attributes, reset-target.content }
+     reset-target.attributes = empty
+     reset-target.content = device
+}
+
+div { # Common
+     version = attribute version { xsd:token { pattern = "\d+(\.\d{1,2})?" } }
+     name = attribute name { part-type }
+     name-reference = attribute name { part-reference-type }
+     base = element base { hex16-type }
+     size = element size { hex16-type }
+     filename = element filename { filename.content }
+     filename.content = filename-type
+}
+
+div { # Types
+     filename-type = xsd:string
+     hex16-type = xsd:token { pattern = "(#[a-fA-f0-9]{1,4})|([0-9]+)" }
+     part-type = xsd:ID
+     part-reference-type = xsd:IDREF
+}
+
+#anything = ( element * { anything }
+#           | attribute * { text }
+#           | text )*
+#foreign-elements = element * - local:* { anything }*

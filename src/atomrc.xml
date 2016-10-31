@@ -61,7 +61,7 @@
              </map -->
         <map>
           <base>#B000</base>
-          <ppia/>
+          <ppia name="ppia"/>
           <size>#0400</size>
         </map>
         <!-- #B400 to #B7FF: undefined -->
@@ -100,7 +100,9 @@
   </computer>
 
   <terminal name="terminal">
-    <fontfilename>mc6847.bmp</fontfilename>
+    <font>
+      <filename>mc6847.bmp</filename>
+    </font>
     <window_title>Acorn Atom Emulator</window_title>
     <reset>
       <device name="atom"/>
@@ -110,7 +112,7 @@
     </video_memory>
     <controller>
       <memory name="ppia"/>
-      </controller>
+    </controller>
   </terminal>
 
 </emulator>
