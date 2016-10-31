@@ -1,5 +1,4 @@
 Import('common_env')
-common_env['BUILDERS']['uxf2png'] = uxf2png
 
 for fn in common_env.Glob('*.uxf', strings=True):
     common_env.uxf2png(fn[:-4])
