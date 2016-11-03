@@ -294,7 +294,7 @@ namespace Xml
     private:
         word m_size;
         const AddressSpace::Configurator::Mapping m_last_memory;
-        std::vector<AddressSpace::Configurator::Mapping> m_memory;
+        std::vector<AddressSpace::Configurator::Mapping *> m_memory;
     public:
         explicit AddressSpaceConfigurator(const xmlpp::Node *p_node)
             : MemoryConfigurator("address_space", p_node)
@@ -317,21 +317,22 @@ namespace Xml
                         const auto &ns(child_elm->find("e:ram|e:rom|e:ppia|e:address_space|e:memory", namespaces));
                         assert (ns.size() == 1);
                         map->memory = MemoryConfigurator::factory(ns[0]);
-                        m_memory.push_back(*map);
+                        m_memory.push_back(map);
                     }
                 }
             }
         virtual ~AddressSpaceConfigurator()
             {
-                for (auto &map : m_memory)
+                for (auto it = m_memory.begin(); it != m_memory.end(); it = m_memory.erase(it))
                 {
-                    delete map.memory;
+                    delete (*it)->memory;
+                    delete *it;
                 }
-                m_memory.clear();
+                assert (m_memory.empty());
             }
         inline virtual word size() const { return m_size; }
         inline virtual const AddressSpace::Configurator::Mapping &mapping(int i) const
-            { return (i < int(m_memory.size())) ? m_memory[i] : m_last_memory; }
+            { return (i < int(m_memory.size())) ? *m_memory[i] : m_last_memory; }
         static const Memory::Configurator *memory_configurator_factory(const xmlpp::Node *p_node)
             { return new AddressSpaceConfigurator(p_node); }
     };
