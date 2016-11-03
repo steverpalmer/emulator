@@ -56,7 +56,7 @@ public:
             computer->reset();
             computer->resume();
             SDL_Event event;
-            bool more = true;
+            bool more = false;
             while( more && SDL_WaitEvent(&event) )
                 switch( event.type ){
                 case SDL_QUIT:
@@ -90,14 +90,17 @@ public:
 void configure_logging(const char *command)
 {
     // copy command since dirname may modify it!
-    char * const command_copy = (char *)malloc(strlen(command));
-    (void) sprintf(command_copy, "%s", command);
+    char * const command_copy = (char *)malloc(strlen(command)+1);
+    (void) strcpy(command_copy, command);
     const char * const command_dir = dirname(command_copy);
+    const int command_dir_length = strlen(command_dir);
     // build the path to the properties file
     const char * const filename = "log4cxx.properties";
-    const int pathname_length(strlen(command_dir) + 1 + strlen(filename) + 1);
+    const int pathname_length(command_dir_length + 1 + strlen(filename) + 1);
     char * const pathname = (char *)malloc(pathname_length);
-    (void) sprintf(pathname, "%s/%s", command_dir, filename);
+    (void) strcpy(pathname, command_dir);
+    pathname[command_dir_length] = '/';
+    (void) strcpy(&pathname[command_dir_length+1], filename);
     log4cxx::PropertyConfigurator::configure(pathname);
     // Tidy up
     free(pathname);
