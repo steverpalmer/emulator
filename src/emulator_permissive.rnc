@@ -2,6 +2,7 @@ namespace e = "http://www.srpalmer.me.uk/ns/emulator"
 namespace local = ""
 
 include "emulator_strict.rnc"
+{ version.value = xsd:decimal { pattern = "[^.]+\.[^.]{2}" } }
 emulator.attributes &= attribute * - version { text }*
 video-memory.attributes &= any-attributes
 controller.attributes &= any-attributes

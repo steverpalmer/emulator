@@ -145,7 +145,7 @@ filename.attributes = empty
 filename.content = filename.value
 
 # Value Types
-version.value = xsd:decimal { pattern = "[^.]+\.[^.]{2}" }
+version.value = "0.05"
 part-id.value = xsd:ID { pattern = "[^0-9].*" }  # allowing for anonymous id.s
 part-reference-id.value = xsd:IDREF
 address.value = ( hexidecimal-address.value | interger-address.value )

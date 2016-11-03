@@ -19,4 +19,6 @@ common_env['BUILDERS']['rng2xsd'] = Builder(action='trang -I rng -O xsd $SOURCE 
 common_env['BUILDERS']['rnc2xsd'] = Builder(action='trang -I rnc -O xsd $SOURCE $TARGET 2>/dev/null',
                                             suffix='xsd', src_suffix='rnc')
 
+common_env['BUILDERS']['jing'] = Builder(action='jing $SOURCES >$TARGET 2>/dev/null')
+
 Export('common_env')
