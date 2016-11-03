@@ -1,5 +1,5 @@
 <?xml version="1.0" ?>
-<e:emulator xmlns:e="http://www.srpalmer.me.uk/ns/emulator" version="0.05">
+<e:emulator xmlns:e="http://www.srpalmer.me.uk/ns/emulator" version="0.05"">
 
   <e:computer name="atom">
     <e:mcs6502 name="mcs6502">
@@ -7,7 +7,8 @@
         <e:map>
           <e:base>#0000</e:base>
           <e:ram name="block0">
-            <e:size>#0400</e:size>
+            <!-- e:size>#0400</e:size -->
+            <e:size>#2800</e:size>
           </e:ram>
         </e:map>
         <!-- e:map>
@@ -39,26 +40,28 @@
             <e:size>#0800</e:size>
           </e:ram>
         </e:map -->
-        <!-- e:map>
+        <e:map>
           <e:base>#2800</e:base>
           <e:ram name="lower">
-            <e:size>#1400</e:size>
+            <!-- e:size>#1400</e:size -->
+            <e:size>#5800</e:size>
           </e:ram>
-        </e:map -->
+        </e:map>
         <e:map>
           <e:base>#8000</e:base>
           <e:ram name="video">
-            <e:size>#0400</e:size>
+            <!-- e:size>#0400</e:size -->
             <!-- e:size>#1800</e:size -->
+            <e:size>#2000</e:size>
           </e:ram>
         </e:map>
         <!-- #9800 to #9FFF: undefined -->
-        <!-- e:map>
+        <e:map>
           <e:base>#A000</e:base>
           <e:rom name="toolkit">
             <e:filename>toolkit.rom</e:filename>
           </e:rom>
-        </e:map -->
+        </e:map>
         <e:map>
           <e:base>#B000</e:base>
           <e:ppia name="ppia"/>
@@ -77,12 +80,12 @@
             <e:filename>basic.rom</e:filename>
           </e:rom>
         </e:map>
-        <!-- e:map>
+        <e:map>
           <e:base>#D000</e:base>
           <e:rom name="float">
             <e:filename>float.rom</e:filename>
           </e:rom>
-        </e:map -->
+        </e:map>
         <!-- e:map>
           <e:base>#E000</e:base>
           <e:rom name="disk">

@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
 <locatingRules xmlns="http://thaiopensource.com/ns/locating-rules/1.0">
   <namespace ns="http://www.srpalmer.me.uk/ns/emulator" typeId="EMULATOR"/>
-  <typeId id="EMULATOR" uri="emulator.rnc"/>
+  <typeId id="EMULATOR" uri="emulator_strict.rnc"/>
 </locatingRules>

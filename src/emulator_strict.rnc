@@ -1,0 +1,154 @@
+namespace e = "http://www.srpalmer.me.uk/ns/emulator"
+
+# Strict Structures
+start = emulator
+
+emulator = emulator.instance
+emulator.instance = element e:emulator { emulator.class }
+emulator.class = emulator.attributes, emulator.content
+emulator.attributes = version.instance
+emulator.content = part*
+
+part = terminal.instance
+part.class = part.attributes, part.content
+part.attributes = name.instance?
+part.content = empty
+
+terminal.instance = element e:terminal { terminal.class }
+terminal.class = part.class, terminal.attributes, terminal.content
+terminal.attributes = empty
+terminal.content = video-memory.instance?
+                   & controller.instance?
+                   & font.instance?
+                   & window-title.instance?
+                   & reset.instance?
+video-memory.instance = element e:video_memory { video-memory.class }
+video-memory.class = video-memory.attributes, video-memory.content
+video-memory.attributes = empty
+video-memory.content = memory
+controller.instance = element e:controller { controller.class }
+controller.class = controller.attributes, controller.content
+controller.attributes = empty
+controller.content = memory
+font.instance = element e:font { font.class }
+font.class = font.attributes, font.content
+font.attributes = empty
+font.content = filename.instance
+window-title.instance = element e:window_title { window-title.class }
+window-title.class = window-title.attributes, window-title.content
+window-title.attributes = empty
+window-title.content = xsd:string
+reset.instance = element e:reset { reset.class }
+reset.class = reset.attributes, reset.content
+reset.attributes = empty
+reset.content = device
+
+part |= device
+device.class = part.class, device.attributes, device.content
+device.attributes = empty
+device.content = empty
+
+device = computer.instance
+computer.instance = element e:computer { computer.class }
+computer.class = device.class, computer.attributes, computer.content
+computer.attributes = empty
+#                     | attribute instantiates { filename.value }
+#                     | attribute extends { filename.value }
+#                     | attribute clone { part-reference-id.value }
+computer.content = device*
+
+device |= cpu
+cpu.class = device.class, cpu.attributes, cpu.content
+cpu.attributes = empty
+cpu.content = empty
+
+cpu = mcs6502.instance
+mcs6502.instance = element e:mcs6502 { mcs6502.class }
+mcs6502.class = cpu.class, mcs6502.attributes , mcs6502.content
+mcs6502.attributes = empty
+mcs6502.content = memory?
+
+device |= memory
+memory.class = device.class, memory.attributes, memory.content
+memory.attributes = empty
+memory.content = empty
+
+memory |= address-space.instance
+address-space.instance = element e:address_space { address-space.class }
+address-space.class = memory.class, address-space.attributes, address-space.content
+address-space.attributes = empty
+address-space.content = address-space.map.instance*
+                        & size.instance?
+address-space.map.instance = element e:map { address-space.map.class }
+address-space.map.class = address-space.map.attributes, address-space.map.content
+address-space.map.attributes = empty
+address-space.map.content = base.instance
+                            & memory
+                            & size.instance?
+
+memory |= ram.instance
+ram.instance = element e:ram { ram.class }
+ram.class = memory.class, ram.attributes, ram.content
+ram.attributes = empty
+ram.content = size.instance
+              & filename.instance?
+
+memory |= rom.instance
+rom.instance = element e:rom { rom.class }
+rom.class = memory.class, rom.attributes, rom.content
+rom.attributes = empty
+rom.content = rom-file.content
+              | rom-inline.content
+rom-file.content = filename.instance
+                   & size.instance?
+rom-inline.content = element e:content { ( attribute type {"hexBinary"}, xsd:hexBinary )
+                                         | ( attribute type {"base64Binary"}, xsd:base64Binary ) }
+
+memory |= ppia.instance
+ppia.instance = element e:ppia { ppia.class }
+ppia.class = memory.class, ppia.attributes, ppia.content
+ppia.attributes = empty
+ppia.content = empty
+
+part-reference.class = part-reference.attributes, part-reference.content
+part-reference.attributes = name-reference.instance
+part-reference.content = empty
+
+device |= device-reference.instance
+device-reference.instance = element e:device { device-reference.class }
+device-reference.class = part-reference.class, device-reference.attributes, device-reference.content
+device-reference.attributes = empty
+device-reference.content = empty
+
+memory |= memory-reference.instance
+memory-reference.instance = element e:memory { memory-reference.class }
+memory-reference.class = part-reference.class, memory-reference.attributes , memory-reference.content
+memory-reference.attributes = empty
+memory-reference.content = empty
+
+# Simple Nodes
+# version number should be a fixed value in strict schema
+version.instance = attribute version { version.value }
+name.instance = attribute name { part-id.value }
+name-reference.instance = attribute href { part-reference-id.value }
+base.instance = element e:base { base.class }
+base.class = base.attributes, base.content
+base.attributes = empty
+base.content = address.value
+size.instance = element e:size { size.class }
+size.class = size.attributes, size.content
+size.attributes = empty
+size.content = address.value
+filename.instance = element e:filename { filename.class }
+filename.class = filename.attributes, filename.content
+filename.attributes = empty
+filename.content = filename.value
+
+# Value Types
+version.value = xsd:decimal { pattern = "[^.]+\.[^.]{2}" }
+part-id.value = xsd:ID { pattern = "[^0-9].*" }  # allowing for anonymous id.s
+part-reference-id.value = xsd:IDREF
+address.value = ( hexidecimal-address.value | interger-address.value )
+hexidecimal-address.value = xsd:token { pattern = "#[a-fA-F0-9]{1,4}" }
+interger-address.value = xsd:unsignedShort
+filename.value = xsd:anyURI

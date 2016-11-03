@@ -1,0 +1,33 @@
+namespace e = "http://www.srpalmer.me.uk/ns/emulator"
+namespace local = ""
+
+include "emulator_strict.rnc"
+emulator.attributes &= attribute * - version { text }*
+video-memory.attributes &= any-attributes
+controller.attributes &= any-attributes
+font.attributes &= any-attributes
+window-title.attributes &= any-attributes
+reset.attributes &= any-attributes
+part.attributes &= attribute * - name { text }*
+address-space.map.attributes &= any-attributes
+base.attributes &= any-attributes
+size.attributes &=any-attributes
+filename.attributes &= any-attributes
+part-reference.attributes &= attribute * - (name|href) { text }*
+
+video-memory.content &= element * - (e:address_space|e:ram|e:rom|e:ppia|e:memory) { anything }*
+controller.content &= element * - (e:address_space|e:ram|e:rom|e:ppia|e:memory) { anything }*
+font.content &= element * - e:filename { anything }*
+reset.content &= element * - (e:computer|e:mcs6502|e:address_space|e:ram|e:rom|e:ppia|e:memory|e:device) { anything }*
+computer.content &= element * - (e:computer|e:mcs6502|e:address_space|e:ram|e:rom|e:ppia|e:memory|e:device) { anything }*
+cpu.content &= any-content
+address-space.content &= element * - (e:map|e:size) { anything }*
+address-space.map.content &= element * - (e:base|e:address_space|e:ram|e:rom|e:ppia|e:memory|e:size) { anything }*
+ram.content &= element * - (e:size|e:filename) { anything }*
+rom.content &= element * - (e:size|e:filename|e:content) { anything }*
+ppia.content &= any-content
+part-reference.content &= any-content
+
+any-attributes =  attribute * { text }*
+any-content = ( element * { anything } | text )*
+anything = ( element * { anything } | attribute * - (name|href) { text } | text )*
