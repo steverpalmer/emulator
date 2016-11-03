@@ -346,6 +346,7 @@ void Ppia::reset()
     m_terminal.mutex.lock();
     m_terminal.notified_vdg_mode = VDG_LAST; // force a notification
     m_terminal.pressed_key       = KBD_NO_KEYPRESS;
+    m_terminal.repeat            = false;
 
     // reset "Control" port first
     m_register[ControlPort] = 0x8A;
