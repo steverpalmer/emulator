@@ -1,7 +1,7 @@
 <?xml version="1.0" ?>
 <e:emulator xmlns:e="http://www.srpalmer.me.uk/ns/emulator" version="0.05">
 
-  <e:computer name="atom">
+  <e:computer name="computer">
     <e:mcs6502 name="mcs6502">
       <e:address_space>
         <e:map>
@@ -105,7 +105,7 @@
     </e:font>
     <e:window_title>Acorn Atom Emulator</e:window_title>
     <e:reset>
-      <e:device href="atom"/>
+      <e:device href="computer"/>
     </e:reset>
     <e:video_memory>
       <e:memory href="video"/>

@@ -9,6 +9,7 @@
 #include <cstdlib>
 
 #include <libxml++/libxml++.h>
+#include <libxml++/validators/relaxngvalidator.h>
 
 #include "config_xml.hpp"
 
@@ -145,12 +146,36 @@ namespace Xml
         static const Part::Configurator *factory(const xmlpp::Node *);
     };
 
+    class PartReferenceConfigurator
+        : public virtual Part::Configurator
+    {
+    protected:
+        Part::id_type m_ref_id;
+        explicit PartReferenceConfigurator(const Glib::ustring p_ref_id)
+            : m_ref_id(p_ref_id)
+            {}
+        explicit PartReferenceConfigurator(const xmlpp::Node *p_node)
+            : m_ref_id("")
+            {
+                LOG4CXX_INFO(cpptrace_log(), "Xml::PartReferenceConfigurator::PartReferenceConfigurator(" << p_node << ")");
+                try { m_ref_id = eval_to_string(p_node, "@href"); }
+                catch (XpathNotFound e) {}
+            }
+    public:
+        virtual ~PartReferenceConfigurator() = default;
+        virtual const Part::id_type &id() const { return m_ref_id; }
+    protected:
+        virtual Part *part_factory() const
+        // TODO: add a placeholder if part not yet defined
+            { return PartsBin::instance()[m_ref_id]; }
+    };
+
     class DeviceConfigurator
         : public virtual Device::Configurator
         , protected PartConfigurator
     {
     protected:
-        explicit DeviceConfigurator(Part::id_type p_id, const xmlpp::Node *p_node=0)
+        explicit DeviceConfigurator(const Glib::ustring p_id, const xmlpp::Node *p_node=0)
             : PartConfigurator(p_id, p_node)
             {}
     public:
@@ -163,7 +188,7 @@ namespace Xml
         , protected DeviceConfigurator
     {
     protected:
-        explicit MemoryConfigurator(Part::id_type p_id, const xmlpp::Node *p_node=0)
+        explicit MemoryConfigurator(const Glib::ustring p_id, const xmlpp::Node *p_node=0)
             : DeviceConfigurator(p_id, p_node)
             {}
     public:
@@ -173,25 +198,26 @@ namespace Xml
 
     class MemoryRefConfigurator
         : public virtual Memory::Configurator
-        , private MemoryConfigurator
+        , private PartReferenceConfigurator
     {
     public:
         explicit MemoryRefConfigurator(const xmlpp::Node *p_node)
-            : MemoryConfigurator("", p_node)
+            : PartReferenceConfigurator(p_node)
             {}
         explicit MemoryRefConfigurator(Glib::ustring p_name)
-            : MemoryConfigurator(p_name)
+            : PartReferenceConfigurator(p_name)
             {}
         virtual ~MemoryRefConfigurator() = default;
+        virtual Part *part_factory() const
+            { return PartReferenceConfigurator::part_factory(); }
         virtual Memory *memory_factory() const
-        // TODO: add a placeholder if part not yet defined
-            { return dynamic_cast<Memory *>(PartsBin::instance()[m_id]); }
+            { return dynamic_cast<Memory *>(part_factory()); }
         static const Memory::Configurator *memory_configurator_factory(const xmlpp::Node *p_node)
             { return new MemoryRefConfigurator(p_node); }
 
         virtual void serialize(std::ostream &p_s) const
             {
-                p_s << "<memory name=\"" << m_id << "\"/>";
+                p_s << "<memory name=\"" << m_ref_id << "\"/>";
             }
     };
 
@@ -323,10 +349,8 @@ namespace Xml
             factory_map["ppia"]          = PpiaConfigurator::memory_configurator_factory;
             factory_map["address_space"] = AddressSpaceConfigurator::memory_configurator_factory;
         }
-        const Memory::Configurator *result(0);
         factory_function *factory = factory_map[p_node->get_name()];
-        if (factory)
-            result = factory(p_node);
+        const Memory::Configurator *result(factory ? factory(p_node) : 0);
         return result;
     }
 
@@ -334,24 +358,26 @@ namespace Xml
 
     class DeviceRefConfigurator
         : public virtual Device::Configurator
-        , private DeviceConfigurator
+        , private PartReferenceConfigurator
     {
     public:
         explicit DeviceRefConfigurator(const xmlpp::Node *p_node)
-            : DeviceConfigurator("", p_node)
+            : PartReferenceConfigurator(p_node)
             {}
         explicit DeviceRefConfigurator(Glib::ustring p_name)
-            : DeviceConfigurator(p_name)
+            : PartReferenceConfigurator(p_name)
             {}
         virtual ~DeviceRefConfigurator() = default;
+        virtual Part *part_factory() const
+            { return PartReferenceConfigurator::part_factory(); }
         virtual Device *device_factory() const
-            { return dynamic_cast<Device *>(PartsBin::instance()[m_id]); }
+            { return dynamic_cast<Device *>(part_factory()); }
         static const Device::Configurator *device_configurator_factory(const xmlpp::Node *p_node)
             { return new DeviceRefConfigurator(p_node); }
 
         virtual void serialize(std::ostream &p_s) const
             {
-                p_s << "<device name=\"" << m_id << "\"/>";
+                p_s << "<device name=\"" << m_ref_id << "\"/>";
             }
     };
 
@@ -364,6 +390,7 @@ namespace Xml
     public:
         explicit MCS6502Configurator(const xmlpp::Node *p_node = 0)
             : DeviceConfigurator("", p_node)
+            , m_memory(0)
             {
                 LOG4CXX_INFO(cpptrace_log(), "Xml::MCS6502Configurator::MCS6502Configurator(" << p_node << ")");
                 if (p_node)
@@ -372,7 +399,6 @@ namespace Xml
                     switch (ns.size())
                     {
                     case 0:
-                        m_memory = new MemoryRefConfigurator("address_space");
                         break;
                     case 1:
                         m_memory = MemoryConfigurator::factory(ns[0]);
@@ -382,6 +408,8 @@ namespace Xml
                         break;
                     }
                 }
+                if (!m_memory)
+                    m_memory = new MemoryRefConfigurator("address_space");
             }
         virtual ~MCS6502Configurator()
             { delete m_memory; }
@@ -431,19 +459,15 @@ namespace Xml
     {
         LOG4CXX_INFO(cpptrace_log(), "Xml::DeviceConfigurator::factory(" << p_node << ")");
         typedef const Device::Configurator *(factory_function)(const xmlpp::Node *);
-        static std::map<std::string, factory_function*> factory_map;
+        static std::map<Glib::ustring, factory_function *> factory_map;
         if (factory_map.size() == 0)
         {
             factory_map["device"]   = DeviceRefConfigurator::device_configurator_factory;
             factory_map["mcs6502"]  = MCS6502Configurator::device_configurator_factory;
             factory_map["computer"] = ComputerConfigurator::device_configurator_factory;
         }
-        const Device::Configurator *result(0);
         factory_function *factory = factory_map[p_node->get_name()];
-        if (factory)
-            result = factory(p_node);
-        else
-            result = MemoryConfigurator::factory(p_node);
+        const Device::Configurator *result(factory ? factory(p_node) : MemoryConfigurator::factory(p_node));
         return result;
     }
 
@@ -480,7 +504,7 @@ namespace Xml
                     }
                 }
                 if (!m_reset_target)
-                    m_reset_target = new DeviceRefConfigurator("atom");
+                    m_reset_target = new DeviceRefConfigurator("computer");
             }
         virtual ~KeyboardControllerConfigurator()
             {
@@ -498,17 +522,21 @@ namespace Xml
         Glib::ustring m_window_title;
     public:
         explicit MonitorViewConfigurator(const xmlpp::Node *p_node = 0)
-            : m_fontfilename("mc6847.bmp")
-            , m_window_title("Emulator")
+            : m_fontfilename("")
+            , m_window_title("")
             {
                 LOG4CXX_INFO(cpptrace_log(), "Xml::MonitorViewConfigurator::MonitorViewConfigurator(" << p_node << ")");
                 if (p_node)
                 {
-                    try { m_fontfilename = eval_to_string(p_node, "e:fontfilename"); }
+                    try { m_fontfilename = eval_to_string(p_node, "e:font/filename"); }
                     catch (XpathNotFound e) {}
                     try { m_window_title = eval_to_string(p_node, "e:window_title"); }
                     catch (XpathNotFound e) {}
                 }
+                if (m_fontfilename.empty())
+                    m_fontfilename = "mc6847.bmp";
+                if (m_window_title.empty())
+                    m_window_title = "Emulator";
             }
         virtual ~MonitorViewConfigurator() = default;
         const Glib::ustring &fontfilename() const { return m_fontfilename; }
@@ -529,6 +557,8 @@ namespace Xml
             : PartConfigurator("", p_node)
             , m_memory(0)
             , m_ppia(0)
+            , m_keyboard_controller(0)
+            , m_monitor_view(0)
             {
                 LOG4CXX_INFO(cpptrace_log(), "Xml::TerminalConfigurator::TerminalConfigurator(" << p_node << ")");
                 if (p_node)
@@ -596,17 +626,13 @@ namespace Xml
     {
         LOG4CXX_INFO(cpptrace_log(), "Xml::PartConfigurator::factory(" << p_node << ")");
         typedef const Part::Configurator *(factory_function)(const xmlpp::Node *);
-        static std::map<const std::string, factory_function *> factory_map;
+        static std::map<const Glib::ustring, factory_function *> factory_map;
         if (factory_map.size() == 0)
         {
             factory_map["terminal"] = TerminalConfigurator::part_configurator_factory;
         }
-        const Part::Configurator *result(0);
         factory_function *factory = factory_map[p_node->get_name()];
-        if (factory)
-            result = factory(p_node);
-        else
-            result = DeviceConfigurator::factory(p_node);
+        const Part::Configurator *result(factory ? factory(p_node) : DeviceConfigurator::factory(p_node));
         return result;
     }
 
@@ -655,6 +681,10 @@ namespace Xml
                 LOG4CXX_FATAL(cpptrace_log(), "Parse Failure");
                 exit(1);
             }
+
+            xmlpp::RelaxNGValidator validator("emulator_permissive.rng");
+            const xmlpp::Document *document(parser.get_document());
+            validator.validate(document);
 
             // TODO: Check version
             const xmlpp::Node *root(parser.get_document()->get_root_node());

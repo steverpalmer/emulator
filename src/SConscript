@@ -9,10 +9,6 @@ common_env.jing('emulator_strict.jing.txt', r'emulator_strict.rng')
 common_env.jing('emulator_permissive.jing.txt', r'emulator_permissive.rng')
 common_env.jing('atomrc.jing.txt', [r'emulator_strict.rng', r'atomrc.xml'])
 common_env.jing('atomrc_full.jing.txt', [r'emulator_strict.rng', r'atomrc_full.xml'])
-#common_env.Alias('test', r'emulator_strict.rng', 'jing $SOURCES 2>/dev/null')
-#common_env.Alias('test', r'emulator_permissive.rng', 'jing $SOURCES 2>/dev/null')
-#common_env.Alias('test', [r'emulator_strict.rng', r'atomrc.xml'], 'jing $SOURCES 2>/dev/null')
-#common_env.Alias('test', [r'emulator_strict.rng', r'atomrc_full.xml'], 'jing $SOURCES 2>/dev/null')
 
 common_env.Command(r'plot.bmp', r'build_plot_bmp.py',
                    "python3 $SOURCE $TARGET")
@@ -42,4 +38,4 @@ emulator_gui_sdl_env.Program('emulator', [ r'monitor_view.cpp'
                                          , PARTSLIB
                                          ])
 
-emulator_gui_sdl_env.Program('key', 'key.cpp')
+#emulator_gui_sdl_env.Program('key', 'key.cpp')

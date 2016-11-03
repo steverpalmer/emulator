@@ -49,12 +49,12 @@ public:
             Terminal *terminal = dynamic_cast<Terminal *>(PartsBin::instance()["terminal"]);
             assert (terminal);
 
-            Device *atom = dynamic_cast<Device *>(PartsBin::instance()["atom"]);
-            assert (atom);
+            Device *computer = dynamic_cast<Device *>(PartsBin::instance()["computer"]);
+            assert (computer);
 
-            LOG4CXX_INFO(cpptrace_log(), "Atom is about to start ...");
-            atom->reset();
-            atom->resume();
+            LOG4CXX_INFO(cpptrace_log(), "Computer is about to start ...");
+            computer->reset();
+            computer->resume();
             SDL_Event event;
             bool more = true;
             while( more && SDL_WaitEvent(&event) )
@@ -71,9 +71,9 @@ public:
                     LOG4CXX_DEBUG(cpptrace_log(), "Unhandled event:" << event.type);
                     break;
                 }
-            LOG4CXX_INFO(cpptrace_log(), "Atom is about to stop ...");
-            atom->pause();
-            while (not atom->is_paused())
+            LOG4CXX_INFO(cpptrace_log(), "Computer is about to stop ...");
+            computer->pause();
+            while (not computer->is_paused())
                 std::this_thread::yield();
         }
 
