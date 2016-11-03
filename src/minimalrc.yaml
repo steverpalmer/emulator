@@ -4,6 +4,7 @@
 # - no VIA
 # - the Basic Interpreter and Kernel ROMs
 ---
+schemaVersion: 0.05
 computer:
   mcs6502:
     address_space:
