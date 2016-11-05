@@ -513,4 +513,16 @@ m2=0..*
 </panel_attributes>
     <additional_attributes>140.0;20.0;10.0;20.0</additional_attributes>
   </element>
+  <element>
+    <id>UMLNote</id>
+    <coordinates>
+      <x>930</x>
+      <y>830</y>
+      <w>230</w>
+      <h>50</h>
+    </coordinates>
+    <panel_attributes>System v3
+Copyright 2016 Steve Palmer</panel_attributes>
+    <additional_attributes/>
+  </element>
 </diagram>

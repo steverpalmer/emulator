@@ -492,4 +492,16 @@ bg=green
     <panel_attributes>lt=&lt;&lt;-</panel_attributes>
     <additional_attributes>10.0;10.0;10.0;60.0</additional_attributes>
   </element>
+  <element>
+    <id>UMLNote</id>
+    <coordinates>
+      <x>161</x>
+      <y>105</y>
+      <w>161</w>
+      <h>35</h>
+    </coordinates>
+    <panel_attributes>Memory
+Copyright 2016 Steve Palmer</panel_attributes>
+    <additional_attributes/>
+  </element>
 </diagram>

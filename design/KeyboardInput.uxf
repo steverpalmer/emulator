@@ -1,8 +1,7 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<diagram program="umlet" version="11.4">
+<?xml version="1.0" encoding="UTF-8"?><diagram program="umlet" version="13.3">
   <zoom_level>10</zoom_level>
   <element>
-    <type>com.umlet.element.Class</type>
+    <type>com.baselet.element.old.element.Class</type>
     <coordinates>
       <x>40</x>
       <y>30</y>
@@ -13,7 +12,7 @@
     <additional_attributes/>
   </element>
   <element>
-    <type>com.umlet.element.Class</type>
+    <type>com.baselet.element.old.element.Class</type>
     <coordinates>
       <x>400</x>
       <y>30</y>
@@ -24,7 +23,7 @@
     <additional_attributes/>
   </element>
   <element>
-    <type>com.umlet.element.Class</type>
+    <type>com.baselet.element.old.element.Class</type>
     <coordinates>
       <x>220</x>
       <y>30</y>
@@ -35,7 +34,7 @@
     <additional_attributes/>
   </element>
   <element>
-    <type>com.umlet.element.Relation</type>
+    <type>com.baselet.element.old.element.Relation</type>
     <coordinates>
       <x>60</x>
       <y>30</y>
@@ -46,7 +45,7 @@
     <additional_attributes>30;30;30;400</additional_attributes>
   </element>
   <element>
-    <type>com.umlet.element.Relation</type>
+    <type>com.baselet.element.old.element.Relation</type>
     <coordinates>
       <x>240</x>
       <y>30</y>
@@ -57,7 +56,7 @@
     <additional_attributes>30;30;30;400</additional_attributes>
   </element>
   <element>
-    <type>com.umlet.element.Relation</type>
+    <type>com.baselet.element.old.element.Relation</type>
     <coordinates>
       <x>420</x>
       <y>30</y>
@@ -68,7 +67,7 @@
     <additional_attributes>30;30;30;410</additional_attributes>
   </element>
   <element>
-    <type>com.umlet.element.Relation</type>
+    <type>com.baselet.element.old.element.Relation</type>
     <coordinates>
       <x>240</x>
       <y>60</y>
@@ -80,7 +79,7 @@ create &amp; initialise</panel_attributes>
     <additional_attributes>30;50;210;50</additional_attributes>
   </element>
   <element>
-    <type>com.umlet.element.Relation</type>
+    <type>com.baselet.element.old.element.Relation</type>
     <coordinates>
       <x>60</x>
       <y>90</y>
@@ -92,7 +91,7 @@ add hardware</panel_attributes>
     <additional_attributes>30;50;390;50</additional_attributes>
   </element>
   <element>
-    <type>com.umlet.element.custom.InteractionFrame</type>
+    <type>com.baselet.element.old.element.InteractionFrame</type>
     <coordinates>
       <x>40</x>
       <y>80</y>
@@ -103,7 +102,7 @@ add hardware</panel_attributes>
     <additional_attributes/>
   </element>
   <element>
-    <type>com.umlet.element.Relation</type>
+    <type>com.baselet.element.old.element.Relation</type>
     <coordinates>
       <x>280</x>
       <y>180</y>
@@ -115,7 +114,7 @@ Keyboard Event</panel_attributes>
     <additional_attributes>170;60;90;60;90;40;170;40</additional_attributes>
   </element>
   <element>
-    <type>com.umlet.element.Relation</type>
+    <type>com.baselet.element.old.element.Relation</type>
     <coordinates>
       <x>240</x>
       <y>210</y>
@@ -127,7 +126,7 @@ set keyboard state</panel_attributes>
     <additional_attributes>30;50;210;50</additional_attributes>
   </element>
   <element>
-    <type>com.umlet.element.custom.InteractionFrame</type>
+    <type>com.baselet.element.old.element.InteractionFrame</type>
     <coordinates>
       <x>40</x>
       <y>190</y>
@@ -138,7 +137,7 @@ set keyboard state</panel_attributes>
     <additional_attributes/>
   </element>
   <element>
-    <type>com.umlet.element.Relation</type>
+    <type>com.baselet.element.old.element.Relation</type>
     <coordinates>
       <x>60</x>
       <y>300</y>
@@ -150,7 +149,7 @@ put byte (column)</panel_attributes>
     <additional_attributes>210;50;30;50</additional_attributes>
   </element>
   <element>
-    <type>com.umlet.element.Relation</type>
+    <type>com.baselet.element.old.element.Relation</type>
     <coordinates>
       <x>60</x>
       <y>330</y>
@@ -162,7 +161,7 @@ get byte (row)</panel_attributes>
     <additional_attributes>30;50;210;50</additional_attributes>
   </element>
   <element>
-    <type>com.umlet.element.custom.InteractionFrame</type>
+    <type>com.baselet.element.old.element.InteractionFrame</type>
     <coordinates>
       <x>40</x>
       <y>300</y>
@@ -170,6 +169,18 @@ get byte (row)</panel_attributes>
       <h>100</h>
     </coordinates>
     <panel_attributes>Simulated Interaction</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLNote</id>
+    <coordinates>
+      <x>40</x>
+      <y>450</y>
+      <w>230</w>
+      <h>50</h>
+    </coordinates>
+    <panel_attributes>Keyboard Input
+Copyright 2016 Steve Palmer</panel_attributes>
     <additional_attributes/>
   </element>
 </diagram>

@@ -230,4 +230,16 @@ steps_to_go</panel_attributes>
     <panel_attributes>lt=&lt;-</panel_attributes>
     <additional_attributes>30;90;30;30</additional_attributes>
   </element>
+  <element>
+    <id>UMLNote</id>
+    <coordinates>
+      <x>50</x>
+      <y>100</y>
+      <w>230</w>
+      <h>50</h>
+    </coordinates>
+    <panel_attributes>cpu
+Copyright 2016 Steve Palmer</panel_attributes>
+    <additional_attributes/>
+  </element>
 </diagram>

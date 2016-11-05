@@ -263,4 +263,16 @@ front()</panel_attributes>
     <panel_attributes>lt=&lt;&lt;&lt;&lt;-&gt;</panel_attributes>
     <additional_attributes>30;30;30;190</additional_attributes>
   </element>
+  <element>
+    <id>UMLNote</id>
+    <coordinates>
+      <x>140</x>
+      <y>610</y>
+      <w>230</w>
+      <h>50</h>
+    </coordinates>
+    <panel_attributes>ScreenGraphicsView
+Copyright 2016 Steve Palmer</panel_attributes>
+    <additional_attributes/>
+  </element>
 </diagram>

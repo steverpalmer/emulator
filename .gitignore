@@ -5,7 +5,7 @@
 .settings
 .externalToolBuilders
 .sconsign.dblite
-/Design/*.png
+/design/*.png
 /src/plot.bmp
 /src/ctrace.log
 /src/ctrace.log.1
