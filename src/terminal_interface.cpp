@@ -15,6 +15,8 @@ const gunichar TerminalInterface::KBD_COPY        = 0xE001;
 
 TerminalInterface::~TerminalInterface()
 {
+    for (auto obs : m_observers)
+        obs->subject_loss(*this);
     m_observers.clear();
 }
 

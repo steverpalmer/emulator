@@ -84,26 +84,28 @@ public:
     virtual void render()
         {
             LOG4CXX_INFO(cpptrace_log(), "MonitorView::Mode0::render()");
-            int rv = SDL_RenderClear(m_state->m_renderer);
-            SDL_Rect texture;
-            texture.w = 8;
-            texture.h = 12;
-            SDL_Rect window;
-            window.w = 8;
-            window.h = 12;
-            assert (!rv);
-            for (int addr = 0; addr < 512; addr++)
-            {
-                const byte ch = m_state->m_memory->get_byte(addr);
-                texture.x = (ch & ((1u << 5u) - 1u)) * texture.w;
-                texture.y = (ch >> 5u) * texture.h;
-                window.x = (addr & ((1u << 5u) - 1u)) * window.w;
-                window.y = (addr >> 5u) * window.h;
-                int rv = SDL_RenderCopy(m_state->m_renderer, m_font, &texture, &window);
+            if (m_state->m_memory) {
+                int rv = SDL_RenderClear(m_state->m_renderer);
+                SDL_Rect texture;
+                texture.w = 8;
+                texture.h = 12;
+                SDL_Rect window;
+                window.w = 8;
+                window.h = 12;
                 assert (!rv);
-                m_state->m_rendered[addr] = ch;
+                for (int addr = 0; addr < 512; addr++)
+                {
+                    const byte ch = m_state->m_memory->get_byte(addr);
+                    texture.x = (ch & ((1u << 5u) - 1u)) * texture.w;
+                    texture.y = (ch >> 5u) * texture.h;
+                    window.x = (addr & ((1u << 5u) - 1u)) * window.w;
+                    window.y = (addr >> 5u) * window.h;
+                    int rv = SDL_RenderCopy(m_state->m_renderer, m_font, &texture, &window);
+                    assert (!rv);
+                    m_state->m_rendered[addr] = ch;
+                }
+                SDL_RenderPresent(m_state->m_renderer);
             }
-            SDL_RenderPresent(m_state->m_renderer);
         }
 };
 
@@ -143,8 +145,18 @@ MonitorView::MonitorView(TerminalInterface *p_terminal_interface,
 MonitorView::~MonitorView()
 {
     LOG4CXX_INFO(cpptrace_log(), "~MonitorView::MonitorView()");
-    m_memory->detach(*this);
-    m_terminal_interface->detach(*this);
+    if (m_memory)
+    {
+        Memory &m(*m_memory);
+        m_memory = 0;
+        m.detach(*this);
+    }
+    if (m_terminal_interface)
+    {
+        TerminalInterface &ti(*m_terminal_interface);
+        m_terminal_interface = 0;
+        ti.detach(*this);
+    }
     m_mode = 0;
     if (m_mode0)
     {
@@ -184,6 +196,12 @@ void MonitorView::set_byte_update(Memory &, word p_addr, byte p_byte, Memory::Ac
             m_mode->set_byte_update(p_addr, p_byte);
 }
 
+void MonitorView::subject_loss(const Memory &p_memory)
+{
+    if (&p_memory == m_memory)
+        m_memory = 0;
+}
+
 void MonitorView::vdg_mode_update(const TerminalInterface &, TerminalInterface::VDGMode p_mode)
 {
     LOG4CXX_INFO(cpptrace_log(), "MonitorView::vdg_mode_update(" << p_mode << ")");
@@ -198,6 +216,12 @@ void MonitorView::vdg_mode_update(const TerminalInterface &, TerminalInterface::
     }
     if (m_mode)
         m_mode->render();
+}
+
+void MonitorView::subject_loss(const TerminalInterface &p_terminal_interface)
+{
+    if (&p_terminal_interface == m_terminal_interface)
+        m_terminal_interface = 0;
 }
 
 void MonitorView::Configurator::serialize(std::ostream &p_s) const

@@ -47,8 +47,10 @@ private:
 private:
     // Memory Observer implementation
     virtual void set_byte_update(Memory &, word, byte, Memory::AccessType);
+    virtual void subject_loss(const Memory &);
     // TerminalInterface Observer implementation
     virtual void vdg_mode_update(const TerminalInterface &, TerminalInterface::VDGMode);
+    virtual void subject_loss(const TerminalInterface &);
 public:
     MonitorView(TerminalInterface *, Memory *, const Configurator &);
     virtual ~MonitorView();

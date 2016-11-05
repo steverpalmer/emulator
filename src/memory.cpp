@@ -23,6 +23,8 @@ Memory::Memory(const Configurator &p_cfgr)
 
 Memory::~Memory()
 {
+    for (auto obs : m_observers)
+        obs->subject_loss(*this);
     m_observers.clear();
 }
 

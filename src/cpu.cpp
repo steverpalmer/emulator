@@ -2371,6 +2371,7 @@ public:
 MCS6502::MCS6502(const Configurator &p_cfgr)
     : Cpu(p_cfgr)
     , m_cycles(0)
+    , m_undefined_instruction(new Instr_Undefined(*this))
     , m_InterruptSource(NO_INTERRUPT)
 {
     LOG4CXX_INFO(cpptrace_log(), "MCS6502::MCS6502(" << p_cfgr << ")");
@@ -2379,7 +2380,7 @@ MCS6502::MCS6502(const Configurator &p_cfgr)
     LOG4CXX_INFO(Part::log(), "making [" << m_memory->id() << "] child of [" << id() << "]");
     m_memory->add_parent(*this);
     assert (SIZE(m_memory->size()) == 65536);
-    m_opcode_mapping.fill(new Instr_Undefined(*this));
+    m_opcode_mapping.fill(m_undefined_instruction);
     new Instr_BRK(*this);
     new Instr_ORA_PRE_INDEXED_INDIRECT(*this);
     new Instr_ORA_ZERO(*this);
@@ -2542,6 +2543,14 @@ MCS6502::~MCS6502()
         m_memory->remove_parent(*this);
         remove_child(*m_memory);
     }
+    for ( auto it = m_opcode_mapping.begin(); it != m_opcode_mapping.end(); ++it )
+    {
+        if (*it != m_undefined_instruction)
+            delete *it;
+        *it = 0;
+    }
+    delete m_undefined_instruction;
+    m_undefined_instruction = 0;
 }
 
 void MCS6502::remove_child(Part &p_child)

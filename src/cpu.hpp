@@ -89,12 +89,13 @@ public:
             { return new MCS6502(*this); }
         virtual void serialize(std::ostream &) const;
     };
-    class Instruction; // Forward declaration
+    class Instruction;
     // Attributes
 public:
     Memory                         *m_memory;
 private:
     int                            m_cycles;
+    class Instruction *            m_undefined_instruction;
     std::array<Instruction *, 256> m_opcode_mapping;
 public:
     volatile int m_InterruptSource;

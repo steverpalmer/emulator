@@ -137,6 +137,7 @@ KeyboardController::KeyboardController(TerminalInterface *p_terminal_interface, 
     , is_control_pressed(false)
 {
     assert (m_terminal_interface);
+    m_terminal_interface->attach(*this);
     assert (m_reset_target);
     LOG4CXX_INFO(cpptrace_log(), "KeyboardController::KeyboardController("
                  << "<controller name=\"" << (p_terminal_interface?p_terminal_interface->id():"?") << "\"/>"
@@ -245,6 +246,18 @@ KeyboardController::KeyboardController(TerminalInterface *p_terminal_interface, 
     keys[SDLK_PAUSE]        = new ResetKey(*this);
 }
 
+KeyboardController::~KeyboardController()
+{
+    if (m_terminal_interface)
+    {
+        TerminalInterface &ti(*m_terminal_interface);
+        m_terminal_interface = 0;
+        ti.detach(*this);
+    }
+    for ( auto it = keys.begin(); it != keys.end(); it = keys.erase(it) )
+        delete it->second;
+}
+
 void KeyboardController::handle_event(SDL_KeyboardEvent &p_key_event)
 {
     LOG4CXX_INFO(cpptrace_log(), "handle_event((" << p_key_event.type << ", " << int(p_key_event.keysym.sym) << ", ...))");
@@ -268,6 +281,12 @@ void KeyboardController::handle_event(SDL_KeyboardEvent &p_key_event)
     {
         LOG4CXX_WARN(cpptrace_log(), "Unmapped key:" << p_key_event.keysym.sym);
     }
+}
+
+void KeyboardController::subject_loss(const TerminalInterface &p_terminal_interface)
+{
+    if (&p_terminal_interface == m_terminal_interface)
+        m_terminal_interface = 0;
 }
 
 

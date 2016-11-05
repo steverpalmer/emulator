@@ -11,7 +11,7 @@
 #include "terminal_interface.hpp"
 
 class KeyboardController
-    : protected NonCopyable
+    : protected TerminalInterface::Observer
 {
     // Types
 public:
@@ -41,10 +41,15 @@ private:
     std::map<SDL_Keycode, const KeyCommand *> keys;
 public:
     KeyboardController(TerminalInterface *, const Configurator &);
-    virtual ~KeyboardController() = default;
+    virtual ~KeyboardController();
 
     void handle_event(SDL_KeyboardEvent &);
 
+private:
+    // TerminalInterface Observer implementation
+    virtual void subject_loss(const TerminalInterface &);
+
+public:
     virtual void serialize(std::ostream &) const;
     friend std::ostream &::operator<<(std::ostream &p_s, const KeyboardController &p_kc)
         { p_kc.serialize(p_s); return p_s; }
