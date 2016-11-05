@@ -72,7 +72,6 @@ Ppia::Ppia(const Configurator &p_cfgr)
     , m_register( { 0, 0, 0, 0 } )
 {
     LOG4CXX_INFO(cpptrace_log(), "Ppia::Ppia(" << p_cfgr << ")");
-    // m_terminal.mutex = PTHREAD_RECURSIVE_MUTEX_INITIALIZER_NP;
     key_mapping[0x00] = new Scanpair(7, SCANCODE(3, CONTROL)); // <Ctrl> @ (nul)
     key_mapping[0x01] = new Scanpair(6, SCANCODE(3, CONTROL)); // <Ctrl> A (soh)
     key_mapping[0x02] = new Scanpair(5, SCANCODE(3, CONTROL)); // <Ctrl> B (stx) start printer
@@ -213,7 +212,7 @@ Ppia::Ppia(const Configurator &p_cfgr)
 Ppia::~Ppia()
 {
     LOG4CXX_INFO(cpptrace_log(), "Ppia::~Ppia([" << id() << "])");
-    for (auto &sp : key_mapping)
+    for (auto sp : key_mapping)
         delete sp.second;
     key_mapping.clear();
 }

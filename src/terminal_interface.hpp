@@ -76,13 +76,12 @@ public:
     virtual VDGMode vdg_mode() const = 0;
     virtual void set_keypress(gunichar, bool p_repeat=false) = 0;
 protected:
-    inline void vdg_mode_notify(VDGMode p_mode)
-        { for (auto obs : m_observers) obs->vdg_mode_update(*this, p_mode); }
+    void vdg_mode_notify(VDGMode);
 public:
-    inline void attach(Observer &p_observer) { m_observers.insert(&p_observer); }
-    inline void detach(Observer &p_observer) { m_observers.erase(&p_observer); }
+    void attach(Observer &);
+    void detach(Observer &);
 
-    virtual ~TerminalInterface() { m_observers.clear(); }
+    virtual ~TerminalInterface();
 
 };
 

@@ -68,7 +68,7 @@ public:
         virtual void serialize(std::ostream &) const;
     };
     // Attributes
-protected:
+private:
     std::set<Observer *> m_observers;
     // Methods
 protected:
