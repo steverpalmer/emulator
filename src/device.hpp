@@ -1,4 +1,5 @@
 // device.hpp
+// Copyright 2016 Steve Palmer
 
 #ifndef DEVICE_HPP_
 #define DEVICE_HPP_

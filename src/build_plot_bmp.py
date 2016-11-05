@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
-
+# build_plot_bmp.py
+# Copyright 2016 Steve Palmer
 __version__ = "0.1"
 
 import argparse

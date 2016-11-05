@@ -1,3 +1,6 @@
+// terminal_interface.cpp
+// Copyright 2016 Steve Palmer
+
 #include "terminal_interface.hpp"
 
 const gunichar TerminalInterface::KBD_NO_KEYPRESS = -1;

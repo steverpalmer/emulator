@@ -1,4 +1,5 @@
 // part.cpp
+// Copyright 2016 Steve Palmer
 
 #include <string>
 #include <list>

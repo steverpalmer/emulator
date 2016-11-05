@@ -1,4 +1,5 @@
 // config_xml.cpp
+// Copyright 2016 Steve Palmer
 
 #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
 

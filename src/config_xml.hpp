@@ -1,4 +1,5 @@
 // config_xml.hpp
+// Copyright 2016 Steve Palmer
 
 #ifndef CONFIG_XML_HPP_
 #define CONFIG_XML_HPP_

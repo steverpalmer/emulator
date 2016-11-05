@@ -1,4 +1,5 @@
 // memory.hpp
+// Copyright 2016 Steve Palmer
 
 #ifndef MEMORY_HPP_
 #define MEMORY_HPP_

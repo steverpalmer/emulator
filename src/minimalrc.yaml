@@ -1,4 +1,7 @@
 %YAML 1.2
+# minimal.yaml
+# Copyright 2016 Steve Palmer
+#
 # A Minimal Atom has only
 # - 2K of Ram,
 # - no VIA

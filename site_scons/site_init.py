@@ -1,3 +1,6 @@
+# site_init.py
+# Copyright 2016 Steve Palmer
+
 import subprocess
 
 try:

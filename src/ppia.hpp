@@ -1,4 +1,5 @@
 // ppia.hpp
+// Copyright 2016 Steve Palmer
 
 #ifndef PPIA_HPP_
 #define PPIA_HPP_

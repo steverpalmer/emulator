@@ -1,4 +1,5 @@
 // common.hpp
+// Copyright 2016 Steve Palmer
 
 #ifndef COMMON_HPP_
 #define COMMON_HPP_

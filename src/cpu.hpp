@@ -1,4 +1,5 @@
 // cpu.hpp
+// Copyright 2016 Steve Palmer
 
 #ifndef CPU_HPP_
 #define CPU_HPP_

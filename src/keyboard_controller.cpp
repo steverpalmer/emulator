@@ -1,4 +1,5 @@
 // keyboard_controller.cpp
+// Copyright 2016 Steve Palmer
 
 /**
  * The behaviour of the Keyboard mapping from the PC to the Atom is described in keyboard.hpp.

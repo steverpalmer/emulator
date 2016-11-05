@@ -1,4 +1,5 @@
 // memory.cpp
+// Copyright 2016 Steve Palmer
 
 #include <cassert>
 #include <fstream>

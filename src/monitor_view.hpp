@@ -1,4 +1,5 @@
 // monitor_view.hpp
+// Copyright 2016 Steve Palmer
 
 #ifndef MONITOR_VIEW_HPP_
 #define MONITOR_VIEW_HPP_

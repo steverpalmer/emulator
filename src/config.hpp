@@ -1,4 +1,5 @@
 // config.hpp
+// Copyright 2016 Steve Palmer
 
 #ifndef _CONFIG_HPP
 #define _CONFIG_HPP

@@ -1,3 +1,6 @@
+# emulator_strict.rnc
+# Copyright 2016 Steve Palmer
+
 namespace e = "http://www.srpalmer.me.uk/ns/emulator"
 
 # Strict Structures

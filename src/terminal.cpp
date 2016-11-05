@@ -1,4 +1,5 @@
 // terminal.cpp
+// Copyright 2016 Steve Palmer
 
 #include "terminal.hpp"
 

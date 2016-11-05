@@ -1,4 +1,5 @@
 // cpu.cpp
+// Copyright 2016 Steve Palmer
 
 #include <cassert>
 #include <unistd.h>

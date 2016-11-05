@@ -1,3 +1,6 @@
+# SConscript
+# Copyright 2016 Steve Palmer
+
 Import('common_env')
 
 # Ancilliaries

@@ -1,4 +1,5 @@
 // keyboard_controller.hpp
+// Copyright 2016 Steve Palmer
 
 #ifndef KEYBOARD_CONTROLLER_HPP_
 #define KEYBOARD_CONTROLLER_HPP_

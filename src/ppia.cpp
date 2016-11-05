@@ -1,4 +1,5 @@
 // ppia.cpp
+// Copyright 2016 Steve Palmer
 
 #include <cassert>
 #include <iomanip>

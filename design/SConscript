@@ -1,3 +1,6 @@
+# SConscript
+# Copyright 2016 Steve Palmer
+
 Import('common_env')
 
 for fn in common_env.Glob('*.uxf', strings=True):

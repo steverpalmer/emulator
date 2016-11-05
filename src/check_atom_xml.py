@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# check_atom_xml.py
+# Copyright 2016 Steve Palmer
 '''
 Tests an atomrc.xml file for errors.
 '''

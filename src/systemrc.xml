@@ -1,4 +1,5 @@
 <?xml version="1.0" ?>
+<!-- Copyright 2016 Steve Palmer -->
 <emulator xmlns="http://www.srpalmer.me.uk/ns/emulator" version="0.05">
 
   <ram name="shared_ram">

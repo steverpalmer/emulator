@@ -1,4 +1,5 @@
 // config_fixed.hpp
+// Copyright 2016 Steve Palmer
 
 #ifndef CONFIG_FIXED_HPP_
 #define CONFIG_FIXED_HPP_

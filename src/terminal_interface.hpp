@@ -1,4 +1,5 @@
 // terminal_interface.hpp
+// Copyright 2016 Steve Palmer
 
 #ifndef TERMINAL_INTERFACE_HPP_
 #define TERMINAL_INTERFACE_HPP_

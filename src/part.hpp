@@ -1,4 +1,5 @@
 // part.hpp
+// Copyright 2016 Steve Palmer
 
 #ifndef PART_HPP_
 #define PART_HPP_
