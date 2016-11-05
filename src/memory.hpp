@@ -47,7 +47,7 @@ public:
     public:
         virtual ~Observer() = default;
         virtual void set_byte_update(Memory &p_memory, word p_addr, byte p_byte, AccessType p_at) = 0;
-        virtual void subject_loss(const Memory &p_memory) {}
+        virtual void subject_loss(const Memory &p_memory) = 0;
     };
 
 	/// The Memory Configurator is an interface to two key items

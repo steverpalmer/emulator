@@ -47,6 +47,7 @@ public:
 
 private:
     // TerminalInterface Observer implementation
+    virtual void vdg_mode_update(const TerminalInterface &, TerminalInterface::VDGMode) {}
     virtual void subject_loss(const TerminalInterface &);
 
 public:

@@ -86,13 +86,13 @@ public:
             LOG4CXX_INFO(cpptrace_log(), "MonitorView::Mode0::render()");
             if (m_state->m_memory) {
                 int rv = SDL_RenderClear(m_state->m_renderer);
+                assert (!rv);
                 SDL_Rect texture;
                 texture.w = 8;
                 texture.h = 12;
                 SDL_Rect window;
                 window.w = 8;
                 window.h = 12;
-                assert (!rv);
                 for (int addr = 0; addr < 512; addr++)
                 {
                     const byte ch = m_state->m_memory->get_byte(addr);
@@ -177,7 +177,7 @@ MonitorView::~MonitorView()
 
 void MonitorView::handle_event(SDL_WindowEvent &p_window_event)
 {
-    LOG4CXX_INFO(cpptrace_log(), "MonitorView::handle_event(" << p_window_event.event << ")");
+    LOG4CXX_INFO(cpptrace_log(), "MonitorView::handle_event(" << int(p_window_event.event) << ")");
     switch (p_window_event.event)
     {
     case SDL_WINDOWEVENT_SIZE_CHANGED:
@@ -191,6 +191,12 @@ void MonitorView::handle_event(SDL_WindowEvent &p_window_event)
 
 void MonitorView::set_byte_update(Memory &, word p_addr, byte p_byte, Memory::AccessType p_at)
 {
+    LOG4CXX_INFO(cpptrace_log()
+                 , "MonitorView::set_byte_update("
+                 << Hex(p_addr)
+                 << ", "
+                 << Hex(p_byte)
+                 << ")");
     if (m_mode)
         if (p_byte != m_rendered[p_addr])
             m_mode->set_byte_update(p_addr, p_byte);
@@ -198,6 +204,7 @@ void MonitorView::set_byte_update(Memory &, word p_addr, byte p_byte, Memory::Ac
 
 void MonitorView::subject_loss(const Memory &p_memory)
 {
+    LOG4CXX_INFO(cpptrace_log(), "MonitorView::subject_loss(Memory)");
     if (&p_memory == m_memory)
         m_memory = 0;
 }
@@ -220,6 +227,7 @@ void MonitorView::vdg_mode_update(const TerminalInterface &, TerminalInterface::
 
 void MonitorView::subject_loss(const TerminalInterface &p_terminal_interface)
 {
+    LOG4CXX_INFO(cpptrace_log(), "MonitorView::subject_loss(TerminalInterface)");
     if (&p_terminal_interface == m_terminal_interface)
         m_terminal_interface = 0;
 }

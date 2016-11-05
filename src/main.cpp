@@ -57,7 +57,7 @@ public:
             computer->reset();
             computer->resume();
             SDL_Event event;
-            bool more = false;
+            bool more = true;
             while( more && SDL_WaitEvent(&event) )
                 switch( event.type ){
                 case SDL_QUIT:
