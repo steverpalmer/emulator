@@ -14,6 +14,7 @@
 #define CTRACE_PREFIX      "ctrace"
 #define PART_LOGGER        "part"
 #define INSTRUCTION_PREFIX "instruction"
+#define SDL_PREFIX         "SDL"
 
 // Types used through out the emulator
 #include <cstdint>
@@ -34,6 +35,16 @@ protected:
 private:
     NonCopyable(const NonCopyable &) = delete;
     const NonCopyable &operator=(const NonCopyable &) = delete;
+};
+
+class SDL
+{
+public:
+    static log4cxx::LoggerPtr log()
+        {
+            static log4cxx::LoggerPtr result(log4cxx::Logger::getLogger(SDL_PREFIX));
+            return result;
+        }
 };
 
 // Streaming Utilitiy

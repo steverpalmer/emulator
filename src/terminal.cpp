@@ -54,22 +54,16 @@ void Terminal::remove_child(Part &p_child)
     }
 }
 
-bool Terminal::handle_event(SDL_Event &event)
+bool Terminal::handle_event(SDL_Event &p_event)
 {
-    bool result(true);
-    switch (event.type)
+    bool result;
+    if (p_event.type == SDL_KEYDOWN || p_event.type == SDL_KEYUP)
     {
-    case SDL_KEYDOWN:
-    case SDL_KEYUP:
-        m_keyboard_controller.handle_event(event.key);
-        break;
-    case SDL_WINDOWEVENT:
-        m_monitor_view.handle_event(event.window);
-        break;
-    default:
-        result=false;
-        break;
+        result = true;
+        m_keyboard_controller.handle_event(p_event.key);
     }
+    else
+        result = m_monitor_view.handle_event(p_event);
     return result;
 }
 

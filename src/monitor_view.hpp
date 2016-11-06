@@ -42,20 +42,24 @@ private:
     SDL_Window         *m_window;
     SDL_Renderer       *m_renderer;
     std::vector<int>   m_rendered;
-    MonitorView::Mode  *m_mode;
-    MonitorView::Mode0 *m_mode0;
+    Mode               *m_mode;
+    Mode0              *m_mode0;
+    const Uint32       m_set_byte_update_event_type;
+    const Uint32       m_vdg_mode_update_event_type;
 private:
+    // TerminalInterface Observer implementation
+    void real_vdg_mode_update(TerminalInterface &, TerminalInterface::VDGMode);
+    virtual void vdg_mode_update(TerminalInterface &, TerminalInterface::VDGMode);
+    virtual void subject_loss(const TerminalInterface &);
     // Memory Observer implementation
+    void real_set_byte_update(Memory &, word, byte, Memory::AccessType);
     virtual void set_byte_update(Memory &, word, byte, Memory::AccessType);
     virtual void subject_loss(const Memory &);
-    // TerminalInterface Observer implementation
-    virtual void vdg_mode_update(const TerminalInterface &, TerminalInterface::VDGMode);
-    virtual void subject_loss(const TerminalInterface &);
 public:
     MonitorView(TerminalInterface *, Memory *, const Configurator &);
     virtual ~MonitorView();
 
-    void handle_event(SDL_WindowEvent &);
+    bool handle_event(SDL_Event &);
 
     virtual void serialize(std::ostream &) const;
     friend std::ostream &::operator<<(std::ostream &p_s, const MonitorView &p_mv)

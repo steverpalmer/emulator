@@ -37,7 +37,7 @@ public:
         {
             LOG4CXX_INFO(cpptrace_log(), "Main::Main(" << argc << ", " << argv << ")");
 
-            LOG4CXX_INFO(cpptrace_log(), "SDL_Init");
+            LOG4CXX_INFO(SDL::log(), "SDL_Init( SDL_INIT_VIDEO )");
             const int rv = SDL_Init( SDL_INIT_VIDEO );
             assert (!rv);
 
@@ -57,31 +57,35 @@ public:
             computer->reset();
             computer->resume();
             SDL_Event event;
-            bool more = true;
-            while( more && SDL_WaitEvent(&event) )
-                switch( event.type ){
-                case SDL_QUIT:
-                    more = false;
-                    break;
-                case SDL_KEYDOWN:
-                case SDL_KEYUP:
-                case SDL_WINDOWEVENT:
-                    (void) terminal->handle_event(event);
-                    break;
-                default:
+            enum {Continue, QuitRequest, EventWaitError} state = Continue;
+            while (state == Continue)
+            {
+                LOG4CXX_INFO(SDL::log(), "SDL_WaitEvent(&event)");
+                if (!SDL_WaitEvent(&event))
+                    state = EventWaitError;
+                else if (event.type == SDL_QUIT)
+                    state = QuitRequest;
+                else if (!terminal->handle_event(event))
                     LOG4CXX_DEBUG(cpptrace_log(), "Unhandled event:" << event.type);
-                    break;
-                }
+            }
             LOG4CXX_INFO(cpptrace_log(), "Computer is about to stop ...");
-            computer->pause();
-            while (not computer->is_paused())
-                std::this_thread::yield();
+            switch (state)
+            {
+            case Continue:
+            case EventWaitError:
+                assert (false);
+            case QuitRequest:
+                computer->pause();
+                while (not computer->is_paused())
+                    std::this_thread::yield();
+            }
         }
 
     virtual ~Main()
         {
             LOG4CXX_INFO(cpptrace_log(), "Main::~Main()");
             PartsBin::instance().clear();
+            LOG4CXX_INFO(SDL::log(), "SDL_Quit");
             SDL_Quit();
             LOG4CXX_INFO(cpptrace_log(), "Main done.");
         }
