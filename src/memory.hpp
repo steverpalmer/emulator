@@ -270,7 +270,63 @@ public:
     virtual void resume();
 
     virtual void serialize(std::ostream &) const;
+
+    friend class Hook;
 };
 
+class Hook
+    : public Memory
+{
+    // Types
+public:
+    class Configurator
+        : public virtual Memory::Configurator
+    {
+    protected:
+        Configurator() = default;
+    public:
+        virtual ~Configurator() = default;
+    	/// 1. Constructor Information
+        virtual word size() const = 0;
+        /// 2. Factory Method
+        virtual Memory *memory_factory() const
+            { return new Hook(*this); }
+
+        virtual void serialize(std::ostream &) const;
+    };
+private:
+    class AddressSpaceConfigurator
+        : public virtual AddressSpace::Configurator
+    {
+        Part::id_type m_id;
+        word m_size;
+        const AddressSpace::Configurator::Mapping m_mapping;
+    public:
+        explicit AddressSpaceConfigurator(word p_size)
+            : m_id("")
+            , m_size(p_size)
+            , m_mapping( { 0, 0, 0 } )
+            {}
+        virtual ~AddressSpaceConfigurator() = default;
+        virtual const Part::id_type &id() const { return m_id; }
+        virtual word size() const { return m_size; }
+        virtual const AddressSpace::Configurator::Mapping &mapping(int i) const { return m_mapping; }
+    };
+    // Attributes
+private:
+    AddressSpace m_address_space;
+    // Methods
+protected:
+    explicit Hook(const Configurator &);
+private:
+    virtual int get_byte_hook(word p_addr, AccessType p_at) { return -1; }
+    virtual int set_byte_hook(word p_addr, byte p_byte, AccessType p_at) { return -1; }
+public:
+    virtual ~Hook() = default;
+    void fill(AddressSpace &p_as, word p_base);
+    virtual word size() const { return m_address_space.size(); }
+    virtual byte get_byte(word p_addr, AccessType p_at = AT_UNKNOWN);
+    virtual void _set_byte(word p_addr, byte p_byte, AccessType p_at = AT_UNKNOWN);
+};
 
 #endif

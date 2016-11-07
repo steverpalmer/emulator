@@ -155,6 +155,9 @@ void AddressSpace::add_child(word p_base, Memory &p_memory, word p_size)
         m_children.insert(&p_memory);
         p_memory.add_parent(*this);
     }
+    Hook *hook = dynamic_cast<Hook *>(&p_memory);
+    if (hook)
+        hook->fill(*this, p_base);
     const int memory_size(SIZE(p_memory.size()));
     assert (memory_size > 0);
     assert (!p_size || (p_size % memory_size == 0));
@@ -218,6 +221,36 @@ void AddressSpace::resume()
     LOG4CXX_INFO(cpptrace_log(), "[" << id() << "].AddressSpace::resume()");
     for (auto mem : m_children)
         mem->resume();
+}
+
+Hook::Hook(const Configurator &p_cfgr)
+    : Memory(p_cfgr)
+    , m_address_space(AddressSpaceConfigurator(p_cfgr.size()))
+{}
+
+void Hook::fill(AddressSpace &p_as, word p_base)
+{
+    for (int hk_addr = 0; hk_addr < m_address_space.size(); hk_addr++)
+    {
+        const word as_addr(p_base + hk_addr);
+        m_address_space.m_base[hk_addr] = hk_addr - (as_addr - p_as.m_base[as_addr]);
+        m_address_space.m_map[hk_addr]  = p_as.m_map[as_addr];
+    }
+}
+
+byte Hook::get_byte(word p_addr, AccessType p_at)
+{
+    int rv = get_byte_hook(p_addr, p_at);
+    if (rv == -1)
+        rv = m_address_space.get_byte(p_addr, p_at);
+    return rv;
+}
+
+void Hook::_set_byte(word p_addr, byte p_byte, AccessType p_at)
+{
+    const int rv = set_byte_hook(p_addr, p_byte, p_at);
+    if (rv == -1)
+        m_address_space.set_byte(p_addr, p_byte, p_at);
 }
 
 

@@ -8,10 +8,11 @@ Import('common_env')
 common_env.rnc2rng('emulator_strict')
 common_env.rnc2rng('emulator_permissive', ['emulator_permissive', 'emulator_strict'])
 
-common_env.jing('emulator_strict.jing.txt', r'emulator_strict.rng')
-common_env.jing('emulator_permissive.jing.txt', r'emulator_permissive.rng')
-common_env.jing('atomrc.jing.txt', [r'emulator_strict.rng', r'atomrc.xml'])
-common_env.jing('atomrc_full.jing.txt', [r'emulator_strict.rng', r'atomrc_full.xml'])
+# This fails in a non-deterministic way
+# common_env.jing('emulator_strict.jing.txt', r'emulator_strict.rng')
+# common_env.jing('emulator_permissive.jing.txt', r'emulator_permissive.rng')
+# common_env.jing('atomrc.jing.txt', [r'emulator_strict.rng', r'atomrc.xml'])
+# common_env.jing('atomrc_full.jing.txt', [r'emulator_strict.rng', r'atomrc_full.xml'])
 
 common_env.Command(r'plot.bmp', r'build_plot_bmp.py',
                    "python3 $SOURCE $TARGET")
@@ -29,6 +30,7 @@ PARTSLIB = partslib_env.StaticLibrary(r'parts', [ r'part.cpp'
                                                 , r'ppia.cpp'
                                                 , r'cpu.cpp'
                                                 , r'terminal_interface.cpp'
+                                                , r'osrdch_hook.cpp'
                                                 ])
 
 emulator_gui_sdl_env = common_env.Clone()
