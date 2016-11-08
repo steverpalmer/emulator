@@ -15,6 +15,16 @@ static log4cxx::LoggerPtr cpptrace_log()
 
 // Device Methods
 
+Part *Device::ReferenceConfigurator::part_factory() const
+{
+    return Part::ReferenceConfigurator::part_factory();
+}
+
+Device *Device::ReferenceConfigurator::device_factory() const
+{
+    return dynamic_cast<Device *>(part_factory());
+}
+
 Device::Device(const Configurator &p_cfg)
     : Part(p_cfg)
 {
@@ -113,6 +123,15 @@ void Device::Configurator::serialize(std::ostream &p_s) const
     p_s << id() << " [color=red];\n";
 #else
     Part::Configurator::serialize(p_s);
+#endif
+}
+
+void Device::ReferenceConfigurator::serialize(std::ostream &p_s) const
+{
+#if SERIALIZE_TO_DOT
+    p_s << m_ref_id << " [color=red];\n";
+#else
+    p_s << "<device href=\"" << m_ref_id << "\"/>";
 #endif
 }
 

@@ -23,6 +23,8 @@ public:
     static const id_type id_here;
     static const id_type id_up;
 
+    static const id_type anonymous_id;
+
     static log4cxx::LoggerPtr log()
         {
             static log4cxx::LoggerPtr result(log4cxx::Logger::getLogger(PART_LOGGER));
@@ -42,8 +44,22 @@ public:
 		friend std::ostream &::operator<<(std::ostream &p_s, const Configurator &p_cfgr)
             { p_cfgr.serialize(p_s); return p_s; }
 	};
+
+    class ReferenceConfigurator
+        : public virtual Configurator
+    {
+    protected:
+        id_type m_ref_id;
+    public:
+        explicit ReferenceConfigurator(const Glib::ustring p_ref_id) : m_ref_id(p_ref_id) {}
+        virtual ~ReferenceConfigurator() = default;
+        virtual const id_type &id() const { return anonymous_id; }
+        virtual Part *part_factory() const;
+        virtual void serialize(std::ostream &) const;
+    };
+
 private:
-	id_type m_id; // Not necessarily Canonical!
+	id_type m_id;
 protected:
     std::set<Part *> m_parents;
 #if SERIALIZE_TO_DOT

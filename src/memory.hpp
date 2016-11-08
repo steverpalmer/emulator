@@ -68,6 +68,21 @@ public:
 
         virtual void serialize(std::ostream &) const;
     };
+
+    class ReferenceConfigurator
+        : public virtual Configurator
+        , protected Device::ReferenceConfigurator
+    {
+    public:
+        explicit ReferenceConfigurator(const Glib::ustring p_ref_id)
+            : Device::ReferenceConfigurator(p_ref_id) {}
+        virtual ~ReferenceConfigurator() = default;
+        virtual Part *part_factory() const;
+        virtual Device *device_factory() const;
+        virtual Memory *memory_factory() const;
+        virtual void serialize(std::ostream &) const;
+    };
+
     // Attributes
 private:
     std::set<Observer *> m_observers;

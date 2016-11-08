@@ -148,27 +148,16 @@ namespace Xml
     };
 
     class PartReferenceConfigurator
-        : public virtual Part::Configurator
+        : public Part::ReferenceConfigurator
     {
     protected:
-        Part::id_type m_ref_id;
-        explicit PartReferenceConfigurator(const Glib::ustring p_ref_id)
-            : m_ref_id(p_ref_id)
-            {}
         explicit PartReferenceConfigurator(const xmlpp::Node *p_node)
-            : m_ref_id("")
+            : Part::ReferenceConfigurator(eval_to_string(p_node, "@href"))
             {
                 LOG4CXX_INFO(cpptrace_log(), "Xml::PartReferenceConfigurator::PartReferenceConfigurator(" << p_node << ")");
-                try { m_ref_id = eval_to_string(p_node, "@href"); }
-                catch (XpathNotFound e) {}
             }
     public:
         virtual ~PartReferenceConfigurator() = default;
-        virtual const Part::id_type &id() const { return m_ref_id; }
-    protected:
-        virtual Part *part_factory() const
-        // TODO: add a placeholder if part not yet defined
-            { return PartsBin::instance()[m_ref_id]; }
     };
 
     class DeviceConfigurator
@@ -182,6 +171,18 @@ namespace Xml
     public:
         virtual ~DeviceConfigurator() = default;
         static const Device::Configurator *factory(const xmlpp::Node *);
+    };
+
+    class DeviceRefConfigurator
+        : public Device::ReferenceConfigurator
+    {
+    public:
+        explicit DeviceRefConfigurator(const xmlpp::Node *p_node)
+            : Device::ReferenceConfigurator(eval_to_string(p_node, "@href"))
+            {}
+        virtual ~DeviceRefConfigurator() = default;
+        static const Device::Configurator *device_configurator_factory(const xmlpp::Node *p_node)
+            { return new DeviceRefConfigurator(p_node); }
     };
 
     class MemoryConfigurator
@@ -198,28 +199,15 @@ namespace Xml
     };
 
     class MemoryRefConfigurator
-        : public virtual Memory::Configurator
-        , private PartReferenceConfigurator
+        : public virtual Memory::ReferenceConfigurator
     {
     public:
         explicit MemoryRefConfigurator(const xmlpp::Node *p_node)
-            : PartReferenceConfigurator(p_node)
-            {}
-        explicit MemoryRefConfigurator(Glib::ustring p_name)
-            : PartReferenceConfigurator(p_name)
+            : Memory::ReferenceConfigurator(eval_to_string(p_node, "@href"))
             {}
         virtual ~MemoryRefConfigurator() = default;
-        virtual Part *part_factory() const
-            { return PartReferenceConfigurator::part_factory(); }
-        virtual Memory *memory_factory() const
-            { return dynamic_cast<Memory *>(part_factory()); }
         static const Memory::Configurator *memory_configurator_factory(const xmlpp::Node *p_node)
             { return new MemoryRefConfigurator(p_node); }
-
-        virtual void serialize(std::ostream &p_s) const
-            {
-                p_s << "<memory name=\"" << m_ref_id << "\"/>";
-            }
     };
 
     class RamConfigurator
@@ -358,31 +346,6 @@ namespace Xml
 
     // Devices Second
 
-    class DeviceRefConfigurator
-        : public virtual Device::Configurator
-        , private PartReferenceConfigurator
-    {
-    public:
-        explicit DeviceRefConfigurator(const xmlpp::Node *p_node)
-            : PartReferenceConfigurator(p_node)
-            {}
-        explicit DeviceRefConfigurator(Glib::ustring p_name)
-            : PartReferenceConfigurator(p_name)
-            {}
-        virtual ~DeviceRefConfigurator() = default;
-        virtual Part *part_factory() const
-            { return PartReferenceConfigurator::part_factory(); }
-        virtual Device *device_factory() const
-            { return dynamic_cast<Device *>(part_factory()); }
-        static const Device::Configurator *device_configurator_factory(const xmlpp::Node *p_node)
-            { return new DeviceRefConfigurator(p_node); }
-
-        virtual void serialize(std::ostream &p_s) const
-            {
-                p_s << "<device name=\"" << m_ref_id << "\"/>";
-            }
-    };
-
     class MCS6502Configurator
         : public virtual MCS6502::Configurator
         , private DeviceConfigurator
@@ -411,7 +374,7 @@ namespace Xml
                     }
                 }
                 if (!m_memory)
-                    m_memory = new MemoryRefConfigurator("address_space");
+                    m_memory = new Memory::ReferenceConfigurator("address_space");
             }
         virtual ~MCS6502Configurator()
             { delete m_memory; }
@@ -506,7 +469,7 @@ namespace Xml
                     }
                 }
                 if (!m_reset_target)
-                    m_reset_target = new DeviceRefConfigurator("computer");
+                    m_reset_target = new Device::ReferenceConfigurator("computer");
             }
         virtual ~KeyboardControllerConfigurator()
             {
@@ -601,9 +564,9 @@ namespace Xml
                     }
                 }
                 if (!m_memory)
-                    m_memory = new MemoryRefConfigurator("video");
+                    m_memory = new Memory::ReferenceConfigurator("video");
                 if (!m_ppia)
-                    m_ppia = new MemoryRefConfigurator("ppia");
+                    m_ppia = new Memory::ReferenceConfigurator("ppia");
                 m_keyboard_controller = new KeyboardControllerConfigurator(p_node);
                 assert (m_keyboard_controller);
                 m_monitor_view = new MonitorViewConfigurator(p_node);

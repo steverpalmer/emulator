@@ -15,6 +15,21 @@ static log4cxx::LoggerPtr cpptrace_log()
 
 // Memory
 
+Part *Memory::ReferenceConfigurator::part_factory() const
+{
+    return Part::ReferenceConfigurator::part_factory();
+}
+
+Device *Memory::ReferenceConfigurator::device_factory() const
+{
+    return dynamic_cast<Device *>(part_factory());
+}
+
+Memory *Memory::ReferenceConfigurator::memory_factory() const
+{
+    return dynamic_cast<Memory *>(part_factory());
+}
+
 Memory::Memory(const Configurator &p_cfgr)
     : Device(p_cfgr)
 {
@@ -264,6 +279,16 @@ void Memory::Configurator::serialize(std::ostream &p_s) const
     Device::Configurator::serialize(p_s);
 #endif
 }
+
+void Memory::ReferenceConfigurator::serialize(std::ostream &p_s) const
+{
+#if SERIALIZE_TO_DOT
+    p_s << m_ref_id << " [color=green];\n";
+#else
+    p_s << "<memory href=\"" << m_ref_id << "\"/>";
+#endif
+}
+
 
 void Ram::Configurator::serialize(std::ostream &p_s) const
 {
