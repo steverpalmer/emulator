@@ -26,37 +26,17 @@ private:
         public:
             virtual const MCS6502::Configurator *mcs6502() const = 0;
         };
-        class HookParameters
-            : public virtual Hook::Configurator
-        {
-        public:
-            virtual const Part::id_type &id() const { return Part::anonymous_id; }
-            virtual word size() const { return 1; }
-        };
         // Attributes
     private:
-        HookParameters             m_hook_parameters;
         MCS6502                    *m_mcs6502;
-        SynchronizationQueue<char> m_queue;
+        SynchronizationQueue<byte> m_queue;
         // Methods
     public:
-        explicit OSRDCH_Adaptor(const Configurator &p_cfgr)
-            : Hook(m_hook_parameters)
-            , m_mcs6502(dynamic_cast<MCS6502 *>(p_cfgr.mcs6502()->device_factory()))
-            {}
+        explicit OSRDCH_Adaptor(const Configurator &);
     private:
-        virtual int get_byte_hook(word, AccessType p_at)
-            {
-                int result(-1);
-                if (p_at == AT_INSTRUCTION)
-                {
-                    result = 0x60 /* RTS */;
-                    m_mcs6502->m_register.A = m_queue.blocking_pull();
-                }
-                return result;
-            }
+        virtual int get_byte_hook(word, AccessType);
     public:
-        void nonblocking_push(char p_char) { m_queue.nonblocking_push(p_char); }
+        void nonblocking_push(byte);
     };
 
     class OSWRCH_Adaptor
@@ -69,35 +49,17 @@ private:
         public:
             virtual const MCS6502::Configurator *mcs6502() const = 0;
         };
-        class HookParameters
-            : public virtual Hook::Configurator
-        {
-        public:
-            virtual const Part::id_type &id() const { return Part::anonymous_id; }
-            virtual word size() const { return 1; }
-        };
         // Attributes
     private:
-        HookParameters             m_hook_parameters;
         MCS6502                    *m_mcs6502;
-        SynchronizationQueue<char> m_queue;  // syncronization interface
+        SynchronizationQueue<byte> m_queue;  // syncronization interface
         // Methods
     public:
-        OSWRCH_Adaptor(const Configurator &p_cfgr)
-            : Hook(m_hook_parameters)
-            , m_mcs6502(dynamic_cast<MCS6502 *>(p_cfgr.mcs6502()->device_factory()))
-            {}
+        explicit OSWRCH_Adaptor(const Configurator &);
     private:
-        virtual int get_byte_hook(word, AccessType p_at)
-            {
-                if (p_at == AT_INSTRUCTION)
-                {
-                    m_queue.nonblocking_push(m_mcs6502->m_register.A);
-                }
-                return -1;
-            }
+        virtual int get_byte_hook(word, AccessType p_at);
     public:
-        char blocking_pull() { return m_queue.blocking_pull(); }
+        byte blocking_pull();
     };
 
     class Configurator
@@ -109,37 +71,22 @@ private:
     };
 
 private:
-    OSRDCH_Adaptor m_OSRDCH;
-    OSWRCH_Adaptor m_OSWRCH;
-    char get_buffer;
+    OSRDCH_Adaptor   m_OSRDCH;
+    OSWRCH_Adaptor   m_OSWRCH;
+    enum { Nominal
+         , OneBehind
+         , CatchUp}  m_get_state;
+    char             m_get_buffer[2];
 
 public:
-    StreamBuf(const Configurator &p_cfgr)
-        : m_OSRDCH(p_cfgr)
-        , m_OSWRCH(p_cfgr)
-        {
-            AddressSpace *address_space = dynamic_cast<AddressSpace *>(p_cfgr.address_space()->memory_factory());
-            assert (address_space);
-            address_space->add_child(0xFE94, m_OSRDCH);
-            address_space->add_child(0xFE52, m_OSWRCH);
-            setg(&get_buffer+1, &get_buffer+1, &get_buffer+1);
-        }
+    explicit StreamBuf(const Configurator &);
 
     std::iostream *iostream_factory()
         { return new std::iostream(this); }
 
 private:
-    virtual int_type overflow(int_type ch)
-        {
-            m_OSRDCH.nonblocking_push(ch);
-            return traits_type::to_int_type(ch);
-        }
-    virtual int_type underflow()
-        {
-            get_buffer = m_OSWRCH.blocking_pull();
-            setg(&get_buffer, &get_buffer, &get_buffer+1);
-            return traits_type::to_int_type(get_buffer);
-        }
+    virtual int_type overflow(int_type);
+    virtual int_type underflow();
 };
 
 #endif
