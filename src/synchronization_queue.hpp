@@ -1,8 +1,8 @@
 // safe_queue.hpp
 // Copyright 2016 Steve Palmer
 
-#ifndef SAFE_QUEUE
-#define SAFE_QUEUE
+#ifndef SYNCHRONIZATION_QUEUE
+#define SYNCHRONIZATION_QUEUE
 
 #include <deque>
 #include <mutex>
@@ -34,7 +34,7 @@
  */
 
 template < typename T, class Container=std::deque<T> >
-class BlockingQueue
+class SynchronizationQueue
 {
     // Types
 public:

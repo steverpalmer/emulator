@@ -8,7 +8,7 @@
 
 #include "memory.hpp"
 #include "cpu.hpp"
-#include "safe_queue.hpp"
+#include "synchronization_queue.hpp"
 
 class StreamBuf
     : public std::streambuf
@@ -35,9 +35,9 @@ private:
         };
         // Attributes
     private:
-        HookParameters      m_hook_parameters;
-        MCS6502             *m_mcs6502;
-        BlockingQueue<char> m_queue;  // syncronization interface
+        HookParameters             m_hook_parameters;
+        MCS6502                    *m_mcs6502;
+        SynchronizationQueue<char> m_queue;
         // Methods
     public:
         explicit OSRDCH_Adaptor(const Configurator &p_cfgr)
@@ -78,9 +78,9 @@ private:
         };
         // Attributes
     private:
-        HookParameters      m_hook_parameters;
-        MCS6502             *m_mcs6502;
-        BlockingQueue<char> m_queue;  // syncronization interface
+        HookParameters             m_hook_parameters;
+        MCS6502                    *m_mcs6502;
+        SynchronizationQueue<char> m_queue;  // syncronization interface
         // Methods
     public:
         OSWRCH_Adaptor(const Configurator &p_cfgr)
