@@ -9,106 +9,125 @@
 #include <condition_variable>
 #include <chrono>
 
-/** A thread-safe, blocking Queue-like object
+/** A thread-safe, blocking std::queue-like object.
  *
- * The Blocking Queue provides a similar interface to the std::queue
- * adaptor, but only allows for thread-safe interface functions.
+ * A BlockingQueue provides a similar interface to the std::queue
+ * adaptor, but only allows thread-safe interface functions.
+ * For example, push is allowed, but front isn't because
+ * its results may be wrong immediately the function returns.
+ * Similarly for functions like empty and size.  Also, retrieving
+ * values from the object is done by a pull function which combines
+ * front and pop.
+ *
  * It can support multiple producers and multiple consumers.
+ * It allows single access to the object as a time.  A second client
+ * requesting concurrent access will be blocked.
+ *
+ * Like std::queue, the container must satisfy the requirements of
+ * SequenceContainer.  Additionally, it must provide the following functions with the usual semantics:
+ * - push_back()
+ * - empty()
+ * - front()
+ * - pop_front()
+ * - clear()
+ * Unlike std::queue, T must be copyable.
  */
 
-template <typename T>
+template < typename T, class Container=std::deque<T> >
 class BlockingQueue
 {
     // Types
 public:
-    typedef std::deque<T> container_type;
-    typedef T             value_type;
+    typedef Container container_type;
+    typedef T         value_type;
+    typedef T         &reference;
+    typedef const T   &const_reference;
 private:
     std::mutex              m_mutex;
-    std::deque<T>           m_queue;
     std::condition_variable m_queue_not_empty;
+protected:
+    Container               c;
 public:
     // front is not thread-safe, so not provided
     // back is not thread-safe, so not provided
     // empty is not thread-safe, so not provided
     // size is not thread-safe, so not provided
-    
-    void push(const T& p_item)
+
+    void nonblocking_push(const value_type &p_item)
         {
             std::unique_lock<std::mutex> lock(m_mutex);
-            m_queue.push_back(p_item);
-            lock.unlock();
-            m_queue_not_empty.notify_one();
-        }
-    
-    void push(T&& p_item)
-        {
-            std::unique_lock<std::mutex> lock(m_mutex);
-            m_queue.push_back(p_item);
+            c.push_back(p_item);
             lock.unlock();
             m_queue_not_empty.notify_one();
         }
 
-    // pop is modified to be atomic, potentially blocking
-    T pop()
+    void nonblocking_push(const value_type&&p_item)
         {
             std::unique_lock<std::mutex> lock(m_mutex);
-            while (!m_queue.empty())
-                m_queue_not_empty.wait(lock);
-            auto result = m_queue.front();
-            m_queue.pop_front();
+            c.push_back(p_item);
+            lock.unlock();
+            m_queue_not_empty.notify_one();
+        }
+
+    bool nonblocking_pull(reference p_item)
+        {
+            bool result;
+            std::unique_lock<std::mutex> lock(m_mutex);
+            if (result = !c.empty)
+            {
+                p_item = c.front();
+                c.pop_front();
+            }
             return result;
         }
 
-    void pop(T& p_item)
+    value_type blocking_pull()
         {
             std::unique_lock<std::mutex> lock(m_mutex);
-            while (!m_queue.empty())
-                m_queue_not_empty.wait(lock);
-            p_item = m_queue.front();
-            m_queue.pop_front();
+            m_queue_not_empty.wait(lock, [this]{ return !this->c.empty(); });
+            value_type result = c.front();
+            c.pop_front();
+            return result;
+        }
+
+    void blocking_pull(reference p_item)
+        {
+            std::unique_lock<std::mutex> lock(m_mutex);
+            m_queue_not_empty.wait_for(lock, [this]{ return !this->c.empty(); });
+            p_item = c.front();
+            c.pop_front();
         }
 
     template<class Rep, class Period>
-    bool pop(T& p_item, std::chrono::duration<Rep, Period>& p_dur)
+    bool blocking_pull(reference p_item, std::chrono::duration<Rep, Period>&p_duration)
         {
-            enum { Waiting, Timeout, NotEmpty } state (Waiting);
+            bool result;
             std::unique_lock<std::mutex> lock(m_mutex);
-            do
+            if (result = m_queue_not_empty.wait_for(lock, p_duration, [this]{ return !this->c.empty(); }))
             {
-                if (!m_queue.empty())
-                    state = NotEmpty;
-                else if (m_queue_not_empty.wait_for(lock, p_dur) == std::cv_status::timeout)
-                    state = Timeout;
+                p_item = c.front();
+                c.pop_front();
             }
-            while (state == Waiting);
-            if (state == NotEmpty)
-            {
-                p_item = m_queue.front();
-                m_queue.pop_front();
-            }
-            return state == NotEmpty;
+            return result;
         }
 
     template<class Clock, class Duration>
-    bool pop(T& p_item, std::chrono::time_point<Clock, Duration>& p_timeout_time)
+    bool blocking_pull(reference p_item, std::chrono::time_point<Clock, Duration>& p_timeout_time)
         {
-            enum { Waiting, Timeout, NotEmpty } state (Waiting);
+            bool result;
             std::unique_lock<std::mutex> lock(m_mutex);
-            do
+            if (result = m_queue_not_empty.wait_until(lock, p_timeout_time, [this]{ return !this->c.empty(); }))
             {
-                if (!m_queue.empty())
-                    state = NotEmpty;
-                else if (m_queue_not_empty.wait_until(lock, p_timeout_time) == std::cv_status::timeout)
-                    state = Timeout;
+                p_item = c.front();
+                c.pop_front();
             }
-            while (state == Waiting);
-            if (state == NotEmpty)
-            {
-                p_item = m_queue.front();
-                m_queue.pop_front();
-            }
-            return state == NotEmpty;
+            return result;
+        }
+
+    void nonblocking_clear()
+        {
+            std::unique_lock<std::mutex> lock(m_mutex);
+            c.clear();
         }
 };
 

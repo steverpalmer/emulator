@@ -51,12 +51,12 @@ private:
                 if (p_at == AT_INSTRUCTION)
                 {
                     result = 0x60 /* RTS */;
-                    m_mcs6502->m_register.A = m_queue.pop();
+                    m_mcs6502->m_register.A = m_queue.blocking_pull();
                 }
                 return result;
             }
     public:
-        void push(char p_char) { m_queue.push(p_char); }
+        void nonblocking_push(char p_char) { m_queue.nonblocking_push(p_char); }
     };
 
     class OSWRCH_Adaptor
@@ -92,12 +92,12 @@ private:
             {
                 if (p_at == AT_INSTRUCTION)
                 {
-                    m_queue.push(m_mcs6502->m_register.A);
+                    m_queue.nonblocking_push(m_mcs6502->m_register.A);
                 }
                 return -1;
             }
     public:
-        char pop() { return m_queue.pop(); }
+        char blocking_pull() { return m_queue.blocking_pull(); }
     };
 
     class Configurator
@@ -131,12 +131,12 @@ public:
 private:
     virtual int_type overflow(int_type ch)
         {
-            m_OSRDCH.push(ch);
+            m_OSRDCH.nonblocking_push(ch);
             return traits_type::to_int_type(ch);
         }
     virtual int_type underflow()
         {
-            get_buffer = m_OSWRCH.pop();
+            get_buffer = m_OSWRCH.blocking_pull();
             setg(&get_buffer, &get_buffer, &get_buffer+1);
             return traits_type::to_int_type(get_buffer);
         }
