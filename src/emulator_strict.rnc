@@ -71,6 +71,12 @@ mcs6502.class = cpu.class, mcs6502.attributes , mcs6502.content
 mcs6502.attributes = empty
 mcs6502.content = memory?
 
+device |= stream.instance
+stream.instance = element e:stream { stream.class }
+stream.class = device.class, stream.attributes, stream.content
+stream.attributes = empty
+stream.content = empty
+
 device |= memory
 memory.class = device.class, memory.attributes, memory.content
 memory.attributes = empty
