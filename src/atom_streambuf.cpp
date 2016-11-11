@@ -1,7 +1,7 @@
-// streambuf.cpp
+// atom_streambuf.cpp
 // Copyright 2016 Steve Palmer
 
-#include "streambuf.hpp"
+#include "atom_streambuf.hpp"
 
 class HookParameters
     : public virtual Hook::Configurator
@@ -15,59 +15,55 @@ static HookParameters hook_parameters;
 
 // OSRDCH
 
-StreamBuf::OSRDCH_Adaptor::OSRDCH_Adaptor(const Configurator &p_cfgr)
+AtomStreamBuf::OSRDCH_Adaptor::OSRDCH_Adaptor(AtomStreamBuf &p_atom_streambuf)
     : Hook(hook_parameters)
-    , m_mcs6502(dynamic_cast<MCS6502 *>(p_cfgr.mcs6502()->device_factory()))
+    , m_atom_streambuf(p_atom_streambuf)
 {
 }
 
-int StreamBuf::OSRDCH_Adaptor::get_byte_hook(word, AccessType p_at)
+int AtomStreamBuf::OSRDCH_Adaptor::get_byte_hook(word, AccessType p_at)
 {
     int result(-1);
-    if (p_at == AT_INSTRUCTION)
+    if (p_at == AT_INSTRUCTION && m_atom_streambuf.m_mcs6502)
     {
         result = 0x60 /* RTS */;
-        m_mcs6502->m_register.A = m_queue.blocking_pull();
+        m_atom_streambuf.m_mcs6502->m_register.A = queue.blocking_pull();
     }
     return result;
 }
 
-void StreamBuf::OSRDCH_Adaptor::nonblocking_push(byte p_byte)
-{
-    m_queue.nonblocking_push(p_byte);
-}
-
 // OSWRCH
 
-StreamBuf::OSWRCH_Adaptor::OSWRCH_Adaptor(const Configurator &p_cfgr)
+AtomStreamBuf::OSWRCH_Adaptor::OSWRCH_Adaptor(AtomStreamBuf &p_atom_streambuf, bool p_is_paused)
     : Hook(hook_parameters)
-    , m_is_paused(p_cfgr.pause_output())
-    , m_mcs6502(dynamic_cast<MCS6502 *>(p_cfgr.mcs6502()->device_factory()))
+    , m_atom_streambuf(p_atom_streambuf)
+    , is_paused(p_is_paused)
 {
 }
 
-int StreamBuf::OSWRCH_Adaptor::get_byte_hook(word, AccessType p_at)
+int AtomStreamBuf::OSWRCH_Adaptor::get_byte_hook(word, AccessType p_at)
 {
-    if (p_at == AT_INSTRUCTION && !m_is_paused)
+    if (p_at == AT_INSTRUCTION && !is_paused && m_atom_streambuf.m_mcs6502)
     {
-        m_queue.nonblocking_push(m_mcs6502->m_register.A);
+        queue.nonblocking_push(m_atom_streambuf.m_mcs6502->m_register.A);
     }
     return -1;
 }
 
-byte StreamBuf::OSWRCH_Adaptor::blocking_pull()
-{
-    return m_queue.blocking_pull();
-}
+// AtomStreamBuf
 
-// StreamBuf
-
-StreamBuf::StreamBuf(const Configurator &p_cfgr)
-    : Device()
-    , m_OSRDCH(p_cfgr)
-    , m_OSWRCH(p_cfgr)
+AtomStreamBuf::AtomStreamBuf(const Configurator &p_cfgr)
+    : Device(p_cfgr)
+    , m_mcs6502(dynamic_cast<MCS6502 *>(p_cfgr.mcs6502()->device_factory()))
+    , m_OSRDCH(*this)
+    , m_OSWRCH(*this, p_cfgr.pause_output())
     , m_get_state(Nominal)
 {
+    if (m_mcs6502)
+    {
+        LOG4CXX_INFO(Part::log(), "making [" << m_mcs6502->id() << "] child of [" << id() << "]");
+        m_mcs6502->add_parent(*this);
+    }
     AddressSpace *address_space = dynamic_cast<AddressSpace *>(p_cfgr.address_space()->memory_factory());
     assert (address_space);
     address_space->add_child(0xFE94, m_OSRDCH);
@@ -75,7 +71,25 @@ StreamBuf::StreamBuf(const Configurator &p_cfgr)
     setg(&m_get_buffer[2], &m_get_buffer[2], &m_get_buffer[2]);
 }
 
-StreamBuf::int_type StreamBuf::overflow(int_type p_ch)
+AtomStreamBuf::~AtomStreamBuf()
+{
+    if (m_mcs6502)
+    {
+        m_mcs6502->remove_parent(*this);
+        remove_child(*m_mcs6502);
+    }
+}
+
+void AtomStreamBuf::remove_child(Part &p_child)
+{
+    if (m_mcs6502 == &p_child)
+    {
+        LOG4CXX_INFO(Part::log(), "removing mcs6502 as child of [" << id() << "]");
+        m_mcs6502 = 0;
+    }
+}
+
+AtomStreamBuf::int_type AtomStreamBuf::overflow(int_type p_ch)
 {
     if (p_ch == traits_type::eof())
         assert (false);
@@ -83,18 +97,18 @@ StreamBuf::int_type StreamBuf::overflow(int_type p_ch)
     {
         if (p_ch == '\n')
             p_ch = '\x0D';
-        m_OSRDCH.nonblocking_push(p_ch);
+        m_OSRDCH.queue.nonblocking_push(p_ch);
     }
     return traits_type::to_int_type(p_ch);
 }
 
-StreamBuf::int_type StreamBuf::underflow()
+AtomStreamBuf::int_type AtomStreamBuf::underflow()
 {
     switch (m_get_state)
     {
     case Nominal:
         m_get_buffer[0] = m_get_buffer[1];
-        m_get_buffer[1] = m_OSWRCH.blocking_pull();
+        m_get_buffer[1] = m_OSWRCH.queue.blocking_pull();
         if (m_get_buffer[1] == '\x0D')
         {
             m_get_state = OneBehind;
@@ -107,7 +121,7 @@ StreamBuf::int_type StreamBuf::underflow()
         }
     case OneBehind:
         m_get_buffer[0] = m_get_buffer[1];
-        m_get_buffer[1] = m_OSWRCH.blocking_pull();
+        m_get_buffer[1] = m_OSWRCH.queue.blocking_pull();
         if (m_get_buffer[0] == '\x0D' && m_get_buffer[1] == '\x0A')
         {
             m_get_buffer[1] = '\n';

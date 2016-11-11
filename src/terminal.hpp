@@ -12,7 +12,6 @@
 #include "ppia.hpp"
 #include "monitor_view.hpp"
 #include "keyboard_controller.hpp"
-#include "streambuf.hpp"
 
 
 class Terminal
@@ -31,7 +30,6 @@ public:
         virtual const Memory::Configurator             *ppia() const = 0;
         virtual const MonitorView::Configurator        &monitor_view() const = 0;
         virtual const KeyboardController::Configurator &keyboard_controller() const = 0;
-        virtual const StreamBuf::Configurator          &streambuf() const = 0;
         virtual Part *part_factory() const
             { return new Terminal(*this); }
 
@@ -43,8 +41,6 @@ private:
     Ppia               *m_ppia;
     MonitorView        m_monitor_view;
     KeyboardController m_keyboard_controller;
-    StreamBuf          m_streambuf;
-    std::iostream      m_iostream;
     // Methods
 public:
     explicit Terminal(const Configurator &);

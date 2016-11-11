@@ -15,8 +15,6 @@ Terminal::Terminal(const Configurator &p_cfgr)
     , m_ppia(dynamic_cast<Ppia *>(p_cfgr.ppia()->memory_factory()))
     , m_monitor_view(m_ppia, m_memory, p_cfgr.monitor_view())
     , m_keyboard_controller(m_ppia, p_cfgr.keyboard_controller())
-    , m_streambuf(p_cfgr.streambuf())
-    , m_iostream(&m_streambuf)
 {
     LOG4CXX_INFO(cpptrace_log(), "Terminal::Terminal(" << p_cfgr << ")");
     assert (m_memory);
@@ -59,12 +57,7 @@ void Terminal::remove_child(Part &p_child)
 bool Terminal::handle_event(SDL_Event &p_event)
 {
     bool result;
-    if (p_event.type == SDL_TEXTINPUT)
-    {
-        result = true;
-        m_iostream << p_event.text.text;
-    }
-    else if (p_event.type == SDL_KEYDOWN || p_event.type == SDL_KEYUP)
+    if (p_event.type == SDL_KEYDOWN || p_event.type == SDL_KEYUP)
     {
         result = true;
         m_keyboard_controller.handle_event(p_event.key);
