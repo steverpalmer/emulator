@@ -9,6 +9,7 @@
 #include <stdlib.h>
 
 #include <thread>
+#include <iostream>
 
 #include <SDL.h>
 
@@ -20,12 +21,52 @@
 #include "part.hpp"
 #include "terminal.hpp"
 #include "device.hpp"
+#include "atom_streambuf.hpp"
 
 static log4cxx::LoggerPtr cpptrace_log()
 {
     static log4cxx::LoggerPtr result(log4cxx::Logger::getLogger(CTRACE_PREFIX ".main.cpp"));
     return result;
 }
+
+class Pipe
+    : private NonCopyable
+{
+private:
+    std::istream     &m_source;
+    std::ostream     &m_sink;
+    bool        m_more;
+    std::thread m_thread;
+private:
+    void thread_function()
+        {
+            char ch;
+            LOG4CXX_INFO(cpptrace_log(), "[" << this << "]Pipe::thread_function()");
+            for (m_more=true; m_more; )
+            {
+                LOG4CXX_INFO(cpptrace_log(), "[" << this << "]Pipe::thread_function reading");
+                m_source >> ch;
+                if (ch == EOF)
+                    break;
+                LOG4CXX_INFO(cpptrace_log(), "[" << this << "]Pipe::thread_function writing");
+                m_sink << ch;
+            }
+        }
+public:
+    Pipe(std::istream &p_source, std::ostream &p_sink)
+        : m_source(p_source)
+        , m_sink(p_sink)
+        , m_thread(&Pipe::thread_function, this)
+        {
+            LOG4CXX_INFO(cpptrace_log(), "Pipe::Pipe() => " << this);
+        }
+    ~Pipe()
+        {
+            LOG4CXX_INFO(cpptrace_log(), "[" << this << "]Pipe::~Pipe()");
+            m_more = false;
+            m_thread.join();
+        }
+};
 
 class Main
     : protected NonCopyable
@@ -48,6 +89,19 @@ public:
             PartsBin::instance().build(*cfg);
             delete cfg;
             LOG4CXX_INFO(cpptrace_log(), PartsBin::instance());
+
+            Pipe *cin(0);
+            Pipe *cout(0);
+            std::iostream *atom_stream(0);
+            AtomStreamBuf *stream = dynamic_cast<AtomStreamBuf *>(PartsBin::instance()["stream"]);
+            if (stream)
+            {
+                LOG4CXX_INFO(cpptrace_log(), "starting streaming");
+                atom_stream = stream->iostream_factory();
+                assert (atom_stream);
+                cin = new Pipe(std::cin, *atom_stream);
+                cout = new Pipe(*atom_stream, std::cout);
+            }
 
             Terminal *terminal = dynamic_cast<Terminal *>(PartsBin::instance()["terminal"]);
             assert (terminal);
@@ -80,6 +134,10 @@ public:
                 computer->pause();
                 while (not computer->is_paused())
                     std::this_thread::yield();
+                delete cout;
+                delete cin;
+                delete atom_stream;
+                delete stream;
             }
         }
 
