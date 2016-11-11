@@ -3,10 +3,10 @@
 
 import subprocess
 
-try:
-    SetOption('num_jobs', int(subprocess.check_output('nproc')))
-except:
-    pass
+#try:
+#    SetOption('num_jobs', int(subprocess.check_output('nproc')))
+#except:
+#    pass
 
 common_env = Environment()
 
