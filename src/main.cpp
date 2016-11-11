@@ -43,9 +43,11 @@ public:
 
             const Configurator *cfg = new Xml::Configurator(argc, argv);  // FIXME: remove Xml::
             assert (cfg);
+            LOG4CXX_INFO(cpptrace_log(), *cfg);
 
             PartsBin::instance().build(*cfg);
             delete cfg;
+            LOG4CXX_INFO(cpptrace_log(), PartsBin::instance());
 
             Terminal *terminal = dynamic_cast<Terminal *>(PartsBin::instance()["terminal"]);
             assert (terminal);
