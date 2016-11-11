@@ -508,6 +508,37 @@ namespace Xml
         const Glib::ustring &window_title() const { return m_window_title; }
     };
 
+    class StreamBufConfigurator
+        : public virtual StreamBuf::Configurator
+        , private DeviceConfigurator
+    {
+    private:
+        const Device::Configurator *m_mcs6502;
+        const Memory::Configurator *m_address_space;
+        bool m_pause_output;
+    public:
+        explicit StreamBufConfigurator(const xmlpp::Node *p_node = 0)
+            : DeviceConfigurator("", p_node)
+            , m_mcs6502(0)
+            , m_address_space(0)
+            , m_pause_output(true)
+            {
+                LOG4CXX_INFO(cpptrace_log(), "Xml::StreamBufConfigurator::StreamBufConfigurator(" << p_node << ")");
+                if (!m_mcs6502)
+                    m_mcs6502 = new Device::ReferenceConfigurator("mcs6502");
+                if (!m_address_space)
+                    m_address_space = new Memory::ReferenceConfigurator("address_space");
+            }
+        virtual ~StreamBufConfigurator()
+            {
+                delete m_mcs6502;
+                delete m_address_space;
+            }
+        virtual const Device::Configurator *mcs6502() const { return m_mcs6502; }
+        virtual const Memory::Configurator *address_space() const { return m_address_space; }
+        virtual bool pause_output() const { return m_pause_output; }
+    };
+
     class TerminalConfigurator
         : public virtual Terminal::Configurator
         , private PartConfigurator
@@ -517,6 +548,7 @@ namespace Xml
         const Memory::Configurator *m_ppia;
         const KeyboardControllerConfigurator *m_keyboard_controller;
         const MonitorViewConfigurator *m_monitor_view;
+        const StreamBufConfigurator *m_streambuf;
     public:
         explicit TerminalConfigurator(const xmlpp::Node *p_node = 0)
             : PartConfigurator("", p_node)
@@ -524,6 +556,7 @@ namespace Xml
             , m_ppia(0)
             , m_keyboard_controller(0)
             , m_monitor_view(0)
+            , m_streambuf(0)
             {
                 LOG4CXX_INFO(cpptrace_log(), "Xml::TerminalConfigurator::TerminalConfigurator(" << p_node << ")");
                 if (p_node)
@@ -571,6 +604,8 @@ namespace Xml
                 assert (m_keyboard_controller);
                 m_monitor_view = new MonitorViewConfigurator(p_node);
                 assert (m_monitor_view);
+                m_streambuf = new StreamBufConfigurator(p_node);
+                assert (m_streambuf);
             }
         virtual ~TerminalConfigurator()
             {
@@ -578,11 +613,13 @@ namespace Xml
                 delete m_ppia;
                 delete m_keyboard_controller;
                 delete m_monitor_view;
+                delete m_streambuf;
             }
         const Memory::Configurator               *memory()              const { return m_memory; }
         const Memory::Configurator               *ppia()                const { return m_ppia; }
         const KeyboardController::Configurator   &keyboard_controller() const { return *m_keyboard_controller; }
         const MonitorView::Configurator          &monitor_view()        const { return *m_monitor_view; }
+        const StreamBuf::Configurator            &streambuf()           const { return *m_streambuf; }
         static const Part::Configurator *part_configurator_factory(const xmlpp::Node *p_node)
             { return new TerminalConfigurator(p_node); }
     };

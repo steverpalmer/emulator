@@ -41,13 +41,14 @@ void StreamBuf::OSRDCH_Adaptor::nonblocking_push(byte p_byte)
 
 StreamBuf::OSWRCH_Adaptor::OSWRCH_Adaptor(const Configurator &p_cfgr)
     : Hook(hook_parameters)
+    , m_is_paused(p_cfgr.pause_output())
     , m_mcs6502(dynamic_cast<MCS6502 *>(p_cfgr.mcs6502()->device_factory()))
 {
 }
 
 int StreamBuf::OSWRCH_Adaptor::get_byte_hook(word, AccessType p_at)
 {
-    if (p_at == AT_INSTRUCTION)
+    if (p_at == AT_INSTRUCTION && !m_is_paused)
     {
         m_queue.nonblocking_push(m_mcs6502->m_register.A);
     }
@@ -62,7 +63,8 @@ byte StreamBuf::OSWRCH_Adaptor::blocking_pull()
 // StreamBuf
 
 StreamBuf::StreamBuf(const Configurator &p_cfgr)
-    : m_OSRDCH(p_cfgr)
+    : Device()
+    , m_OSRDCH(p_cfgr)
     , m_OSWRCH(p_cfgr)
     , m_get_state(Nominal)
 {
