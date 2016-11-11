@@ -14,7 +14,6 @@ Terminal::Terminal(const Configurator &p_cfgr)
     , m_memory(p_cfgr.memory()->memory_factory())
     , m_ppia(dynamic_cast<Ppia *>(p_cfgr.ppia()->memory_factory()))
     , m_monitor_view(m_ppia, m_memory, p_cfgr.monitor_view())
-    , m_keyboard_controller(m_ppia, p_cfgr.keyboard_controller())
 {
     LOG4CXX_INFO(cpptrace_log(), "Terminal::Terminal(" << p_cfgr << ")");
     assert (m_memory);
@@ -57,13 +56,7 @@ void Terminal::remove_child(Part &p_child)
 bool Terminal::handle_event(SDL_Event &p_event)
 {
     bool result;
-    if (p_event.type == SDL_KEYDOWN || p_event.type == SDL_KEYUP)
-    {
-        result = true;
-        m_keyboard_controller.handle_event(p_event.key);
-    }
-    else
-        result = m_monitor_view.handle_event(p_event);
+    result = m_monitor_view.handle_event(p_event);
     return result;
 }
 
@@ -83,7 +76,6 @@ void Terminal::Configurator::serialize(std::ostream &p_s) const
         << "<video_memory>" << *memory() << "</video_memory>"
         << "<controller>" << *ppia() << "</controller>"
         << monitor_view()
-        << keyboard_controller()
         << "</terminal>";
 #endif
 }
@@ -102,7 +94,6 @@ void Terminal::serialize(std::ostream &p_s) const
     p_s << "Memory(" << m_memory->id() << ")"
         << "Ppia(" << m_ppia->id() << ")"
         << m_monitor_view
-        << m_keyboard_controller
         << ")";
 #endif
 }

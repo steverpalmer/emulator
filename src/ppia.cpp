@@ -19,10 +19,6 @@ enum Ports {
     ControlPort = 3
 };
 
-#define SHIFT   byte(0x80)
-#define CONTROL byte(0x40)
-#define SCANCODE(CLMN, SHFT_CTRL) (byte(~((1 << (CLMN)) | (SHFT_CTRL))))
-
 ///****************************************************************************
 /// PPIA
 ///
@@ -33,8 +29,6 @@ enum Ports {
 /// b3..b0 - Keyboard Row request
 /// b7..b4 - Graphics Mode request
 ///
-/// The Keyboard Row request is modelled by setting the shared m_keyboard_row.
-/// The Graphics Mode request is modelled locally by calling scr_set_mode.
 ///****************************************************************************
 /// Port B: Inputs (all active low)
 ///
@@ -42,8 +36,6 @@ enum Ports {
 /// b6     - Control Key Press return
 /// b7     - Shift Key Press return
 ///
-/// The keyboard response is modelled using the kbd module and the shared
-/// m_keyboard_row value from Port A.
 ///****************************************************************************
 /// Port C: Output and Input
 ///
@@ -56,7 +48,6 @@ enum Ports {
 /// b6 - Repeat Key Press (active low)
 /// b7 - 60 Hz Video Flyback Sync
 ///
-/// The Repeat Key Press is modelled using the kdb module.
 /// All other inputs are module simply as a 2 state flip-flop.
 /// Outputs are ignored.
 ///
@@ -72,171 +63,87 @@ Ppia::Ppia(const Configurator &p_cfgr)
     , m_register( { 0, 0, 0, 0 } )
 {
     LOG4CXX_INFO(cpptrace_log(), "Ppia::Ppia(" << p_cfgr << ")");
-    key_mapping[0x00] = new Scanpair(7, SCANCODE(3, CONTROL)); // <Ctrl> @ (nul)
-    key_mapping[0x01] = new Scanpair(6, SCANCODE(3, CONTROL)); // <Ctrl> A (soh)
-    key_mapping[0x02] = new Scanpair(5, SCANCODE(3, CONTROL)); // <Ctrl> B (stx) start printer
-    key_mapping[0x03] = new Scanpair(4, SCANCODE(3, CONTROL)); // <Ctrl> C (etx) end printer
-    key_mapping[0x04] = new Scanpair(3, SCANCODE(3, CONTROL)); // <Ctrl> D (eot)
-    key_mapping[0x05] = new Scanpair(2, SCANCODE(3, CONTROL)); // <Ctrl> E (enq)
-    key_mapping[0x06] = new Scanpair(1, SCANCODE(3, CONTROL)); // <Ctrl> F (ack) start screen
-    key_mapping[0x07] = new Scanpair(0, SCANCODE(3, CONTROL)); // <Ctrl> G (bel) bleep
-    key_mapping[0x08] = new Scanpair(9, SCANCODE(4, CONTROL)); // <Ctrl> H (bs)  backspace
-    key_mapping[0x09] = new Scanpair(8, SCANCODE(4, CONTROL)); // <Ctrl> I (tab) horizontal tab
-    key_mapping[0x0A] = new Scanpair(7, SCANCODE(4, CONTROL)); // <Ctrl> J (lf)  linefeed
-    key_mapping[0x0B] = new Scanpair(6, SCANCODE(4, CONTROL)); // <Ctrl> K (vt)  vertical tab
-    key_mapping[0x0C] = new Scanpair(5, SCANCODE(4, CONTROL)); // <Ctrl> L (ff)  formfeed
-    key_mapping[0x0D] = new Scanpair(4, SCANCODE(4, CONTROL)); // <Ctrl> M (cr)  return
-    key_mapping[0x0E] = new Scanpair(3, SCANCODE(4, CONTROL)); // <Ctrl> N (so)  page mode on
-    key_mapping[0x0F] = new Scanpair(2, SCANCODE(4, CONTROL)); // <Ctrl> O (si)  page mode off
-    key_mapping[0x10] = new Scanpair(1, SCANCODE(4, CONTROL)); // <Ctrl> P (dle)
-    key_mapping[0x11] = new Scanpair(0, SCANCODE(4, CONTROL)); // <Ctrl> Q (dc1)
-    key_mapping[0x12] = new Scanpair(9, SCANCODE(5, CONTROL)); // <Ctrl> R (dc2)
-    key_mapping[0x13] = new Scanpair(8, SCANCODE(5, CONTROL)); // <Ctrl> S (dc3)
-    key_mapping[0x14] = new Scanpair(7, SCANCODE(5, CONTROL)); // <Ctrl> T (dc4)
-    key_mapping[0x15] = new Scanpair(6, SCANCODE(5, CONTROL)); // <Ctrl> U (nak) end screen
-    key_mapping[0x16] = new Scanpair(5, SCANCODE(5, CONTROL)); // <Ctrl> V (syn)
-    key_mapping[0x17] = new Scanpair(4, SCANCODE(5, CONTROL)); // <Ctrl> W (etb)
-    key_mapping[0x18] = new Scanpair(3, SCANCODE(5, CONTROL)); // <Ctrl> X (can) cancel
-    key_mapping[0x19] = new Scanpair(2, SCANCODE(5, CONTROL)); // <Ctrl> Y (em)
-    key_mapping[0x1A] = new Scanpair(1, SCANCODE(5, CONTROL)); // <Ctrl> Z (sub)
-    key_mapping[0x1B] = new Scanpair(0, SCANCODE(5, CONTROL)); // <Ctrl> [ (esc) escape
-    key_mapping[0x1C] = new Scanpair(7, SCANCODE(0, CONTROL)); // <Ctrl> \ (fs)
-    key_mapping[0x1D] = new Scanpair(6, SCANCODE(0, CONTROL)); // <Ctrl> ] (gs)
-    key_mapping[0x1E] = new Scanpair(5, SCANCODE(0, CONTROL)); // <Ctrl> ^ (rs) home cursor
-    // 0x1F <Ctrl> _ (us) is not possible
-    key_mapping[' ']  = new Scanpair(9, SCANCODE(0, 0));
-    key_mapping['!']  = new Scanpair(2, SCANCODE(1, SHIFT));
-    key_mapping['"']  = new Scanpair(1, SCANCODE(1, SHIFT));
-    key_mapping['#']  = new Scanpair(0, SCANCODE(1, SHIFT));
-    key_mapping['$']  = new Scanpair(9, SCANCODE(2, SHIFT));
-    key_mapping['%']  = new Scanpair(8, SCANCODE(2, SHIFT));
-    key_mapping['&']  = new Scanpair(7, SCANCODE(2, SHIFT));
-    key_mapping['\''] = new Scanpair(6, SCANCODE(2, SHIFT));
-    key_mapping['(']  = new Scanpair(5, SCANCODE(2, SHIFT));
-    key_mapping[')']  = new Scanpair(4, SCANCODE(2, SHIFT));
-    key_mapping['*']  = new Scanpair(3, SCANCODE(2, SHIFT));
-    key_mapping['+']  = new Scanpair(2, SCANCODE(2, SHIFT));
-    key_mapping[',']  = new Scanpair(1, SCANCODE(2, 0));
-    key_mapping['-']  = new Scanpair(0, SCANCODE(2, 0));
-    key_mapping['.']  = new Scanpair(9, SCANCODE(3, 0));
-    key_mapping['/']  = new Scanpair(8, SCANCODE(3, 0));
-    key_mapping['0']  = new Scanpair(3, SCANCODE(1, 0));
-    key_mapping['1']  = new Scanpair(2, SCANCODE(1, 0));
-    key_mapping['2']  = new Scanpair(1, SCANCODE(1, 0));
-    key_mapping['3']  = new Scanpair(0, SCANCODE(1, 0));
-    key_mapping['4']  = new Scanpair(9, SCANCODE(2, 0));
-    key_mapping['5']  = new Scanpair(8, SCANCODE(2, 0));
-    key_mapping['6']  = new Scanpair(7, SCANCODE(2, 0));
-    key_mapping['7']  = new Scanpair(6, SCANCODE(2, 0));
-    key_mapping['8']  = new Scanpair(5, SCANCODE(2, 0));
-    key_mapping['9']  = new Scanpair(4, SCANCODE(2, 0));
-    key_mapping[':']  = new Scanpair(3, SCANCODE(2, 0));
-    key_mapping[';']  = new Scanpair(2, SCANCODE(2, 0));
-    key_mapping['<']  = new Scanpair(1, SCANCODE(2, SHIFT));
-    key_mapping['=']  = new Scanpair(0, SCANCODE(2, SHIFT));
-    key_mapping['>']  = new Scanpair(9, SCANCODE(3, SHIFT));
-    key_mapping['?']  = new Scanpair(8, SCANCODE(3, SHIFT));
-    key_mapping['@']  = new Scanpair(7, SCANCODE(3, 0));
-    key_mapping['A']  = new Scanpair(6, SCANCODE(3, 0));
-    key_mapping['B']  = new Scanpair(5, SCANCODE(3, 0));
-    key_mapping['C']  = new Scanpair(4, SCANCODE(3, 0));
-    key_mapping['D']  = new Scanpair(3, SCANCODE(3, 0));
-    key_mapping['E']  = new Scanpair(2, SCANCODE(3, 0));
-    key_mapping['F']  = new Scanpair(1, SCANCODE(3, 0));
-    key_mapping['G']  = new Scanpair(0, SCANCODE(3, 0));
-    key_mapping['H']  = new Scanpair(9, SCANCODE(4, 0));
-    key_mapping['I']  = new Scanpair(8, SCANCODE(4, 0));
-    key_mapping['J']  = new Scanpair(7, SCANCODE(4, 0));
-    key_mapping['K']  = new Scanpair(6, SCANCODE(4, 0));
-    key_mapping['L']  = new Scanpair(5, SCANCODE(4, 0));
-    key_mapping['M']  = new Scanpair(4, SCANCODE(4, 0));
-    key_mapping['N']  = new Scanpair(3, SCANCODE(4, 0));
-    key_mapping['O']  = new Scanpair(2, SCANCODE(4, 0));
-    key_mapping['P']  = new Scanpair(1, SCANCODE(4, 0));
-    key_mapping['Q']  = new Scanpair(0, SCANCODE(4, 0));
-    key_mapping['R']  = new Scanpair(9, SCANCODE(5, 0));
-    key_mapping['S']  = new Scanpair(8, SCANCODE(5, 0));
-    key_mapping['T']  = new Scanpair(7, SCANCODE(5, 0));
-    key_mapping['U']  = new Scanpair(6, SCANCODE(5, 0));
-    key_mapping['V']  = new Scanpair(5, SCANCODE(5, 0));
-    key_mapping['W']  = new Scanpair(4, SCANCODE(5, 0));
-    key_mapping['X']  = new Scanpair(3, SCANCODE(5, 0));
-    key_mapping['Y']  = new Scanpair(2, SCANCODE(5, 0));
-    key_mapping['Z']  = new Scanpair(1, SCANCODE(5, 0));
-    key_mapping['[']  = new Scanpair(8, SCANCODE(1, 0));
-    key_mapping['\\'] = new Scanpair(7, SCANCODE(1, 0));
-    key_mapping[']']  = new Scanpair(6, SCANCODE(1, 0));
-    key_mapping['^']  = new Scanpair(5, SCANCODE(1, 0));
-    // '_' is not possible
-    // '`' is not possible
-    key_mapping['a']  = new Scanpair(6, SCANCODE(3, SHIFT));
-    key_mapping['b']  = new Scanpair(5, SCANCODE(3, SHIFT));
-    key_mapping['c']  = new Scanpair(4, SCANCODE(3, SHIFT));
-    key_mapping['d']  = new Scanpair(3, SCANCODE(3, SHIFT));
-    key_mapping['e']  = new Scanpair(2, SCANCODE(3, SHIFT));
-    key_mapping['f']  = new Scanpair(1, SCANCODE(3, SHIFT));
-    key_mapping['g']  = new Scanpair(0, SCANCODE(3, SHIFT));
-    key_mapping['h']  = new Scanpair(9, SCANCODE(4, SHIFT));
-    key_mapping['i']  = new Scanpair(8, SCANCODE(4, SHIFT));
-    key_mapping['j']  = new Scanpair(7, SCANCODE(4, SHIFT));
-    key_mapping['k']  = new Scanpair(6, SCANCODE(4, SHIFT));
-    key_mapping['l']  = new Scanpair(5, SCANCODE(4, SHIFT));
-    key_mapping['m']  = new Scanpair(4, SCANCODE(4, SHIFT));
-    key_mapping['n']  = new Scanpair(3, SCANCODE(4, SHIFT));
-    key_mapping['o']  = new Scanpair(2, SCANCODE(4, SHIFT));
-    key_mapping['p']  = new Scanpair(1, SCANCODE(4, SHIFT));
-    key_mapping['q']  = new Scanpair(0, SCANCODE(4, SHIFT));
-    key_mapping['r']  = new Scanpair(9, SCANCODE(5, SHIFT));
-    key_mapping['s']  = new Scanpair(8, SCANCODE(5, SHIFT));
-    key_mapping['t']  = new Scanpair(7, SCANCODE(5, SHIFT));
-    key_mapping['u']  = new Scanpair(6, SCANCODE(5, SHIFT));
-    key_mapping['v']  = new Scanpair(5, SCANCODE(5, SHIFT));
-    key_mapping['w']  = new Scanpair(4, SCANCODE(5, SHIFT));
-    key_mapping['x']  = new Scanpair(3, SCANCODE(5, SHIFT));
-    key_mapping['y']  = new Scanpair(2, SCANCODE(5, SHIFT));
-    key_mapping['z']  = new Scanpair(1, SCANCODE(5, SHIFT));
-    // '{' '|' '}' '~' are not possible
-    key_mapping[0x7F] = new Scanpair(4, SCANCODE(1, 0));
 
-    key_mapping[KBD_LEFT]  = new Scanpair(3, SCANCODE(0, SHIFT));
-    key_mapping[KBD_UP]    = new Scanpair(2, SCANCODE(0, 0));
-    key_mapping[KBD_RIGHT] = new Scanpair(3, SCANCODE(0, 0));
-    key_mapping[KBD_DOWN]  = new Scanpair(2, SCANCODE(0, SHIFT));
-    key_mapping[KBD_LOCK]  = new Scanpair(4, SCANCODE(0, 0));
-    key_mapping[KBD_COPY]  = new Scanpair(5, SCANCODE(1, 0));
+    key_mapping[AtomKeyboardInterface::SPACE              ] = Scanpair(9, 1<<0);
+    key_mapping[AtomKeyboardInterface::LEFTBRACKET        ] = Scanpair(8, 1<<0);
+    key_mapping[AtomKeyboardInterface::BACKSLASH          ] = Scanpair(7, 1<<0);
+    key_mapping[AtomKeyboardInterface::RIGHTBRACKET       ] = Scanpair(6, 1<<0);
+    key_mapping[AtomKeyboardInterface::CIRCUMFLEX         ] = Scanpair(5, 1<<0);
+    key_mapping[AtomKeyboardInterface::LOCK               ] = Scanpair(4, 1<<0);
+    key_mapping[AtomKeyboardInterface::LEFT_RIGHT         ] = Scanpair(3, 1<<0);
+    key_mapping[AtomKeyboardInterface::UP_DOWN            ] = Scanpair(2, 1<<0);
+    key_mapping[AtomKeyboardInterface::SPARE1             ] = Scanpair(1, 1<<0);
+    key_mapping[AtomKeyboardInterface::SPARE2             ] = Scanpair(0, 1<<0);
+    key_mapping[AtomKeyboardInterface::SPARE3             ] = Scanpair(9, 1<<1);
+    key_mapping[AtomKeyboardInterface::SPARE4             ] = Scanpair(8, 1<<1);
+    key_mapping[AtomKeyboardInterface::SPARE5             ] = Scanpair(7, 1<<1);
+    key_mapping[AtomKeyboardInterface::RETURN             ] = Scanpair(6, 1<<1);
+    key_mapping[AtomKeyboardInterface::COPY               ] = Scanpair(5, 1<<1);
+    key_mapping[AtomKeyboardInterface::DELETE             ] = Scanpair(4, 1<<1);
+    key_mapping[AtomKeyboardInterface::_0                 ] = Scanpair(3, 1<<1);
+    key_mapping[AtomKeyboardInterface::_1_EXCLAMATION     ] = Scanpair(2, 1<<1);
+    key_mapping[AtomKeyboardInterface::_2_DOUBLEQUOTE     ] = Scanpair(1, 1<<1);
+    key_mapping[AtomKeyboardInterface::_3_NUMBER          ] = Scanpair(0, 1<<1);
+    key_mapping[AtomKeyboardInterface::_4_DOLLAR          ] = Scanpair(9, 1<<2);
+    key_mapping[AtomKeyboardInterface::_5_PERCENT         ] = Scanpair(8, 1<<2);
+    key_mapping[AtomKeyboardInterface::_6_AMPERSAND       ] = Scanpair(7, 1<<2);
+    key_mapping[AtomKeyboardInterface::_7_SINGLEQUOTE     ] = Scanpair(6, 1<<2);
+    key_mapping[AtomKeyboardInterface::_8_LEFTPARENTHESIS ] = Scanpair(5, 1<<2);
+    key_mapping[AtomKeyboardInterface::_9_RIGHTPARENTHESIS] = Scanpair(4, 1<<2);
+    key_mapping[AtomKeyboardInterface::COLON_ASTERISK     ] = Scanpair(3, 1<<2);
+    key_mapping[AtomKeyboardInterface::SEMICOLON_PLUS     ] = Scanpair(2, 1<<2);
+    key_mapping[AtomKeyboardInterface::COMMA_LESSTHAN     ] = Scanpair(1, 1<<2);
+    key_mapping[AtomKeyboardInterface::MINUS_EQUALS       ] = Scanpair(0, 1<<2);
+    key_mapping[AtomKeyboardInterface::PERIOD_GREATERTHAN ] = Scanpair(9, 1<<3);
+    key_mapping[AtomKeyboardInterface::SLASH_QUESTION     ] = Scanpair(8, 1<<3);
+    key_mapping[AtomKeyboardInterface::AT                 ] = Scanpair(7, 1<<3);
+    key_mapping[AtomKeyboardInterface::A                  ] = Scanpair(6, 1<<3);
+    key_mapping[AtomKeyboardInterface::B                  ] = Scanpair(5, 1<<3);
+    key_mapping[AtomKeyboardInterface::C                  ] = Scanpair(4, 1<<3);
+    key_mapping[AtomKeyboardInterface::D                  ] = Scanpair(3, 1<<3);
+    key_mapping[AtomKeyboardInterface::E                  ] = Scanpair(2, 1<<3);
+    key_mapping[AtomKeyboardInterface::F                  ] = Scanpair(1, 1<<3);
+    key_mapping[AtomKeyboardInterface::G                  ] = Scanpair(0, 1<<3);
+    key_mapping[AtomKeyboardInterface::H                  ] = Scanpair(9, 1<<4);
+    key_mapping[AtomKeyboardInterface::I                  ] = Scanpair(8, 1<<4);
+    key_mapping[AtomKeyboardInterface::J                  ] = Scanpair(7, 1<<4);
+    key_mapping[AtomKeyboardInterface::K                  ] = Scanpair(6, 1<<4);
+    key_mapping[AtomKeyboardInterface::L                  ] = Scanpair(5, 1<<4);
+    key_mapping[AtomKeyboardInterface::M                  ] = Scanpair(4, 1<<4);
+    key_mapping[AtomKeyboardInterface::N                  ] = Scanpair(3, 1<<4);
+    key_mapping[AtomKeyboardInterface::O                  ] = Scanpair(2, 1<<4);
+    key_mapping[AtomKeyboardInterface::P                  ] = Scanpair(1, 1<<4);
+    key_mapping[AtomKeyboardInterface::Q                  ] = Scanpair(0, 1<<4);
+    key_mapping[AtomKeyboardInterface::R                  ] = Scanpair(9, 1<<5);
+    key_mapping[AtomKeyboardInterface::S                  ] = Scanpair(8, 1<<5);
+    key_mapping[AtomKeyboardInterface::T                  ] = Scanpair(7, 1<<5);
+    key_mapping[AtomKeyboardInterface::U                  ] = Scanpair(6, 1<<5);
+    key_mapping[AtomKeyboardInterface::V                  ] = Scanpair(5, 1<<5);
+    key_mapping[AtomKeyboardInterface::W                  ] = Scanpair(4, 1<<5);
+    key_mapping[AtomKeyboardInterface::X                  ] = Scanpair(3, 1<<5);
+    key_mapping[AtomKeyboardInterface::Y                  ] = Scanpair(2, 1<<5);
+    key_mapping[AtomKeyboardInterface::Z                  ] = Scanpair(1, 1<<5);
+    key_mapping[AtomKeyboardInterface::ESCAPE             ] = Scanpair(0, 1<<5);
 
-    key_mapping[KBD_NO_KEYPRESS] = 0;
+    key_mapping[AtomKeyboardInterface::CTRL               ] = Scanpair(10, 1<<6);
+    key_mapping[AtomKeyboardInterface::SHIFT              ] = Scanpair(10, 1<<7);
+    key_mapping[AtomKeyboardInterface::REPT               ] = Scanpair(11, 1<<6);
+
     reset();
 }
 
 Ppia::~Ppia()
 {
     LOG4CXX_INFO(cpptrace_log(), "Ppia::~Ppia([" << id() << "])");
-    for (auto sp : key_mapping)
-        delete sp.second;
     key_mapping.clear();
 }
 
 byte Ppia::get_PortB(int p_row)
 {
     LOG4CXX_INFO(cpptrace_log(), "[" << id() << "].Ppia::get_PortB(" << p_row << ")");
-    byte result(0xFF); // Active Low, so start with all high
-    m_terminal.mutex.lock();
-    try
-    {
-        auto sp = key_mapping.at(m_terminal.pressed_key);
-        if (sp)
-        {
-            result = sp->second;
-            if (p_row != sp->first)
-                result |= ~(SHIFT | CONTROL);
-        }
-    }
-    catch (std::out_of_range &e)
-    {
-        LOG4CXX_WARN(cpptrace_log(), "[" << id() << "] unexpected key: " << m_terminal.pressed_key);
-    }
-    m_terminal.mutex.unlock();
+    m_keyboard.mutex.lock();
+    const byte result(p_row < 10 ? m_keyboard.row[p_row] & m_keyboard.row[11] : m_keyboard.row[11]);
+    m_keyboard.mutex.unlock();
     return result;
 }
 
@@ -244,12 +151,11 @@ byte Ppia::get_PortC(byte p_previous)
 {
     LOG4CXX_INFO(cpptrace_log(), "[" << id() << "].Ppia::get_PortC(" << Hex(p_previous) << ")");
     byte result(p_previous & 0xBF);          // clear REPT and FLYBACK signals
-    m_terminal.mutex.lock();
-    if (!m_terminal.repeat)
-        result |= 0x40;
+    m_keyboard.mutex.lock();
+    result &= m_keyboard.row[12];
+    m_keyboard.mutex.unlock();
     result ^= 0x80;                                // Flip Terminal Refresh bit
     result ^= 0x30;                                      // Flip Tape input bits
-    m_terminal.mutex.unlock();
     return result;
 }
 
@@ -345,8 +251,11 @@ void Ppia::reset()
     // reset the IO Model Inputs first
     m_terminal.mutex.lock();
     m_terminal.notified_vdg_mode = VDG_LAST; // force a notification
-    m_terminal.pressed_key       = KBD_NO_KEYPRESS;
-    m_terminal.repeat            = false;
+
+    m_keyboard.mutex.lock();
+    for (int i = 0; i <12; i++)
+        m_keyboard.row[i] = ~0;  // Active Low
+    m_keyboard.mutex.unlock();
 
     // reset "Control" port first
     m_register[ControlPort] = 0x8A;
@@ -369,21 +278,38 @@ TerminalInterface::VDGMode Ppia::vdg_mode() const
     return result;
 }
 
-void Ppia::set_keypress(gunichar p_key, bool p_repeat)
+void Ppia::down(Key p_key)
 {
-    LOG4CXX_INFO(cpptrace_log(), "[" << id() << "].Ppia::set_keypress(" << p_key << ")");
-    if (key_mapping.find(p_key) == key_mapping.end())
+    LOG4CXX_INFO(cpptrace_log(), "[" << id() << "].Ppia::down(" << p_key << ")");
+    m_keyboard.mutex.lock();
+    try
     {
-        LOG4CXX_WARN(cpptrace_log(), "[" << id() << "].Ppia::set_keypress: Unknown key: " << p_key);
+        Scanpair &sp = key_mapping[p_key];
+        m_keyboard.row[sp.first] &= ~sp.second;
     }
-    else
+    catch (std::out_of_range e)
     {
-        m_terminal.mutex.lock();
-        m_terminal.pressed_key = p_key;
-        m_terminal.repeat      = p_repeat;
-        m_terminal.mutex.unlock();
+        LOG4CXX_WARN(cpptrace_log(), "[" << id() << "].Ppia::down: Unknown key: " << p_key);
     }
+    m_keyboard.mutex.unlock();
 }
+
+void Ppia::up(Key p_key)
+{
+    LOG4CXX_INFO(cpptrace_log(), "[" << id() << "].Ppia::up(" << p_key << ")");
+    m_keyboard.mutex.lock();
+    try
+    {
+        Scanpair &sp = key_mapping[p_key];
+        m_keyboard.row[sp.first] |= sp.second;
+    }
+    catch (std::out_of_range e)
+    {
+        LOG4CXX_WARN(cpptrace_log(), "[" << id() << "].Ppia::up: Unknown key: " << p_key);
+    }
+    m_keyboard.mutex.unlock();
+}
+
 
 void Ppia::Configurator::serialize(std::ostream &p_s) const
 {
@@ -407,8 +333,7 @@ void Ppia::serialize(std::ostream &p_s) const
     p_s << ", PortA("   << Hex(m_register[PortA]) << ")"
         << ", PortB("   << Hex(m_register[PortB]) << ")"
         << ", PortC("   << Hex(m_register[PortC]) << ")"
-        << ", Control(" << Hex(m_register[ControlPort]) << ")"
-        << ", Key("     << m_terminal.pressed_key << ")";
+        << ", Control(" << Hex(m_register[ControlPort]) << ")";
     m_terminal.mutex.unlock();
     p_s << ")";
 #endif

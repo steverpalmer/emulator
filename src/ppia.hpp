@@ -9,11 +9,13 @@
 
 #include "common.hpp"
 #include "memory.hpp"
+#include "atom_keyboard_interface.hpp"
 #include "terminal_interface.hpp"
 
 
 class Ppia
     : public Memory
+    , public virtual AtomKeyboardInterface
     , public TerminalInterface
 {
 public:
@@ -39,11 +41,14 @@ private:
         mutable std::recursive_mutex mutex;
         VDGMode  vdg_mode;
         VDGMode  notified_vdg_mode;
-        gunichar pressed_key;
-        bool     repeat;
     } m_terminal;
+    struct
+    {
+        mutable std::recursive_mutex mutex;
+        std::array<byte, 12> row;
+    } m_keyboard;
     typedef std::pair<int, byte> Scanpair;
-    std::map<gunichar, const Scanpair *> key_mapping;
+    std::map<AtomKeyboardInterface::Key, Scanpair> key_mapping;
     // Methods
 private:
     byte get_PortB(int p_row);
@@ -61,11 +66,15 @@ public:
 protected:
     virtual void _set_byte(word p_addr, byte p_byte, AccessType p_at = AT_UNKNOWN);
 
+    // AtomKeyboardInterface
+private:
+    virtual void down(Key);
+    virtual void up(Key);
+
     // TerminalInterface
 public:
     virtual Part::id_type id() const { return Device::id(); }
     virtual VDGMode vdg_mode() const;
-    virtual void set_keypress(gunichar, bool p_repeat=false);
 
     virtual void serialize(std::ostream &) const;
 };

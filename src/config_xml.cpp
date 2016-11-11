@@ -474,47 +474,6 @@ namespace Xml
 
     // Other Parts last
 
-    class KeyboardControllerConfigurator
-        : public virtual KeyboardController::Configurator
-    {
-    private:
-        const Device::Configurator *m_reset_target;
-    public:
-        explicit KeyboardControllerConfigurator(const xmlpp::Node *p_node = 0)
-            : m_reset_target(0)
-            {
-                LOG4CXX_INFO(cpptrace_log(), "Xml::KeyboardControllerConfigurator::KeyboardControllerConfigurator(" << p_node << ")");
-                if (p_node)
-                {
-                    const xmlpp::NodeSet device_ns(p_node->find("e:reset", namespaces));
-                    switch (device_ns.size())
-                    {
-                    case 0:
-                        break;
-                    case 1:
-                        for (auto child : device_ns.front()->get_children())
-                        {
-                            m_reset_target = DeviceConfigurator::factory(child);
-                            if (m_reset_target)
-                                break;
-                        }
-                        break;
-                    default:
-                        assert (false);
-                        break;
-                    }
-                }
-                if (!m_reset_target)
-                    m_reset_target = new Device::ReferenceConfigurator("computer");
-            }
-        virtual ~KeyboardControllerConfigurator()
-            {
-                delete m_reset_target;
-            }
-        virtual const Device::Configurator *reset_target() const
-            { return m_reset_target; }
-    };
-
     class MonitorViewConfigurator
         : public virtual MonitorView::Configurator
     {
@@ -551,14 +510,12 @@ namespace Xml
     private:
         const Memory::Configurator *m_memory;
         const Memory::Configurator *m_ppia;
-        const KeyboardControllerConfigurator *m_keyboard_controller;
         const MonitorViewConfigurator *m_monitor_view;
     public:
         explicit TerminalConfigurator(const xmlpp::Node *p_node = 0)
             : PartConfigurator("", p_node)
             , m_memory(0)
             , m_ppia(0)
-            , m_keyboard_controller(0)
             , m_monitor_view(0)
             {
                 LOG4CXX_INFO(cpptrace_log(), "Xml::TerminalConfigurator::TerminalConfigurator(" << p_node << ")");
@@ -603,8 +560,6 @@ namespace Xml
                     m_memory = new Memory::ReferenceConfigurator("video");
                 if (!m_ppia)
                     m_ppia = new Memory::ReferenceConfigurator("ppia");
-                m_keyboard_controller = new KeyboardControllerConfigurator(p_node);
-                assert (m_keyboard_controller);
                 m_monitor_view = new MonitorViewConfigurator(p_node);
                 assert (m_monitor_view);
             }
@@ -612,12 +567,10 @@ namespace Xml
             {
                 delete m_memory;
                 delete m_ppia;
-                delete m_keyboard_controller;
                 delete m_monitor_view;
             }
         const Memory::Configurator               *memory()              const { return m_memory; }
         const Memory::Configurator               *ppia()                const { return m_ppia; }
-        const KeyboardController::Configurator   &keyboard_controller() const { return *m_keyboard_controller; }
         const MonitorView::Configurator          &monitor_view()        const { return *m_monitor_view; }
         static const Part::Configurator *part_configurator_factory(const xmlpp::Node *p_node)
             { return new TerminalConfigurator(p_node); }

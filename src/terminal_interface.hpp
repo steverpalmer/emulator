@@ -47,16 +47,6 @@ public:
             return p_s;
         }
 
-    static const gunichar KBD_NO_KEYPRESS;
-    static const gunichar KBD_LEFT;
-    static const gunichar KBD_UP;
-    static const gunichar KBD_RIGHT;
-    static const gunichar KBD_DOWN;
-    static const gunichar KBD_SHIFT;
-    static const gunichar KBD_LOCK;
-    static const gunichar KBD_CTRL;
-    static const gunichar KBD_COPY;
-
     class Observer
         : protected NonCopyable
     {
@@ -75,7 +65,6 @@ protected:
 public:
     virtual Part::id_type id() const = 0;
     virtual VDGMode vdg_mode() const = 0;
-    virtual void set_keypress(gunichar, bool p_repeat=false) = 0;
 protected:
     void vdg_mode_notify(VDGMode);
 public:
