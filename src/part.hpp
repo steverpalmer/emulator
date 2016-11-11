@@ -60,6 +60,7 @@ public:
 
 private:
 	id_type m_id;
+    static int anonymous_id_counter;
 protected:
     std::set<Part *> m_parents;
 #if SERIALIZE_TO_DOT
@@ -70,6 +71,7 @@ public:
     static std::unique_ptr<id_type> canonical_id(const id_type &);
 protected:
 	explicit Part(const Configurator &);
+	explicit Part();
 public:
     virtual ~Part();
 

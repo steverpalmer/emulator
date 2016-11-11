@@ -36,6 +36,12 @@ Memory::Memory(const Configurator &p_cfgr)
     LOG4CXX_INFO(cpptrace_log(), "Memory::Memory(" << p_cfgr << ")");
 }
 
+Memory::Memory()
+    : Device()
+{
+    LOG4CXX_INFO(cpptrace_log(), "Memory::Memory()");
+}
+
 Memory::~Memory()
 {
     for (auto obs : m_observers)
@@ -149,6 +155,14 @@ AddressSpace::AddressSpace(const Configurator &p_cfgr)
     }
 }
 
+AddressSpace::AddressSpace(word p_size)
+    : Memory()
+    , m_base(SIZE(p_size), 0)
+    , m_map(SIZE(p_size), 0)
+{
+    LOG4CXX_INFO(cpptrace_log(), "AddressSpace::AddressSpace(" << p_size << ")");
+}
+
 byte AddressSpace::get_byte(word p_addr, AccessType p_at)
 {
     LOG4CXX_INFO(cpptrace_log(), "[" << id() << "].AddressSpace::get_byte(" << Hex(p_addr) << ", " << p_at << ")");
@@ -240,7 +254,7 @@ void AddressSpace::resume()
 
 Hook::Hook(const Configurator &p_cfgr)
     : Memory(p_cfgr)
-    , m_address_space(AddressSpaceConfigurator(p_cfgr.size()))
+    , m_address_space(p_cfgr.size())
 {}
 
 void Hook::fill(AddressSpace &p_as, word p_base)

@@ -53,6 +53,7 @@ public:
     // Methods
 protected:
     explicit Device(const Configurator &);
+    Device();
 public:
     virtual ~Device();
     virtual void reset() {};

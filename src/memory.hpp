@@ -89,6 +89,7 @@ private:
     // Methods
 protected:
     explicit Memory(const Configurator &);
+    Memory();
 protected:
     virtual void _set_byte(word p_addr, byte p_byte, AccessType p_at = AT_UNKNOWN) = 0;
 public:
@@ -269,6 +270,7 @@ private:
     // Methods
 public:
     explicit AddressSpace(const Configurator &);
+    explicit AddressSpace(word p_size = 0);
     virtual word size() const { return m_map.size(); }
     virtual byte get_byte(word p_addr, AccessType p_at = AT_UNKNOWN);
 protected:
@@ -306,28 +308,7 @@ public:
         /// 2. Factory Method
         virtual Memory *memory_factory() const
             { return new Hook(*this); }
-
-        virtual void serialize(std::ostream &) const;
     };
-private:
-    class AddressSpaceConfigurator
-        : public virtual AddressSpace::Configurator
-    {
-        Part::id_type m_id;
-        word m_size;
-        const AddressSpace::Configurator::Mapping m_mapping;
-    public:
-        explicit AddressSpaceConfigurator(word p_size)
-            : m_id("")
-            , m_size(p_size)
-            , m_mapping( { 0, 0, 0 } )
-            {}
-        virtual ~AddressSpaceConfigurator() = default;
-        virtual const Part::id_type &id() const { return m_id; }
-        virtual word size() const { return m_size; }
-        virtual const AddressSpace::Configurator::Mapping &mapping(int i) const { return m_mapping; }
-    };
-    // Attributes
 private:
     AddressSpace m_address_space;
     // Methods

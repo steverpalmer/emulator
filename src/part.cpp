@@ -15,6 +15,7 @@ static log4cxx::LoggerPtr cpptrace_log()
 }
 
 const Part::id_type Part::anonymous_id("");
+int Part::anonymous_id_counter(1000);
 
 Part *Part::ReferenceConfigurator::part_factory() const
 {
@@ -25,14 +26,23 @@ Part *Part::ReferenceConfigurator::part_factory() const
 Part::Part(const Part::Configurator &p_cfgr)
     : m_id(p_cfgr.id())
 {
-    static int anonymous_id_counter = 1000;
     LOG4CXX_INFO(cpptrace_log(), "Part::Part(" << p_cfgr << ")");
     assert (!dynamic_cast<const Part::ReferenceConfigurator *>(&p_cfgr));
-    LOG4CXX_INFO(Part::log(), "created [" << m_id << "]");
     if (m_id == anonymous_id)
     {
         m_id = std::to_string(++anonymous_id_counter);
     }
+    LOG4CXX_INFO(Part::log(), "created [" << m_id << "]");
+    assert (!PartsBin::instance()[m_id]);
+    PartsBin::instance()[m_id] = this;
+}
+
+Part::Part()
+{
+    LOG4CXX_INFO(cpptrace_log(), "Part::Part()");
+    m_id = std::to_string(++anonymous_id_counter);
+    LOG4CXX_INFO(Part::log(), "created [" << m_id << "]");
+    assert (!PartsBin::instance()[m_id]);
     PartsBin::instance()[m_id] = this;
 }
 
