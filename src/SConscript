@@ -29,7 +29,6 @@ PARTSLIB = partslib_env.StaticLibrary(r'parts', [ r'part.cpp'
                                                 , r'memory.cpp'
                                                 , r'ppia.cpp'
                                                 , r'cpu.cpp'
-                                                , r'terminal_interface.cpp'
                                                 , r'atom_streambuf.cpp'
                                                 ])
 

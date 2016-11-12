@@ -66,12 +66,24 @@ public:
     virtual Part::id_type id() const = 0;
     virtual VDGMode vdg_mode() const = 0;
 protected:
-    void vdg_mode_notify(VDGMode);
+    void vdg_mode_notify(VDGMode p_mode)
+        {
+            for (auto obs : m_observers)
+                obs->vdg_mode_update(*this, p_mode);
+        }
 public:
-    void attach(Observer &);
-    void detach(Observer &);
+    void attach(Observer & p_observer)
+        { m_observers.insert(&p_observer); }
 
-    virtual ~TerminalInterface();
+    void detach(Observer & p_observer)
+        { m_observers.erase(&p_observer); }
+
+    virtual ~TerminalInterface()
+        {
+            for (auto obs : m_observers)
+                obs->subject_loss(*this);
+            m_observers.clear();
+        }
 
 };
 
