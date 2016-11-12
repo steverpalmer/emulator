@@ -19,10 +19,11 @@
 #include "config.hpp"
 #include "config_xml.hpp"
 #include "part.hpp"
-#include "terminal.hpp"
 #include "device.hpp"
 #include "atom_streambuf.hpp"
+#include "ppia.hpp"
 #include "keyboard_adaptor.hpp"
+#include "dispatcher.hpp"
 
 static log4cxx::LoggerPtr cpptrace_log()
 {
@@ -73,6 +74,7 @@ class Main
     : protected NonCopyable
 {
 private:
+private:
     Main();
 public:
     Main(int argc, char *argv[])
@@ -108,9 +110,6 @@ public:
             assert (ppia);
             KeyboardAdaptor *keyboard = new KeyboardAdaptor(ppia);
 
-            Terminal *terminal = dynamic_cast<Terminal *>(PartsBin::instance()["terminal"]);
-            assert (terminal);
-
             Device *computer = dynamic_cast<Device *>(PartsBin::instance()["computer"]);
             assert (computer);
 
@@ -119,18 +118,17 @@ public:
             computer->resume();
             SDL_Event event;
             enum {Continue, QuitRequest, EventWaitError} state = Continue;
-            while (state == Continue)
+            do
             {
                 LOG4CXX_INFO(SDL::log(), "SDL_WaitEvent(&event)");
                 if (!SDL_WaitEvent(&event))
                     state = EventWaitError;
                 else if (event.type == SDL_QUIT)
                     state = QuitRequest;
-                else if (event.type == SDL_KEYDOWN || event.type == SDL_KEYUP)
-                    keyboard->handle(event.key);
-                else if (!terminal->handle_event(event))
-                    LOG4CXX_DEBUG(cpptrace_log(), "Unhandled event:" << event.type);
+                else
+                    Dispatcher::instance().dispatch(event);
             }
+            while (state == Continue);
             LOG4CXX_INFO(cpptrace_log(), "Computer is about to stop ...");
             switch (state)
             {
@@ -145,6 +143,7 @@ public:
                 delete cin;
                 delete atom_stream;
                 delete stream;
+                delete keyboard;
             }
         }
 

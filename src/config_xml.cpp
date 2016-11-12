@@ -19,7 +19,7 @@
 #include "ppia.hpp"
 #include "cpu.hpp"
 #include "atom_streambuf.hpp"
-#include "terminal.hpp"
+#include "monitor_view.hpp"
 
 static log4cxx::LoggerPtr cpptrace_log()
 {
@@ -455,34 +455,19 @@ namespace Xml
 
     };
 
-    const Device::Configurator *DeviceConfigurator::factory(const xmlpp::Node *p_node)
-    {
-        LOG4CXX_INFO(cpptrace_log(), "Xml::DeviceConfigurator::factory(" << p_node << ")");
-        typedef const Device::Configurator *(factory_function)(const xmlpp::Node *);
-        static std::map<Glib::ustring, factory_function *> factory_map;
-        if (factory_map.size() == 0)
-        {
-            factory_map["device"]   = DeviceRefConfigurator::device_configurator_factory;
-            factory_map["mcs6502"]  = MCS6502Configurator::device_configurator_factory;
-            factory_map["stream"]   = AtomStreamBufConfigurator::device_configurator_factory;
-            factory_map["computer"] = ComputerConfigurator::device_configurator_factory;
-        }
-        factory_function *factory = factory_map[p_node->get_name()];
-        const Device::Configurator *result(factory ? factory(p_node) : MemoryConfigurator::factory(p_node));
-        return result;
-    }
-
-    // Other Parts last
-
     class MonitorViewConfigurator
         : public virtual MonitorView::Configurator
+        , private DeviceConfigurator
     {
     private:
         Glib::ustring m_fontfilename;
         Glib::ustring m_window_title;
+        const Memory::Configurator *m_memory;
+        const Memory::Configurator *m_ppia;
     public:
         explicit MonitorViewConfigurator(const xmlpp::Node *p_node = 0)
-            : m_fontfilename("")
+            : DeviceConfigurator("", p_node)
+            , m_fontfilename("")
             , m_window_title("")
             {
                 LOG4CXX_INFO(cpptrace_log(), "Xml::MonitorViewConfigurator::MonitorViewConfigurator(" << p_node << ")");
@@ -492,35 +477,6 @@ namespace Xml
                     catch (XpathNotFound e) {}
                     try { m_window_title = eval_to_string(p_node, "e:window_title"); }
                     catch (XpathNotFound e) {}
-                }
-                if (m_fontfilename.empty())
-                    m_fontfilename = "mc6847.bmp";
-                if (m_window_title.empty())
-                    m_window_title = "Emulator";
-            }
-        virtual ~MonitorViewConfigurator() = default;
-        const Glib::ustring &fontfilename() const { return m_fontfilename; }
-        const Glib::ustring &window_title() const { return m_window_title; }
-    };
-
-    class TerminalConfigurator
-        : public virtual Terminal::Configurator
-        , private PartConfigurator
-    {
-    private:
-        const Memory::Configurator *m_memory;
-        const Memory::Configurator *m_ppia;
-        const MonitorViewConfigurator *m_monitor_view;
-    public:
-        explicit TerminalConfigurator(const xmlpp::Node *p_node = 0)
-            : PartConfigurator("", p_node)
-            , m_memory(0)
-            , m_ppia(0)
-            , m_monitor_view(0)
-            {
-                LOG4CXX_INFO(cpptrace_log(), "Xml::TerminalConfigurator::TerminalConfigurator(" << p_node << ")");
-                if (p_node)
-                {
                     const xmlpp::NodeSet video_memory_ns(p_node->find("e:video_memory", namespaces));
                     switch (video_memory_ns.size())
                     {
@@ -556,35 +512,53 @@ namespace Xml
                         break;
                     }
                 }
+                if (m_fontfilename.empty())
+                    m_fontfilename = "mc6847.bmp";
+                if (m_window_title.empty())
+                    m_window_title = "Emulator";
                 if (!m_memory)
                     m_memory = new Memory::ReferenceConfigurator("video");
                 if (!m_ppia)
                     m_ppia = new Memory::ReferenceConfigurator("ppia");
-                m_monitor_view = new MonitorViewConfigurator(p_node);
-                assert (m_monitor_view);
             }
-        virtual ~TerminalConfigurator()
+        virtual ~MonitorViewConfigurator()
             {
                 delete m_memory;
                 delete m_ppia;
-                delete m_monitor_view;
             }
-        const Memory::Configurator               *memory()              const { return m_memory; }
-        const Memory::Configurator               *ppia()                const { return m_ppia; }
-        const MonitorView::Configurator          &monitor_view()        const { return *m_monitor_view; }
-        static const Part::Configurator *part_configurator_factory(const xmlpp::Node *p_node)
-            { return new TerminalConfigurator(p_node); }
+        const Glib::ustring        &fontfilename() const { return m_fontfilename; }
+        const Glib::ustring        &window_title() const { return m_window_title; }
+        const Memory::Configurator *memory()       const { return m_memory; }
+        const Memory::Configurator *ppia()         const { return m_ppia; }
+        static const Device::Configurator *device_configurator_factory(const xmlpp::Node *p_node)
+            { return new MonitorViewConfigurator(p_node); }
     };
+
+    const Device::Configurator *DeviceConfigurator::factory(const xmlpp::Node *p_node)
+    {
+        LOG4CXX_INFO(cpptrace_log(), "Xml::DeviceConfigurator::factory(" << p_node << ")");
+        typedef const Device::Configurator *(factory_function)(const xmlpp::Node *);
+        static std::map<Glib::ustring, factory_function *> factory_map;
+        if (factory_map.size() == 0)
+        {
+            factory_map["device"]   = DeviceRefConfigurator::device_configurator_factory;
+            factory_map["mcs6502"]  = MCS6502Configurator::device_configurator_factory;
+            factory_map["stream"]   = AtomStreamBufConfigurator::device_configurator_factory;
+            factory_map["computer"] = ComputerConfigurator::device_configurator_factory;
+            factory_map["terminal"] = MonitorViewConfigurator::device_configurator_factory;
+        }
+        factory_function *factory = factory_map[p_node->get_name()];
+        const Device::Configurator *result(factory ? factory(p_node) : MemoryConfigurator::factory(p_node));
+        return result;
+    }
+
+    // Other Parts last
 
     const Part::Configurator *PartConfigurator::factory(const xmlpp::Node *p_node)
     {
         LOG4CXX_INFO(cpptrace_log(), "Xml::PartConfigurator::factory(" << p_node << ")");
         typedef const Part::Configurator *(factory_function)(const xmlpp::Node *);
         static std::map<const Glib::ustring, factory_function *> factory_map;
-        if (factory_map.size() == 0)
-        {
-            factory_map["terminal"] = TerminalConfigurator::part_configurator_factory;
-        }
         factory_function *factory = factory_map[p_node->get_name()];
         const Part::Configurator *result(factory ? factory(p_node) : DeviceConfigurator::factory(p_node));
         return result;

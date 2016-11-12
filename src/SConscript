@@ -36,7 +36,6 @@ emulator_gui_sdl_env = common_env.Clone()
 emulator_gui_sdl_env.ParseConfig("pkg-config --cflags --libs sdl2 libxml++-2.6")
 emulator_gui_sdl_env.Program('emulator', [ r'monitor_view.cpp'
                                          , r'keyboard_adaptor.cpp'
-                                         , r'terminal.cpp'
                                          , r'config_xml.cpp'
                                          , r'main.cpp'
                                          , PARTSLIB

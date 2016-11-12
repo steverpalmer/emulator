@@ -118,26 +118,26 @@ public:
         }
 };
 
-MonitorView::MonitorView(AtomMonitorInterface *p_atom_monitor,
-                         Memory *p_memory,
-                         const Configurator &p_cfgr)
-    : m_atom_monitor(p_atom_monitor)
-    , m_memory(p_memory)
+MonitorView::MonitorView(const Configurator &p_cfgr)
+    : Device(p_cfgr)
+    , m_ppia(dynamic_cast<Ppia *>(p_cfgr.ppia()->memory_factory()))
+    , m_memory(p_cfgr.memory()->memory_factory())
     , m_rendered(m_memory->size())
     , m_mode(0)
     , m_mode0(0)
-    , m_set_byte_update_event_type(SDL_RegisterEvents(1))
-    , m_vdg_mode_update_event_type(SDL_RegisterEvents(1))
+    , m_resize_handler(*this)
+    , m_character_handler(*this)
+    , m_mode_handler(*this)
+    , m_subject_loss_handler(*this)
+    , m_observer(m_character_handler, m_mode_handler, m_subject_loss_handler)
 {
-    assert (p_atom_monitor);
-    assert (p_memory);
-    assert (m_set_byte_update_event_type != (Uint32)-1);
-    assert (m_vdg_mode_update_event_type != (Uint32)-1);
-    LOG4CXX_INFO(cpptrace_log(),
-                 "MonitorView::MonitorView("
-                 << "<controller name=\"" << p_atom_monitor->id() << "\"/>"
-                 << "<memory name=\"" << p_memory->id() << "\"/>"
-                 << p_cfgr << ")");
+    assert (m_memory);
+    LOG4CXX_INFO(Part::log(), "making [" << m_memory->id() << "] child of [" << id() << "]");
+    m_memory->add_parent(*this);
+    assert (m_ppia);
+    LOG4CXX_INFO(Part::log(), "making [" << m_ppia->id() << "] child of [" << id() << "]");
+    m_ppia->add_parent(*this);
+    
     LOG4CXX_INFO(SDL::log(), "SDL_CreateWindow(...)");
     m_window = SDL_CreateWindow(p_cfgr.window_title().c_str(),
                                 SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
@@ -154,24 +154,22 @@ MonitorView::MonitorView(AtomMonitorInterface *p_atom_monitor,
     assert (!rv);
     std::fill(m_rendered.begin(), m_rendered.end(), -1); // (un)Initialise cache
     m_mode0 = new Mode0(this, p_cfgr);
-    m_atom_monitor->attach(*this);
-    m_memory->attach(*this);
+    
+    m_memory->attach(m_observer);
+    m_ppia->AtomMonitorInterface::attach(m_observer);
 }
 
 MonitorView::~MonitorView()
 {
-    LOG4CXX_INFO(cpptrace_log(), "~MonitorView::MonitorView()");
     if (m_memory)
     {
-        Memory &m(*m_memory);
-        m_memory = 0;
-        m.detach(*this);
+        m_memory->detach(m_observer);
+        remove_child(*m_memory);
     }
-    if (m_atom_monitor)
+    if (m_ppia)
     {
-        AtomMonitorInterface &am(*m_atom_monitor);
-        m_atom_monitor = 0;
-        am.detach(*this);
+        m_ppia->AtomMonitorInterface::detach(m_observer);
+        remove_child(*m_ppia);
     }
     m_mode = 0;
     if (m_mode0)
@@ -193,111 +191,47 @@ MonitorView::~MonitorView()
     }
 }
 
-// The following function execute in the Cpu thread
-
-void MonitorView::vdg_mode_update(AtomMonitorInterface &p_atom_monitor, AtomMonitorInterface::VDGMode p_mode)
+void MonitorView::window_resize()
 {
-    LOG4CXX_INFO(cpptrace_log(), "MonitorView::vdg_mode_update(" << p_mode << ")");
-    SDL_Event event;
-    SDL_memset(&event, 0, sizeof(event));
-    event.type = m_vdg_mode_update_event_type;
-    event.user.code = p_mode;
-    event.user.data1 = &p_atom_monitor;
-    const int rv = SDL_PushEvent(&event);
-    assert (rv);
+    if (m_mode)
+        m_mode->render();
 }
 
-void MonitorView::subject_loss(const AtomMonitorInterface &p_atom_monitor)
+void MonitorView::set_byte_update(Memory &, word p_addr, byte p_byte, Memory::AccessType)
 {
-    LOG4CXX_INFO(cpptrace_log(), "MonitorView::subject_loss(AtomMonitorInterface)");
-    if (&p_atom_monitor == m_atom_monitor)
-        m_atom_monitor = 0;
+    if (m_mode)
+        if (p_byte != m_rendered[p_addr])
+            m_mode->set_byte_update(p_addr, p_byte);
 }
 
-void MonitorView::set_byte_update(Memory &p_memory, word p_addr, byte p_byte, Memory::AccessType p_at)
+void MonitorView::vdg_mode_update(AtomMonitorInterface &, AtomMonitorInterface::VDGMode p_mode)
 {
-    LOG4CXX_INFO(cpptrace_log()
-                 , "MonitorView::set_byte_update("
-                 << Hex(p_addr)
-                 << ", "
-                 << Hex(p_byte)
-                 << ")");
-    SDL_Event event;
-    SDL_memset(&event, 0, sizeof(event));
-    event.type = m_set_byte_update_event_type;
-    event.user.code = p_addr | (p_byte << 16) | (p_at << 24);
-    event.user.data1 = &p_memory;
-    const int rv = SDL_PushEvent(&event);
-    assert (rv);
-}
-
-void MonitorView::subject_loss(const Memory &p_memory)
-{
-    LOG4CXX_INFO(cpptrace_log(), "MonitorView::subject_loss(Memory)");
-    if (&p_memory == m_memory)
-        m_memory = 0;
-}
-
-// These functions execute in the main thread
-
-bool MonitorView::handle_event(SDL_Event &p_event)
-{
-    bool result(true);
-    LOG4CXX_INFO(cpptrace_log(), "MonitorView::handle_event(" << int(p_event.type) << ")");
-    if (p_event.type == m_vdg_mode_update_event_type)
-    {
-        if (p_event.user.data1)
-            real_vdg_mode_update( *static_cast<AtomMonitorInterface *>(p_event.user.data1)
-                                , AtomMonitorInterface::VDGMode(p_event.user.code)
-                                );
-    }
-    else if (p_event.type == m_set_byte_update_event_type)
-    {
-        if (p_event.user.data1)
-            real_set_byte_update( *static_cast<Memory *>(p_event.user.data1)
-                                , word(p_event.user.code)
-                                , byte(p_event.user.code >> 16)
-                                , Memory::AccessType(p_event.user.code >> 24)
-                                );
-    }
-    else if (p_event.type == SDL_WINDOWEVENT && p_event.window.event == SDL_WINDOWEVENT_SIZE_CHANGED)
-    {
-        if (m_mode)
-            m_mode->render();
-    }
-    else
-        result = false;
-    return result;
-}
-
-void MonitorView::real_vdg_mode_update(AtomMonitorInterface &, AtomMonitorInterface::VDGMode p_mode)
-{
-    LOG4CXX_INFO(cpptrace_log(), "MonitorView::real_vdg_mode_update(" << p_mode << ")");
     switch (p_mode)
     {
     case AtomMonitorInterface::VDG_MODE0:
         m_mode = m_mode0;
         break;
     default:
-        LOG4CXX_ERROR(cpptrace_log(), "Can't render graphics mode " << p_mode);
         m_mode = 0;
     }
     if (m_mode)
         m_mode->render();
 }
 
-void MonitorView::real_set_byte_update(Memory &, word p_addr, byte p_byte, Memory::AccessType)
+void MonitorView::remove_child(Part &p_child)
 {
-    LOG4CXX_INFO(cpptrace_log()
-                 , "MonitorView::real_set_byte_update("
-                 << Hex(p_addr)
-                 << ", "
-                 << Hex(p_byte)
-                 << ")");
-    if (m_mode)
-        if (p_byte != m_rendered[p_addr])
-            m_mode->set_byte_update(p_addr, p_byte);
+    if (&p_child == m_memory)
+    {
+        LOG4CXX_INFO(Part::log(), "removing video memory child of [" << id() << "]");
+        m_memory = 0;
+    }
+    if (&p_child == m_ppia)
+    {
+        LOG4CXX_INFO(Part::log(), "removing ppia child of [" << id() << "]");
+        m_ppia = 0;
+    }
 }
+
 
 void MonitorView::Configurator::serialize(std::ostream &p_s) const
 {

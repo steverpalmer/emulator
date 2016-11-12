@@ -13,6 +13,8 @@ static log4cxx::LoggerPtr cpptrace_log()
 
 KeyboardAdaptor::KeyboardAdaptor(AtomKeyboardInterface *p_atom_keyboard)
     : m_atom_keyboard(p_atom_keyboard)
+    , keydown(*this)
+    , keyup(*this)
 {
     assert (m_atom_keyboard);
     LOG4CXX_INFO(cpptrace_log(), "KeyboardAdaptor::KeyboardAdaptor(" << p_atom_keyboard << ")");
@@ -88,27 +90,4 @@ KeyboardAdaptor::KeyboardAdaptor(AtomKeyboardInterface *p_atom_keyboard)
     keys[SDL_SCANCODE_F3          ] = AtomKeyboardInterface::SPARE3;
     keys[SDL_SCANCODE_F4          ] = AtomKeyboardInterface::SPARE4;
     keys[SDL_SCANCODE_F5          ] = AtomKeyboardInterface::SPARE5;
-}
-
-void KeyboardAdaptor::handle(SDL_KeyboardEvent &p_key_event)
-{
-    LOG4CXX_INFO(cpptrace_log(), "KeyboardAdaptor::handle((" << p_key_event.type << ", " << int(p_key_event.keysym.scancode) << ", ...))");
-    try
-    {
-        if (m_atom_keyboard)
-            switch (p_key_event.type)
-            {
-            case SDL_KEYDOWN:
-                m_atom_keyboard->down(keys[p_key_event.keysym.scancode]);
-                break;
-            case SDL_KEYUP:
-                m_atom_keyboard->up(keys[p_key_event.keysym.scancode]);
-                break;
-            default :
-                assert(0);
-            }
-    }
-    catch (std::out_of_range e)
-    {
-    }
 }
