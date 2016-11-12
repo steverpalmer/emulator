@@ -118,10 +118,10 @@ public:
         }
 };
 
-MonitorView::MonitorView(TerminalInterface *p_terminal_interface,
+MonitorView::MonitorView(AtomMonitorInterface *p_atom_monitor,
                          Memory *p_memory,
                          const Configurator &p_cfgr)
-    : m_terminal_interface(p_terminal_interface)
+    : m_atom_monitor(p_atom_monitor)
     , m_memory(p_memory)
     , m_rendered(m_memory->size())
     , m_mode(0)
@@ -129,13 +129,13 @@ MonitorView::MonitorView(TerminalInterface *p_terminal_interface,
     , m_set_byte_update_event_type(SDL_RegisterEvents(1))
     , m_vdg_mode_update_event_type(SDL_RegisterEvents(1))
 {
-    assert (p_terminal_interface);
+    assert (p_atom_monitor);
     assert (p_memory);
     assert (m_set_byte_update_event_type != (Uint32)-1);
     assert (m_vdg_mode_update_event_type != (Uint32)-1);
     LOG4CXX_INFO(cpptrace_log(),
                  "MonitorView::MonitorView("
-                 << "<controller name=\"" << p_terminal_interface->id() << "\"/>"
+                 << "<controller name=\"" << p_atom_monitor->id() << "\"/>"
                  << "<memory name=\"" << p_memory->id() << "\"/>"
                  << p_cfgr << ")");
     LOG4CXX_INFO(SDL::log(), "SDL_CreateWindow(...)");
@@ -154,7 +154,7 @@ MonitorView::MonitorView(TerminalInterface *p_terminal_interface,
     assert (!rv);
     std::fill(m_rendered.begin(), m_rendered.end(), -1); // (un)Initialise cache
     m_mode0 = new Mode0(this, p_cfgr);
-    m_terminal_interface->attach(*this);
+    m_atom_monitor->attach(*this);
     m_memory->attach(*this);
 }
 
@@ -167,11 +167,11 @@ MonitorView::~MonitorView()
         m_memory = 0;
         m.detach(*this);
     }
-    if (m_terminal_interface)
+    if (m_atom_monitor)
     {
-        TerminalInterface &ti(*m_terminal_interface);
-        m_terminal_interface = 0;
-        ti.detach(*this);
+        AtomMonitorInterface &am(*m_atom_monitor);
+        m_atom_monitor = 0;
+        am.detach(*this);
     }
     m_mode = 0;
     if (m_mode0)
@@ -195,23 +195,23 @@ MonitorView::~MonitorView()
 
 // The following function execute in the Cpu thread
 
-void MonitorView::vdg_mode_update(TerminalInterface &p_terminal_interface, TerminalInterface::VDGMode p_mode)
+void MonitorView::vdg_mode_update(AtomMonitorInterface &p_atom_monitor, AtomMonitorInterface::VDGMode p_mode)
 {
     LOG4CXX_INFO(cpptrace_log(), "MonitorView::vdg_mode_update(" << p_mode << ")");
     SDL_Event event;
     SDL_memset(&event, 0, sizeof(event));
     event.type = m_vdg_mode_update_event_type;
     event.user.code = p_mode;
-    event.user.data1 = &p_terminal_interface;
+    event.user.data1 = &p_atom_monitor;
     const int rv = SDL_PushEvent(&event);
     assert (rv);
 }
 
-void MonitorView::subject_loss(const TerminalInterface &p_terminal_interface)
+void MonitorView::subject_loss(const AtomMonitorInterface &p_atom_monitor)
 {
-    LOG4CXX_INFO(cpptrace_log(), "MonitorView::subject_loss(TerminalInterface)");
-    if (&p_terminal_interface == m_terminal_interface)
-        m_terminal_interface = 0;
+    LOG4CXX_INFO(cpptrace_log(), "MonitorView::subject_loss(AtomMonitorInterface)");
+    if (&p_atom_monitor == m_atom_monitor)
+        m_atom_monitor = 0;
 }
 
 void MonitorView::set_byte_update(Memory &p_memory, word p_addr, byte p_byte, Memory::AccessType p_at)
@@ -247,8 +247,8 @@ bool MonitorView::handle_event(SDL_Event &p_event)
     if (p_event.type == m_vdg_mode_update_event_type)
     {
         if (p_event.user.data1)
-            real_vdg_mode_update( *static_cast<TerminalInterface *>(p_event.user.data1)
-                                , TerminalInterface::VDGMode(p_event.user.code)
+            real_vdg_mode_update( *static_cast<AtomMonitorInterface *>(p_event.user.data1)
+                                , AtomMonitorInterface::VDGMode(p_event.user.code)
                                 );
     }
     else if (p_event.type == m_set_byte_update_event_type)
@@ -270,12 +270,12 @@ bool MonitorView::handle_event(SDL_Event &p_event)
     return result;
 }
 
-void MonitorView::real_vdg_mode_update(TerminalInterface &, TerminalInterface::VDGMode p_mode)
+void MonitorView::real_vdg_mode_update(AtomMonitorInterface &, AtomMonitorInterface::VDGMode p_mode)
 {
     LOG4CXX_INFO(cpptrace_log(), "MonitorView::real_vdg_mode_update(" << p_mode << ")");
     switch (p_mode)
     {
-    case TerminalInterface::VDG_MODE0:
+    case AtomMonitorInterface::VDG_MODE0:
         m_mode = m_mode0;
         break;
     default:

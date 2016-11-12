@@ -269,7 +269,7 @@ void Ppia::reset()
     m_terminal.mutex.unlock();
 }
 
-TerminalInterface::VDGMode Ppia::vdg_mode() const
+AtomMonitorInterface::VDGMode Ppia::vdg_mode() const
 {
     LOG4CXX_INFO(cpptrace_log(), "[" << id() << "].Ppia::vdg_mode()");
     m_terminal.mutex.lock();

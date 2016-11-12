@@ -1,15 +1,15 @@
-// terminal_interface.hpp
+// atom_monitor_interface.hpp
 // Copyright 2016 Steve Palmer
 
-#ifndef TERMINAL_INTERFACE_HPP_
-#define TERMINAL_INTERFACE_HPP_
+#ifndef ATOM_MONITOR_INTERFACE_HPP_
+#define ATOM_MONITOR_INTERFACE_HPP_
 
 #include <set>
 
 #include "common.hpp"
 #include "part.hpp"
 
-class TerminalInterface
+class AtomMonitorInterface
     : protected NonCopyable
 {
 public:
@@ -54,14 +54,14 @@ public:
         Observer() = default;
     public:
         virtual ~Observer() = default;
-        virtual void vdg_mode_update(TerminalInterface &, VDGMode) = 0;
-        virtual void subject_loss(const TerminalInterface &) = 0;
+        virtual void vdg_mode_update(AtomMonitorInterface &, VDGMode) = 0;
+        virtual void subject_loss(const AtomMonitorInterface &) = 0;
     };
 
 private:
     std::set<Observer *> m_observers;
 protected:
-    TerminalInterface() = default;
+    AtomMonitorInterface() = default;
 public:
     virtual Part::id_type id() const = 0;
     virtual VDGMode vdg_mode() const = 0;
@@ -78,7 +78,7 @@ public:
     void detach(Observer & p_observer)
         { m_observers.erase(&p_observer); }
 
-    virtual ~TerminalInterface()
+    virtual ~AtomMonitorInterface()
         {
             for (auto obs : m_observers)
                 obs->subject_loss(*this);

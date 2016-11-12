@@ -9,11 +9,11 @@
 #include <SDL.h>
 
 #include "common.hpp"
-#include "terminal_interface.hpp"
+#include "atom_monitor_interface.hpp"
 #include "memory.hpp"
 
 class MonitorView
-    : public virtual TerminalInterface::Observer
+    : public virtual AtomMonitorInterface::Observer
     , public virtual Memory::Observer
 {
     // Types
@@ -37,26 +37,26 @@ public:
     class Mode0;
 
 private:
-    TerminalInterface  *m_terminal_interface;
-    Memory             *m_memory;
-    SDL_Window         *m_window;
-    SDL_Renderer       *m_renderer;
-    std::vector<int>   m_rendered;
-    Mode               *m_mode;
-    Mode0              *m_mode0;
-    const Uint32       m_set_byte_update_event_type;
-    const Uint32       m_vdg_mode_update_event_type;
+    AtomMonitorInterface *m_atom_monitor;
+    Memory               *m_memory;
+    SDL_Window           *m_window;
+    SDL_Renderer         *m_renderer;
+    std::vector<int>     m_rendered;
+    Mode                 *m_mode;
+    Mode0                *m_mode0;
+    const Uint32         m_set_byte_update_event_type;
+    const Uint32         m_vdg_mode_update_event_type;
 private:
-    // TerminalInterface Observer implementation
-    void real_vdg_mode_update(TerminalInterface &, TerminalInterface::VDGMode);
-    virtual void vdg_mode_update(TerminalInterface &, TerminalInterface::VDGMode);
-    virtual void subject_loss(const TerminalInterface &);
+    // AtomMonitorInterface Observer implementation
+    void real_vdg_mode_update(AtomMonitorInterface &, AtomMonitorInterface::VDGMode);
+    virtual void vdg_mode_update(AtomMonitorInterface &, AtomMonitorInterface::VDGMode);
+    virtual void subject_loss(const AtomMonitorInterface &);
     // Memory Observer implementation
     void real_set_byte_update(Memory &, word, byte, Memory::AccessType);
     virtual void set_byte_update(Memory &, word, byte, Memory::AccessType);
     virtual void subject_loss(const Memory &);
 public:
-    MonitorView(TerminalInterface *, Memory *, const Configurator &);
+    MonitorView(AtomMonitorInterface *, Memory *, const Configurator &);
     virtual ~MonitorView();
 
     bool handle_event(SDL_Event &);

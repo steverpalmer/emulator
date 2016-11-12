@@ -10,13 +10,13 @@
 #include "common.hpp"
 #include "memory.hpp"
 #include "atom_keyboard_interface.hpp"
-#include "terminal_interface.hpp"
+#include "atom_monitor_interface.hpp"
 
 
 class Ppia
     : public Memory
     , public virtual AtomKeyboardInterface
-    , public TerminalInterface
+    , public AtomMonitorInterface
 {
 public:
     class Configurator
