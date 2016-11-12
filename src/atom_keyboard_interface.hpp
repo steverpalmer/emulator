@@ -1,8 +1,8 @@
-// terminal_interface.hpp
+// atom_keyboard_interface.hpp
 // Copyright 2016 Steve Palmer
 
 #ifndef ATOM_KEYBOARD_INTERFACE_HPP_
-#define ATOM_KEYBOARD__INTERFACE_HPP_
+#define ATOM_KEYBOARD_INTERFACE_HPP_
 
 #include <set>
 

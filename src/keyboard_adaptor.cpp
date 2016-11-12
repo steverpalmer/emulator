@@ -82,6 +82,12 @@ KeyboardAdaptor::KeyboardAdaptor(AtomKeyboardInterface *p_atom_keyboard)
     keys[SDL_SCANCODE_RCTRL       ] = AtomKeyboardInterface::CTRL;
     keys[SDL_SCANCODE_RSHIFT      ] = AtomKeyboardInterface::SHIFT;
     keys[SDL_SCANCODE_RALT        ] = AtomKeyboardInterface::REPT;
+
+    keys[SDL_SCANCODE_F1          ] = AtomKeyboardInterface::SPARE1;
+    keys[SDL_SCANCODE_F2          ] = AtomKeyboardInterface::SPARE2;
+    keys[SDL_SCANCODE_F3          ] = AtomKeyboardInterface::SPARE3;
+    keys[SDL_SCANCODE_F4          ] = AtomKeyboardInterface::SPARE4;
+    keys[SDL_SCANCODE_F5          ] = AtomKeyboardInterface::SPARE5;
 }
 
 void KeyboardAdaptor::handle(SDL_KeyboardEvent &p_key_event)

@@ -22,6 +22,7 @@
 #include "terminal.hpp"
 #include "device.hpp"
 #include "atom_streambuf.hpp"
+#include "keyboard_adaptor.hpp"
 
 static log4cxx::LoggerPtr cpptrace_log()
 {
@@ -103,6 +104,10 @@ public:
                 cout = new Pipe(*atom_stream, std::cout);
             }
 
+            Ppia *ppia = dynamic_cast<Ppia *>(PartsBin::instance()["ppia"]);
+            assert (ppia);
+            KeyboardAdaptor *keyboard = new KeyboardAdaptor(ppia);
+
             Terminal *terminal = dynamic_cast<Terminal *>(PartsBin::instance()["terminal"]);
             assert (terminal);
 
@@ -121,6 +126,8 @@ public:
                     state = EventWaitError;
                 else if (event.type == SDL_QUIT)
                     state = QuitRequest;
+                else if (event.type == SDL_KEYDOWN || event.type == SDL_KEYUP)
+                    keyboard->handle(event.key);
                 else if (!terminal->handle_event(event))
                     LOG4CXX_DEBUG(cpptrace_log(), "Unhandled event:" << event.type);
             }
