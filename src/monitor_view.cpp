@@ -18,13 +18,14 @@ static log4cxx::LoggerPtr cpptrace_log()
 }
 
 class MonitorView::Mode
-    : protected NonCopyable
+    : public Part
 {
 protected:
     MonitorView *m_state;
 protected:
-    explicit Mode(MonitorView *p_state)
-        : m_state(p_state)
+    explicit Mode(const Part::id_type p_id, MonitorView *p_state)
+        : Part(p_id)
+        , m_state(p_state)
         {
             LOG4CXX_INFO(cpptrace_log(), "MonitorView::Mode::Mode(" << p_state << ")");
             assert (m_state);
@@ -42,7 +43,7 @@ private:
     SDL_Texture * m_font;
 public:
     Mode0(MonitorView *p_state, const MonitorView::Configurator &p_cfgr)
-        : Mode(p_state)
+        : Mode("Mode 0", p_state)
         {
             LOG4CXX_INFO(cpptrace_log(), "MonitorView::Mode0::Mode0(" << &p_state << ", " << p_cfgr << ")");
             LOG4CXX_INFO(SDL::log(), "SDL_LoadBMP(" << p_cfgr.fontfilename().c_str() << ")");
@@ -154,6 +155,9 @@ MonitorView::MonitorView(const Configurator &p_cfgr)
     assert (!rv);
     std::fill(m_rendered.begin(), m_rendered.end(), -1); // (un)Initialise cache
     m_mode0 = new Mode0(this, p_cfgr);
+    assert (m_mode0);
+    LOG4CXX_INFO(Part::log(), "making [" << m_mode0->id() << "] child of [" << id() << "]");
+    m_mode0->add_parent(*this);
     
     m_memory->attach(m_observer);
     m_ppia->AtomMonitorInterface::attach(m_observer);
@@ -163,19 +167,16 @@ MonitorView::~MonitorView()
 {
     if (m_memory)
     {
-        m_memory->detach(m_observer);
         remove_child(*m_memory);
     }
     if (m_ppia)
     {
-        m_ppia->AtomMonitorInterface::detach(m_observer);
         remove_child(*m_ppia);
     }
     m_mode = 0;
     if (m_mode0)
     {
-        delete m_mode0;
-        m_mode0 = 0;
+        remove_child(*m_mode0);
     }
     if (m_renderer)
     {
@@ -223,24 +224,40 @@ void MonitorView::remove_child(Part &p_child)
     if (&p_child == m_memory)
     {
         LOG4CXX_INFO(Part::log(), "removing video memory child of [" << id() << "]");
+        m_memory->detach(m_observer);
         m_memory = 0;
     }
     if (&p_child == m_ppia)
     {
         LOG4CXX_INFO(Part::log(), "removing ppia child of [" << id() << "]");
+        m_ppia->AtomMonitorInterface::detach(m_observer);
         m_ppia = 0;
+    }
+    if (&p_child == m_mode0)
+    {
+        LOG4CXX_INFO(Part::log(), "removing mode0 child of [" << id() << "]");
+        if (m_mode == m_mode0)
+            m_mode = 0;
+        m_mode0 = 0;
     }
 }
 
 
 void MonitorView::Configurator::serialize(std::ostream &p_s) const
 {
-    p_s << "<fontfilename>" << fontfilename() << "</fontfilename>"
-        << "<windowtitle>"  << window_title() << "</windowtitle>";
+    p_s << "<monitor>"
+        << "<controller>" << *ppia() << "</controller>"
+        << "<video>" << *memory() << "</video>"
+        << "<fontfilename>" << fontfilename() << "</fontfilename>"
+        << "<windowtitle>"  << window_title() << "</windowtitle>"
+        << "</monitor>";
 }
 
 void MonitorView::serialize(std::ostream &p_s) const
 {
-    p_s << "MonitorView("
-        << ")";
+    p_s << "MonitorView(";
+    p_s << "Mode(" << (m_mode?m_mode->id():"?") << ")";
+    if (m_ppia) p_s << ", " << *m_ppia;
+    if (m_memory) p_s << "," << *m_memory;
+    p_s << ")";
 }

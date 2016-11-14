@@ -117,8 +117,8 @@ public:
             computer->reset();
             computer->resume();
             SDL_Event event;
-            enum {Continue, QuitRequest, EventWaitError} state = Continue;
-            do
+            enum {Continue, QuitRequest, EventWaitError} state = QuitRequest;
+            while (state == Continue)
             {
                 LOG4CXX_INFO(SDL::log(), "SDL_WaitEvent(&event)");
                 if (!SDL_WaitEvent(&event))
@@ -128,7 +128,6 @@ public:
                 else
                     Dispatcher::instance().dispatch(event);
             }
-            while (state == Continue);
             LOG4CXX_INFO(cpptrace_log(), "Computer is about to stop ...");
             switch (state)
             {

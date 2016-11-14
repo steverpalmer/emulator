@@ -37,6 +37,16 @@ Part::Part(const Part::Configurator &p_cfgr)
     PartsBin::instance()[m_id] = this;
 }
 
+Part::Part(const id_type &p_id)
+    : m_id(p_id)
+{
+    LOG4CXX_INFO(cpptrace_log(), "Part::Part(" << p_id << ")");
+    assert (m_id != anonymous_id);
+    LOG4CXX_INFO(Part::log(), "created [" << m_id << "]");
+    assert (!PartsBin::instance()[m_id]);
+    PartsBin::instance()[m_id] = this;
+}
+
 Part::Part()
 {
     LOG4CXX_INFO(cpptrace_log(), "Part::Part()");

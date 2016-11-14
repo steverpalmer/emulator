@@ -71,7 +71,8 @@ public:
     static std::unique_ptr<id_type> canonical_id(const id_type &);
 protected:
 	explicit Part(const Configurator &);
-	explicit Part();
+	explicit Part(const id_type &p_id);
+    Part();
 public:
     virtual ~Part();
 
