@@ -75,8 +75,28 @@ class Emulator
 {
 private:
     Emulator();
+    enum {Continue, QuitRequest, EventWaitError} state = Continue;
+
+    class QuitHandler
+        : public Dispatcher::Handler
+    {
+    private:
+        Emulator &emulator;
+    public:
+        explicit QuitHandler(Emulator &p_emulator)
+            : Dispatcher::Handler(SDL_QUIT)
+            , emulator(p_emulator)
+            {}
+    private:
+        void handle(const SDL_Event &)
+            {
+                emulator.state = QuitRequest;
+            }
+    } quit_handler;
+
 public:
     Emulator(int argc, char *argv[])
+        : quit_handler(*this)
         {
             LOG4CXX_INFO(cpptrace_log(), "Emulator::Emulator(" << argc << ", " << argv << ")");
 
@@ -117,14 +137,12 @@ public:
             computer->reset();
             computer->resume();
             SDL_Event event;
-            enum {Continue, QuitRequest, EventWaitError} state = Continue;
+            state = Continue;
             while (state == Continue)
             {
                 LOG4CXX_INFO(SDL::log(), "SDL_WaitEvent(&event)");
                 if (!SDL_WaitEvent(&event))
                     state = EventWaitError;
-                else if (event.type == SDL_QUIT)
-                    state = QuitRequest;
                 else
                     Dispatcher::instance().dispatch(event);
             }
