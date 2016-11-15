@@ -1,4 +1,4 @@
-// main.cpp
+// emulator.cpp
 // Copyright 2016 Steve Palmer
 
 #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
@@ -27,7 +27,7 @@
 
 static log4cxx::LoggerPtr cpptrace_log()
 {
-    static log4cxx::LoggerPtr result(log4cxx::Logger::getLogger(CTRACE_PREFIX ".main.cpp"));
+    static log4cxx::LoggerPtr result(log4cxx::Logger::getLogger(CTRACE_PREFIX ".emulator.cpp"));
     return result;
 }
 
@@ -70,16 +70,15 @@ public:
         }
 };
 
-class Main
+class Emulator
     : protected NonCopyable
 {
 private:
-private:
-    Main();
+    Emulator();
 public:
-    Main(int argc, char *argv[])
+    Emulator(int argc, char *argv[])
         {
-            LOG4CXX_INFO(cpptrace_log(), "Main::Main(" << argc << ", " << argv << ")");
+            LOG4CXX_INFO(cpptrace_log(), "Emulator::Emulator(" << argc << ", " << argv << ")");
 
             LOG4CXX_INFO(SDL::log(), "SDL_Init( SDL_INIT_VIDEO )");
             const int rv = SDL_Init( SDL_INIT_VIDEO );
@@ -149,13 +148,13 @@ public:
             }
         }
 
-    virtual ~Main()
+    virtual ~Emulator()
         {
-            LOG4CXX_INFO(cpptrace_log(), "Main::~Main()");
+            LOG4CXX_INFO(cpptrace_log(), "Emulator::~Emulator()");
             PartsBin::instance().clear();
             LOG4CXX_INFO(SDL::log(), "SDL_Quit");
             SDL_Quit();
-            LOG4CXX_INFO(cpptrace_log(), "Main done.");
+            LOG4CXX_INFO(cpptrace_log(), "Emulator done.");
         }
 };
 
@@ -184,6 +183,6 @@ int main (int argc, char *argv[])
 {
     configure_logging(*argv);
     LOG4CXX_INFO(cpptrace_log(), "main(" << argc << ", " << argv << ")");
-    Main(argc, argv);
+    Emulator(argc, argv);
     return EXIT_SUCCESS;
 }

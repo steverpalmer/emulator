@@ -38,7 +38,7 @@ emulator_gui_sdl_env.Program('emulator', [ r'dispatcher.cpp'
                                          , r'monitor_view.cpp'
                                          , r'keyboard_adaptor.cpp'
                                          , r'config_xml.cpp'
-                                         , r'main.cpp'
+                                         , r'emulator.cpp'
                                          , PARTSLIB
                                          ])
 
