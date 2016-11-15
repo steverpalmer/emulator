@@ -112,15 +112,8 @@ namespace Xml
 
     float eval_to_int(const xmlpp::Node *p_node, const Glib::ustring &p_xpath)
     {
-        int result;
         const Glib::ustring str(eval_to_string(p_node, p_xpath));
-        if (!str.empty())
-        {
-            if (str[0] == '#')
-                result = std::stoi(str.c_str()+1, NULL, 16);
-            else
-                result = std::atoi(str.c_str());
-        }
+        const int result((!str.empty() && str[0] == '#')?std::stoi(str.c_str()+1, NULL, 16):std::atoi(str.c_str()));
         return result;
     }
 
