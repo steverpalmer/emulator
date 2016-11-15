@@ -219,7 +219,6 @@ void AddressSpace::add_child(word p_base, Memory &p_memory, word p_size)
 void AddressSpace::clear()
 {
     LOG4CXX_INFO(cpptrace_log(), "[" << id() << "].AddressSpace::clear()");
-    assert (is_paused());
     for (auto &m: m_map)
         m = 0;
     for (auto &b: m_base)

@@ -65,7 +65,6 @@ void Computer::add_child(Device &p_device)
 void Computer::clear()
 {
     LOG4CXX_INFO(cpptrace_log(), "[" << id() << "].Computer::clear()");
-    assert (is_paused());
     LOG4CXX_INFO(Part::log(), "removing all children of [" << id() << "]");
     m_children.clear();
 }
