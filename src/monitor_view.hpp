@@ -19,43 +19,32 @@ class MonitorView
     // Types
 private:
 
-    class Handler
-        : public Dispatcher::Handler
-    {
-    protected:
-        MonitorView &monitor_view;
-        Handler(Uint32 p_event_type, MonitorView &);
-    public:
-        virtual ~Handler() = default;
-        void prepare_event(SDL_Event &) const;
-    };
-
-    class ResizeHandler
-        : public Handler
+    class WindowHandler
+        : public Dispatcher::StateHandler<MonitorView>
     {
     public:
-        explicit ResizeHandler(MonitorView &);
-        virtual ~ResizeHandler() = default;
+        explicit WindowHandler(MonitorView &);
+        virtual ~WindowHandler() = default;
         virtual void handle(const SDL_Event &);
     };
 
-    class CharacterHandler
-        : public Handler
+    class SetByteHandler
+        : public Dispatcher::StateHandler<MonitorView>
     {
     public:
-        explicit CharacterHandler(MonitorView &);
-        virtual ~CharacterHandler() = default;
-        void push(Memory &, word, byte, Memory::AccessType);
+        explicit SetByteHandler(MonitorView &);
+        virtual ~SetByteHandler() = default;
+        void push(Memory &, word, byte, Memory::AccessType) const;
         virtual void handle(const SDL_Event &);
     };
 
-    class ModeHandler
-        : public Handler
+    class VdgModeHandler
+        : public Dispatcher::StateHandler<MonitorView>
     {
     public:
-        explicit ModeHandler(MonitorView &);
-        virtual ~ModeHandler() = default;
-        void push(AtomMonitorInterface &, AtomMonitorInterface::VDGMode);
+        explicit VdgModeHandler(MonitorView &);
+        virtual ~VdgModeHandler() = default;
+        void push(AtomMonitorInterface &, AtomMonitorInterface::VDGMode) const;
         virtual void handle(const SDL_Event &);
     };
 
@@ -64,10 +53,10 @@ private:
         , public virtual Memory::Observer
     {
     private:
-        CharacterHandler   m_character_handler;
-        ModeHandler        m_mode_handler;
+        const SetByteHandler &m_set_byte_handler;
+        const VdgModeHandler &m_vdg_mode_handler;
     public:
-        Observer(CharacterHandler &, ModeHandler &);
+        Observer(const SetByteHandler &, const VdgModeHandler &);
         virtual ~Observer() = default;
     private:
         // Memory::Observer
@@ -100,18 +89,17 @@ public:
     class Mode0;
 
 private:
-    Ppia                 *m_ppia;
-    Memory               *m_memory;
-    SDL_Window           *m_window;
-    SDL_Renderer         *m_renderer;
-    std::vector<int>     m_rendered;
-    Mode                 *m_mode;
-    Mode0                *m_mode0;
+    Ppia             *m_ppia;
+    Memory           *m_memory;
+    SDL_Window       *m_window;
+    SDL_Renderer     *m_renderer;
+    std::vector<int> m_rendered;
+    Mode             *m_mode;
+    Mode0            *m_mode0;
 
-    ResizeHandler        m_resize_handler;
-    CharacterHandler     m_character_handler;
-    ModeHandler          m_mode_handler;
-
+    const WindowHandler  m_window_handler;
+    const SetByteHandler m_set_byte_handler;
+    const VdgModeHandler m_vdg_mode_handler;
     Observer             m_observer;
 public:
     void window_resize();

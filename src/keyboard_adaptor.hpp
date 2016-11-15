@@ -16,30 +16,20 @@ class KeyboardAdaptor
 {
     // Types
 private:
-    class Handler
-        : public Dispatcher::Handler
-    {
-    protected:
-        const KeyboardAdaptor &keyboard_adaptor;
-        Handler(Uint32 p_event_type, KeyboardAdaptor &);
-    public:
-        virtual ~Handler() = default;
-    };
-
     class DownHandler
-        : public Handler
+        : public Dispatcher::StateHandler<const KeyboardAdaptor>
     {
     public:
-        DownHandler(KeyboardAdaptor &);
+        DownHandler(const KeyboardAdaptor &);
         virtual ~DownHandler() = default;
         virtual void handle(const SDL_Event &);
     };
 
     class UpHandler
-        : public Handler
+        : public Dispatcher::StateHandler<const KeyboardAdaptor>
     {
     public:
-        UpHandler(KeyboardAdaptor &);
+        UpHandler(const KeyboardAdaptor &);
         virtual ~UpHandler() = default;
         virtual void handle(const SDL_Event &);
     };
@@ -48,10 +38,12 @@ public:
     AtomKeyboardInterface *m_atom_keyboard;
 private:
     std::map<SDL_Scancode, AtomKeyboardInterface::Key> keys;
-    DownHandler down_handler;
-    UpHandler   up_handler;
+    const DownHandler down_handler;
+    const UpHandler   up_handler;
+    Device            *reset_device;
+    AtomKeyboardInterface::Key atom_key(SDL_Scancode);
 public:
-    KeyboardAdaptor(AtomKeyboardInterface *);
+    KeyboardAdaptor(AtomKeyboardInterface *, Device *p_reset_device = 0);
     virtual ~KeyboardAdaptor() = default;
 };
 

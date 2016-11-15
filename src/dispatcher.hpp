@@ -16,14 +16,38 @@ class Dispatcher
 {
 public:
     class Handler
+        : public NonCopyable
     {
     protected:
-        Uint32 event_type;
+        const Uint32 event_type;
         explicit Handler(Uint32 p_event_type);
+        Handler();
+        void prepare(SDL_Event &p_event) const;
+        void push(SDL_Event &) const;
     public:
         virtual ~Handler();
         virtual void handle(const SDL_Event &) = 0;
+        void push() const;
     };
+
+    template<class T>
+    class StateHandler
+        : public Handler
+    {
+    protected:
+        T &state;
+        explicit StateHandler(T &p_state)
+            : Handler()
+            , state(p_state)
+            {}
+        StateHandler(Uint32 p_event_type, T &p_state)
+            : Handler(p_event_type)
+            , state(p_state)
+            {}
+    public:
+        virtual ~StateHandler() = default;
+    };
+
 private:
     std::map<Uint32, Handler *>m_map;
 private:

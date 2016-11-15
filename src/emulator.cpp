@@ -75,22 +75,20 @@ class Emulator
 {
 private:
     Emulator();
-    enum {Continue, QuitRequest, EventWaitError} state = Continue;
+    enum {Continue, QuitRequest, EventWaitError} loop_state;
+    Device *root;
 
     class QuitHandler
-        : public Dispatcher::Handler
+        : public Dispatcher::StateHandler<Emulator>
     {
-    private:
-        Emulator &emulator;
     public:
         explicit QuitHandler(Emulator &p_emulator)
-            : Dispatcher::Handler(SDL_QUIT)
-            , emulator(p_emulator)
+            : Dispatcher::StateHandler<Emulator>(SDL_QUIT, p_emulator)
             {}
     private:
         void handle(const SDL_Event &)
             {
-                emulator.state = QuitRequest;
+                state.loop_state = QuitRequest;
             }
     } quit_handler;
 
@@ -126,35 +124,35 @@ public:
                 cout = new Pipe(*atom_stream, std::cout);
             }
 #endif
+            Device *root = dynamic_cast<Device *>(PartsBin::instance()["root"]);
+            assert (root);
+
             Ppia *ppia = dynamic_cast<Ppia *>(PartsBin::instance()["ppia"]);
             assert (ppia);
-            KeyboardAdaptor *keyboard = new KeyboardAdaptor(ppia);
+            KeyboardAdaptor *keyboard = new KeyboardAdaptor(ppia, root);
 
-            Device *computer = dynamic_cast<Device *>(PartsBin::instance()["computer"]);
-            assert (computer);
-
-            LOG4CXX_INFO(cpptrace_log(), "Computer is about to start ...");
-            computer->reset();
-            computer->resume();
+            LOG4CXX_INFO(cpptrace_log(), "Emulation is about to start ...");
+            root->reset();
+            root->resume();
             SDL_Event event;
-            state = Continue;
-            while (state == Continue)
+            loop_state = Continue;
+            while (loop_state == Continue)
             {
                 LOG4CXX_INFO(SDL::log(), "SDL_WaitEvent(&event)");
                 if (!SDL_WaitEvent(&event))
-                    state = EventWaitError;
+                    loop_state = EventWaitError;
                 else
                     Dispatcher::instance().dispatch(event);
             }
-            LOG4CXX_INFO(cpptrace_log(), "Computer is about to stop ...");
-            switch (state)
+            LOG4CXX_INFO(cpptrace_log(), "Emulation is about to stop ...");
+            switch (loop_state)
             {
             case Continue:
             case EventWaitError:
                 assert (false);
             case QuitRequest:
-                computer->pause();
-                while (not computer->is_paused())
+                root->pause();
+                while (not root->is_paused())
                     std::this_thread::yield();
 #if 0
                 delete cout;

@@ -50,7 +50,6 @@ monitor.content = video-memory.instance?
                   & controller.instance?
                   & font.instance?
                   & window-title.instance?
-                  & reset.instance?
 video-memory.instance = element e:video_memory { video-memory.class }
 video-memory.class = video-memory.attributes, video-memory.content
 video-memory.attributes = empty
@@ -67,10 +66,6 @@ window-title.instance = element e:window_title { window-title.class }
 window-title.class = window-title.attributes, window-title.content
 window-title.attributes = empty
 window-title.content = xsd:string
-reset.instance = element e:reset { reset.class }
-reset.class = reset.attributes, reset.content
-reset.attributes = empty
-reset.content = device
 
 device |= stream.instance
 stream.instance = element e:stream { stream.class }

@@ -11,15 +11,8 @@ static log4cxx::LoggerPtr cpptrace_log()
     return result;
 }
 
-KeyboardAdaptor::Handler::Handler(Uint32 p_event_type, KeyboardAdaptor &p_keyboard_adaptor)
-    : Dispatcher::Handler(p_event_type)
-    , keyboard_adaptor(p_keyboard_adaptor)
-{
-    LOG4CXX_INFO(cpptrace_log(), "KeyboardAdaptor::Handler::Handler(" << p_event_type << ", ...)");
-}
-
-KeyboardAdaptor::DownHandler::DownHandler(KeyboardAdaptor &p_keyboard_adaptor)
-    : Handler(SDL_KEYDOWN, p_keyboard_adaptor)
+KeyboardAdaptor::DownHandler::DownHandler(const KeyboardAdaptor &p_keyboard_adaptor)
+    : Dispatcher::StateHandler<const KeyboardAdaptor>(SDL_KEYDOWN, p_keyboard_adaptor)
 {
     LOG4CXX_INFO(cpptrace_log(), "KeyboardAdaptor::DownHandler::DownHandler()");
 }
@@ -29,8 +22,18 @@ void KeyboardAdaptor::DownHandler::handle(const SDL_Event &p_event)
     LOG4CXX_INFO(cpptrace_log(), "KeyboardAdaptor::DownHandler::handle(" << p_event.key.keysym.scancode << ")");
     try
     {
-        if (keyboard_adaptor.m_atom_keyboard)
-            keyboard_adaptor.m_atom_keyboard->down(keyboard_adaptor.keys.at(p_event.key.keysym.scancode));
+        const AtomKeyboardInterface::Key key = state.keys.at(p_event.key.keysym.scancode);
+        switch (key)
+        {
+        case AtomKeyboardInterface::BREAK:
+            if (state.reset_device)
+                state.reset_device->reset();
+            break;
+        default:
+            if (state.m_atom_keyboard)
+                state.m_atom_keyboard->down(key);
+            break;
+        }
     }
     catch (std::out_of_range e)
     {
@@ -38,8 +41,8 @@ void KeyboardAdaptor::DownHandler::handle(const SDL_Event &p_event)
     }
 }
 
-KeyboardAdaptor::UpHandler::UpHandler(KeyboardAdaptor &p_keyboard_adaptor)
-    : Handler(SDL_KEYUP, p_keyboard_adaptor)
+KeyboardAdaptor::UpHandler::UpHandler(const KeyboardAdaptor &p_keyboard_adaptor)
+    : Dispatcher::StateHandler<const KeyboardAdaptor>(SDL_KEYUP, p_keyboard_adaptor)
 {
     LOG4CXX_INFO(cpptrace_log(), "KeyboardAdaptor::UpHandler::UpHandler()");
 }
@@ -49,8 +52,16 @@ void KeyboardAdaptor::UpHandler::handle(const SDL_Event &p_event)
     LOG4CXX_INFO(cpptrace_log(), "KeyboardAdaptor::UpHandler::handle(" << p_event.key.keysym.scancode << ")");
     try
     {
-        if (keyboard_adaptor.m_atom_keyboard)
-            keyboard_adaptor.m_atom_keyboard->up(keyboard_adaptor.keys.at(p_event.key.keysym.scancode));
+        const AtomKeyboardInterface::Key key = state.keys.at(p_event.key.keysym.scancode);
+        switch (key)
+        {
+        case AtomKeyboardInterface::BREAK:
+            break;
+        default:
+            if (state.m_atom_keyboard)
+                state.m_atom_keyboard->up(key);
+            break;
+        }
     }
     catch (std::out_of_range e)
     {
@@ -58,11 +69,11 @@ void KeyboardAdaptor::UpHandler::handle(const SDL_Event &p_event)
     }
 }
 
-
-KeyboardAdaptor::KeyboardAdaptor(AtomKeyboardInterface *p_atom_keyboard)
+KeyboardAdaptor::KeyboardAdaptor(AtomKeyboardInterface *p_atom_keyboard, Device *p_reset_device)
     : m_atom_keyboard(p_atom_keyboard)
     , down_handler(*this)
     , up_handler(*this)
+    , reset_device(p_reset_device)
 {
     assert (m_atom_keyboard);
     LOG4CXX_INFO(cpptrace_log(), "KeyboardAdaptor::KeyboardAdaptor(" << p_atom_keyboard << ")");
@@ -132,6 +143,8 @@ KeyboardAdaptor::KeyboardAdaptor(AtomKeyboardInterface *p_atom_keyboard)
     keys[SDL_SCANCODE_RCTRL         ] = AtomKeyboardInterface::CTRL;
     keys[SDL_SCANCODE_RSHIFT        ] = AtomKeyboardInterface::SHIFT;
     keys[SDL_SCANCODE_RALT          ] = AtomKeyboardInterface::REPT;
+
+    keys[SDL_SCANCODE_PAUSE         ] = AtomKeyboardInterface::BREAK;
 
     keys[SDL_SCANCODE_F1            ] = AtomKeyboardInterface::SPARE1;
     keys[SDL_SCANCODE_F2            ] = AtomKeyboardInterface::SPARE2;

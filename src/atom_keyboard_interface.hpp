@@ -51,7 +51,8 @@ public:
         ESCAPE,
         CTRL = 0x80,
         SHIFT,
-        REPT
+        REPT,
+        BREAK = 0xC0
     };
 
 protected:

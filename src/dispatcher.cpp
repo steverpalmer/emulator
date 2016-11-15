@@ -9,6 +9,13 @@ static log4cxx::LoggerPtr cpptrace_log()
     return result;
 }
 
+Dispatcher::Handler::Handler()
+    : event_type(SDL_RegisterEvents(1))
+{
+    LOG4CXX_INFO(cpptrace_log(), "Dispatcher::Handler::Handler()");
+    Dispatcher::instance().attach(event_type, *this);
+}
+
 Dispatcher::Handler::Handler(Uint32 p_event_type)
     : event_type(p_event_type)
 {
@@ -20,6 +27,25 @@ Dispatcher::Handler::~Handler()
 {
     LOG4CXX_INFO(cpptrace_log(), "Dispatcher::Handler::~Handler()");
     Dispatcher::instance().detach(event_type);
+}
+
+void Dispatcher::Handler::prepare(SDL_Event &p_event) const
+{
+    SDL_memset(&p_event, 0, sizeof(p_event));
+    p_event.type = event_type;
+}
+
+void Dispatcher::Handler::push(SDL_Event &p_event) const
+{
+    const int rv = SDL_PushEvent(&p_event);
+    assert (rv);
+}
+
+void Dispatcher::Handler::push() const
+{
+    SDL_Event event;
+    prepare(event);
+    push(event);
 }
 
 void Dispatcher::attach(Uint32 p_event_type, Handler &p_handler)
