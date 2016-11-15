@@ -40,8 +40,7 @@ private:
     {
         mutable std::recursive_mutex mutex;
         VDGMode  vdg_mode;
-        VDGMode  notified_vdg_mode;
-    } m_terminal;
+    } m_monitor;
     struct
     {
         mutable std::recursive_mutex mutex;
@@ -63,15 +62,15 @@ public:
     virtual word size() const { return 4; }
     virtual void reset();
     virtual byte get_byte(word p_addr, AccessType p_at = AT_UNKNOWN);
-protected:
-    virtual void _set_byte(word p_addr, byte p_byte, AccessType p_at = AT_UNKNOWN);
+private:
+    virtual void unobserved_set_byte(word p_addr, byte p_byte, AccessType p_at = AT_UNKNOWN);
 
     // AtomKeyboardInterface
 private:
     virtual void down(Key);
     virtual void up(Key);
 
-    // TerminalInterface
+    // AtomMonitorInterface
 public:
     virtual Part::id_type id() const { return Device::id(); }
     virtual VDGMode vdg_mode() const;
