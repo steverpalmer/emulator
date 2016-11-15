@@ -98,6 +98,7 @@
         </e:map>
       </e:address_space>
     </e:mcs6502>
+
     <e:monitor name="monitor">
       <e:font>
         <e:filename>mc6847.bmp</e:filename>
@@ -110,6 +111,8 @@
         <e:memory href="ppia"/>
       </e:controller>
     </e:monitor>
+
+    <e:stream/>
 
   </e:computer>
 

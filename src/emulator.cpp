@@ -32,7 +32,7 @@ static log4cxx::LoggerPtr cpptrace_log()
 }
 
 class Pipe
-    : private NonCopyable
+    : public Part
 {
 private:
     std::istream     &m_source;
@@ -42,29 +42,30 @@ private:
 private:
     void thread_function()
         {
+            LOG4CXX_INFO(cpptrace_log(), "[" << id() << "]Pipe::thread_function()");
             char ch;
-            LOG4CXX_INFO(cpptrace_log(), "[" << this << "]Pipe::thread_function()");
             for (m_more=true; m_more; )
             {
-                LOG4CXX_INFO(cpptrace_log(), "[" << this << "]Pipe::thread_function reading");
+                LOG4CXX_INFO(cpptrace_log(), "[" << id() << "]Pipe::thread_function reading");
                 m_source >> ch;
                 if (ch == EOF)
                     break;
-                LOG4CXX_INFO(cpptrace_log(), "[" << this << "]Pipe::thread_function writing");
+                LOG4CXX_INFO(cpptrace_log(), "[" << id() << "]Pipe::thread_function writing");
                 m_sink << ch;
             }
         }
 public:
-    Pipe(std::istream &p_source, std::ostream &p_sink)
-        : m_source(p_source)
+    Pipe(Part::id_type p_name, std::istream &p_source, std::ostream &p_sink)
+        : Part(p_name)
+        , m_source(p_source)
         , m_sink(p_sink)
         , m_thread(&Pipe::thread_function, this)
         {
-            LOG4CXX_INFO(cpptrace_log(), "Pipe::Pipe() => " << this);
+            LOG4CXX_INFO(cpptrace_log(), "Pipe::Pipe(" << p_name << ", ...)");
         }
     ~Pipe()
         {
-            LOG4CXX_INFO(cpptrace_log(), "[" << this << "]Pipe::~Pipe()");
+            LOG4CXX_INFO(cpptrace_log(), "[" << id() << "]Pipe::~Pipe()");
             m_more = false;
             m_thread.join();
         }
@@ -110,20 +111,18 @@ public:
             delete cfg;
             LOG4CXX_INFO(cpptrace_log(), PartsBin::instance());
 
-#if 0
-            Pipe *cin(0);
-            Pipe *cout(0);
-            std::iostream *atom_stream(0);
-            AtomStreamBuf *stream = dynamic_cast<AtomStreamBuf *>(PartsBin::instance()["stream"]);
+            // Pipe *cin(0);
+            Pipe *outgoing(0);
+            std::istream *atom_stream(0);
+            AtomInputStreamBuf *stream = dynamic_cast<AtomInputStreamBuf *>(PartsBin::instance()["stream"]);
             if (stream)
             {
                 LOG4CXX_INFO(cpptrace_log(), "starting streaming");
-                atom_stream = stream->iostream_factory();
+                atom_stream = stream->istream_factory();
                 assert (atom_stream);
-                cin = new Pipe(std::cin, *atom_stream);
-                cout = new Pipe(*atom_stream, std::cout);
+                // cin = new Pipe("input stream", std::cin, *atom_stream);
+                outgoing = new Pipe("output stream", *atom_stream, std::cout);
             }
-#endif
             Device *root = dynamic_cast<Device *>(PartsBin::instance()["root"]);
             assert (root);
 
@@ -154,12 +153,10 @@ public:
                 root->pause();
                 while (not root->is_paused())
                     std::this_thread::yield();
-#if 0
-                delete cout;
-                delete cin;
+
                 delete atom_stream;
                 delete stream;
-#endif
+
                 delete keyboard;
             }
         }

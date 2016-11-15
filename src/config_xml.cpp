@@ -379,7 +379,7 @@ namespace Xml
     };
 
     class AtomStreamBufConfigurator
-        : public virtual AtomStreamBuf::Configurator
+        : public virtual AtomInputStreamBuf::Configurator
         , private DeviceConfigurator
     {
     private:
@@ -391,7 +391,7 @@ namespace Xml
             : DeviceConfigurator("stream", p_node)
             , m_mcs6502(0)
             , m_address_space(0)
-            , m_pause_output(true)
+            , m_pause_output(false)
             {
                 LOG4CXX_INFO(cpptrace_log(), "Xml::AtomStreamBufConfigurator::AtomStreamBufConfigurator(" << p_node << ")");
                 if (!m_mcs6502)

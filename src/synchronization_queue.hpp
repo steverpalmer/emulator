@@ -33,6 +33,8 @@
  * Unlike std::queue, T must be copyable.
  */
 
+#include <ratio>
+
 template < typename T, class Container=std::deque<T> >
 class SynchronizationQueue
 {
@@ -45,9 +47,20 @@ public:
 private:
     std::mutex              m_mutex;
     std::condition_variable m_queue_not_empty;
+    bool                    m_do_not_block;
 protected:
     Container               c;
+private:
+    const std::chrono::duration<int,std::milli> delay;
+
 public:
+    explicit SynchronizationQueue(int p_delay=100)
+        : m_do_not_block(false)
+        , delay(p_delay)
+        {}
+
+public:
+
     // front is not thread-safe, so not provided
     // back is not thread-safe, so not provided
     // empty is not thread-safe, so not provided
@@ -83,27 +96,41 @@ public:
 
     value_type blocking_pull()
         {
+            value_type result;
             std::unique_lock<std::mutex> lock(m_mutex);
-            m_queue_not_empty.wait(lock, [this]{ return !this->c.empty(); });
-            value_type result = c.front();
-            c.pop_front();
+            while (!m_do_not_block && c.empty())
+                (void) m_queue_not_empty.wait_for(lock, delay);
+            if (c.empty())
+                result = 0;
+            else
+            {
+                result = c.front();
+                c.pop_front();
+            }
             return result;
         }
 
     void blocking_pull(reference p_item)
         {
             std::unique_lock<std::mutex> lock(m_mutex);
-            m_queue_not_empty.wait_for(lock, [this]{ return !this->c.empty(); });
-            p_item = c.front();
-            c.pop_front();
+            while (!m_do_not_block && c.empty())
+                (void) m_queue_not_empty.wait_for(lock, delay);
+            if (!c.empty())
+            {
+                p_item = c.front();
+                c.pop_front();
+            }
         }
 
     template<class Rep, class Period>
     bool blocking_pull(reference p_item, std::chrono::duration<Rep, Period>&p_duration)
         {
-            bool result;
+            std::cv_status wait_rv(std::cv_status::no_timeout);
             std::unique_lock<std::mutex> lock(m_mutex);
-            if (result = m_queue_not_empty.wait_for(lock, p_duration, [this]{ return !this->c.empty(); }))
+            while (!m_do_not_block && wait_rv == std::cv_status::no_timeout && c.empty())
+                wait_rv = m_queue_not_empty.wait_for(lock, p_duration);
+            bool result;
+            if (result = !c.empty())
             {
                 p_item = c.front();
                 c.pop_front();
@@ -114,9 +141,12 @@ public:
     template<class Clock, class Duration>
     bool blocking_pull(reference p_item, std::chrono::time_point<Clock, Duration>& p_timeout_time)
         {
-            bool result;
+            std::cv_status wait_rv(std::cv_status::no_timeout);
             std::unique_lock<std::mutex> lock(m_mutex);
-            if (result = m_queue_not_empty.wait_until(lock, p_timeout_time, [this]{ return !this->c.empty(); }))
+            while (!m_do_not_block && wait_rv == std::cv_status::no_timeout && c.empty())
+                wait_rv = m_queue_not_empty.wait_until(lock, p_timeout_time);
+            bool result;
+            if (result = !c.empty())
             {
                 p_item = c.front();
                 c.pop_front();
@@ -129,6 +159,19 @@ public:
             std::unique_lock<std::mutex> lock(m_mutex);
             c.clear();
         }
+
+    void unblock()
+        {
+            std::unique_lock<std::mutex> lock(m_mutex);
+            m_do_not_block = true;
+            m_queue_not_empty.notify_all();
+        }
+
+    ~SynchronizationQueue()
+        {
+            unblock();
+        }
+
 };
 
 #endif
