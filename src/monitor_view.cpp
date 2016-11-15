@@ -17,6 +17,110 @@ static log4cxx::LoggerPtr cpptrace_log()
     return result;
 }
 
+MonitorView::Handler::Handler(Uint32 p_event_type, MonitorView &p_monitor_view)
+    : Dispatcher::Handler(p_event_type)
+    , monitor_view(p_monitor_view)
+{
+    LOG4CXX_INFO(cpptrace_log(), "MonitorView::Handler::Handler(" << p_event_type << ", ...)");
+}
+
+void MonitorView::Handler::prepare_event(SDL_Event &p_event) const
+{
+    LOG4CXX_INFO(cpptrace_log(), "MonitorView::Handler::prepare_event(...)");
+    SDL_memset(&p_event, 0, sizeof(p_event));
+    p_event.type = event_type;
+}
+
+MonitorView::ResizeHandler::ResizeHandler(MonitorView &p_monitor_view)
+    : Handler(SDL_WINDOWEVENT, p_monitor_view)
+{
+    LOG4CXX_INFO(cpptrace_log(), "MonitorView::ResizeHandler::ResizeHandler(...)");
+}
+
+void MonitorView::ResizeHandler::handle(const SDL_Event &p_event)
+{
+    LOG4CXX_INFO(cpptrace_log(), "MonitorView::ResizeHandler::handle(" << int(p_event.window.event) << ")");
+    if (p_event.window.event == SDL_WINDOWEVENT_SIZE_CHANGED)
+        monitor_view.window_resize();
+}
+
+MonitorView::CharacterHandler::CharacterHandler(MonitorView &p_monitor_view)
+    : Handler(SDL_RegisterEvents(1), p_monitor_view)
+{
+    LOG4CXX_INFO(cpptrace_log(), "MonitorView::CharacterHandler::CharacterHandler(...)");
+}
+
+void MonitorView::CharacterHandler::push(Memory &p_memory, word p_addr, byte p_byte, Memory::AccessType p_at)
+{
+    LOG4CXX_INFO(cpptrace_log(), "MonitorView::CharacterHandler::push(" << Hex(p_addr) << ", " << Hex(p_byte) << ", ...)");
+    SDL_Event event;
+    prepare_event(event);
+    event.user.code = p_addr | (p_byte << 16) | (p_at << 24);
+    event.user.data1 = &p_memory;
+    const int rv = SDL_PushEvent(&event);
+    assert (rv);
+}
+
+void MonitorView::CharacterHandler::handle(const SDL_Event &p_event)
+{
+    LOG4CXX_INFO(cpptrace_log(), "MonitorView::CharacterHandler::handle(" << p_event.user.code << ")");
+    monitor_view.set_byte_update( *static_cast<Memory *>(p_event.user.data1)
+                                , word(p_event.user.code)
+                                , byte(p_event.user.code >> 16)
+                                , Memory::AccessType(p_event.user.code >> 24)
+                                );
+}
+
+MonitorView::ModeHandler::ModeHandler(MonitorView &p_monitor_view)
+    : Handler(SDL_RegisterEvents(1), p_monitor_view)
+{
+    LOG4CXX_INFO(cpptrace_log(), "MonitorView::ModeHandler::ModeHandler(...)");
+}
+
+void MonitorView::ModeHandler::push(AtomMonitorInterface &p_monitor, AtomMonitorInterface::VDGMode p_mode)
+{
+    LOG4CXX_INFO(cpptrace_log(), "MonitorView::ModeHandler::push(" << p_mode << ")");
+    SDL_Event event;
+    prepare_event(event);
+    event.user.code = p_mode;
+    event.user.data1 = &p_monitor;
+    const int rv = SDL_PushEvent(&event);
+    assert (rv);
+}
+
+void MonitorView::ModeHandler::handle(const SDL_Event &p_event)
+{
+    LOG4CXX_INFO(cpptrace_log(), "MonitorView::ModeHandler::handle(" << p_event.user.code << ")");
+    monitor_view.vdg_mode_update( *static_cast<AtomMonitorInterface *>(p_event.user.data1)
+                                , AtomMonitorInterface::VDGMode(p_event.user.code)
+                                );
+}
+
+MonitorView::Observer::Observer(CharacterHandler   &p_character_handler,
+                                ModeHandler        &p_mode_handler)
+    : m_character_handler(p_character_handler)
+    , m_mode_handler(p_mode_handler)
+{
+    LOG4CXX_INFO(cpptrace_log(), "MonitorView::Observer::Observer(...)");
+}
+
+void MonitorView::Observer::set_byte_update( Memory &p_memory
+                                           , word p_addr
+                                           , byte p_byte
+                                           , Memory::AccessType p_at)
+{
+    LOG4CXX_INFO(cpptrace_log(), "MonitorView::Observer::set_byte_update(" << Hex(p_addr) << ", " << Hex(p_byte) << ")");
+    m_character_handler.push(p_memory, p_addr, p_byte, p_at);
+}
+
+void MonitorView::Observer::vdg_mode_update( AtomMonitorInterface & p_atom_monitor
+                                           , AtomMonitorInterface::VDGMode p_mode)
+{
+    LOG4CXX_INFO(cpptrace_log(), "MonitorView::Observer::set_mode_update(" << p_mode << ")");
+    m_mode_handler.push(p_atom_monitor, p_mode);
+}
+
+
 class MonitorView::Mode
     : public Part
 {
@@ -129,16 +233,14 @@ MonitorView::MonitorView(const Configurator &p_cfgr)
     , m_resize_handler(*this)
     , m_character_handler(*this)
     , m_mode_handler(*this)
-    , m_subject_loss_handler(*this)
-    , m_observer(m_character_handler, m_mode_handler, m_subject_loss_handler)
+    , m_observer(m_character_handler, m_mode_handler)
 {
+    LOG4CXX_INFO(cpptrace_log(), "MonitorView::MonitorView(" << p_cfgr << ")");
     assert (m_memory);
     LOG4CXX_INFO(Part::log(), "making [" << m_memory->id() << "] child of [" << id() << "]");
-    m_memory->add_parent(*this);
     assert (m_ppia);
     LOG4CXX_INFO(Part::log(), "making [" << m_ppia->id() << "] child of [" << id() << "]");
-    m_ppia->add_parent(*this);
-    
+
     LOG4CXX_INFO(SDL::log(), "SDL_CreateWindow(...)");
     m_window = SDL_CreateWindow(p_cfgr.window_title().c_str(),
                                 SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
@@ -157,27 +259,19 @@ MonitorView::MonitorView(const Configurator &p_cfgr)
     m_mode0 = new Mode0(this, p_cfgr);
     assert (m_mode0);
     LOG4CXX_INFO(Part::log(), "making [" << m_mode0->id() << "] child of [" << id() << "]");
-    m_mode0->add_parent(*this);
-    
+
     m_memory->attach(m_observer);
     m_ppia->AtomMonitorInterface::attach(m_observer);
 }
 
 MonitorView::~MonitorView()
 {
-    if (m_memory)
-    {
-        remove_child(*m_memory);
-    }
-    if (m_ppia)
-    {
-        remove_child(*m_ppia);
-    }
+    LOG4CXX_INFO(cpptrace_log(), "MonitorView::~MonitorView()");
+    LOG4CXX_INFO(Part::log(), "removing children of [" << id() << "]");
+    m_memory = 0;
+    m_ppia = 0;
     m_mode = 0;
-    if (m_mode0)
-    {
-        remove_child(*m_mode0);
-    }
+    m_mode0 = 0;
     if (m_renderer)
     {
         LOG4CXX_INFO(SDL::log(), "SDL_DestroyRenderer(...)");
@@ -194,12 +288,14 @@ MonitorView::~MonitorView()
 
 void MonitorView::window_resize()
 {
+    LOG4CXX_INFO(cpptrace_log(), "MonitorView::window_resize()");
     if (m_mode)
         m_mode->render();
 }
 
 void MonitorView::set_byte_update(Memory &, word p_addr, byte p_byte, Memory::AccessType)
 {
+    LOG4CXX_INFO(cpptrace_log(), "MonitorView::set_byte_update(" << Hex(p_addr) << ", " << Hex(p_byte) << ")");
     if (m_mode)
         if (p_byte != m_rendered[p_addr])
             m_mode->set_byte_update(p_addr, p_byte);
@@ -207,6 +303,7 @@ void MonitorView::set_byte_update(Memory &, word p_addr, byte p_byte, Memory::Ac
 
 void MonitorView::vdg_mode_update(AtomMonitorInterface &, AtomMonitorInterface::VDGMode p_mode)
 {
+    LOG4CXX_INFO(cpptrace_log(), "MonitorView::vdg_mode_update(" << p_mode << ")");
     switch (p_mode)
     {
     case AtomMonitorInterface::VDG_MODE0:
@@ -217,29 +314,6 @@ void MonitorView::vdg_mode_update(AtomMonitorInterface &, AtomMonitorInterface::
     }
     if (m_mode)
         m_mode->render();
-}
-
-void MonitorView::remove_child(Part &p_child)
-{
-    if (&p_child == m_memory)
-    {
-        LOG4CXX_INFO(Part::log(), "removing video memory child of [" << id() << "]");
-        m_memory->detach(m_observer);
-        m_memory = 0;
-    }
-    if (&p_child == m_ppia)
-    {
-        LOG4CXX_INFO(Part::log(), "removing ppia child of [" << id() << "]");
-        m_ppia->AtomMonitorInterface::detach(m_observer);
-        m_ppia = 0;
-    }
-    if (&p_child == m_mode0)
-    {
-        LOG4CXX_INFO(Part::log(), "removing mode0 child of [" << id() << "]");
-        if (m_mode == m_mode0)
-            m_mode = 0;
-        m_mode0 = 0;
-    }
 }
 
 

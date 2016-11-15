@@ -12,39 +12,10 @@ emulator.class = emulator.attributes, emulator.content
 emulator.attributes = version.instance
 emulator.content = part*
 
-part = terminal.instance
+part = empty
 part.class = part.attributes, part.content
 part.attributes = name.instance?
 part.content = empty
-
-terminal.instance = element e:terminal { terminal.class }
-terminal.class = part.class, terminal.attributes, terminal.content
-terminal.attributes = empty
-terminal.content = video-memory.instance?
-                   & controller.instance?
-                   & font.instance?
-                   & window-title.instance?
-                   & reset.instance?
-video-memory.instance = element e:video_memory { video-memory.class }
-video-memory.class = video-memory.attributes, video-memory.content
-video-memory.attributes = empty
-video-memory.content = memory
-controller.instance = element e:controller { controller.class }
-controller.class = controller.attributes, controller.content
-controller.attributes = empty
-controller.content = memory
-font.instance = element e:font { font.class }
-font.class = font.attributes, font.content
-font.attributes = empty
-font.content = filename.instance
-window-title.instance = element e:window_title { window-title.class }
-window-title.class = window-title.attributes, window-title.content
-window-title.attributes = empty
-window-title.content = xsd:string
-reset.instance = element e:reset { reset.class }
-reset.class = reset.attributes, reset.content
-reset.attributes = empty
-reset.content = device
 
 part |= device
 device.class = part.class, device.attributes, device.content
@@ -70,6 +41,36 @@ mcs6502.instance = element e:mcs6502 { mcs6502.class }
 mcs6502.class = cpu.class, mcs6502.attributes , mcs6502.content
 mcs6502.attributes = empty
 mcs6502.content = memory?
+
+device |= monitor.instance
+monitor.instance = element e:monitor { monitor.class }
+monitor.class = part.class, monitor.attributes, monitor.content
+monitor.attributes = empty
+monitor.content = video-memory.instance?
+                  & controller.instance?
+                  & font.instance?
+                  & window-title.instance?
+                  & reset.instance?
+video-memory.instance = element e:video_memory { video-memory.class }
+video-memory.class = video-memory.attributes, video-memory.content
+video-memory.attributes = empty
+video-memory.content = memory
+controller.instance = element e:controller { controller.class }
+controller.class = controller.attributes, controller.content
+controller.attributes = empty
+controller.content = memory
+font.instance = element e:font { font.class }
+font.class = font.attributes, font.content
+font.attributes = empty
+font.content = filename.instance
+window-title.instance = element e:window_title { window-title.class }
+window-title.class = window-title.attributes, window-title.content
+window-title.attributes = empty
+window-title.content = xsd:string
+reset.instance = element e:reset { reset.class }
+reset.class = reset.attributes, reset.content
+reset.attributes = empty
+reset.content = device
 
 device |= stream.instance
 stream.instance = element e:stream { stream.class }

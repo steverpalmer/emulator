@@ -141,19 +141,19 @@ Ppia::~Ppia()
 byte Ppia::get_PortB(int p_row)
 {
     LOG4CXX_INFO(cpptrace_log(), "[" << id() << "].Ppia::get_PortB(" << p_row << ")");
-    m_keyboard.mutex.lock();
-    const byte result(p_row < 10 ? m_keyboard.row[p_row] & m_keyboard.row[11] : m_keyboard.row[11]);
-    m_keyboard.mutex.unlock();
+    std::lock_guard<std::recursive_mutex> lock(m_keyboard.mutex);
+    const byte result(p_row < 10 ? m_keyboard.row[p_row] & m_keyboard.row[10] : m_keyboard.row[10]);
     return result;
 }
 
 byte Ppia::get_PortC(byte p_previous)
 {
     LOG4CXX_INFO(cpptrace_log(), "[" << id() << "].Ppia::get_PortC(" << Hex(p_previous) << ")");
-    byte result(p_previous & 0xBF);          // clear REPT and FLYBACK signals
-    m_keyboard.mutex.lock();
-    result &= m_keyboard.row[12];
-    m_keyboard.mutex.unlock();
+    byte result(p_previous | 0x40);                        // clear REPT signal
+    {
+        std::lock_guard<std::recursive_mutex> lock(m_keyboard.mutex);
+        result &= m_keyboard.row[11];
+    }
     result ^= 0x80;                                // Flip Terminal Refresh bit
     result ^= 0x30;                                      // Flip Tape input bits
     return result;
@@ -203,19 +203,20 @@ void Ppia::set_PortA(byte p_byte)
             VDG_MODE0,  // 0xE
             VDG_MODE4,  // 0xF
         };
-    m_terminal.mutex.lock();
-    m_terminal.vdg_mode = mode_mapping[p_byte >> 4 & 0x0F];
-    if (m_terminal.vdg_mode != m_terminal.notified_vdg_mode)
+    const VDGMode new_mode(mode_mapping[p_byte >> 4 & 0x0F]);
+    bool need_to_notify;
     {
-        vdg_mode_notify(m_terminal.vdg_mode);
-        m_terminal.notified_vdg_mode = m_terminal.vdg_mode;
+        std::lock_guard<std::recursive_mutex> lock(m_monitor.mutex);
+        need_to_notify = (m_monitor.vdg_mode != new_mode);
+        m_monitor.vdg_mode = new_mode;
     }
-    m_terminal.mutex.unlock();
+    if (need_to_notify)
+        vdg_mode_notify(new_mode);
 }
 
-void Ppia::_set_byte(word p_addr, byte p_byte, AccessType p_at)
+void Ppia::unobserved_set_byte(word p_addr, byte p_byte, AccessType p_at)
 {
-    LOG4CXX_INFO(cpptrace_log(), "[" << id() << "].Ppia::_set_byte(" << Hex(p_addr) << ", " << Hex(p_byte) << ", " << p_at << ")");
+    LOG4CXX_INFO(cpptrace_log(), "[" << id() << "].Ppia::unobserved_set_byte(" << Hex(p_addr) << ", " << Hex(p_byte) << ", " << p_at << ")");
     assert (p_addr < 4);
     switch (p_addr)
     {
@@ -249,13 +250,15 @@ void Ppia::reset()
 {
     LOG4CXX_INFO(cpptrace_log(), "[" << id() << "].Ppia::reset()");
     // reset the IO Model Inputs first
-    m_terminal.mutex.lock();
-    m_terminal.notified_vdg_mode = VDG_LAST; // force a notification
-
-    m_keyboard.mutex.lock();
-    for (int i = 0; i <12; i++)
-        m_keyboard.row[i] = ~0;  // Active Low
-    m_keyboard.mutex.unlock();
+    {
+        std::lock_guard<std::recursive_mutex> lock(m_keyboard.mutex);
+        for (int i = 0; i <12; i++)
+            m_keyboard.row[i] = ~0;  // Active Low
+    }
+    {
+        std::lock_guard<std::recursive_mutex> lock(m_monitor.mutex);
+        m_monitor.vdg_mode = VDG_LAST; // force a notification
+    }
 
     // reset "Control" port first
     m_register[ControlPort] = 0x8A;
@@ -266,22 +269,20 @@ void Ppia::reset()
 
     // Finally reset the IO Model outputs
     set_PortA(m_register[PortA]);
-    m_terminal.mutex.unlock();
 }
 
 AtomMonitorInterface::VDGMode Ppia::vdg_mode() const
 {
     LOG4CXX_INFO(cpptrace_log(), "[" << id() << "].Ppia::vdg_mode()");
-    m_terminal.mutex.lock();
-    const VDGMode result(m_terminal.vdg_mode);
-    m_terminal.mutex.unlock();
+    std::lock_guard<std::recursive_mutex> lock(m_monitor.mutex);
+    const VDGMode result(m_monitor.vdg_mode);
     return result;
 }
 
 void Ppia::down(Key p_key)
 {
     LOG4CXX_INFO(cpptrace_log(), "[" << id() << "].Ppia::down(" << p_key << ")");
-    m_keyboard.mutex.lock();
+    std::lock_guard<std::recursive_mutex> lock(m_keyboard.mutex);
     try
     {
         Scanpair &sp = key_mapping[p_key];
@@ -291,13 +292,12 @@ void Ppia::down(Key p_key)
     {
         LOG4CXX_WARN(cpptrace_log(), "[" << id() << "].Ppia::down: Unknown key: " << p_key);
     }
-    m_keyboard.mutex.unlock();
 }
 
 void Ppia::up(Key p_key)
 {
     LOG4CXX_INFO(cpptrace_log(), "[" << id() << "].Ppia::up(" << p_key << ")");
-    m_keyboard.mutex.lock();
+    std::lock_guard<std::recursive_mutex> lock(m_keyboard.mutex);
     try
     {
         Scanpair &sp = key_mapping[p_key];
@@ -307,7 +307,6 @@ void Ppia::up(Key p_key)
     {
         LOG4CXX_WARN(cpptrace_log(), "[" << id() << "].Ppia::up: Unknown key: " << p_key);
     }
-    m_keyboard.mutex.unlock();
 }
 
 
@@ -329,12 +328,13 @@ void Ppia::serialize(std::ostream &p_s) const
 #else
     p_s << "Ppia(";
     Memory::serialize(p_s);
-    m_terminal.mutex.lock();
-    p_s << ", PortA("   << Hex(m_register[PortA]) << ")"
-        << ", PortB("   << Hex(m_register[PortB]) << ")"
-        << ", PortC("   << Hex(m_register[PortC]) << ")"
-        << ", Control(" << Hex(m_register[ControlPort]) << ")";
-    m_terminal.mutex.unlock();
+    {
+        std::lock_guard<std::recursive_mutex> lock(m_monitor.mutex);
+        p_s << ", PortA("   << Hex(m_register[PortA]) << ")"
+            << ", PortB("   << Hex(m_register[PortB]) << ")"
+            << ", PortC("   << Hex(m_register[PortC]) << ")"
+            << ", Control(" << Hex(m_register[ControlPort]) << ")";
+    }
     p_s << ")";
 #endif
 }

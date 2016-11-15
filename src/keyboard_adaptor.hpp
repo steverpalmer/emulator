@@ -1,4 +1,4 @@
-// keyboard_handler.hpp
+// keyboard_adaptor.hpp
 // Copyright 2016 Steve Palmer
 
 #ifndef KEYBOARD_ADAPTOR_HPP_
@@ -20,63 +20,36 @@ private:
         : public Dispatcher::Handler
     {
     protected:
-        KeyboardAdaptor &keyboard_adaptor;
-        Handler(Uint32 p_event_type, KeyboardAdaptor &p_keyboard_adaptor)
-            : Dispatcher::Handler(p_event_type)
-            , keyboard_adaptor(p_keyboard_adaptor)
-            {}
+        const KeyboardAdaptor &keyboard_adaptor;
+        Handler(Uint32 p_event_type, KeyboardAdaptor &);
     public:
         virtual ~Handler() = default;
     };
 
-    class KeyDownHandler
+    class DownHandler
         : public Handler
     {
     public:
-        KeyDownHandler(KeyboardAdaptor &p_keyboard_adaptor)
-            : Handler(SDL_KEYDOWN, p_keyboard_adaptor)
-            {}
-        virtual ~KeyDownHandler() = default;
-        virtual void handle(SDL_Event &p_event)
-            {
-                try
-                {
-                    if (keyboard_adaptor.m_atom_keyboard)
-                        keyboard_adaptor.m_atom_keyboard->down(keyboard_adaptor.keys.at(p_event.key.keysym.scancode));
-                }
-                catch (std::out_of_range e)
-                {
-                }
-            }
+        DownHandler(KeyboardAdaptor &);
+        virtual ~DownHandler() = default;
+        virtual void handle(const SDL_Event &);
     };
 
-    class KeyUpHandler
+    class UpHandler
         : public Handler
     {
     public:
-        KeyUpHandler(KeyboardAdaptor &p_keyboard_adaptor)
-            : Handler(SDL_KEYUP, p_keyboard_adaptor)
-            {}
-        virtual ~KeyUpHandler() = default;
-        virtual void handle(SDL_Event &p_event)
-            {
-                try
-                {
-                    if (keyboard_adaptor.m_atom_keyboard)
-                        keyboard_adaptor.m_atom_keyboard->up(keyboard_adaptor.keys.at(p_event.key.keysym.scancode));
-                }
-                catch (std::out_of_range e)
-                {
-                }
-            }
+        UpHandler(KeyboardAdaptor &);
+        virtual ~UpHandler() = default;
+        virtual void handle(const SDL_Event &);
     };
 
 public:
     AtomKeyboardInterface *m_atom_keyboard;
 private:
     std::map<SDL_Scancode, AtomKeyboardInterface::Key> keys;
-    KeyDownHandler keydown;
-    KeyUpHandler   keyup;
+    DownHandler down_handler;
+    UpHandler   up_handler;
 public:
     KeyboardAdaptor(AtomKeyboardInterface *);
     virtual ~KeyboardAdaptor() = default;

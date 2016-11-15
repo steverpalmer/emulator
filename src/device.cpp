@@ -60,28 +60,14 @@ void Computer::add_child(Device &p_device)
 {
     LOG4CXX_INFO(Part::log(), "making [" << p_device.id() << "] child of [" << id() << "]");
     (void) m_children.insert(&p_device);
-    p_device.add_parent(*this);
-}
-
-void Computer::remove_child(Part &p_part, bool do_erase)
-{
-    LOG4CXX_INFO(cpptrace_log(), "[" << id() << "].Computer::remove_child([" << p_part.id() << "])");
-    LOG4CXX_INFO(Part::log(), "removing [" << p_part.id() << "] as child of [" << id() << "]");
-    if (do_erase)
-    {
-        auto device = dynamic_cast<Device *>(&p_part);
-        if (device)
-            m_children.erase(device);
-    }
-    p_part.remove_parent(*this);
 }
 
 void Computer::clear()
 {
     LOG4CXX_INFO(cpptrace_log(), "[" << id() << "].Computer::clear()");
-    for (auto it = m_children.begin(); it != m_children.end(); it = m_children.erase(it))
-        remove_child(**it, false);
-    assert (m_children.empty());
+    assert (is_paused());
+    LOG4CXX_INFO(Part::log(), "removing all children of [" << id() << "]");
+    m_children.clear();
 }
 
 Computer::~Computer()
@@ -164,7 +150,6 @@ void Device::serialize(std::ostream &p_s) const
 {
 #if SERIALIZE_TO_DOT
     p_s << id() << " [color=red];\n";
-    serialize_parents(p_s);
 #else
     Part::serialize(p_s);
 #endif

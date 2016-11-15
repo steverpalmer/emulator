@@ -85,7 +85,6 @@ public:
 private:
     virtual int_type overflow(int_type);
     virtual int_type underflow();
-    virtual void remove_child(Part &);
 };
 
 #endif

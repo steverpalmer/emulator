@@ -53,14 +53,14 @@ public:
         SHIFT,
         REPT
     };
-        
+
 protected:
     AtomKeyboardInterface() = default;
 public:
     virtual ~AtomKeyboardInterface() = default;
     virtual void down(Key) = 0;
     virtual void up(Key) = 0;
-        
+
 };
 
 #endif

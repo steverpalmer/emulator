@@ -18,18 +18,11 @@ public:
     class Handler
     {
     protected:
-        Uint32     &event_type;
-        Handler(Uint32 p_event_type)
-            : event_type(p_event_type)
-            {
-                Dispatcher::instance().map(event_type, *this);
-            }
+        Uint32 event_type;
+        explicit Handler(Uint32 p_event_type);
     public:
-        virtual ~Handler()
-            {
-                Dispatcher::instance().demap(event_type);
-            }
-        virtual void handle(SDL_Event &) = 0;
+        virtual ~Handler();
+        virtual void handle(const SDL_Event &) = 0;
     };
 private:
     std::map<Uint32, Handler *>m_map;
@@ -47,26 +40,9 @@ public:
             }
             return *s_instance;
         }
-    void map(Uint32 p_event_type, Handler &p_handler)
-        {
-            m_map[p_event_type] = &p_handler;
-        }
-    void demap(Uint32 p_event_type)
-        {
-            m_map[p_event_type] = 0;
-        }
-    void dispatch(SDL_Event &p_event)
-        {
-            try
-            {
-                Handler * handler(m_map.at(p_event.type));
-                if (handler)
-                    handler->handle(p_event);
-            }
-            catch (std::out_of_range e)
-            {
-            }
-        }
+    void attach(Uint32 p_event_type, Handler &);
+    void detach(Uint32 p_event_type);
+    void dispatch(SDL_Event &p_event);
 };
 
 #endif

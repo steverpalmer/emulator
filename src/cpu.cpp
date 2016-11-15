@@ -80,9 +80,6 @@ Cpu::~Cpu()
 void Cpu::step(int p_cnt)
 {
     LOG4CXX_INFO(cpptrace_log(), "[" << id() << "].Cpu::step(" << p_cnt << ")");
-#if EXEC_TRACE
-    dump(m_6502tracelog, 1);
-#endif
     if (p_cnt < 1)
         p_cnt = 1;
     m_mutex.lock();
@@ -2378,7 +2375,6 @@ MCS6502::MCS6502(const Configurator &p_cfgr)
     m_memory = p_cfgr.memory()->memory_factory();
     assert (m_memory);
     LOG4CXX_INFO(Part::log(), "making [" << m_memory->id() << "] child of [" << id() << "]");
-    m_memory->add_parent(*this);
     assert (SIZE(m_memory->size()) == 65536);
     m_opcode_mapping.fill(m_undefined_instruction);
     new Instr_BRK(*this);
@@ -2538,11 +2534,9 @@ MCS6502::MCS6502(const Configurator &p_cfgr)
 MCS6502::~MCS6502()
 {
     LOG4CXX_INFO(cpptrace_log(), "[" << id() << "].~MCS6502::MCS6502()");
-    if (m_memory)
-    {
-        m_memory->remove_parent(*this);
-        remove_child(*m_memory);
-    }
+    assert (is_paused());
+    LOG4CXX_INFO(Part::log(), "removing children of [" << id() << "]");
+    m_memory = 0;
     for ( auto it = m_opcode_mapping.begin(); it != m_opcode_mapping.end(); ++it )
     {
         if (*it != m_undefined_instruction)
@@ -2551,16 +2545,6 @@ MCS6502::~MCS6502()
     }
     delete m_undefined_instruction;
     m_undefined_instruction = 0;
-}
-
-void MCS6502::remove_child(Part &p_child)
-{
-    LOG4CXX_INFO(cpptrace_log(), "[" << id() << "].~MCS6502::remove_child([" << p_child.id() << "])");
-    if (&p_child == m_memory)
-    {
-        LOG4CXX_INFO(Part::log(), "removing [" << p_child.id() << "] as child of [" << id() << "]");
-        m_memory = 0;
-    }
 }
 
 void MCS6502::single_step()

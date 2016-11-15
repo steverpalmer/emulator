@@ -1,4 +1,4 @@
-// keyboard_handler.cpp
+// keyboard_adaptor.cpp
 // Copyright 2016 Steve Palmer
 
 #include <cassert>
@@ -7,14 +7,62 @@
 
 static log4cxx::LoggerPtr cpptrace_log()
 {
-    static log4cxx::LoggerPtr result(log4cxx::Logger::getLogger(CTRACE_PREFIX ".keyboard_controller.cpp"));
+    static log4cxx::LoggerPtr result(log4cxx::Logger::getLogger(CTRACE_PREFIX ".keyboard_adaptor.cpp"));
     return result;
 }
 
+KeyboardAdaptor::Handler::Handler(Uint32 p_event_type, KeyboardAdaptor &p_keyboard_adaptor)
+    : Dispatcher::Handler(p_event_type)
+    , keyboard_adaptor(p_keyboard_adaptor)
+{
+    LOG4CXX_INFO(cpptrace_log(), "KeyboardAdaptor::Handler::Handler(" << p_event_type << ", ...)");
+}
+
+KeyboardAdaptor::DownHandler::DownHandler(KeyboardAdaptor &p_keyboard_adaptor)
+    : Handler(SDL_KEYDOWN, p_keyboard_adaptor)
+{
+    LOG4CXX_INFO(cpptrace_log(), "KeyboardAdaptor::DownHandler::DownHandler()");
+}
+
+void KeyboardAdaptor::DownHandler::handle(const SDL_Event &p_event)
+{
+    LOG4CXX_INFO(cpptrace_log(), "KeyboardAdaptor::DownHandler::handle(" << p_event.key.keysym.scancode << ")");
+    try
+    {
+        if (keyboard_adaptor.m_atom_keyboard)
+            keyboard_adaptor.m_atom_keyboard->down(keyboard_adaptor.keys.at(p_event.key.keysym.scancode));
+    }
+    catch (std::out_of_range e)
+    {
+        LOG4CXX_WARN(cpptrace_log(), "KeyboardAdaptor::DownHandler::handle: Unknown key " << p_event.key.keysym.scancode);
+    }
+}
+
+KeyboardAdaptor::UpHandler::UpHandler(KeyboardAdaptor &p_keyboard_adaptor)
+    : Handler(SDL_KEYUP, p_keyboard_adaptor)
+{
+    LOG4CXX_INFO(cpptrace_log(), "KeyboardAdaptor::UpHandler::UpHandler()");
+}
+
+void KeyboardAdaptor::UpHandler::handle(const SDL_Event &p_event)
+{
+    LOG4CXX_INFO(cpptrace_log(), "KeyboardAdaptor::UpHandler::handle(" << p_event.key.keysym.scancode << ")");
+    try
+    {
+        if (keyboard_adaptor.m_atom_keyboard)
+            keyboard_adaptor.m_atom_keyboard->up(keyboard_adaptor.keys.at(p_event.key.keysym.scancode));
+    }
+    catch (std::out_of_range e)
+    {
+        LOG4CXX_WARN(cpptrace_log(), "KeyboardAdaptor::UpHandler::handle: Unknown key " << p_event.key.keysym.scancode);
+    }
+}
+
+
 KeyboardAdaptor::KeyboardAdaptor(AtomKeyboardInterface *p_atom_keyboard)
     : m_atom_keyboard(p_atom_keyboard)
-    , keydown(*this)
-    , keyup(*this)
+    , down_handler(*this)
+    , up_handler(*this)
 {
     assert (m_atom_keyboard);
     LOG4CXX_INFO(cpptrace_log(), "KeyboardAdaptor::KeyboardAdaptor(" << p_atom_keyboard << ")");
@@ -55,39 +103,39 @@ KeyboardAdaptor::KeyboardAdaptor(AtomKeyboardInterface *p_atom_keyboard)
     keys[SDL_SCANCODE_9] = AtomKeyboardInterface::_9_RIGHTPARENTHESIS;
     keys[SDL_SCANCODE_0] = AtomKeyboardInterface::_0;
 
-    keys[SDL_SCANCODE_RETURN      ] = AtomKeyboardInterface::RETURN;
-    keys[SDL_SCANCODE_BACKSPACE   ] = AtomKeyboardInterface::CIRCUMFLEX;
-    keys[SDL_SCANCODE_TAB         ] = AtomKeyboardInterface::COPY;
-    keys[SDL_SCANCODE_SPACE       ] = AtomKeyboardInterface::SPACE;
-    keys[SDL_SCANCODE_MINUS       ] = AtomKeyboardInterface::MINUS_EQUALS;
-    keys[SDL_SCANCODE_EQUALS      ] = AtomKeyboardInterface::COLON_ASTERISK;
-    keys[SDL_SCANCODE_LEFTBRACKET ] = AtomKeyboardInterface::AT;
-    keys[SDL_SCANCODE_RIGHTBRACKET] = AtomKeyboardInterface::BACKSLASH;
-    keys[SDL_SCANCODE_BACKSLASH   ] = AtomKeyboardInterface::LOCK;
-    keys[SDL_SCANCODE_SEMICOLON   ] = AtomKeyboardInterface::SEMICOLON_PLUS;
-    keys[SDL_SCANCODE_APOSTROPHE  ] = AtomKeyboardInterface::LEFTBRACKET;
-    keys[SDL_SCANCODE_GRAVE       ] = AtomKeyboardInterface::ESCAPE;
-    keys[SDL_SCANCODE_NONUSHASH   ] = AtomKeyboardInterface::RIGHTBRACKET;
-    keys[SDL_SCANCODE_COMMA       ] = AtomKeyboardInterface::COMMA_LESSTHAN;
-    keys[SDL_SCANCODE_PERIOD      ] = AtomKeyboardInterface::PERIOD_GREATERTHAN;
-    keys[SDL_SCANCODE_SLASH       ] = AtomKeyboardInterface::SLASH_QUESTION;
-    keys[SDL_SCANCODE_CAPSLOCK    ] = AtomKeyboardInterface::LOCK;
-    keys[SDL_SCANCODE_DELETE      ] = AtomKeyboardInterface::DELETE;
-    keys[SDL_SCANCODE_LEFT        ] = AtomKeyboardInterface::LEFT_RIGHT;
-    keys[SDL_SCANCODE_RIGHT       ] = AtomKeyboardInterface::LEFT_RIGHT;
-    keys[SDL_SCANCODE_UP          ] = AtomKeyboardInterface::UP_DOWN;
-    keys[SDL_SCANCODE_DOWN        ] = AtomKeyboardInterface::UP_DOWN;
+    keys[SDL_SCANCODE_RETURN        ] = AtomKeyboardInterface::RETURN;
+    keys[SDL_SCANCODE_BACKSPACE     ] = AtomKeyboardInterface::CIRCUMFLEX;
+    keys[SDL_SCANCODE_TAB           ] = AtomKeyboardInterface::COPY;
+    keys[SDL_SCANCODE_SPACE         ] = AtomKeyboardInterface::SPACE;
+    keys[SDL_SCANCODE_MINUS         ] = AtomKeyboardInterface::MINUS_EQUALS;
+    keys[SDL_SCANCODE_EQUALS        ] = AtomKeyboardInterface::COLON_ASTERISK;
+    keys[SDL_SCANCODE_LEFTBRACKET   ] = AtomKeyboardInterface::AT;
+    keys[SDL_SCANCODE_RIGHTBRACKET  ] = AtomKeyboardInterface::BACKSLASH;
+    keys[SDL_SCANCODE_NONUSBACKSLASH] = AtomKeyboardInterface::LOCK;
+    keys[SDL_SCANCODE_SEMICOLON     ] = AtomKeyboardInterface::SEMICOLON_PLUS;
+    keys[SDL_SCANCODE_APOSTROPHE    ] = AtomKeyboardInterface::LEFTBRACKET;
+    keys[SDL_SCANCODE_GRAVE         ] = AtomKeyboardInterface::ESCAPE;
+    keys[SDL_SCANCODE_BACKSLASH     ] = AtomKeyboardInterface::RIGHTBRACKET;
+    keys[SDL_SCANCODE_COMMA         ] = AtomKeyboardInterface::COMMA_LESSTHAN;
+    keys[SDL_SCANCODE_PERIOD        ] = AtomKeyboardInterface::PERIOD_GREATERTHAN;
+    keys[SDL_SCANCODE_SLASH         ] = AtomKeyboardInterface::SLASH_QUESTION;
+    keys[SDL_SCANCODE_CAPSLOCK      ] = AtomKeyboardInterface::LOCK;
+    keys[SDL_SCANCODE_DELETE        ] = AtomKeyboardInterface::DELETE;
+    keys[SDL_SCANCODE_LEFT          ] = AtomKeyboardInterface::LEFT_RIGHT;
+    keys[SDL_SCANCODE_RIGHT         ] = AtomKeyboardInterface::LEFT_RIGHT;
+    keys[SDL_SCANCODE_UP            ] = AtomKeyboardInterface::UP_DOWN;
+    keys[SDL_SCANCODE_DOWN          ] = AtomKeyboardInterface::UP_DOWN;
 
-    keys[SDL_SCANCODE_LCTRL       ] = AtomKeyboardInterface::CTRL;
-    keys[SDL_SCANCODE_LSHIFT      ] = AtomKeyboardInterface::SHIFT;
-    keys[SDL_SCANCODE_LALT        ] = AtomKeyboardInterface::REPT;
-    keys[SDL_SCANCODE_RCTRL       ] = AtomKeyboardInterface::CTRL;
-    keys[SDL_SCANCODE_RSHIFT      ] = AtomKeyboardInterface::SHIFT;
-    keys[SDL_SCANCODE_RALT        ] = AtomKeyboardInterface::REPT;
+    keys[SDL_SCANCODE_LCTRL         ] = AtomKeyboardInterface::CTRL;
+    keys[SDL_SCANCODE_LSHIFT        ] = AtomKeyboardInterface::SHIFT;
+    keys[SDL_SCANCODE_LALT          ] = AtomKeyboardInterface::REPT;
+    keys[SDL_SCANCODE_RCTRL         ] = AtomKeyboardInterface::CTRL;
+    keys[SDL_SCANCODE_RSHIFT        ] = AtomKeyboardInterface::SHIFT;
+    keys[SDL_SCANCODE_RALT          ] = AtomKeyboardInterface::REPT;
 
-    keys[SDL_SCANCODE_F1          ] = AtomKeyboardInterface::SPARE1;
-    keys[SDL_SCANCODE_F2          ] = AtomKeyboardInterface::SPARE2;
-    keys[SDL_SCANCODE_F3          ] = AtomKeyboardInterface::SPARE3;
-    keys[SDL_SCANCODE_F4          ] = AtomKeyboardInterface::SPARE4;
-    keys[SDL_SCANCODE_F5          ] = AtomKeyboardInterface::SPARE5;
+    keys[SDL_SCANCODE_F1            ] = AtomKeyboardInterface::SPARE1;
+    keys[SDL_SCANCODE_F2            ] = AtomKeyboardInterface::SPARE2;
+    keys[SDL_SCANCODE_F3            ] = AtomKeyboardInterface::SPARE3;
+    keys[SDL_SCANCODE_F4            ] = AtomKeyboardInterface::SPARE4;
+    keys[SDL_SCANCODE_F5            ] = AtomKeyboardInterface::SPARE5;
 }

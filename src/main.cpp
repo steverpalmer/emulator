@@ -93,6 +93,7 @@ public:
             delete cfg;
             LOG4CXX_INFO(cpptrace_log(), PartsBin::instance());
 
+#if 0
             Pipe *cin(0);
             Pipe *cout(0);
             std::iostream *atom_stream(0);
@@ -105,7 +106,7 @@ public:
                 cin = new Pipe(std::cin, *atom_stream);
                 cout = new Pipe(*atom_stream, std::cout);
             }
-
+#endif
             Ppia *ppia = dynamic_cast<Ppia *>(PartsBin::instance()["ppia"]);
             assert (ppia);
             KeyboardAdaptor *keyboard = new KeyboardAdaptor(ppia);
@@ -117,7 +118,7 @@ public:
             computer->reset();
             computer->resume();
             SDL_Event event;
-            enum {Continue, QuitRequest, EventWaitError} state = QuitRequest;
+            enum {Continue, QuitRequest, EventWaitError} state = Continue;
             while (state == Continue)
             {
                 LOG4CXX_INFO(SDL::log(), "SDL_WaitEvent(&event)");
@@ -138,10 +139,12 @@ public:
                 computer->pause();
                 while (not computer->is_paused())
                     std::this_thread::yield();
+#if 0
                 delete cout;
                 delete cin;
                 delete atom_stream;
                 delete stream;
+#endif
                 delete keyboard;
             }
         }

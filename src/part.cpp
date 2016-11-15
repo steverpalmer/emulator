@@ -59,12 +59,6 @@ Part::Part()
 Part::~Part()
 {
     LOG4CXX_INFO(cpptrace_log(), "Part::~Part([" << id() << "])");
-    for (auto p: m_parents)
-    {
-        p->remove_child(*this);
-        LOG4CXX_INFO(Part::log(), "removing [" << p->id() << "] as parent of [" << id() << "]");
-    }
-    m_parents.clear();
     LOG4CXX_INFO(Part::log(), "destructed [" << m_id << "]");
 }
 
@@ -72,9 +66,9 @@ const char Part::id_delimiter     = '.';
 const Part::id_type Part::id_here = ".";
 const Part::id_type Part::id_up   = "..";
 
+#if 0
 std::unique_ptr<Part::id_type> Part::canonical_id(const id_type &p_s)
 {
-#if 0
     LOG4CXX_INFO(cpptrace_log(), "Part::canonical_id(" << p_s << ")");
     std::list<Glib::ustring> l;
     const Glib::ustring s(p_s.normalize());
@@ -125,23 +119,9 @@ std::unique_ptr<Part::id_type> Part::canonical_id(const id_type &p_s)
     if (*result == "")
         *result += Part::id_delimiter;
     return result;
-#else
     return std::unique_ptr<Glib::ustring>(new Glib::ustring(p_s));
+}
 #endif
-}
-
-void Part::add_parent(Part &p_parent)
-{
-    LOG4CXX_INFO(Part::log(), "making [" << p_parent.id() << "] parent of [" << id() << "]");
-    (void) m_parents.insert(&p_parent);
-}
-
-void Part::remove_parent(Part &p_parent)
-{
-    LOG4CXX_INFO(Part::log(), "removing [" << p_parent.id() << "] as parent of [" << id() << "]");
-    (void) m_parents.erase(&p_parent);
-}
-
 
 int PartsBin::self_check() const
 {
@@ -163,7 +143,6 @@ void PartsBin::clear()
     assert (self_check() == 0);
     for (auto it = m_bin.begin(); it != m_bin.end(); it = m_bin.erase(it))
     {
-        LOG4CXX_DEBUG(Part::log(), *this);
         LOG4CXX_DEBUG(Part::log(), "// Deleting:" << it->first);
         auto p(it->second);
         it->second = 0;
@@ -208,19 +187,10 @@ void PartsBin::Configurator::serialize(std::ostream &p_s) const
 #endif
 }
 
-#if SERIALIZE_TO_DOT
-void Part::serialize_parents(std::ostream &p_s) const
-{
-    for (auto device : m_parents)
-        p_s << id() << " -> " << device->id() << " [style=dashed];\n";
-}
-#endif
-
 void Part::serialize(std::ostream &p_s) const
 {
 #if SERIALIZE_TO_DOT
     p_s << m_id << ";\n";
-    serialize_parents(p_s);
 #else
     p_s << "id(\"" << m_id << "\")";
 #endif

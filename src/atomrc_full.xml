@@ -101,22 +101,21 @@
         </e:map>
       </e:address_space>
     </e:mcs6502>
+    <e:monitor>
+      <e:font>
+        <e:filename>mc6847.bmp</e:filename>
+      </e:font>
+      <e:window_title>Acorn Atom Emulator</e:window_title>
+      <e:reset>
+        <e:device href="computer"/>
+      </e:reset>
+      <e:video_memory>
+        <e:memory href="video"/>
+      </e:video_memory>
+      <e:controller>
+        <e:memory href="ppia"/>
+      </e:controller>
+    </e:monitor>
   </e:computer>
-
-  <e:terminal name="terminal">
-    <e:font>
-      <e:filename>mc6847.bmp</e:filename>
-    </e:font>
-    <e:window_title>Acorn Atom Emulator</e:window_title>
-    <e:reset>
-      <e:device href="computer"/>
-    </e:reset>
-    <e:video_memory>
-      <e:memory href="video"/>
-    </e:video_memory>
-    <e:controller>
-      <e:memory href="ppia"/>
-    </e:controller>
-  </e:terminal>
 
 </e:emulator>

@@ -42,7 +42,7 @@ public:
         , protected Part::ReferenceConfigurator
     {
     public:
-        explicit ReferenceConfigurator(const Glib::ustring p_ref_id)
+        explicit ReferenceConfigurator(const id_type p_ref_id)
             : Part::ReferenceConfigurator(p_ref_id) {}
         virtual ~ReferenceConfigurator() = default;
         virtual Part *part_factory() const;
@@ -97,9 +97,6 @@ public:
     virtual ~Computer();
 public:
     void add_child(Device &);
-    void remove_child(Part &, bool);
-    virtual void remove_child(Part &p_part)
-        { remove_child(p_part, true); }
     void clear();
 
     virtual void reset();

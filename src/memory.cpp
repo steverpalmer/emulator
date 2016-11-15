@@ -44,14 +44,35 @@ Memory::Memory()
 
 Memory::~Memory()
 {
-    for (auto obs : m_observers)
-        obs->subject_loss(*this);
     m_observers.clear();
+}
+
+void Memory::attach(Observer &p_observer)
+{
+    LOG4CXX_INFO(cpptrace_log(), "[" << id() << "]Memory::attach(...)");
+    m_observers.insert(&p_observer);
+}
+
+void Memory::detach(Observer &p_observer)
+{
+    LOG4CXX_INFO(cpptrace_log(), "[" << id() << "]Memory::detach(...)");
+    m_observers.erase(&p_observer);
+}
+
+void Memory::set_byte(word p_addr, byte p_byte, AccessType p_at)
+{
+    LOG4CXX_INFO(cpptrace_log(), "[" << id() << "]Memory::set_byte(" << Hex(p_addr) << ", " << Hex(p_byte) << ", " << p_at << ")");
+    unobserved_set_byte(p_addr, p_byte, p_at);
+    for ( auto obs : m_observers )
+    {
+        LOG4CXX_DEBUG(cpptrace_log(), "[" << id() << "]Memory::set_byte: notifing observers");
+        obs->set_byte_update(*this, p_addr, p_byte, p_at);
+    }
 }
 
 word Memory::get_word(word p_addr, AccessType p_at)
 {
-    LOG4CXX_INFO(cpptrace_log(), "[" << id() << "].get_word(" << Hex(p_addr) << ", " << p_at << ")");
+    // LOG4CXX_INFO(cpptrace_log(), "[" << id() << "].get_word(" << Hex(p_addr) << ", " << p_at << ")");
     const word low_byte(get_byte(p_addr, p_at));
     const word high_byte(get_byte(((p_addr+1)==size())?0:(p_addr+1), p_at));
     return low_byte | high_byte << 8;
@@ -165,13 +186,13 @@ AddressSpace::AddressSpace(word p_size)
 
 byte AddressSpace::get_byte(word p_addr, AccessType p_at)
 {
-    LOG4CXX_INFO(cpptrace_log(), "[" << id() << "].AddressSpace::get_byte(" << Hex(p_addr) << ", " << p_at << ")");
+    // LOG4CXX_INFO(cpptrace_log(), "[" << id() << "].AddressSpace::get_byte(" << Hex(p_addr) << ", " << p_at << ")");
     return m_map[p_addr] ? m_map[p_addr]->get_byte(p_addr-m_base[p_addr], p_at) : 0;
 }
 
-void AddressSpace::_set_byte(word p_addr, byte p_byte, AccessType p_at)
+void AddressSpace::unobserved_set_byte(word p_addr, byte p_byte, AccessType p_at)
 {
-    LOG4CXX_INFO(cpptrace_log(), "[" << id() << "].AddressSpace::_set_byte(" << Hex(p_addr) << ", " << Hex(p_byte) << ", " << p_at << ")");
+    LOG4CXX_INFO(cpptrace_log(), "[" << id() << "].AddressSpace::unobserved_set_byte(" << Hex(p_addr) << ", " << Hex(p_byte) << ", " << p_at << ")");
     if (m_map[p_addr])
     	m_map[p_addr]->set_byte(p_addr-m_base[p_addr], p_byte, p_at);
 }
@@ -180,10 +201,7 @@ void AddressSpace::add_child(word p_base, Memory &p_memory, word p_size)
 {
     LOG4CXX_INFO(cpptrace_log(), "[" << id() << "].AddressSpace::add_child(" << Hex(p_base) << ", [" << p_memory.id() << "], " << Hex(p_size) << ")");
     LOG4CXX_INFO(Part::log(), "making [" << p_memory.id() << "] child of [" << id() << "]");
-    {  // These two statements should occur together
-        m_children.insert(&p_memory);
-        p_memory.add_parent(*this);
-    }
+    m_children.insert(&p_memory);
     Hook *hook = dynamic_cast<Hook *>(&p_memory);
     if (hook)
         hook->fill(*this, p_base);
@@ -198,31 +216,16 @@ void AddressSpace::add_child(word p_base, Memory &p_memory, word p_size)
     }
 }
 
-void AddressSpace::remove_child(Part &p_part, bool do_erase)
-{
-    LOG4CXX_INFO(cpptrace_log(), "[" << id() << "].AddressSpace::remove_child([" << p_part.id() << "])");
-    LOG4CXX_INFO(Part::log(), "removing [" << p_part.id() << "] as child of [" << id() << "]");
-    {  // These two statements should occur together
-        if (do_erase)
-        {
-            auto memory = dynamic_cast<Memory *>(&p_part);
-            if (memory)
-                m_children.erase(memory);
-        }
-        p_part.remove_parent(*this);
-    }
-}
-
 void AddressSpace::clear()
 {
     LOG4CXX_INFO(cpptrace_log(), "[" << id() << "].AddressSpace::clear()");
+    assert (is_paused());
     for (auto &m: m_map)
         m = 0;
     for (auto &b: m_base)
         b = 0;
-    for (auto it = m_children.begin(); it != m_children.end(); it = m_children.erase(it))
-        remove_child(**it, false);
-    assert (m_children.empty());
+    LOG4CXX_INFO(Part::log(), "removing children of [" << id() << "]");
+    m_children.clear();
 }
 
 AddressSpace::~AddressSpace()
@@ -252,6 +255,15 @@ void AddressSpace::resume()
         mem->resume();
 }
 
+bool AddressSpace::is_paused() const
+{
+    bool result = true;
+    LOG4CXX_DEBUG(cpptrace_log(), "[" << id() << "].AddressSpace::is_paused()");
+    for (auto memory : m_children)
+        result &= memory->is_paused();
+    return result;
+}
+
 Hook::Hook(const Configurator &p_cfgr)
     : Memory(p_cfgr)
     , m_address_space(p_cfgr.size())
@@ -275,7 +287,7 @@ byte Hook::get_byte(word p_addr, AccessType p_at)
     return rv;
 }
 
-void Hook::_set_byte(word p_addr, byte p_byte, AccessType p_at)
+void Hook::unobserved_set_byte(word p_addr, byte p_byte, AccessType p_at)
 {
     const int rv = set_byte_hook(p_addr, p_byte, p_at);
     if (rv == -1)

@@ -545,7 +545,7 @@ namespace Xml
             factory_map["mcs6502"]  = MCS6502Configurator::device_configurator_factory;
             factory_map["stream"]   = AtomStreamBufConfigurator::device_configurator_factory;
             factory_map["computer"] = ComputerConfigurator::device_configurator_factory;
-            factory_map["terminal"] = MonitorViewConfigurator::device_configurator_factory;
+            factory_map["monitor"] = MonitorViewConfigurator::device_configurator_factory;
         }
         factory_function *factory = factory_map[p_node->get_name()];
         const Device::Configurator *result(factory ? factory(p_node) : MemoryConfigurator::factory(p_node));

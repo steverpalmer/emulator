@@ -55,7 +55,6 @@ public:
     public:
         virtual ~Observer() = default;
         virtual void vdg_mode_update(AtomMonitorInterface &, VDGMode) = 0;
-        virtual void subject_loss(const AtomMonitorInterface &) = 0;
     };
 
 private:
@@ -80,8 +79,6 @@ public:
 
     virtual ~AtomMonitorInterface()
         {
-            for (auto obs : m_observers)
-                obs->subject_loss(*this);
             m_observers.clear();
         }
 

@@ -46,8 +46,7 @@ public:
         Observer() = default;
     public:
         virtual ~Observer() = default;
-        virtual void set_byte_update(Memory &p_memory, word p_addr, byte p_byte, AccessType p_at) = 0;
-        virtual void subject_loss(const Memory &p_memory) = 0;
+        virtual void set_byte_update(Memory &, word, byte, AccessType) = 0;
     };
 
 	/// The Memory Configurator is an interface to two key items
@@ -74,7 +73,7 @@ public:
         , protected Device::ReferenceConfigurator
     {
     public:
-        explicit ReferenceConfigurator(const Glib::ustring p_ref_id)
+        explicit ReferenceConfigurator(const id_type p_ref_id)
             : Device::ReferenceConfigurator(p_ref_id) {}
         virtual ~ReferenceConfigurator() = default;
         virtual Part *part_factory() const;
@@ -90,23 +89,18 @@ private:
 protected:
     explicit Memory(const Configurator &);
     Memory();
-protected:
-    virtual void _set_byte(word p_addr, byte p_byte, AccessType p_at = AT_UNKNOWN) = 0;
+private:
+    virtual void unobserved_set_byte(word p_addr, byte p_byte, AccessType p_at = AT_UNKNOWN) = 0;
 public:
     virtual word size() const = 0;
 
-    inline void attach(Observer &p_observer) { m_observers.insert(&p_observer); }
-    inline void detach(Observer &p_observer) { m_observers.erase(&p_observer); }
+    void attach(Observer &);
+    void detach(Observer &);
 
     virtual ~Memory();
 
     virtual byte get_byte(word p_addr, AccessType p_at = AT_UNKNOWN) = 0;
-    inline void set_byte(word p_addr, byte p_byte, AccessType p_at = AT_UNKNOWN)
-        {
-            _set_byte(p_addr, p_byte, p_at);
-            for ( auto obs : m_observers )
-                obs->set_byte_update(*this, p_addr, p_byte, p_at);
-        }
+    void set_byte(word p_addr, byte p_byte, AccessType p_at = AT_UNKNOWN);
     word get_word(word p_addr, AccessType p_at = AT_UNKNOWN);
     void set_word(word p_addr, word p_word, AccessType p_at = AT_UNKNOWN);
 
@@ -177,8 +171,8 @@ public:
         { return m_storage.size(); }
     virtual byte get_byte(word p_addr, AccessType p_at = AT_UNKNOWN)
         { return m_storage.get_byte(p_addr, p_at); }
-protected:
-    virtual void _set_byte(word p_addr, byte p_byte, AccessType p_at = AT_UNKNOWN)
+private:
+    virtual void unobserved_set_byte(word p_addr, byte p_byte, AccessType p_at = AT_UNKNOWN)
         { m_storage.set_byte(p_addr, p_byte, p_at); }
 
 public:
@@ -222,8 +216,8 @@ public:
         { return m_storage.size(); }
     virtual byte get_byte(word p_addr, AccessType p_at = AT_UNKNOWN)
         { return m_storage.get_byte(p_addr, p_at); }
-protected:
-    virtual void _set_byte(word p_addr, byte p_byte, AccessType p_at = AT_UNKNOWN)
+private:
+    virtual void unobserved_set_byte(word p_addr, byte p_byte, AccessType p_at = AT_UNKNOWN)
         { /* Do Nothing! */ }
 
 public:
@@ -273,18 +267,16 @@ public:
     explicit AddressSpace(word p_size = 0);
     virtual word size() const { return m_map.size(); }
     virtual byte get_byte(word p_addr, AccessType p_at = AT_UNKNOWN);
-protected:
-    virtual void _set_byte(word p_addr, byte p_byte, AccessType p_at = AT_UNKNOWN);
+private:
+    virtual void unobserved_set_byte(word p_addr, byte p_byte, AccessType p_at = AT_UNKNOWN);
 public:
     void add_child(word p_base, Memory &p_memory, word p_size = 0);
-    void remove_child(Part &p_part, bool);
-    virtual void remove_child(Part &p_part)
-        { remove_child(p_part, true); }
     void clear();
     virtual ~AddressSpace();
     virtual void reset();
     virtual void pause();
     virtual void resume();
+    virtual bool is_paused() const;
 
     virtual void serialize(std::ostream &) const;
 
@@ -322,7 +314,8 @@ public:
     void fill(AddressSpace &p_as, word p_base);
     virtual word size() const { return m_address_space.size(); }
     virtual byte get_byte(word p_addr, AccessType p_at = AT_UNKNOWN);
-    virtual void _set_byte(word p_addr, byte p_byte, AccessType p_at = AT_UNKNOWN);
+private:
+    virtual void unobserved_set_byte(word p_addr, byte p_byte, AccessType p_at = AT_UNKNOWN);
 };
 
 #endif

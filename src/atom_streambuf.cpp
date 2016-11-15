@@ -62,7 +62,6 @@ AtomStreamBuf::AtomStreamBuf(const Configurator &p_cfgr)
     if (m_mcs6502)
     {
         LOG4CXX_INFO(Part::log(), "making [" << m_mcs6502->id() << "] child of [" << id() << "]");
-        m_mcs6502->add_parent(*this);
     }
     AddressSpace *address_space = dynamic_cast<AddressSpace *>(p_cfgr.address_space()->memory_factory());
     assert (address_space);
@@ -75,16 +74,7 @@ AtomStreamBuf::~AtomStreamBuf()
 {
     if (m_mcs6502)
     {
-        m_mcs6502->remove_parent(*this);
-        remove_child(*m_mcs6502);
-    }
-}
-
-void AtomStreamBuf::remove_child(Part &p_child)
-{
-    if (m_mcs6502 == &p_child)
-    {
-        LOG4CXX_INFO(Part::log(), "removing mcs6502 as child of [" << id() << "]");
+        LOG4CXX_INFO(Part::log(), "removing children of [" << id() << "]");
         m_mcs6502 = 0;
     }
 }

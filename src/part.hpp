@@ -51,7 +51,7 @@ public:
     protected:
         id_type m_ref_id;
     public:
-        explicit ReferenceConfigurator(const Glib::ustring p_ref_id) : m_ref_id(p_ref_id) {}
+        explicit ReferenceConfigurator(const id_type p_ref_id) : m_ref_id(p_ref_id) {}
         virtual ~ReferenceConfigurator() = default;
         virtual const id_type &id() const { return anonymous_id; }
         virtual Part *part_factory() const;
@@ -61,24 +61,14 @@ public:
 private:
 	id_type m_id;
     static int anonymous_id_counter;
-protected:
-    std::set<Part *> m_parents;
-#if SERIALIZE_TO_DOT
-    void serialize_parents(std::ostream &) const;
-#endif
 public:
 	const id_type &id() const { return m_id; }
-    static std::unique_ptr<id_type> canonical_id(const id_type &);
 protected:
 	explicit Part(const Configurator &);
 	explicit Part(const id_type &p_id);
     Part();
 public:
     virtual ~Part();
-
-    void add_parent(Part &);
-    void remove_parent(Part &);
-    virtual void remove_child(Part &) {}
 
     virtual void serialize(std::ostream &) const;
 	friend std::ostream &::operator<<(std::ostream &p_s, const Part &p_p)
@@ -182,16 +172,14 @@ public:
     inline std::pair<iterator,bool> insert( const value_type& value )
         {
             assert (self_check() == 0);
-            const value_type l_v(*Part::canonical_id(value.first), value.second);
-            std::pair<iterator,bool> result(m_bin.insert(l_v));
+            std::pair<iterator,bool> result(m_bin.insert(value));
             assert (self_check() == 0);
             return result;
         }
     inline iterator insert( const_iterator hint, const value_type& value )
         {
             assert (self_check() == 0);
-            const value_type l_v(*Part::canonical_id(value.first), value.second);
-            iterator result(m_bin.insert(hint, l_v));
+            iterator result(m_bin.insert(hint, value));
             assert (self_check() == 0);
             return result;
         }
@@ -218,7 +206,7 @@ public:
     inline size_type erase( const key_type& key )
         {
             assert (self_check() == 0);
-            size_type result(m_bin.erase(*Part::canonical_id(key)));
+            size_type result(m_bin.erase(key));
             assert (self_check() == 0);
             return result;
         }
@@ -226,45 +214,45 @@ public:
     inline mapped_type& at( const key_type& key )
         {
             assert (self_check() == 0);
-            mapped_type &result(m_bin.at(*Part::canonical_id(key)));
+            mapped_type &result(m_bin.at(key));
             assert (self_check() == 0);
             return result;
         }
     inline const mapped_type& at( const key_type& key ) const
         {
             assert (self_check() == 0);
-            return m_bin.at(*Part::canonical_id(key));
+            return m_bin.at(key);
         }
     inline mapped_type& operator[]( const key_type& key )
         {
             assert (self_check() == 0);
-            mapped_type &result(m_bin[*Part::canonical_id(key)]);
+            mapped_type &result(m_bin[key]);
             assert (self_check() == 0);
             return result;
         }
     inline mapped_type& operator[]( key_type& key )
         {
             assert (self_check() == 0);
-            mapped_type &result(m_bin[*Part::canonical_id(key)]);
+            mapped_type &result(m_bin[key]);
             assert (self_check() == 0);
             return result;
         }
     inline size_type count( const key_type& key ) const
         {
             assert (self_check() == 0);
-            return m_bin.count(*Part::canonical_id(key));
+            return m_bin.count(key);
         }
     inline iterator find( const key_type& key )
         {
             assert (self_check() == 0);
-            iterator result(m_bin.find(*Part::canonical_id(key)));
+            iterator result(m_bin.find(key));
             assert (self_check() == 0);
             return result;
         }
     inline const_iterator find( const key_type& key ) const
         {
             assert (self_check() == 0);
-            return m_bin.find(*Part::canonical_id(key));
+            return m_bin.find(key);
         }
     virtual void serialize(std::ostream &) const;
     friend std::ostream &::operator<<(std::ostream &p_s, const PartsBin &p_pb)
