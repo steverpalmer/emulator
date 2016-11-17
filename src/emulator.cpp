@@ -43,15 +43,16 @@ private:
     void thread_function()
         {
             LOG4CXX_INFO(cpptrace_log(), "[" << id() << "]Pipe::thread_function()");
-            char ch;
             for (m_more=true; m_more; )
             {
                 LOG4CXX_INFO(cpptrace_log(), "[" << id() << "]Pipe::thread_function reading");
-                m_source >> ch;
+                const char ch(m_source.get());
+                LOG4CXX_INFO(cpptrace_log(), "[" << id() << "]Pipe::thread_function read " << int(ch));
                 if (ch == EOF)
                     break;
-                LOG4CXX_INFO(cpptrace_log(), "[" << id() << "]Pipe::thread_function writing");
-                m_sink << ch;
+                LOG4CXX_INFO(cpptrace_log(), "[" << id() << "]Pipe::thread_function writing " << int(ch));
+                m_sink.put(ch);
+                LOG4CXX_INFO(cpptrace_log(), "[" << id() << "]Pipe::thread_function written");
             }
         }
 public:
@@ -105,14 +106,13 @@ public:
 
             const Configurator *cfg = new Xml::Configurator(argc, argv);  // FIXME: remove Xml::
             assert (cfg);
-            LOG4CXX_INFO(cpptrace_log(), *cfg);
+            LOG4CXX_DEBUG(cpptrace_log(), *cfg);
 
             PartsBin::instance().build(*cfg);
             delete cfg;
-            LOG4CXX_INFO(cpptrace_log(), PartsBin::instance());
+            LOG4CXX_DEBUG(cpptrace_log(), PartsBin::instance());
 
             // Pipe *cin(0);
-            Pipe *outgoing(0);
             std::istream *atom_stream(0);
             AtomInputStreamBuf *stream = dynamic_cast<AtomInputStreamBuf *>(PartsBin::instance()["stream"]);
             if (stream)
@@ -121,7 +121,7 @@ public:
                 atom_stream = stream->istream_factory();
                 assert (atom_stream);
                 // cin = new Pipe("input stream", std::cin, *atom_stream);
-                outgoing = new Pipe("output stream", *atom_stream, std::cout);
+                new Pipe("output stream", *atom_stream, std::cout);
             }
             Device *root = dynamic_cast<Device *>(PartsBin::instance()["root"]);
             assert (root);

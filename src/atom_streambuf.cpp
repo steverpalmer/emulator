@@ -80,10 +80,8 @@ AtomStreamBufBase::AtomStreamBufBase(MCS6502 &p_mcs6502, bool output_paused)
     : m_mcs6502(p_mcs6502)
     , m_OSRDCH(*this)
     , m_OSWRCH(*this, output_paused)
-    , m_get_state(Nominal)
 {
     LOG4CXX_INFO(cpptrace_log(), "AtomStreamBufBase::AtomStreamBufBase([" << p_mcs6502.id() << "], " << output_paused << ")");
-    setg(&m_get_buffer[2], &m_get_buffer[2], &m_get_buffer[2]);
 }
 
 AtomStreamBufBase::~AtomStreamBufBase()
@@ -115,53 +113,72 @@ AtomStreamBufBase::int_type AtomStreamBufBase::overflow(int_type p_ch)
 AtomStreamBufBase::int_type AtomStreamBufBase::underflow()
 {
     LOG4CXX_INFO(cpptrace_log(), "AtomStreamBuf::underflow()");
-    switch (m_get_state)
+    static enum { Nominal, OneBehind, CatchUp}  state = Nominal;
+    static char             buffer[2];
+    static std::mutex       mutex;
+    std::lock_guard<std::mutex> lock(mutex);  // one at a time...
+    char * current;
+    switch (state)
     {
     case Nominal:
-        m_get_buffer[0] = m_get_buffer[1];
+        buffer[0] = buffer[1];
         LOG4CXX_DEBUG(cpptrace_log(), "AtomStreamBuf::underflow trying to pulled");
-        m_get_buffer[1] = m_OSWRCH.queue.blocking_pull();
-        LOG4CXX_DEBUG(cpptrace_log(), "AtomStreamBuf::underflow pulled a " << int(m_get_buffer[1]));
-        if (m_get_buffer[1] == '\x0D')
+        buffer[1] = m_OSWRCH.queue.blocking_pull();
+        LOG4CXX_DEBUG(cpptrace_log(), "AtomStreamBuf::underflow pulled a " << int(buffer[1]));
+        if (buffer[1] == '\x0D'  || buffer[1] == '\x0A')
         {
-            m_get_state = OneBehind;
+            state = OneBehind;
             // Don't break
         }
         else
         {
-            setg(&m_get_buffer[1], &m_get_buffer[1], &m_get_buffer[2]);
+            current = &buffer[1];
             break;
         }
     case OneBehind:
-        m_get_buffer[0] = m_get_buffer[1];
+        buffer[0] = buffer[1];
         LOG4CXX_DEBUG(cpptrace_log(), "AtomStreamBuf::underflow trying to pulled again");
-        m_get_buffer[1] = m_OSWRCH.queue.blocking_pull();
-        LOG4CXX_DEBUG(cpptrace_log(), "AtomStreamBuf::underflow pulled another " << int(m_get_buffer[1]));
-        if (m_get_buffer[0] == '\x0D' && m_get_buffer[1] == '\x0A')
+        buffer[1] = m_OSWRCH.queue.blocking_pull();
+        LOG4CXX_DEBUG(cpptrace_log(), "AtomStreamBuf::underflow pulled another " << int(buffer[1]));
+        if (buffer[0] == '\x0D' && buffer[1] == '\x0A')
         {
-            m_get_buffer[1] = '\n';
-            setg(&m_get_buffer[1], &m_get_buffer[1], &m_get_buffer[2]);
-            m_get_state = Nominal;
+            buffer[1] = '\n';
+            current = &buffer[1];
+            state = Nominal;
         }
-        else if (m_get_buffer[1] == '\x0D')
+        else if (buffer[0] == '\x0A' && buffer[1] == '\x0D')
         {
-            setg(&m_get_buffer[0], &m_get_buffer[0], &m_get_buffer[1]);
+            buffer[1] = '\n';
+            current = &buffer[1];
+            state = Nominal;
+        }
+        else if (buffer[1] == '\x0D' || buffer[1] == '\x0A')
+        {
+            current = &buffer[0];
             // Stay OneBehind
         }
         else
         {
-            setg(&m_get_buffer[0], &m_get_buffer[0], &m_get_buffer[1]);
-            m_get_state = CatchUp;
+            current = &buffer[0];
+            state = CatchUp;
         }
         break;
     case CatchUp:
-        setg(&m_get_buffer[1], &m_get_buffer[1], &m_get_buffer[2]);
-        m_get_state = Nominal;
+        current = &buffer[1];
+        state = Nominal;
         break;
     }
-    return traits_type::to_int_type(*gptr());
+    LOG4CXX_INFO(cpptrace_log(), "AtomStreamBuf::underflow() returning ... ");
+    const int_type result(traits_type::to_int_type(*current));
+    LOG4CXX_INFO(cpptrace_log(), "AtomStreamBuf::underflow() => " << result);
+    return result;
 }
 
+AtomStreamBufBase::int_type AtomStreamBufBase::uflow()
+{
+    LOG4CXX_INFO(cpptrace_log(), "AtomStreamBuf::uflow()");
+    return underflow();
+}
 
 
 // AtomInputStreamBuf

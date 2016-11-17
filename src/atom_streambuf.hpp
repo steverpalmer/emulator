@@ -55,10 +55,6 @@ public:
     MCS6502        &m_mcs6502;
     OSRDCH_Adaptor m_OSRDCH;
     OSWRCH_Adaptor m_OSWRCH;
-    enum { Nominal
-         , OneBehind
-         , CatchUp}  m_get_state;
-    char             m_get_buffer[2];
 
 public:
     AtomStreamBufBase(MCS6502 &, bool output_paused);
@@ -85,6 +81,7 @@ public:
 
     virtual int_type overflow(int_type p_ch);
     virtual int_type underflow();
+    virtual int_type uflow();
 };
 
 
@@ -118,6 +115,7 @@ public:
 
 private:
     virtual int_type underflow() { return m_streambuf_base.underflow(); }
+    virtual int_type uflow()     { return m_streambuf_base.uflow(); }
 };
 
 
