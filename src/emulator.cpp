@@ -154,8 +154,8 @@ public:
                 while (not root->is_paused())
                     std::this_thread::yield();
 
-                delete atom_stream;
-                delete stream;
+                if (stream)
+                    delete atom_stream;
 
                 delete keyboard;
             }

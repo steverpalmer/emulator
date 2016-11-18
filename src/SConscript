@@ -42,5 +42,3 @@ emulator_gui_sdl_env.Program('emulator', [ r'dispatcher.cpp'
                                          , PARTSLIB
                                          ])
 
-#emulator_gui_sdl_env.Program('key', 'key.cpp')
-#emulator_gui_sdl_env.Program('test_stream', 'test_stream.cpp')

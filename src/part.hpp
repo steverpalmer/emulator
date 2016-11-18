@@ -67,8 +67,12 @@ protected:
 	explicit Part(const Configurator &);
 	explicit Part(const id_type &p_id);
     Part();
-public:
     virtual ~Part();
+private:
+    virtual void termination_notification() {}
+public:
+
+    friend class PartsBin;
 
     virtual void serialize(std::ostream &) const;
 	friend std::ostream &::operator<<(std::ostream &p_s, const Part &p_p)

@@ -54,8 +54,8 @@ public:
 protected:
     explicit Device(const Configurator &);
     Device();
-public:
     virtual ~Device();
+public:
     virtual void reset() {};
     virtual void pause() {};
     virtual void resume() {};
@@ -94,6 +94,7 @@ private:
     // Methods
 public:
     explicit Computer(const Configurator &);
+private:
     virtual ~Computer();
 public:
     void add_child(Device &);

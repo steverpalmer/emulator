@@ -89,6 +89,7 @@ private:
 protected:
     explicit Memory(const Configurator &);
     Memory();
+    virtual ~Memory();
 private:
     virtual void unobserved_set_byte(word p_addr, byte p_byte, AccessType p_at = AT_UNKNOWN) = 0;
 public:
@@ -96,8 +97,6 @@ public:
 
     void attach(Observer &);
     void detach(Observer &);
-
-    virtual ~Memory();
 
     virtual byte get_byte(word p_addr, AccessType p_at = AT_UNKNOWN) = 0;
     void set_byte(word p_addr, byte p_byte, AccessType p_at = AT_UNKNOWN);
@@ -166,7 +165,9 @@ private:
     // Methods
 public:
     explicit Ram(const Configurator &);
+private:
     virtual ~Ram();
+public:
     virtual word size() const
         { return m_storage.size(); }
     virtual byte get_byte(word p_addr, AccessType p_at = AT_UNKNOWN)
@@ -211,7 +212,9 @@ private:
     // Methods
 public:
     explicit Rom(const Configurator &);
+private:
     virtual ~Rom();
+public:
     virtual word size() const
         { return m_storage.size(); }
     virtual byte get_byte(word p_addr, AccessType p_at = AT_UNKNOWN)
@@ -272,7 +275,9 @@ private:
 public:
     void add_child(word p_base, Memory &p_memory, word p_size = 0);
     void clear();
+private:
     virtual ~AddressSpace();
+public:
     virtual void reset();
     virtual void pause();
     virtual void resume();
@@ -306,11 +311,11 @@ private:
     // Methods
 protected:
     explicit Hook(const Configurator &);
+    virtual ~Hook() = default;
 private:
     virtual int get_byte_hook(word p_addr, AccessType p_at) { return -1; }
     virtual int set_byte_hook(word p_addr, byte p_byte, AccessType p_at) { return -1; }
 public:
-    virtual ~Hook() = default;
     void fill(AddressSpace &p_as, word p_base);
     virtual word size() const { return m_address_space.size(); }
     virtual byte get_byte(word p_addr, AccessType p_at = AT_UNKNOWN);

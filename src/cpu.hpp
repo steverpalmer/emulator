@@ -57,8 +57,8 @@ private:
     void thread_function();
 protected:
     explicit Cpu(const Configurator &);
-public:
     virtual ~Cpu();
+public:
     virtual void resume();
     virtual void pause();
     virtual bool is_paused() const;
@@ -115,8 +115,9 @@ public:
             return result;
         }
     explicit MCS6502(const Configurator &);
+private:
     virtual ~MCS6502();
-
+public:
     virtual void reset(InterruptState p_is);
     virtual void NMI(InterruptState p_is = INTERRUPT_PULSE);
     virtual void IRQ(InterruptState p_is = INTERRUPT_PULSE);

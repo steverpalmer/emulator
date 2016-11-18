@@ -55,6 +55,7 @@ private:
     void set_PortA(byte p_byte);
 public:
     explicit Ppia(const Configurator &);
+private:
     virtual ~Ppia();
 
     // Device

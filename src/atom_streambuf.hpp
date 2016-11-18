@@ -106,8 +106,9 @@ private:
 
 public:
     explicit AtomInputStreamBuf(const Configurator &);
+private:
     virtual ~AtomInputStreamBuf();
-
+public:
     void unblock() { m_streambuf_base.unblock(); }
 
     std::istream *istream_factory()
@@ -141,8 +142,9 @@ private:
 
 public:
     explicit AtomOutputStreamBuf(const Configurator &);
+private:
     virtual ~AtomOutputStreamBuf();
-
+public:
     virtual void reset()  { m_streambuf_base.reset(); }
     virtual void pause()  { m_streambuf_base.pause(); }
     virtual void resume() { m_streambuf_base.resume(); }
@@ -179,8 +181,9 @@ private:
 
 public:
     explicit AtomStreamBuf(const Configurator &);
+private:
     virtual ~AtomStreamBuf();
-
+public:
     virtual void reset()  { m_streambuf_base.reset(); }
     virtual void pause()  { m_streambuf_base.pause(); }
     virtual void resume() { m_streambuf_base.resume(); }
