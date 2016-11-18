@@ -38,6 +38,12 @@
 template < typename T, class Container=std::deque<T> >
 class SynchronizationQueue
 {
+    static log4cxx::LoggerPtr cpptrace_log()
+        {
+            static log4cxx::LoggerPtr result(log4cxx::Logger::getLogger(CTRACE_PREFIX ".synchronization_queue.hpp"));
+            return result;
+        }
+
     // Types
 public:
     typedef Container container_type;
@@ -58,7 +64,9 @@ public:
     explicit SynchronizationQueue(int p_delay=100)
         : m_stop_blocking(false)
         , delay(p_delay)
-        {}
+        {
+            LOG4CXX_INFO(cpptrace_log(), "SynchronizationQueue::SynchronizationQueue(" << p_delay << ")");
+        }
 
 public:
 
@@ -69,6 +77,7 @@ public:
 
     void nonblocking_push(const value_type &p_item)
         {
+            LOG4CXX_INFO(cpptrace_log(), "SynchronizationQueue::nonblocking_push(" << p_item << ")");
             std::unique_lock<std::mutex> lock(m_mutex);
             c.push_back(p_item);
             lock.unlock();
@@ -77,6 +86,7 @@ public:
 
     void nonblocking_push(const value_type&&p_item)
         {
+            LOG4CXX_INFO(cpptrace_log(), "SynchronizationQueue::nonblocking_push(" << p_item << ")");
             std::unique_lock<std::mutex> lock(m_mutex);
             c.push_back(p_item);
             lock.unlock();
@@ -85,6 +95,7 @@ public:
 
     bool nonblocking_pull(reference p_item)
         {
+            LOG4CXX_INFO(cpptrace_log(), "SynchronizationQueue::nonblocking_pull(...)");
             bool result;
             std::unique_lock<std::mutex> lock(m_mutex);
             if (result = !c.empty)
@@ -97,10 +108,13 @@ public:
 
     value_type blocking_pull()
         {
+            LOG4CXX_INFO(cpptrace_log(), "SynchronizationQueue::blocking_pull()");
             value_type result;
             std::unique_lock<std::mutex> lock(m_mutex);
+            LOG4CXX_DEBUG(cpptrace_log(), "SynchronizationQueue::blocking_pull() about to block");
             while (!m_stop_blocking && c.empty())
                 (void) m_queue_not_empty.wait_for(lock, delay);
+            LOG4CXX_DEBUG(cpptrace_log(), "SynchronizationQueue::blocking_pull() unblocked");
             if (m_stop_blocking)
                 result = m_last;
             else
@@ -113,6 +127,7 @@ public:
 
     void blocking_pull(reference p_item)
         {
+            LOG4CXX_INFO(cpptrace_log(), "SynchronizationQueue::blocking_pull(...)");
             std::unique_lock<std::mutex> lock(m_mutex);
             while (!m_stop_blocking && c.empty())
                 (void) m_queue_not_empty.wait_for(lock, delay);
@@ -128,6 +143,7 @@ public:
     template<class Rep, class Period>
     bool blocking_pull(reference p_item, std::chrono::duration<Rep, Period>&p_duration)
         {
+            LOG4CXX_INFO(cpptrace_log(), "SynchronizationQueue::blocking_pull(..., duration)");
             std::cv_status wait_rv(std::cv_status::no_timeout);
             std::unique_lock<std::mutex> lock(m_mutex);
             while (!m_stop_blocking && wait_rv == std::cv_status::no_timeout && c.empty())
@@ -146,6 +162,7 @@ public:
     template<class Clock, class Duration>
     bool blocking_pull(reference p_item, std::chrono::time_point<Clock, Duration>& p_timeout_time)
         {
+            LOG4CXX_INFO(cpptrace_log(), "SynchronizationQueue::blocking_pull(..., time_out)");
             std::cv_status wait_rv(std::cv_status::no_timeout);
             std::unique_lock<std::mutex> lock(m_mutex);
             while (!m_stop_blocking && wait_rv == std::cv_status::no_timeout && c.empty())
@@ -163,21 +180,26 @@ public:
 
     void nonblocking_clear()
         {
+            LOG4CXX_INFO(cpptrace_log(), "SynchronizationQueue::nonblocking_clear()");
             std::unique_lock<std::mutex> lock(m_mutex);
             c.clear();
         }
 
     void unblock()
         {
+            LOG4CXX_INFO(cpptrace_log(), "SynchronizationQueue::unblock()");
             std::unique_lock<std::mutex> lock(m_mutex);
             m_stop_blocking = true;
             m_queue_not_empty.notify_all();
+            LOG4CXX_DEBUG(cpptrace_log(), "SynchronizationQueue::unblock() done");
         }
 
     void unblock(T p_last)
         {
+            LOG4CXX_INFO(cpptrace_log(), "SynchronizationQueue::unblock(" << p_last << ")");
             m_last = p_last;
             unblock();
+            LOG4CXX_DEBUG(cpptrace_log(), "SynchronizationQueue::unblock(" << p_last << ") done");
         }
 
     virtual ~SynchronizationQueue() = default;
