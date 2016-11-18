@@ -53,6 +53,7 @@ public:
     // Methods
 protected:
     explicit Device(const Configurator &);
+    explicit Device(const id_type &);
     Device();
     virtual ~Device();
 public:

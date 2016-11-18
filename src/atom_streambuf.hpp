@@ -42,6 +42,7 @@ namespace Atom
             OSRDCH_Adaptor(const Configurator &, Streambuf &);
             void attach();
         private:
+            virtual void terminating();
             virtual int get_byte_hook(word, AccessType);
         };
 

@@ -74,12 +74,12 @@ void Cpu::terminating()
     m_mutex.lock();
     m_steps_to_go = THREAD_DIE;
     m_mutex.unlock();
-    m_thread.join();
 }
 
 Cpu::~Cpu()
 {
     LOG4CXX_INFO(cpptrace_log(), "Cpu::~Cpu([" << id() << "])");
+    m_thread.join();
 }
 
 void Cpu::step(int p_cnt)

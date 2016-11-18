@@ -31,6 +31,12 @@ Device::Device(const Configurator &p_cfg)
     LOG4CXX_INFO(cpptrace_log(), "Device::Device(" << p_cfg << ")");
 }
 
+Device::Device(const id_type &p_id)
+    : Part(p_id)
+{
+    LOG4CXX_INFO(cpptrace_log(), "Device::Device(" << p_id << ")");
+}
+
 Device::Device()
     : Part()
 {

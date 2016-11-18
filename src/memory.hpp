@@ -88,6 +88,7 @@ private:
     // Methods
 protected:
     explicit Memory(const Configurator &);
+    explicit Memory(const id_type &);
     Memory();
     virtual ~Memory();
 private:
@@ -267,6 +268,7 @@ private:
     // Methods
 public:
     explicit AddressSpace(const Configurator &);
+    explicit AddressSpace(const id_type &, word p_size = 0);
     explicit AddressSpace(word p_size = 0);
     virtual word size() const { return m_map.size(); }
     virtual byte get_byte(word p_addr, AccessType p_at = AT_UNKNOWN);
@@ -307,10 +309,11 @@ public:
             { return new Hook(*this); }
     };
 private:
-    AddressSpace m_address_space;
+    AddressSpace *m_address_space;
     // Methods
 protected:
     explicit Hook(const Configurator &);
+    explicit Hook(const id_type &, word p_size = 1);
     explicit Hook(word p_size = 1);
     virtual ~Hook() = default;
 private:
@@ -318,7 +321,7 @@ private:
     virtual int set_byte_hook(word p_addr, byte p_byte, AccessType p_at) { return -1; }
 public:
     void fill(AddressSpace &p_as, word p_base);
-    virtual word size() const { return m_address_space.size(); }
+    virtual word size() const { return m_address_space->size(); }
     virtual byte get_byte(word p_addr, AccessType p_at = AT_UNKNOWN);
 private:
     virtual void unobserved_set_byte(word p_addr, byte p_byte, AccessType p_at = AT_UNKNOWN);

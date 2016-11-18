@@ -10,6 +10,7 @@
 
 #include <thread>
 #include <iostream>
+#include <atomic>
 
 #include <SDL.h>
 
@@ -37,8 +38,8 @@ class Pipe
 private:
     std::istream     &m_source;
     std::ostream     &m_sink;
-    bool        m_more;
-    std::thread m_thread;
+    std::atomic_bool m_more;
+    std::thread      m_thread;
 private:
     void thread_function()
         {
@@ -46,11 +47,11 @@ private:
             for (m_more=true; m_more; )
             {
                 LOG4CXX_INFO(cpptrace_log(), "[" << id() << "]Pipe::thread_function reading");
-                const char ch(m_source.get());
-                LOG4CXX_INFO(cpptrace_log(), "[" << id() << "]Pipe::thread_function read " << int(ch));
-                if (ch == EOF)
+                const int ch(m_source.get());
+                LOG4CXX_INFO(cpptrace_log(), "[" << id() << "]Pipe::thread_function read " << ch);
+                if (!m_more || ch == EOF)
                     break;
-                LOG4CXX_INFO(cpptrace_log(), "[" << id() << "]Pipe::thread_function writing " << int(ch));
+                LOG4CXX_INFO(cpptrace_log(), "[" << id() << "]Pipe::thread_function writing " << ch);
                 m_sink.put(ch);
                 LOG4CXX_INFO(cpptrace_log(), "[" << id() << "]Pipe::thread_function written");
             }
@@ -67,12 +68,14 @@ public:
 private:
     virtual void terminating()
         {
+            LOG4CXX_INFO(cpptrace_log(), "[" << id() << "]Pipe::terminating()");
             m_more = false;
-            m_thread.join();
+            LOG4CXX_INFO(cpptrace_log(), "[" << id() << "]Pipe::terminating() =>");
         }
     ~Pipe()
         {
             LOG4CXX_INFO(cpptrace_log(), "[" << id() << "]Pipe::~Pipe()");
+            m_thread.join();
         }
 };
 

@@ -36,6 +36,12 @@ Memory::Memory(const Configurator &p_cfgr)
     LOG4CXX_INFO(cpptrace_log(), "Memory::Memory(" << p_cfgr << ")");
 }
 
+Memory::Memory(const id_type &p_id)
+    : Device(p_id)
+{
+    LOG4CXX_INFO(cpptrace_log(), "Memory::Memory(" << p_id << ")");
+}
+
 Memory::Memory()
     : Device()
 {
@@ -176,6 +182,14 @@ AddressSpace::AddressSpace(const Configurator &p_cfgr)
     }
 }
 
+AddressSpace::AddressSpace(const id_type &p_id, word p_size)
+    : Memory(p_id)
+    , m_base(SIZE(p_size), 0)
+    , m_map(SIZE(p_size), 0)
+{
+    LOG4CXX_INFO(cpptrace_log(), "AddressSpace::AddressSpace(" << p_size << ")");
+}
+
 AddressSpace::AddressSpace(word p_size)
     : Memory()
     , m_base(SIZE(p_size), 0)
@@ -256,8 +270,8 @@ void AddressSpace::resume()
 
 bool AddressSpace::is_paused() const
 {
-    bool result = true;
     LOG4CXX_DEBUG(cpptrace_log(), "[" << id() << "].AddressSpace::is_paused()");
+    bool result = true;
     for (auto memory : m_children)
         result &= memory->is_paused();
     return result;
@@ -265,21 +279,35 @@ bool AddressSpace::is_paused() const
 
 Hook::Hook(const Configurator &p_cfgr)
     : Memory(p_cfgr)
-    , m_address_space(p_cfgr.size())
-{}
+{
+    LOG4CXX_DEBUG(cpptrace_log(), "[" << id() << "].Hook::Hook(" << p_cfgr << ")");
+    m_address_space = new AddressSpace(p_cfgr.size());
+    assert (m_address_space);
+}
+
+Hook::Hook(const id_type &p_id, word p_size)
+    : Memory(p_id)
+{
+    LOG4CXX_DEBUG(cpptrace_log(), "[" << id() << "].Hook::Hook(" << p_id << ", " << p_size << ")");
+    m_address_space = new AddressSpace(p_size);
+    assert (m_address_space);
+}
 
 Hook::Hook(word p_size)
     : Memory()
-    , m_address_space(p_size)
-{}
+{
+    LOG4CXX_DEBUG(cpptrace_log(), "[" << id() << "].Hook::Hook(" << p_size << ")");
+    m_address_space = new AddressSpace(p_size);
+    assert (m_address_space);
+}
 
 void Hook::fill(AddressSpace &p_as, word p_base)
 {
-    for (int hk_addr = 0; hk_addr < m_address_space.size(); hk_addr++)
+    for (int hk_addr = 0; hk_addr < m_address_space->size(); hk_addr++)
     {
         const word as_addr(p_base + hk_addr);
-        m_address_space.m_base[hk_addr] = hk_addr - (as_addr - p_as.m_base[as_addr]);
-        m_address_space.m_map[hk_addr]  = p_as.m_map[as_addr];
+        m_address_space->m_base[hk_addr] = hk_addr - (as_addr - p_as.m_base[as_addr]);
+        m_address_space->m_map[hk_addr]  = p_as.m_map[as_addr];
     }
 }
 
@@ -287,7 +315,7 @@ byte Hook::get_byte(word p_addr, AccessType p_at)
 {
     int rv = get_byte_hook(p_addr, p_at);
     if (rv == -1)
-        rv = m_address_space.get_byte(p_addr, p_at);
+        rv = m_address_space->get_byte(p_addr, p_at);
     return rv;
 }
 
@@ -295,7 +323,7 @@ void Hook::unobserved_set_byte(word p_addr, byte p_byte, AccessType p_at)
 {
     const int rv = set_byte_hook(p_addr, p_byte, p_at);
     if (rv == -1)
-        m_address_space.set_byte(p_addr, p_byte, p_at);
+        m_address_space->set_byte(p_addr, p_byte, p_at);
 }
 
 

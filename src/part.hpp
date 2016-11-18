@@ -65,7 +65,7 @@ public:
 	const id_type &id() const { return m_id; }
 protected:
 	explicit Part(const Configurator &);
-	explicit Part(const id_type &p_id);
+	explicit Part(const id_type &);
     Part();
     virtual ~Part();
 private:

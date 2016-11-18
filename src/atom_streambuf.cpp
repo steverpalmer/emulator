@@ -12,7 +12,7 @@ static log4cxx::LoggerPtr cpptrace_log()
 // Atom::Streambuf::OSRDCH
 
 Atom::Streambuf::OSRDCH_Adaptor::OSRDCH_Adaptor(const Configurator &p_cfgr, Atom::Streambuf &p_streambuf)
-    : Hook()
+    : Hook("OSRDCH")
     , m_streambuf(p_streambuf)
     , m_mcs6502(*dynamic_cast<MCS6502 *>(PartsBin::instance()[p_cfgr.mcs6502()]))
 {
@@ -23,6 +23,12 @@ void Atom::Streambuf::OSRDCH_Adaptor::attach()
 {
     LOG4CXX_INFO(cpptrace_log(), "Atom::Streambuf::OSRDCH_Adaptor::attach(...)");
     m_streambuf.m_address_space->add_child(0xFE94, *this);
+}
+
+void Atom::Streambuf::OSRDCH_Adaptor::terminating()
+{
+    LOG4CXX_INFO(cpptrace_log(), "Atom::Streambuf::OSRDCH_Adaptor::terminating(...)");
+    m_streambuf.put_queue.unblock(traits_type::eof());
 }
 
 int Atom::Streambuf::OSRDCH_Adaptor::get_byte_hook(word, AccessType p_at)
@@ -44,7 +50,7 @@ int Atom::Streambuf::OSRDCH_Adaptor::get_byte_hook(word, AccessType p_at)
 // Atom::Streambuf::OSWRCH
 
 Atom::Streambuf::OSWRCH_Adaptor::OSWRCH_Adaptor(const Configurator &p_cfgr, Atom::Streambuf &p_streambuf)
-    : Hook()
+    : Hook("OSWRCH")
     , m_streambuf(p_streambuf)
     , m_mcs6502(*dynamic_cast<MCS6502 *>(PartsBin::instance()[p_cfgr.mcs6502()]))
     , is_paused(p_cfgr.pause_output())
