@@ -47,7 +47,8 @@ public:
 private:
     std::mutex              m_mutex;
     std::condition_variable m_queue_not_empty;
-    bool                    m_do_not_block;
+    bool                    m_stop_blocking;
+    T                       m_last;
 protected:
     Container               c;
 private:
@@ -55,7 +56,7 @@ private:
 
 public:
     explicit SynchronizationQueue(int p_delay=100)
-        : m_do_not_block(false)
+        : m_stop_blocking(false)
         , delay(p_delay)
         {}
 
@@ -98,10 +99,10 @@ public:
         {
             value_type result;
             std::unique_lock<std::mutex> lock(m_mutex);
-            while (!m_do_not_block && c.empty())
+            while (!m_stop_blocking && c.empty())
                 (void) m_queue_not_empty.wait_for(lock, delay);
-            if (c.empty())
-                result = 0;
+            if (m_stop_blocking)
+                result = m_last;
             else
             {
                 result = c.front();
@@ -113,9 +114,11 @@ public:
     void blocking_pull(reference p_item)
         {
             std::unique_lock<std::mutex> lock(m_mutex);
-            while (!m_do_not_block && c.empty())
+            while (!m_stop_blocking && c.empty())
                 (void) m_queue_not_empty.wait_for(lock, delay);
-            if (!c.empty())
+            if (m_stop_blocking)
+                p_item = m_last;
+            else
             {
                 p_item = c.front();
                 c.pop_front();
@@ -127,7 +130,7 @@ public:
         {
             std::cv_status wait_rv(std::cv_status::no_timeout);
             std::unique_lock<std::mutex> lock(m_mutex);
-            while (!m_do_not_block && wait_rv == std::cv_status::no_timeout && c.empty())
+            while (!m_stop_blocking && wait_rv == std::cv_status::no_timeout && c.empty())
                 wait_rv = m_queue_not_empty.wait_for(lock, p_duration);
             bool result;
             if (result = !c.empty())
@@ -135,6 +138,8 @@ public:
                 p_item = c.front();
                 c.pop_front();
             }
+            else
+                p_item = m_last;
             return result;
         }
 
@@ -143,7 +148,7 @@ public:
         {
             std::cv_status wait_rv(std::cv_status::no_timeout);
             std::unique_lock<std::mutex> lock(m_mutex);
-            while (!m_do_not_block && wait_rv == std::cv_status::no_timeout && c.empty())
+            while (!m_stop_blocking && wait_rv == std::cv_status::no_timeout && c.empty())
                 wait_rv = m_queue_not_empty.wait_until(lock, p_timeout_time);
             bool result;
             if (result = !c.empty())
@@ -151,6 +156,8 @@ public:
                 p_item = c.front();
                 c.pop_front();
             }
+            else
+                p_item = m_last;
             return result;
         }
 
@@ -163,14 +170,17 @@ public:
     void unblock()
         {
             std::unique_lock<std::mutex> lock(m_mutex);
-            m_do_not_block = true;
+            m_stop_blocking = true;
             m_queue_not_empty.notify_all();
         }
 
-    ~SynchronizationQueue()
+    void unblock(T p_last)
         {
+            m_last = p_last;
             unblock();
         }
+
+    virtual ~SynchronizationQueue() = default;
 
 };
 

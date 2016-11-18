@@ -69,7 +69,7 @@ protected:
     Part();
     virtual ~Part();
 private:
-    virtual void termination_notification() {}
+    virtual void terminating() {}
 public:
 
     friend class PartsBin;

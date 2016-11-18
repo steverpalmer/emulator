@@ -12,191 +12,194 @@
 #include "synchronization_queue.hpp"
 
 
-class AtomStreamBufBase
-    : public std::streambuf
+namespace Atom
 {
-    // Types
-public:
-    class OSRDCH_Adaptor
-        : public Hook
+
+    class Streambuf
+        : public std::streambuf
     {
-        // Attributes
-    private:
-        AtomStreamBufBase &m_streambuf;
+        // Types
     public:
-        SynchronizationQueue<byte> queue;
-        // Methods
-    public:
-        explicit OSRDCH_Adaptor(AtomStreamBufBase &);
-        void attach(AddressSpace &);
-    private:
-        virtual int get_byte_hook(word, AccessType);
-    };
-
-    class OSWRCH_Adaptor
-        : public Hook
-    {
-        // Attributes
-    private:
-        AtomStreamBufBase &m_streambuf;
-    public:
-        bool is_paused;
-        SynchronizationQueue<byte> queue;  // syncronization interface
-        // Methods
-    public:
-        OSWRCH_Adaptor(AtomStreamBufBase &, bool);
-        void attach(AddressSpace &);
-    private:
-        virtual int get_byte_hook(word, AccessType p_at);
-    public:
-    };
-
-public:
-    MCS6502        &m_mcs6502;
-    OSRDCH_Adaptor m_OSRDCH;
-    OSWRCH_Adaptor m_OSWRCH;
-
-public:
-    AtomStreamBufBase(MCS6502 &, bool output_paused);
-    virtual ~AtomStreamBufBase();
-
-    virtual void reset()
+        class OSRDCH_Adaptor
+            : public Hook
         {
-            m_OSWRCH.is_paused = true;
-            m_OSWRCH.queue.nonblocking_clear();
-        }
-    virtual void pause()
-        {
-            m_OSWRCH.is_paused = true;
-        }
-    virtual void resume()
-        {
-            m_OSWRCH.is_paused = false;
-        }
-    virtual bool is_paused() const
-        {
-            return m_OSWRCH.is_paused;
-        }
-    void unblock();
+        public:
+            class Configurator
+                : private NonCopyable
+            {
+            protected:
+                Configurator() = default;
+            public:
+                virtual ~Configurator() = default;
+                virtual const Part::id_type &mcs6502() const = 0;
+            };
+            // Attributes
+        private:
+            Streambuf &m_streambuf;
+            MCS6502  &m_mcs6502;
+            // Methods
+        public:
+            OSRDCH_Adaptor(const Configurator &, Streambuf &);
+            void attach();
+        private:
+            virtual int get_byte_hook(word, AccessType);
+        };
 
-    virtual int_type overflow(int_type p_ch);
-    virtual int_type underflow();
-    virtual int_type uflow();
-};
+        class OSWRCH_Adaptor
+            : public Hook
+        {
+        public:
+            class Configurator
+                : private NonCopyable
+            {
+            protected:
+                Configurator() = default;
+            public:
+                virtual ~Configurator() = default;
+                virtual const Part::id_type &mcs6502() const = 0;
+                virtual bool pause_output() const = 0;
+            };
+            // Attributes
+        private:
+            Streambuf &m_streambuf;
+            MCS6502  &m_mcs6502;
+        public:
+            bool is_paused;
+            // Methods
+        public:
+            OSWRCH_Adaptor(const Configurator &, Streambuf &);
+            void attach();
+        private:
+            virtual int get_byte_hook(word, AccessType p_at);
+        };
 
-
-class AtomInputStreamBuf
-    : public std::streambuf
-    , public Device
-{
-    // Types
-public:
-    class Configurator
-        : public virtual Device::Configurator
-    {
+        class Configurator
+            : public virtual OSRDCH_Adaptor::Configurator
+            , public virtual OSWRCH_Adaptor::Configurator
+        {
+        protected:
+            Configurator() = default;
+        public:
+            virtual ~Configurator() = default;
+            virtual const Memory::Configurator *address_space() const = 0;
+        };
     public:
-        virtual const Device::Configurator *mcs6502() const = 0;
-        virtual const Memory::Configurator *address_space() const = 0;
-        virtual Device *device_factory() const
-            { return new AtomInputStreamBuf(*this); }
+        SynchronizationQueue<int_type> put_queue;
+        SynchronizationQueue<int_type> get_queue;
+        AddressSpace   *m_address_space;
+        OSRDCH_Adaptor *m_OSRDCH;
+        OSWRCH_Adaptor *m_OSWRCH;
+
+    public:
+        explicit Streambuf(const Configurator &);
+        void terminating();
+        virtual ~Streambuf();
+
+        void reset()
+            {
+                m_OSWRCH->is_paused = true;
+                put_queue.nonblocking_clear();
+                get_queue.nonblocking_clear();
+            }
+        void pause()
+            {
+                m_OSWRCH->is_paused = true;
+            }
+        void resume()
+            {
+                m_OSWRCH->is_paused = false;
+            }
+        bool is_paused() const
+            {
+                return m_OSWRCH->is_paused;
+            }
+
+        virtual int_type overflow(int_type p_ch);
+        virtual int_type underflow();
+        virtual int_type uflow();
     };
 
-private:
-    AtomStreamBufBase m_streambuf_base;
 
-public:
-    explicit AtomInputStreamBuf(const Configurator &);
-private:
-    virtual ~AtomInputStreamBuf();
-public:
-    void unblock() { m_streambuf_base.unblock(); }
-
-    std::istream *istream_factory()
-        { return new std::istream(this); }
-
-private:
-    virtual int_type underflow() { return m_streambuf_base.underflow(); }
-    virtual int_type uflow()     { return m_streambuf_base.uflow(); }
-};
-
-
-class AtomOutputStreamBuf
-    : public std::streambuf
-    , public Device
-{
-    // Types
-public:
-    class Configurator
-        : public virtual Device::Configurator
+    class IStream
+        : public std::istream
+        , public Device
     {
+        // Types
     public:
-        virtual const Device::Configurator *mcs6502() const = 0;
-        virtual bool pause_output() const = 0;
-        virtual const Memory::Configurator *address_space() const = 0;
-        virtual Device *device_factory() const
-            { return new AtomOutputStreamBuf(*this); }
+        class Configurator
+            : public virtual Device::Configurator
+            , public virtual Streambuf::Configurator
+        {
+            virtual Device *device_factory() const
+                { return new Atom::IStream(*this); }
+        };
+
+    public:
+        explicit IStream(const Configurator &);
+    private:
+        virtual void terminating();
+        virtual ~IStream();
+    public:
+        virtual void reset()           { dynamic_cast<Atom::Streambuf *>(rdbuf())->reset(); }
+        virtual void pause()           { dynamic_cast<Atom::Streambuf *>(rdbuf())->pause(); }
+        virtual void resume()          { dynamic_cast<Atom::Streambuf *>(rdbuf())->resume(); }
+        virtual bool is_paused() const { return dynamic_cast<Atom::Streambuf *>(rdbuf())->is_paused(); }
     };
 
-private:
-    AtomStreamBufBase m_streambuf_base;
 
-public:
-    explicit AtomOutputStreamBuf(const Configurator &);
-private:
-    virtual ~AtomOutputStreamBuf();
-public:
-    virtual void reset()  { m_streambuf_base.reset(); }
-    virtual void pause()  { m_streambuf_base.pause(); }
-    virtual void resume() { m_streambuf_base.resume(); }
-    virtual bool is_paused() const { return m_streambuf_base.is_paused(); }
-    void unblock()        { m_streambuf_base.unblock(); }
-
-    std::ostream *ostream_factory()
-        { return new std::ostream(this); }
-
-private:
-    virtual int_type overflow(int_type p_ch) { return m_streambuf_base.overflow(p_ch); }
-};
-
-
-class AtomStreamBuf
-    : public std::streambuf
-    , public Device
-{
-    // Types
-public:
-    class Configurator
-        : public virtual Device::Configurator
+    class OStream
+        : public std::ostream
+        , public Device
     {
+        // Types
     public:
-        virtual const Device::Configurator *mcs6502() const = 0;
-        virtual bool pause_output() const = 0;
-        virtual const Memory::Configurator *address_space() const = 0;
-        virtual Device *device_factory() const
-            { return new AtomStreamBuf(*this); }
+        class Configurator
+            : public virtual Device::Configurator
+            , public virtual Streambuf::Configurator
+        {
+            virtual Device *device_factory() const
+                { return new Atom::OStream(*this); }
+        };
+
+    public:
+        explicit OStream(const Configurator &);
+    private:
+        virtual void terminating();
+        virtual ~OStream();
+    public:
+        virtual void reset()           { dynamic_cast<Atom::Streambuf *>(rdbuf())->reset(); }
+        virtual void pause()           { dynamic_cast<Atom::Streambuf *>(rdbuf())->pause(); }
+        virtual void resume()          { dynamic_cast<Atom::Streambuf *>(rdbuf())->resume(); }
+        virtual bool is_paused() const { return dynamic_cast<Atom::Streambuf *>(rdbuf())->is_paused(); }
     };
 
-private:
-    AtomStreamBufBase m_streambuf_base;
 
-public:
-    explicit AtomStreamBuf(const Configurator &);
-private:
-    virtual ~AtomStreamBuf();
-public:
-    virtual void reset()  { m_streambuf_base.reset(); }
-    virtual void pause()  { m_streambuf_base.pause(); }
-    virtual void resume() { m_streambuf_base.resume(); }
-    virtual bool is_paused() const { return m_streambuf_base.is_paused(); }
-    void unblock() { m_streambuf_base.unblock(); }
+    class IOStream
+        : public std::iostream
+        , public Device
+    {
+        // Types
+    public:
+        class Configurator
+            : public virtual Device::Configurator
+            , public virtual Streambuf::Configurator
+        {
+            virtual Device *device_factory() const
+                { return new Atom::IOStream(*this); }
+        };
 
-    std::iostream *iostream_factory()
-        { return new std::iostream(this); }
+    public:
+        explicit IOStream(const Configurator &);
+    private:
+        virtual void terminating();
+        virtual ~IOStream();
+    public:
+        virtual void reset()           { dynamic_cast<Atom::Streambuf *>(rdbuf())->reset(); }
+        virtual void pause()           { dynamic_cast<Atom::Streambuf *>(rdbuf())->pause(); }
+        virtual void resume()          { dynamic_cast<Atom::Streambuf *>(rdbuf())->resume(); }
+        virtual bool is_paused() const { return dynamic_cast<Atom::Streambuf *>(rdbuf())->is_paused(); }
+    };
 
-private:
-    virtual int_type underflow()             { return m_streambuf_base.underflow(); }
-    virtual int_type overflow(int_type p_ch) { return m_streambuf_base.overflow(p_ch); }
-};
-
+}
 
 #endif

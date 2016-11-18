@@ -64,11 +64,15 @@ public:
         {
             LOG4CXX_INFO(cpptrace_log(), "Pipe::Pipe(" << p_name << ", ...)");
         }
+private:
+    virtual void terminating()
+        {
+            m_more = false;
+            m_thread.join();
+        }
     ~Pipe()
         {
             LOG4CXX_INFO(cpptrace_log(), "[" << id() << "]Pipe::~Pipe()");
-            m_more = false;
-            m_thread.join();
         }
 };
 
@@ -112,16 +116,11 @@ public:
             delete cfg;
             LOG4CXX_DEBUG(cpptrace_log(), PartsBin::instance());
 
-            // Pipe *cin(0);
-            std::istream *atom_stream(0);
-            AtomInputStreamBuf *stream = dynamic_cast<AtomInputStreamBuf *>(PartsBin::instance()["stream"]);
+            auto *stream = dynamic_cast<Atom::IStream *>(PartsBin::instance()["stream"]);
             if (stream)
             {
                 LOG4CXX_INFO(cpptrace_log(), "starting streaming");
-                atom_stream = stream->istream_factory();
-                assert (atom_stream);
-                // cin = new Pipe("input stream", std::cin, *atom_stream);
-                new Pipe("output stream", *atom_stream, std::cout);
+                new Pipe("output stream", *stream, std::cout);
             }
             Device *root = dynamic_cast<Device *>(PartsBin::instance()["root"]);
             assert (root);
@@ -153,9 +152,6 @@ public:
                 root->pause();
                 while (not root->is_paused())
                     std::this_thread::yield();
-
-                if (stream)
-                    delete atom_stream;
 
                 delete keyboard;
             }

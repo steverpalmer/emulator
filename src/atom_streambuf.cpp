@@ -9,123 +9,119 @@ static log4cxx::LoggerPtr cpptrace_log()
     return result;
 }
 
-class HookParameters
-    : public virtual Hook::Configurator
-{
-public:
-    virtual const Part::id_type &id() const { return Part::anonymous_id; }
-    virtual word size() const { return 1; }
-};
+// Atom::Streambuf::OSRDCH
 
-static HookParameters hook_parameters;
-
-// OSRDCH
-
-AtomStreamBufBase::OSRDCH_Adaptor::OSRDCH_Adaptor(AtomStreamBufBase &p_streambuf)
-    : Hook(hook_parameters)
+Atom::Streambuf::OSRDCH_Adaptor::OSRDCH_Adaptor(const Configurator &p_cfgr, Atom::Streambuf &p_streambuf)
+    : Hook()
     , m_streambuf(p_streambuf)
+    , m_mcs6502(*dynamic_cast<MCS6502 *>(PartsBin::instance()[p_cfgr.mcs6502()]))
 {
-    LOG4CXX_INFO(cpptrace_log(), "OSRDCH_Adaptor::OSRDCH_Adaptor(...)");
+    LOG4CXX_INFO(cpptrace_log(), "Atom::Streambuf::OSRDCH_Adaptor::OSRDCH_Adaptor([" << p_cfgr.mcs6502() << "])");
 }
 
-void AtomStreamBufBase::OSRDCH_Adaptor::attach(AddressSpace &p_address_space)
+void Atom::Streambuf::OSRDCH_Adaptor::attach()
 {
-    LOG4CXX_INFO(cpptrace_log(), "OSRDCH_Adaptor::attach(...)");
-    p_address_space.add_child(0xFE94, *this);
+    LOG4CXX_INFO(cpptrace_log(), "Atom::Streambuf::OSRDCH_Adaptor::attach(...)");
+    m_streambuf.m_address_space->add_child(0xFE94, *this);
 }
 
-int AtomStreamBufBase::OSRDCH_Adaptor::get_byte_hook(word, AccessType p_at)
+int Atom::Streambuf::OSRDCH_Adaptor::get_byte_hook(word, AccessType p_at)
 {
-    LOG4CXX_INFO(cpptrace_log(), "OSRDCH_Adaptor::get_byte_hook(..., " << p_at << ")");
+    LOG4CXX_INFO(cpptrace_log(), "Atom::Streambuf::OSRDCH_Adaptor::get_byte_hook(..., " << p_at << ")");
     int result(-1);
     if (p_at == AT_INSTRUCTION)
     {
-        result = 0x60 /* RTS */;
-        m_streambuf.m_mcs6502.m_register.A = queue.blocking_pull();
+        int_type next_value = m_streambuf.put_queue.blocking_pull();
+        if (traits_type::not_eof(next_value))
+        {
+            result = 0x60 /* RTS */;
+            m_mcs6502.m_register.A = next_value;
+        }
     }
     return result;
 }
 
-// OSWRCH
+// Atom::Streambuf::OSWRCH
 
-AtomStreamBufBase::OSWRCH_Adaptor::OSWRCH_Adaptor(AtomStreamBufBase &p_streambuf,
-                                                  bool p_is_paused)
-    : Hook(hook_parameters)
+Atom::Streambuf::OSWRCH_Adaptor::OSWRCH_Adaptor(const Configurator &p_cfgr, Atom::Streambuf &p_streambuf)
+    : Hook()
     , m_streambuf(p_streambuf)
-    , is_paused(p_is_paused)
+    , m_mcs6502(*dynamic_cast<MCS6502 *>(PartsBin::instance()[p_cfgr.mcs6502()]))
+    , is_paused(p_cfgr.pause_output())
 {
-    LOG4CXX_INFO(cpptrace_log(), "OSWRCH_Adaptor::OSWRCH_Adaptor(...)");
+    LOG4CXX_INFO(cpptrace_log(), "Atom::Streambuf::OSWRCH_Adaptor::OSWRCH_Adaptor([" << p_cfgr.mcs6502() << "])");
 }
 
-void AtomStreamBufBase::OSWRCH_Adaptor::attach(AddressSpace &p_address_space)
+void Atom::Streambuf::OSWRCH_Adaptor::attach()
 {
-    LOG4CXX_INFO(cpptrace_log(), "OSWRCH_Adaptor::attach(...)");
-    p_address_space.add_child(0xFE52, *this);
+    LOG4CXX_INFO(cpptrace_log(), "Atom::Streambuf::OSWRCH_Adaptor::attach(...)");
+    m_streambuf.m_address_space->add_child(0xFE52, *this);
 }
 
-int AtomStreamBufBase::OSWRCH_Adaptor::get_byte_hook(word, AccessType p_at)
+int Atom::Streambuf::OSWRCH_Adaptor::get_byte_hook(word, AccessType p_at)
 {
-    LOG4CXX_INFO(cpptrace_log(), "OSWRCH_Adaptor::get_byte_hook(..., " << p_at << ")");
+    LOG4CXX_INFO(cpptrace_log(), "Atom::Streambuf::OSWRCH_Adaptor::get_byte_hook(..., " << p_at << ")");
     if (p_at == AT_INSTRUCTION /* && !is_paused */)
     {
-        LOG4CXX_DEBUG(cpptrace_log(), "OSWRCH_Adaptor::get_byte_hook pushing an " << int(m_streambuf.m_mcs6502.m_register.A));
-        queue.nonblocking_push(m_streambuf.m_mcs6502.m_register.A);
+        LOG4CXX_DEBUG(cpptrace_log(), "OSWRCH_Adaptor::get_byte_hook pushing an " << m_mcs6502.m_register.A);
+        m_streambuf.get_queue.nonblocking_push(traits_type::to_int_type(m_mcs6502.m_register.A));
     }
     return -1;
 }
 
-// AtomStreamBufBase
+// Atom::Streambuf
 
-AtomStreamBufBase::AtomStreamBufBase(MCS6502 &p_mcs6502, bool output_paused)
-    : m_mcs6502(p_mcs6502)
-    , m_OSRDCH(*this)
-    , m_OSWRCH(*this, output_paused)
+Atom::Streambuf::Streambuf(const Configurator &p_cfgr)
 {
-    LOG4CXX_INFO(cpptrace_log(), "AtomStreamBufBase::AtomStreamBufBase([" << p_mcs6502.id() << "], " << output_paused << ")");
+    LOG4CXX_INFO(cpptrace_log(), "Atom::Streambuf::Streambuf(...)");
+    m_address_space = dynamic_cast<AddressSpace *>(p_cfgr.address_space()->memory_factory());
+    assert (m_address_space);
+    m_OSRDCH = new OSRDCH_Adaptor(p_cfgr, *this);
+    assert (m_OSRDCH);
+    m_OSWRCH = new OSWRCH_Adaptor(p_cfgr, *this);
+    assert (m_OSWRCH);
 }
 
-AtomStreamBufBase::~AtomStreamBufBase()
+void Atom::Streambuf::terminating()
 {
-    LOG4CXX_INFO(cpptrace_log(), "AtomStreamBufBase::~AtomStreamBufBase()");
+    LOG4CXX_INFO(cpptrace_log(), "Atom::Streambuf::terminating()");
+    get_queue.unblock(traits_type::eof());
+    put_queue.unblock(traits_type::eof());
 }
 
-void AtomStreamBufBase::unblock()
+Atom::Streambuf::~Streambuf()
 {
-    LOG4CXX_INFO(cpptrace_log(), "AtomStreamBufBase::unblock()");
-    m_OSRDCH.queue.unblock();
-    m_OSWRCH.queue.unblock();
+    LOG4CXX_INFO(cpptrace_log(), "Atom::Streambuf::~Streambuf()");
 }
 
-AtomStreamBufBase::int_type AtomStreamBufBase::overflow(int_type p_ch)
+Atom::Streambuf::int_type Atom::Streambuf::overflow(int_type p_ch)
 {
-    LOG4CXX_INFO(cpptrace_log(), "AtomStreamBufBase::overflow(" << p_ch << ")");
-    if (p_ch == traits_type::eof())
-        assert (false);
-    else
+    LOG4CXX_INFO(cpptrace_log(), "Atom::Streambuf::overflow(" << p_ch << ")");
+    if (traits_type::not_eof(p_ch))
     {
         if (p_ch == '\n')
             p_ch = '\x0D';
-        m_OSRDCH.queue.nonblocking_push(p_ch);
+        put_queue.nonblocking_push(p_ch);
     }
     return traits_type::to_int_type(p_ch);
 }
 
-AtomStreamBufBase::int_type AtomStreamBufBase::underflow()
+Atom::Streambuf::int_type Atom::Streambuf::underflow()
 {
-    LOG4CXX_INFO(cpptrace_log(), "AtomStreamBuf::underflow()");
+    LOG4CXX_INFO(cpptrace_log(), "Atom::Streambuf::underflow()");
     static enum { Nominal, OneBehind, CatchUp}  state = Nominal;
-    static char             buffer[2];
+    static int_type         buffer[2];
     static std::mutex       mutex;
     std::lock_guard<std::mutex> lock(mutex);  // one at a time...
-    char * current;
+    int_type * current;
     switch (state)
     {
     case Nominal:
         buffer[0] = buffer[1];
-        LOG4CXX_DEBUG(cpptrace_log(), "AtomStreamBuf::underflow trying to pulled");
-        buffer[1] = m_OSWRCH.queue.blocking_pull();
-        LOG4CXX_DEBUG(cpptrace_log(), "AtomStreamBuf::underflow pulled a " << int(buffer[1]));
-        if (buffer[1] == '\x0D'  || buffer[1] == '\x0A')
+        LOG4CXX_DEBUG(cpptrace_log(), "Atom::Streambuf::underflow trying to pulled");
+        buffer[1] = get_queue.blocking_pull();
+        LOG4CXX_DEBUG(cpptrace_log(), "Atom::Streambuf::underflow pulled a " << buffer[1]);
+        if (traits_type::not_eof(buffer[1]) && (buffer[1] == '\x0D'  || buffer[1] == '\x0A'))
         {
             state = OneBehind;
             // Don't break
@@ -137,10 +133,15 @@ AtomStreamBufBase::int_type AtomStreamBufBase::underflow()
         }
     case OneBehind:
         buffer[0] = buffer[1];
-        LOG4CXX_DEBUG(cpptrace_log(), "AtomStreamBuf::underflow trying to pulled again");
-        buffer[1] = m_OSWRCH.queue.blocking_pull();
-        LOG4CXX_DEBUG(cpptrace_log(), "AtomStreamBuf::underflow pulled another " << int(buffer[1]));
-        if (buffer[0] == '\x0D' && buffer[1] == '\x0A')
+        LOG4CXX_DEBUG(cpptrace_log(), "Atom::Streambuf::underflow trying to pulled again");
+        buffer[1] = get_queue.blocking_pull();
+        LOG4CXX_DEBUG(cpptrace_log(), "Atom::Streambuf::underflow pulled another " << int(buffer[1]));
+        if (!traits_type::not_eof(buffer[1]))
+        {
+            current = &buffer[0];
+            state = CatchUp;
+        }
+        else if (buffer[0] == '\x0D' && buffer[1] == '\x0A')
         {
             buffer[1] = '\n';
             current = &buffer[1];
@@ -168,67 +169,80 @@ AtomStreamBufBase::int_type AtomStreamBufBase::underflow()
         state = Nominal;
         break;
     }
-    LOG4CXX_INFO(cpptrace_log(), "AtomStreamBuf::underflow() returning ... ");
-    const int_type result(traits_type::to_int_type(*current));
-    LOG4CXX_INFO(cpptrace_log(), "AtomStreamBuf::underflow() => " << result);
-    return result;
+    LOG4CXX_INFO(cpptrace_log(), "Atom::Streambuf::underflow() => " << *current);
+    return *current;
 }
 
-AtomStreamBufBase::int_type AtomStreamBufBase::uflow()
+Atom::Streambuf::int_type Atom::Streambuf::uflow()
 {
-    LOG4CXX_INFO(cpptrace_log(), "AtomStreamBuf::uflow()");
+    LOG4CXX_INFO(cpptrace_log(), "Atom::Streambuf::uflow()");
     return underflow();
 }
 
 
-// AtomInputStreamBuf
+// Atom::IStream
 
-AtomInputStreamBuf::AtomInputStreamBuf(const Configurator &p_cfgr)
-    : Device(p_cfgr)
-    , m_streambuf_base(*dynamic_cast<MCS6502 *>(p_cfgr.mcs6502()->device_factory()), true)
+Atom::IStream::IStream(const Configurator &p_cfgr)
+    : std::istream(new Streambuf(p_cfgr))
+    , Device(p_cfgr)
 {
-    LOG4CXX_INFO(cpptrace_log(), "AtomInputStreamBuf::AtomInputStreamBuf(" << p_cfgr << ")");
-    AddressSpace *address_space = dynamic_cast<AddressSpace *>(p_cfgr.address_space()->memory_factory());
-    assert (address_space);
-    m_streambuf_base.m_OSWRCH.attach(*address_space);
+    LOG4CXX_INFO(cpptrace_log(), "Atom::IStream::IStream(" << p_cfgr << ")");
+    dynamic_cast<Atom::Streambuf *>(rdbuf())->m_OSWRCH->attach();
 }
 
-AtomInputStreamBuf::~AtomInputStreamBuf()
+void Atom::IStream::terminating()
 {
-    LOG4CXX_INFO(cpptrace_log(), "AtomInputStreamBuf::~AtomInputStreamBuf()");
+    LOG4CXX_INFO(cpptrace_log(), "Atom::IStream::terminating()");
+    dynamic_cast<Atom::Streambuf *>(rdbuf())->terminating();
 }
 
-// AtomOutputStreamBuf
-
-AtomOutputStreamBuf::AtomOutputStreamBuf(const Configurator &p_cfgr)
-    : Device(p_cfgr)
-    , m_streambuf_base(*dynamic_cast<MCS6502 *>(p_cfgr.mcs6502()->device_factory()), p_cfgr.pause_output())
+Atom::IStream::~IStream()
 {
-    LOG4CXX_INFO(cpptrace_log(), "AtomOutputStreamBuf::AtomOutputStreamBuf(" << p_cfgr << ")");
-    AddressSpace *address_space = dynamic_cast<AddressSpace *>(p_cfgr.address_space()->memory_factory());
-    assert (address_space);
-    m_streambuf_base.m_OSRDCH.attach(*address_space);
+    LOG4CXX_INFO(cpptrace_log(), "Atom::IStream::~IStream()");
+    delete rdbuf(0);
 }
 
-AtomOutputStreamBuf::~AtomOutputStreamBuf()
+// Atom::OStream
+
+Atom::OStream::OStream(const Configurator &p_cfgr)
+    : std::ostream(new Atom::Streambuf(p_cfgr))
+    , Device(p_cfgr)
 {
-    LOG4CXX_INFO(cpptrace_log(), "AtomOutputStreamBuf::~AtomOutputStreamBuf()");
+    LOG4CXX_INFO(cpptrace_log(), "Atom::OStream::OStream(" << p_cfgr << ")");
+    dynamic_cast<Atom::Streambuf *>(rdbuf())->m_OSRDCH->attach();
 }
 
-// AtomStreamBuf
-
-AtomStreamBuf::AtomStreamBuf(const Configurator &p_cfgr)
-    : Device(p_cfgr)
-    , m_streambuf_base(*dynamic_cast<MCS6502 *>(p_cfgr.mcs6502()->device_factory()), p_cfgr.pause_output())
+void Atom::OStream::terminating()
 {
-    LOG4CXX_INFO(cpptrace_log(), "AtomStreamBuf::AtomStreamBuf(" << p_cfgr << ")");
-    AddressSpace *address_space = dynamic_cast<AddressSpace *>(p_cfgr.address_space()->memory_factory());
-    assert (address_space);
-    m_streambuf_base.m_OSWRCH.attach(*address_space);
-    m_streambuf_base.m_OSRDCH.attach(*address_space);
+    LOG4CXX_INFO(cpptrace_log(), "Atom::OStream::terminating()");
+    dynamic_cast<Atom::Streambuf *>(rdbuf())->terminating();
 }
 
-AtomStreamBuf::~AtomStreamBuf()
+Atom::OStream::~OStream()
 {
-    LOG4CXX_INFO(cpptrace_log(), "AtomStreamBuf::~AtomStreamBuf()");
+    LOG4CXX_INFO(cpptrace_log(), "Atom::OStream::~Atom::OStream()");
+    delete rdbuf(0);
+}
+
+// Atom::Stream
+
+Atom::IOStream::IOStream(const Configurator &p_cfgr)
+    : std::iostream(new Atom::Streambuf(p_cfgr))
+    , Device(p_cfgr)
+{
+    LOG4CXX_INFO(cpptrace_log(), "Atom::IOStream::IOStream(" << p_cfgr << ")");
+    dynamic_cast<Atom::Streambuf *>(rdbuf())->m_OSWRCH->attach();
+    dynamic_cast<Atom::Streambuf *>(rdbuf())->m_OSRDCH->attach();
+}
+
+void Atom::IOStream::terminating()
+{
+    LOG4CXX_INFO(cpptrace_log(), "Atom::IOStream::terminating()");
+    dynamic_cast<Atom::Streambuf *>(rdbuf())->terminating();
+}
+
+Atom::IOStream::~IOStream()
+{
+    LOG4CXX_INFO(cpptrace_log(), "Atom::IOStream::~IOStream()");
+    delete rdbuf(0);
 }

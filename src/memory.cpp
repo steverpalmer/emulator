@@ -268,6 +268,11 @@ Hook::Hook(const Configurator &p_cfgr)
     , m_address_space(p_cfgr.size())
 {}
 
+Hook::Hook(word p_size)
+    : Memory()
+    , m_address_space(p_size)
+{}
+
 void Hook::fill(AddressSpace &p_as, word p_base)
 {
     for (int hk_addr = 0; hk_addr < m_address_space.size(); hk_addr++)

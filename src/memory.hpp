@@ -311,6 +311,7 @@ private:
     // Methods
 protected:
     explicit Hook(const Configurator &);
+    explicit Hook(word p_size = 1);
     virtual ~Hook() = default;
 private:
     virtual int get_byte_hook(word p_addr, AccessType p_at) { return -1; }

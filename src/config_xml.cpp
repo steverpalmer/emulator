@@ -378,38 +378,35 @@ namespace Xml
             { return new MCS6502Configurator(p_node); }
     };
 
-    class AtomStreamBufConfigurator
-        : public virtual AtomInputStreamBuf::Configurator
+    class AtomStreamConfigurator
+        : public virtual Atom::IStream::Configurator
         , private DeviceConfigurator
     {
     private:
-        const Device::Configurator *m_mcs6502;
+        const Part::id_type m_mcs6502;
         const Memory::Configurator *m_address_space;
         bool m_pause_output;
     public:
-        explicit AtomStreamBufConfigurator(const xmlpp::Node *p_node = 0)
+        explicit AtomStreamConfigurator(const xmlpp::Node *p_node = 0)
             : DeviceConfigurator("stream", p_node)
-            , m_mcs6502(0)
+            , m_mcs6502("mcs6502")
             , m_address_space(0)
             , m_pause_output(false)
             {
-                LOG4CXX_INFO(cpptrace_log(), "Xml::AtomStreamBufConfigurator::AtomStreamBufConfigurator(" << p_node << ")");
-                if (!m_mcs6502)
-                    m_mcs6502 = new Device::ReferenceConfigurator("mcs6502");
+                LOG4CXX_INFO(cpptrace_log(), "Xml::AtomStreamConfigurator::AtomStreamConfigurator(" << p_node << ")");
                 if (!m_address_space)
                     m_address_space = new Memory::ReferenceConfigurator("address_space");
             }
-        virtual ~AtomStreamBufConfigurator()
+        virtual ~AtomStreamConfigurator()
             {
-                delete m_mcs6502;
                 delete m_address_space;
             }
-        virtual const Device::Configurator *mcs6502() const { return m_mcs6502; }
+        virtual const Part::id_type &mcs6502() const { return m_mcs6502; }
         virtual const Memory::Configurator *address_space() const { return m_address_space; }
         virtual bool pause_output() const { return m_pause_output; }
 
         static const Device::Configurator *device_configurator_factory(const xmlpp::Node *p_node)
-            { return new AtomStreamBufConfigurator(p_node); }
+            { return new AtomStreamConfigurator(p_node); }
     };
 
     class ComputerConfigurator
@@ -536,9 +533,9 @@ namespace Xml
         {
             factory_map["device"]   = DeviceRefConfigurator::device_configurator_factory;
             factory_map["mcs6502"]  = MCS6502Configurator::device_configurator_factory;
-            factory_map["stream"]   = AtomStreamBufConfigurator::device_configurator_factory;
+            factory_map["stream"]   = AtomStreamConfigurator::device_configurator_factory;
             factory_map["computer"] = ComputerConfigurator::device_configurator_factory;
-            factory_map["monitor"] = MonitorViewConfigurator::device_configurator_factory;
+            factory_map["monitor"]  = MonitorViewConfigurator::device_configurator_factory;
         }
         factory_function *factory = factory_map[p_node->get_name()];
         const Device::Configurator *result(factory ? factory(p_node) : MemoryConfigurator::factory(p_node));

@@ -57,6 +57,7 @@ private:
     void thread_function();
 protected:
     explicit Cpu(const Configurator &);
+    virtual void terminating();
     virtual ~Cpu();
 public:
     virtual void resume();
