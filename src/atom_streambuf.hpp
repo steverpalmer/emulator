@@ -172,6 +172,7 @@ namespace Atom
         virtual void pause()           { dynamic_cast<Atom::Streambuf *>(rdbuf())->pause(); }
         virtual void resume()          { dynamic_cast<Atom::Streambuf *>(rdbuf())->resume(); }
         virtual bool is_paused() const { return dynamic_cast<Atom::Streambuf *>(rdbuf())->is_paused(); }
+        void unblock() { dynamic_cast<Atom::Streambuf *>(rdbuf())->put_queue.unblock(traits_type::eof()); }
     };
 
 
@@ -199,6 +200,7 @@ namespace Atom
         virtual void pause()           { dynamic_cast<Atom::Streambuf *>(rdbuf())->pause(); }
         virtual void resume()          { dynamic_cast<Atom::Streambuf *>(rdbuf())->resume(); }
         virtual bool is_paused() const { return dynamic_cast<Atom::Streambuf *>(rdbuf())->is_paused(); }
+        void unblock() { dynamic_cast<Atom::Streambuf *>(rdbuf())->put_queue.unblock(traits_type::eof()); }
     };
 
 }
