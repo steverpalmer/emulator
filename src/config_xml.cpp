@@ -379,7 +379,7 @@ namespace Xml
     };
 
     class AtomStreamConfigurator
-        : public virtual Atom::IStream::Configurator
+        : public virtual Atom::OStream::Configurator
         , private DeviceConfigurator
     {
     private:

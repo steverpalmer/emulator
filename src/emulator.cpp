@@ -85,6 +85,7 @@ class Emulator
 private:
     Emulator();
     enum {Continue, QuitRequest, EventWaitError} loop_state;
+    Atom::OStream *stream;
     Device *root;
 
     class QuitHandler
@@ -93,11 +94,19 @@ private:
     public:
         explicit QuitHandler(Emulator &p_emulator)
             : Dispatcher::StateHandler<Emulator>(SDL_QUIT, p_emulator)
-            {}
+            {
+                LOG4CXX_INFO(cpptrace_log(), "QuitHandler::QuitHandler(...)");
+            }
     private:
         void handle(const SDL_Event &)
             {
+                LOG4CXX_INFO(cpptrace_log(), "QuitHandler::handle(...)");
                 state.loop_state = QuitRequest;
+                if (state.stream)
+                {
+                    LOG4CXX_INFO(cpptrace_log(), "QuitHandler::handle unblocking stream");
+                    state.stream->unblock();
+                }
             }
     } quit_handler;
 
@@ -119,11 +128,12 @@ public:
             delete cfg;
             LOG4CXX_DEBUG(cpptrace_log(), PartsBin::instance());
 
-            auto *stream = dynamic_cast<Atom::IStream *>(PartsBin::instance()["stream"]);
+            stream = dynamic_cast<Atom::OStream *>(PartsBin::instance()["stream"]);
             if (stream)
             {
                 LOG4CXX_INFO(cpptrace_log(), "starting streaming");
-                new Pipe("output stream", *stream, std::cout);
+                // new Pipe("output stream", *stream, std::cout);
+                new Pipe("input stream", std::cin, *stream);
             }
             Device *root = dynamic_cast<Device *>(PartsBin::instance()["root"]);
             assert (root);
