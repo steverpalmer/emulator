@@ -5,6 +5,7 @@
 #define PPIA_HPP_
 
 #include <array>
+#include <chrono>
 #include <mutex>
 
 #include "common.hpp"
@@ -36,6 +37,7 @@ public:
     // Attributes
 private:
     std::array<byte, 4> m_register;
+    std::chrono::time_point<std::chrono::steady_clock> m_start;
     struct
     {
         mutable std::recursive_mutex mutex;

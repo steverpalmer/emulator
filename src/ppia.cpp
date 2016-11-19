@@ -3,6 +3,7 @@
 
 #include <cassert>
 #include <iomanip>
+#include <cmath>
 
 #include "ppia.hpp"
 
@@ -61,6 +62,7 @@ enum Ports {
 Ppia::Ppia(const Configurator &p_cfgr)
     : Memory(p_cfgr)
     , m_register( { 0, 0, 0, 0 } )
+    , m_start( std::chrono::steady_clock::now())
 {
     LOG4CXX_INFO(cpptrace_log(), "Ppia::Ppia(" << p_cfgr << ")");
 
@@ -149,13 +151,26 @@ byte Ppia::get_PortB(int p_row)
 byte Ppia::get_PortC(byte p_previous)
 {
     LOG4CXX_INFO(cpptrace_log(), "[" << id() << "].Ppia::get_PortC(" << Hex(p_previous) << ")");
-    byte result(p_previous | 0x40);                        // clear REPT signal
+    byte result(p_previous | 0xD0);  // clear REPT, Flyback and 2.4KHz signal
     {
         std::lock_guard<std::recursive_mutex> lock(m_keyboard.mutex);
         result &= m_keyboard.row[11];
     }
-    result ^= 0x80;                                // Flip Terminal Refresh bit
-    result ^= 0x30;                                      // Flip Tape input bits
+    const std::chrono::duration<double> delay = std::chrono::steady_clock::now() - m_start;
+    LOG4CXX_DEBUG(cpptrace_log(), "[" << id() << "].Ppia::get_PortC() delay: " << delay.count());
+    {
+        const double scaled_delay(delay.count() * 60.0);
+        const double fractional_part(scaled_delay - std::floor(scaled_delay));
+        if (fractional_part < 0.05)
+            result &= ~0x80;
+    }
+    {
+        const double scaled_delay(delay.count() * 2400.0);
+        const double fractional_part(scaled_delay - std::floor(scaled_delay));
+        if (fractional_part < 0.5)
+            result &= ~0x10;
+    }
+    result ^= 0x20;
     return result;
 }
 
