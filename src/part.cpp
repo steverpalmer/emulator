@@ -142,7 +142,8 @@ void PartsBin::clear()
     LOG4CXX_INFO(cpptrace_log(), "PartsBin::clear()");
     assert (self_check() == 0);
     for (auto pair : m_bin)
-        pair.second->terminating();
+        if (pair.second)
+            pair.second->terminating();
     for (auto it = m_bin.begin(); it != m_bin.end(); it = m_bin.erase(it))
     {
         LOG4CXX_DEBUG(Part::log(), "// Deleting:" << it->first);

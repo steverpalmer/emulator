@@ -55,6 +55,7 @@ private:
     // Methods
 private:
     void thread_function();
+    Cpu();
 protected:
     explicit Cpu(const Configurator &);
     virtual void terminating();
@@ -117,6 +118,7 @@ public:
         }
     explicit MCS6502(const Configurator &);
 private:
+    MCS6502();
     virtual ~MCS6502();
 public:
     virtual void reset(InterruptState p_is);

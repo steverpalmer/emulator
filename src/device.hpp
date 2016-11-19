@@ -93,6 +93,8 @@ public:
 private:
     std::set<Device *> m_children;
     // Methods
+private:
+    Computer();
 public:
     explicit Computer(const Configurator &);
 private:

@@ -25,6 +25,7 @@
 #include "ppia.hpp"
 #include "keyboard_adaptor.hpp"
 #include "dispatcher.hpp"
+#include "pump.hpp"
 
 static log4cxx::LoggerPtr cpptrace_log()
 {
@@ -32,61 +33,12 @@ static log4cxx::LoggerPtr cpptrace_log()
     return result;
 }
 
-class Pipe
-    : public Part
-{
-private:
-    std::istream     &m_source;
-    std::ostream     &m_sink;
-    std::atomic_bool m_more;
-    std::thread      m_thread;
-private:
-    void thread_function()
-        {
-            LOG4CXX_INFO(cpptrace_log(), "[" << id() << "]Pipe::thread_function()");
-            for (m_more=true; m_more; )
-            {
-                LOG4CXX_INFO(cpptrace_log(), "[" << id() << "]Pipe::thread_function reading");
-                const int ch(m_source.get());
-                LOG4CXX_INFO(cpptrace_log(), "[" << id() << "]Pipe::thread_function read " << ch);
-                if (!m_more || ch == EOF)
-                    break;
-                LOG4CXX_INFO(cpptrace_log(), "[" << id() << "]Pipe::thread_function writing " << ch);
-                m_sink.put(ch);
-                LOG4CXX_INFO(cpptrace_log(), "[" << id() << "]Pipe::thread_function written");
-            }
-        }
-public:
-    Pipe(Part::id_type p_name, std::istream &p_source, std::ostream &p_sink)
-        : Part(p_name)
-        , m_source(p_source)
-        , m_sink(p_sink)
-        , m_thread(&Pipe::thread_function, this)
-        {
-            LOG4CXX_INFO(cpptrace_log(), "Pipe::Pipe(" << p_name << ", ...)");
-        }
-private:
-    virtual void terminating()
-        {
-            LOG4CXX_INFO(cpptrace_log(), "[" << id() << "]Pipe::terminating()");
-            m_more = false;
-            LOG4CXX_INFO(cpptrace_log(), "[" << id() << "]Pipe::terminating() =>");
-        }
-    ~Pipe()
-        {
-            LOG4CXX_INFO(cpptrace_log(), "[" << id() << "]Pipe::~Pipe()");
-            m_thread.join();
-        }
-};
-
 class Emulator
     : protected NonCopyable
 {
 private:
     Emulator();
     enum {Continue, QuitRequest, EventWaitError} loop_state;
-    Atom::OStream *stream;
-    Device *root;
 
     class QuitHandler
         : public Dispatcher::StateHandler<Emulator>
@@ -102,11 +54,6 @@ private:
             {
                 LOG4CXX_INFO(cpptrace_log(), "QuitHandler::handle(...)");
                 state.loop_state = QuitRequest;
-                if (state.stream)
-                {
-                    LOG4CXX_INFO(cpptrace_log(), "QuitHandler::handle unblocking stream");
-                    state.stream->unblock();
-                }
             }
     } quit_handler;
 
@@ -128,13 +75,10 @@ public:
             delete cfg;
             LOG4CXX_DEBUG(cpptrace_log(), PartsBin::instance());
 
-            stream = dynamic_cast<Atom::OStream *>(PartsBin::instance()["stream"]);
-            if (stream)
-            {
-                LOG4CXX_INFO(cpptrace_log(), "starting streaming");
-                // new Pipe("output stream", *stream, std::cout);
-                new Pipe("input stream", std::cin, *stream);
-            }
+            auto stream = dynamic_cast<Atom::IOStream *>(PartsBin::instance()["stream"]);
+            Pump::Stdin stdin(stream);
+            Pump::Stdout stdout(stream);
+
             Device *root = dynamic_cast<Device *>(PartsBin::instance()["root"]);
             assert (root);
 
@@ -156,18 +100,16 @@ public:
                     Dispatcher::instance().dispatch(event);
             }
             LOG4CXX_INFO(cpptrace_log(), "Emulation is about to stop ...");
-            switch (loop_state)
-            {
-            case Continue:
-            case EventWaitError:
-                assert (false);
-            case QuitRequest:
-                root->pause();
-                while (not root->is_paused())
-                    std::this_thread::yield();
-
-                delete keyboard;
-            }
+            assert (loop_state == QuitRequest);
+            stdin.stop();
+            if (stream)
+                stream->unblock();
+            stdout.stop();
+            root->pause();
+            while (not root->is_paused())
+                std::this_thread::yield();
+            
+            delete keyboard;
         }
 
     virtual ~Emulator()

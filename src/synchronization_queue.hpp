@@ -122,6 +122,7 @@ public:
                 result = c.front();
                 c.pop_front();
             }
+            LOG4CXX_INFO(cpptrace_log(), "SynchronizationQueue::blocking_pull() => " << result);
             return result;
         }
 

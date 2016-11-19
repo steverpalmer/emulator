@@ -25,12 +25,6 @@ void Atom::Streambuf::OSRDCH_Adaptor::attach()
     m_streambuf.m_address_space->add_child(0xFE94, *this);
 }
 
-void Atom::Streambuf::OSRDCH_Adaptor::terminating()
-{
-    LOG4CXX_INFO(cpptrace_log(), "Atom::Streambuf::OSRDCH_Adaptor::terminating(...)");
-    m_streambuf.put_queue.unblock(traits_type::eof());
-}
-
 int Atom::Streambuf::OSRDCH_Adaptor::get_byte_hook(word, AccessType p_at)
 {
     LOG4CXX_INFO(cpptrace_log(), "Atom::Streambuf::OSRDCH_Adaptor::get_byte_hook(..., " << p_at << ")");
@@ -186,69 +180,98 @@ Atom::Streambuf::int_type Atom::Streambuf::uflow()
 }
 
 
+// Atom::StreamDevice
+
+Atom::StreamDevice::StreamDevice(const Configurator &p_cfgr)
+    : Device(p_cfgr)
+    , streambuf(new Streambuf(p_cfgr))
+{
+    LOG4CXX_INFO(cpptrace_log(), "Atom::StreamDevice::StreamDevice(" << p_cfgr << ")");
+    assert (streambuf);
+}
+
+void Atom::StreamDevice::reset()
+{
+    streambuf->reset();
+}
+
+void Atom::StreamDevice::pause()
+{
+    streambuf->pause();
+}
+
+void Atom::StreamDevice::resume()
+{
+    streambuf->resume();
+}
+
+bool Atom::StreamDevice::is_paused()
+{
+    return streambuf->is_paused();
+}
+
+void Atom::StreamDevice::unblock()
+{
+    streambuf->put_queue.unblock(Atom::Streambuf::traits_type::eof());
+    streambuf->get_queue.unblock(Atom::Streambuf::traits_type::eof());
+}
+
+void Atom::StreamDevice::terminating()
+{
+    streambuf->terminating();
+}
+
+Atom::StreamDevice::~StreamDevice()
+{
+    LOG4CXX_INFO(cpptrace_log(), "Atom::StreamDevice::~StreamDevice()");
+    delete streambuf;
+}
+
 // Atom::IStream
 
 Atom::IStream::IStream(const Configurator &p_cfgr)
-    : std::istream(new Streambuf(p_cfgr))
-    , Device(p_cfgr)
+    : StreamDevice(p_cfgr)
+    , std::istream(streambuf)
 {
     LOG4CXX_INFO(cpptrace_log(), "Atom::IStream::IStream(" << p_cfgr << ")");
-    dynamic_cast<Atom::Streambuf *>(rdbuf())->m_OSWRCH->attach();
-}
-
-void Atom::IStream::terminating()
-{
-    LOG4CXX_INFO(cpptrace_log(), "Atom::IStream::terminating()");
-    dynamic_cast<Atom::Streambuf *>(rdbuf())->terminating();
+    streambuf->m_OSWRCH->attach();
 }
 
 Atom::IStream::~IStream()
 {
     LOG4CXX_INFO(cpptrace_log(), "Atom::IStream::~IStream()");
-    delete rdbuf(0);
+    (void) rdbuf(0);
 }
 
 // Atom::OStream
 
 Atom::OStream::OStream(const Configurator &p_cfgr)
-    : std::ostream(new Atom::Streambuf(p_cfgr))
-    , Device(p_cfgr)
+    : StreamDevice(p_cfgr)
+    , std::ostream(streambuf)
 {
     LOG4CXX_INFO(cpptrace_log(), "Atom::OStream::OStream(" << p_cfgr << ")");
-    dynamic_cast<Atom::Streambuf *>(rdbuf())->m_OSRDCH->attach();
-}
-
-void Atom::OStream::terminating()
-{
-    LOG4CXX_INFO(cpptrace_log(), "Atom::OStream::terminating()");
-    dynamic_cast<Atom::Streambuf *>(rdbuf())->terminating();
+    streambuf->m_OSRDCH->attach();
 }
 
 Atom::OStream::~OStream()
 {
     LOG4CXX_INFO(cpptrace_log(), "Atom::OStream::~Atom::OStream()");
-    delete rdbuf(0);
+    (void) rdbuf(0);
 }
 
 // Atom::Stream
 
 Atom::IOStream::IOStream(const Configurator &p_cfgr)
-    : std::iostream(new Atom::Streambuf(p_cfgr))
-    , Device(p_cfgr)
+    : StreamDevice(p_cfgr)
+    , std::iostream(streambuf)
 {
     LOG4CXX_INFO(cpptrace_log(), "Atom::IOStream::IOStream(" << p_cfgr << ")");
-    dynamic_cast<Atom::Streambuf *>(rdbuf())->m_OSWRCH->attach();
-    dynamic_cast<Atom::Streambuf *>(rdbuf())->m_OSRDCH->attach();
-}
-
-void Atom::IOStream::terminating()
-{
-    LOG4CXX_INFO(cpptrace_log(), "Atom::IOStream::terminating()");
-    dynamic_cast<Atom::Streambuf *>(rdbuf())->terminating();
+    streambuf->m_OSWRCH->attach();
+    streambuf->m_OSRDCH->attach();
 }
 
 Atom::IOStream::~IOStream()
 {
     LOG4CXX_INFO(cpptrace_log(), "Atom::IOStream::~IOStream()");
-    delete rdbuf(0);
+    (void) rdbuf(0);
 }

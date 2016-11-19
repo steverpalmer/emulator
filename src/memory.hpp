@@ -119,6 +119,8 @@ public:
 class Storage
 {
     std::vector<byte> m_storage;
+private:
+    Storage();
 public:
     Storage(int size) : m_storage(size, 0) {}
     virtual ~Storage() = default;
@@ -164,6 +166,8 @@ private:
     Storage m_storage;
     Glib::ustring m_filename;
     // Methods
+private:
+    Ram();
 public:
     explicit Ram(const Configurator &);
 private:
@@ -211,6 +215,8 @@ public:
 private:
     Storage m_storage;
     // Methods
+private:
+    Rom();
 public:
     explicit Rom(const Configurator &);
 private:

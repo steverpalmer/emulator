@@ -53,6 +53,7 @@ private:
     byte get_PortB(int p_row);
     byte get_PortC(byte p_previous);
     void set_PortA(byte p_byte);
+    Ppia();
 public:
     explicit Ppia(const Configurator &);
 private:

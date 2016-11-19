@@ -23,6 +23,7 @@ namespace Xml
         void process_command_line(int argc, char *argv[]);
         void process_XML();
         bool check_and_complete_params();
+        Configurator();
     public:
         Configurator(int argc, char *argv[]);
         virtual ~Configurator();

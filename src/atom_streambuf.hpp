@@ -42,7 +42,6 @@ namespace Atom
             OSRDCH_Adaptor(const Configurator &, Streambuf &);
             void attach();
         private:
-            virtual void terminating();
             virtual int get_byte_hook(word, AccessType);
         };
 
@@ -91,6 +90,8 @@ namespace Atom
         OSRDCH_Adaptor *m_OSRDCH;
         OSWRCH_Adaptor *m_OSWRCH;
 
+    private:
+        Streambuf();
     public:
         explicit Streambuf(const Configurator &);
         void terminating();
@@ -120,87 +121,92 @@ namespace Atom
         virtual int_type uflow();
     };
 
-
-    class IStream
-        : public std::istream
-        , public Device
+    class StreamDevice
+        : public Device
     {
-        // Types
     public:
         class Configurator
             : public virtual Device::Configurator
             , public virtual Streambuf::Configurator
         {
+        };
+    protected:
+        Streambuf *streambuf;
+    private:
+        StreamDevice();
+    protected:
+        explicit StreamDevice(const Configurator &);
+        virtual ~StreamDevice();
+    public:
+        virtual void reset();
+        virtual void pause();
+        virtual void resume();
+        virtual bool is_paused();
+        void unblock();
+        virtual void terminating();
+    };
+    
+    class IStream
+        : public StreamDevice
+        , public std::istream
+    {
+        // Types
+    public:
+        class Configurator
+            : public virtual StreamDevice::Configurator
+        {
             virtual Device *device_factory() const
-                { return new Atom::IStream(*this); }
+                { return new IStream(*this); }
         };
 
+    private:
+        IStream();
     public:
         explicit IStream(const Configurator &);
     private:
-        virtual void terminating();
         virtual ~IStream();
-    public:
-        virtual void reset()           { dynamic_cast<Atom::Streambuf *>(rdbuf())->reset(); }
-        virtual void pause()           { dynamic_cast<Atom::Streambuf *>(rdbuf())->pause(); }
-        virtual void resume()          { dynamic_cast<Atom::Streambuf *>(rdbuf())->resume(); }
-        virtual bool is_paused() const { return dynamic_cast<Atom::Streambuf *>(rdbuf())->is_paused(); }
     };
 
-
     class OStream
-        : public std::ostream
-        , public Device
+        : public StreamDevice
+        , public std::ostream
     {
         // Types
     public:
         class Configurator
-            : public virtual Device::Configurator
-            , public virtual Streambuf::Configurator
+            : public virtual StreamDevice::Configurator
         {
             virtual Device *device_factory() const
-                { return new Atom::OStream(*this); }
+                { return new OStream(*this); }
         };
 
+    private:
+        OStream();
     public:
         explicit OStream(const Configurator &);
     private:
-        virtual void terminating();
         virtual ~OStream();
-    public:
-        virtual void reset()           { dynamic_cast<Atom::Streambuf *>(rdbuf())->reset(); }
-        virtual void pause()           { dynamic_cast<Atom::Streambuf *>(rdbuf())->pause(); }
-        virtual void resume()          { dynamic_cast<Atom::Streambuf *>(rdbuf())->resume(); }
-        virtual bool is_paused() const { return dynamic_cast<Atom::Streambuf *>(rdbuf())->is_paused(); }
-        void unblock() { dynamic_cast<Atom::Streambuf *>(rdbuf())->put_queue.unblock(traits_type::eof()); }
     };
 
-
     class IOStream
-        : public std::iostream
-        , public Device
+        : public StreamDevice
+        , public std::iostream
     {
         // Types
     public:
         class Configurator
-            : public virtual Device::Configurator
-            , public virtual Streambuf::Configurator
+            : public virtual StreamDevice::Configurator
         {
             virtual Device *device_factory() const
-                { return new Atom::IOStream(*this); }
+                { return new IOStream(*this); }
         };
 
+    private:
+        IOStream();
     public:
         explicit IOStream(const Configurator &);
     private:
-        virtual void terminating();
         virtual ~IOStream();
-    public:
-        virtual void reset()           { dynamic_cast<Atom::Streambuf *>(rdbuf())->reset(); }
-        virtual void pause()           { dynamic_cast<Atom::Streambuf *>(rdbuf())->pause(); }
-        virtual void resume()          { dynamic_cast<Atom::Streambuf *>(rdbuf())->resume(); }
-        virtual bool is_paused() const { return dynamic_cast<Atom::Streambuf *>(rdbuf())->is_paused(); }
-        void unblock() { dynamic_cast<Atom::Streambuf *>(rdbuf())->put_queue.unblock(traits_type::eof()); }
     };
 
 }

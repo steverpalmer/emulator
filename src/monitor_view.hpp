@@ -22,6 +22,7 @@ private:
     class WindowHandler
         : public Dispatcher::StateHandler<MonitorView>
     {
+        WindowHandler();
     public:
         explicit WindowHandler(MonitorView &);
         virtual ~WindowHandler() = default;
@@ -31,6 +32,7 @@ private:
     class SetByteHandler
         : public Dispatcher::StateHandler<MonitorView>
     {
+        SetByteHandler();
     public:
         explicit SetByteHandler(MonitorView &);
         virtual ~SetByteHandler() = default;
@@ -41,6 +43,7 @@ private:
     class VdgModeHandler
         : public Dispatcher::StateHandler<MonitorView>
     {
+        VdgModeHandler();
     public:
         explicit VdgModeHandler(MonitorView &);
         virtual ~VdgModeHandler() = default;
@@ -55,6 +58,7 @@ private:
     private:
         const SetByteHandler &m_set_byte_handler;
         const VdgModeHandler &m_vdg_mode_handler;
+        Observer();
     public:
         Observer(const SetByteHandler &, const VdgModeHandler &);
         virtual ~Observer() = default;
@@ -109,6 +113,7 @@ public:
 public:
     explicit MonitorView(const Configurator &);
 private:
+    MonitorView();
     virtual ~MonitorView();
 public:
     virtual void serialize(std::ostream &) const;

@@ -33,6 +33,8 @@ protected:
             command_dir = dirname(command_copy);
             free(command_copy);
         }
+private:
+    Configurator();
 public:
     virtual ~Configurator() = default;
 };

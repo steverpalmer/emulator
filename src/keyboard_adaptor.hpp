@@ -42,6 +42,7 @@ private:
     const UpHandler   up_handler;
     Device            *reset_device;
     AtomKeyboardInterface::Key atom_key(SDL_Scancode);
+    KeyboardAdaptor();
 public:
     KeyboardAdaptor(AtomKeyboardInterface *, Device *p_reset_device = 0);
     virtual ~KeyboardAdaptor() = default;

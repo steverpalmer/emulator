@@ -39,6 +39,7 @@ private:
 
 class SDL
 {
+    SDL();
 public:
     static log4cxx::LoggerPtr log()
         {
@@ -54,6 +55,7 @@ class Hex
 {
 	unsigned int m_v;
 	int          m_w;
+    Hex();
 public:
 	explicit Hex(byte p_v) : m_v(p_v), m_w(2) {}
 	explicit Hex(word p_v) : m_v(p_v), m_w(4) {}
