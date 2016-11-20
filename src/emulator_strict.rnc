@@ -73,6 +73,17 @@ stream.class = device.class, stream.attributes, stream.content
 stream.attributes = empty
 stream.content = empty
 
+device |= tape.instance
+tape.instance = element e:tape { tape.class }
+tape.class = device.class, tape.attributes, tape.content
+tape.attributes = empty
+tape.content = processor.instance?
+               & directory.instance?
+processor.instance = element e:processor { processor.class }
+processor.class = processor.attributes, processor.content
+processor.attributes = empty
+processor.content = cpu | device-reference.instance
+
 device |= memory
 memory.class = device.class, memory.attributes, memory.content
 memory.attributes = empty
@@ -147,7 +158,11 @@ size.content = address.value
 filename.instance = element e:filename { filename.class }
 filename.class = filename.attributes, filename.content
 filename.attributes = empty
-filename.content = filename.value
+filename.content = path.value
+directory.instance = element e:directory { directory.class }
+directory.class = directory.attributes, directory.content
+directory.attributes = empty
+directory.content = path.value
 
 # Value Types
 version.value = "0.05"
@@ -156,4 +171,4 @@ part-reference-id.value = xsd:IDREF
 address.value = ( hexidecimal-address.value | interger-address.value )
 hexidecimal-address.value = xsd:token { pattern = "#[a-fA-F0-9]{1,4}" }
 interger-address.value = xsd:unsignedShort
-filename.value = xsd:anyURI
+path.value = xsd:anyURI

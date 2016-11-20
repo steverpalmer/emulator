@@ -19,6 +19,7 @@
 #include "ppia.hpp"
 #include "cpu.hpp"
 #include "atom_streambuf.hpp"
+#include "atom_tape.hpp"
 #include "monitor_view.hpp"
 
 static log4cxx::LoggerPtr cpptrace_log()
@@ -383,30 +384,55 @@ namespace Xml
         , private DeviceConfigurator
     {
     private:
-        const Part::id_type m_mcs6502;
-        const Memory::Configurator *m_address_space;
+        const Device::Configurator *m_mcs6502;
         bool m_pause_output;
     public:
         explicit AtomStreamConfigurator(const xmlpp::Node *p_node = 0)
             : DeviceConfigurator("stream", p_node)
-            , m_mcs6502("mcs6502")
-            , m_address_space(0)
+            , m_mcs6502(0)
             , m_pause_output(false)
             {
                 LOG4CXX_INFO(cpptrace_log(), "Xml::AtomStreamConfigurator::AtomStreamConfigurator(" << p_node << ")");
-                if (!m_address_space)
-                    m_address_space = new Memory::ReferenceConfigurator("address_space");
+                if (!m_mcs6502)
+                    m_mcs6502 = new Device::ReferenceConfigurator("mcs6502");
             }
         virtual ~AtomStreamConfigurator()
             {
-                delete m_address_space;
+                delete m_mcs6502;
             }
-        virtual const Part::id_type &mcs6502() const { return m_mcs6502; }
-        virtual const Memory::Configurator *address_space() const { return m_address_space; }
+        virtual const Device::Configurator *mcs6502() const { return m_mcs6502; }
         virtual bool pause_output() const { return m_pause_output; }
 
         static const Device::Configurator *device_configurator_factory(const xmlpp::Node *p_node)
             { return new AtomStreamConfigurator(p_node); }
+    };
+
+    class AtomTapeConfigurator
+        : public virtual Atom::Tape::Configurator
+        , private DeviceConfigurator
+    {
+    private:
+        Glib::ustring m_directory;
+        const Device::Configurator *m_mcs6502;
+    public:
+        explicit AtomTapeConfigurator(const xmlpp::Node *p_node = 0)
+            : DeviceConfigurator("tape", p_node)
+            , m_directory(".")
+            , m_mcs6502(0)
+            {
+                LOG4CXX_INFO(cpptrace_log(), "Xml::AtomTapeConfigurator::AtomTapeConfigurator(" << p_node << ")");
+                if (!m_mcs6502)
+                    m_mcs6502 = new Device::ReferenceConfigurator("mcs6502");
+            }
+        virtual ~AtomTapeConfigurator()
+            {
+                delete m_mcs6502;
+            }
+        virtual const Glib::ustring &directory() const { return m_directory; }
+        virtual const Device::Configurator *mcs6502() const { return m_mcs6502; }
+
+        static const Device::Configurator *device_configurator_factory(const xmlpp::Node *p_node)
+            { return new AtomTapeConfigurator(p_node); }
     };
 
     class ComputerConfigurator
@@ -536,6 +562,7 @@ namespace Xml
             factory_map["stream"]   = AtomStreamConfigurator::device_configurator_factory;
             factory_map["computer"] = ComputerConfigurator::device_configurator_factory;
             factory_map["monitor"]  = MonitorViewConfigurator::device_configurator_factory;
+            factory_map["tape"]     = AtomTapeConfigurator::device_configurator_factory;
         }
         factory_function *factory = factory_map[p_node->get_name()];
         const Device::Configurator *result(factory ? factory(p_node) : MemoryConfigurator::factory(p_node));
