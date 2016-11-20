@@ -121,6 +121,7 @@ private:
     MCS6502();
     virtual ~MCS6502();
 public:
+    AddressSpace *address_space() const { return dynamic_cast<AddressSpace *>(m_memory); }
     virtual void reset(InterruptState p_is);
     virtual void NMI(InterruptState p_is = INTERRUPT_PULSE);
     virtual void IRQ(InterruptState p_is = INTERRUPT_PULSE);

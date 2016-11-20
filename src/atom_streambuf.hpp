@@ -31,12 +31,10 @@ namespace Atom
                 Configurator() = default;
             public:
                 virtual ~Configurator() = default;
-                virtual const Part::id_type &mcs6502() const = 0;
             };
             // Attributes
         private:
-            Streambuf &m_streambuf;
-            MCS6502  &m_mcs6502;
+            Streambuf &streambuf;
             // Methods
         public:
             OSRDCH_Adaptor(const Configurator &, Streambuf &);
@@ -56,13 +54,11 @@ namespace Atom
                 Configurator() = default;
             public:
                 virtual ~Configurator() = default;
-                virtual const Part::id_type &mcs6502() const = 0;
                 virtual bool pause_output() const = 0;
             };
             // Attributes
         private:
-            Streambuf &m_streambuf;
-            MCS6502  &m_mcs6502;
+            Streambuf &streambuf;
         public:
             bool is_paused;
             // Methods
@@ -81,14 +77,15 @@ namespace Atom
             Configurator() = default;
         public:
             virtual ~Configurator() = default;
-            virtual const Memory::Configurator *address_space() const = 0;
+            virtual const Device::Configurator *mcs6502() const = 0;
         };
     public:
         SynchronizationQueue<int_type> put_queue;
         SynchronizationQueue<int_type> get_queue;
-        AddressSpace   *m_address_space;
-        OSRDCH_Adaptor *m_OSRDCH;
-        OSWRCH_Adaptor *m_OSWRCH;
+        MCS6502        *mcs6502;
+        AddressSpace   *address_space;
+        OSRDCH_Adaptor *OSRDCH;
+        OSWRCH_Adaptor *OSWRCH;
 
     private:
         Streambuf();
@@ -99,21 +96,21 @@ namespace Atom
 
         void reset()
             {
-                m_OSWRCH->is_paused = true;
+                OSWRCH->is_paused = true;
                 put_queue.nonblocking_clear();
                 get_queue.nonblocking_clear();
             }
         void pause()
             {
-                m_OSWRCH->is_paused = true;
+                OSWRCH->is_paused = true;
             }
         void resume()
             {
-                m_OSWRCH->is_paused = false;
+                OSWRCH->is_paused = false;
             }
         bool is_paused() const
             {
-                return m_OSWRCH->is_paused;
+                return OSWRCH->is_paused;
             }
 
         virtual int_type overflow(int_type p_ch);
