@@ -30,6 +30,7 @@ PARTSLIB = partslib_env.StaticLibrary(r'parts', [ r'part.cpp'
                                                 , r'ppia.cpp'
                                                 , r'cpu.cpp'
                                                 , r'atom_streambuf.cpp'
+                                                , r'atom_tape.cpp'
                                                 ])
 
 emulator_gui_sdl_env = common_env.Clone()
