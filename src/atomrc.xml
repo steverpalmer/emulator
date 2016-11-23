@@ -114,10 +114,7 @@
 
     <!-- e:stream/ -->
 
-    <e:tape>
-      <e:processor><e:device href="mcs6502"/></e:processor>
-      <e:directory>../Basic</e:directory>
-    </e:tape>
+    <!-- e:tape/ -->
 
   </e:computer>
 
