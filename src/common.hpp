@@ -6,6 +6,7 @@
 
 // Includes used everywhere
 
+#include <exception>
 #include <ostream>  // part of the serialize pattern
 #include <glibmm/ustring.h>  // Glib::ustring used everywhere
 #include <log4cxx/logger.h>
@@ -46,6 +47,19 @@ public:
             static log4cxx::LoggerPtr result(log4cxx::Logger::getLogger(SDL_PREFIX));
             return result;
         }
+};
+
+class ExceptionWithReason
+    : public std::exception
+{
+private:
+    const Glib::ustring reason;
+private:
+    ExceptionWithReason();
+public:
+    ExceptionWithReason(const Glib::ustring &p_reason) : reason(p_reason) {}
+    virtual ~ExceptionWithReason() = default;
+    virtual const char *what() const noexcept { return reason.c_str(); }
 };
 
 // Streaming Utilitiy

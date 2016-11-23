@@ -32,39 +32,34 @@ namespace Xml
 {
     // Helper Stuff for processing the XML
 
-    class XpathNotFound
-        : public std::exception
+    struct XpathNotFound
+        : public ExceptionWithReason
     {
-        virtual const char *what() const throw()
-            { return "XPath not present"; }
+        XpathNotFound() : ExceptionWithReason("XPath not present") {}
     } xpath_not_present;
 
-    class XpathAmbiguous
-        : public std::exception
+    struct XpathAmbiguous
+        : public ExceptionWithReason
     {
-        virtual const char *what() const throw()
-            { return "XPath ambiguous"; }
+        XpathAmbiguous() : ExceptionWithReason("XPath ambiguous") {}
     } xpath_ambiguous;
 
-    class XpathNotValue
-        : public std::exception
+    struct XpathNotValue
+        : public ExceptionWithReason
     {
-        virtual const char *what() const throw()
-            { return "XPath not a value"; }
+        XpathNotValue() : ExceptionWithReason("XPath not a value") {}
     } xpath_not_a_value;
 
-    class XpathNotFloat
-        : public std::exception
+    struct XpathNotFloat
+        : public ExceptionWithReason
     {
-        virtual const char *what() const throw()
-            { return "XPath did not return a float"; }
+        XpathNotFloat() : ExceptionWithReason("XPath did not return a float") {}
     } xpath_not_a_float;
 
-    class XpathNotInt
-        : public std::exception
+    struct XpathNotInt
+        : public ExceptionWithReason
     {
-        virtual const char *what() const throw()
-            { return "XPath did not return an integer"; }
+        XpathNotInt() : ExceptionWithReason("XPath did not return an integer") {}
     } xpath_not_an_integer;
 
     static xmlpp::Node::PrefixNsMap namespaces = { { "e", "http://www.srpalmer.me.uk/ns/emulator" } };

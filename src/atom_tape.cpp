@@ -10,16 +10,10 @@ static log4cxx::LoggerPtr cpptrace_log()
 }
 
 class Fail
-    : public std::exception
+    : public ExceptionWithReason
 {
-private:
-    const Glib::ustring reason;
 public:
-    Fail(const Glib::ustring &p_reason)
-        : reason(p_reason)
-        {}
-    virtual const char *what() const throw()
-        { return reason.c_str(); }
+    Fail(const Glib::ustring &p_reason) : ExceptionWithReason(p_reason) {}
 };
 
 Atom::Tape::Filename::Filename(word addr, Memory &memory)
