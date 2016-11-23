@@ -79,6 +79,33 @@ class MCS6502
     : public Cpu
 {
 public:
+#if 0
+    class SetLogLevel
+        : public Hook
+    {
+    private:
+        const log4cxx::LevelPtr level;
+        SetLogLevel();
+    public:
+        SetLogLevel(word addr, const MCS6502 &mcs6502, log4cxx::LevelPtr p_level)
+            : Hook()
+            , level(p_level)
+            {
+                AddressSpace *as = mcs6502.address_space();
+                assert (as);
+                as->add_child(addr, *this);
+            }
+    private:
+        virtual int get_byte_hook(word, AccessType p_at)
+            {
+                if (p_at == AT_INSTRUCTION)
+                {
+                    MCS6502::log()->setLevel(level);
+                }
+                return -1;
+            }
+    };
+#endif
     class Configurator
         : public virtual Cpu::Configurator
     {

@@ -86,6 +86,14 @@ public:
             assert (ppia);
             KeyboardAdaptor *keyboard = new KeyboardAdaptor(ppia, root);
 
+#if 0
+            MCS6502 *mcs6502 = dynamic_cast<MCS6502 *>(PartsBin::instance()["mcs6502"]);
+            assert (mcs6502);
+            LOG4CXX_WARN(cpptrace_log(), "1 => " << PartsBin::instance());
+            MCS6502::SetLogLevel(0xCEED, *mcs6502, log4cxx::Level::getInfo());
+            LOG4CXX_WARN(cpptrace_log(), "2 => " << PartsBin::instance());
+#endif
+
             LOG4CXX_INFO(cpptrace_log(), "Emulation is about to start ...");
             root->reset();
             root->resume();
@@ -101,6 +109,7 @@ public:
             }
             LOG4CXX_INFO(cpptrace_log(), "Emulation is about to stop ...");
             assert (loop_state == QuitRequest);
+
             stdin.stop();
             if (stream)
                 stream->unblock();
