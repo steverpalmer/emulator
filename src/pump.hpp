@@ -10,6 +10,8 @@
 #include <thread>
 #include <atomic>
 
+#include "dispatcher.hpp"
+
 namespace Pump
 {
 
@@ -56,6 +58,9 @@ namespace Pump
     class Stdin
         : public Base<std::ostream>
     {
+        // Attributes
+    private:
+        const Dispatcher::Handler &quit_handler;
         // Methods
     private:
         void process_one_character()
@@ -73,11 +78,16 @@ namespace Pump
                     if (read_return)
                         // May Block
                         stream->put(ch);
+                    else
+                        quit_handler.push();
                 }
             }
         Stdin();
     public:
-        Stdin(std::ostream *sink) : Base(sink) {}
+        Stdin(std::ostream *sink, const Dispatcher::Handler &p_quit_handler)
+            : Base(sink)
+            , quit_handler(p_quit_handler)
+            {}
         virtual ~Stdin() = default;
     };
 

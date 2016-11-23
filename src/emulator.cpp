@@ -76,7 +76,7 @@ public:
             LOG4CXX_DEBUG(cpptrace_log(), PartsBin::instance());
 
             auto stream = dynamic_cast<Atom::IOStream *>(PartsBin::instance()["stream"]);
-            Pump::Stdin stdin(stream);
+            Pump::Stdin stdin(stream, quit_handler);
             Pump::Stdout stdout(stream);
 
             Device *root = dynamic_cast<Device *>(PartsBin::instance()["root"]);
