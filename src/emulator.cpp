@@ -7,10 +7,12 @@
 #include <stdio.h>
 #include <libgen.h>
 #include <stdlib.h>
+#include <signal.h>
 
 #include <thread>
 #include <iostream>
 #include <atomic>
+#include <chrono>
 
 #include <SDL.h>
 
@@ -33,12 +35,18 @@ static log4cxx::LoggerPtr cpptrace_log()
     return result;
 }
 
+static class Emulator *emulator(0);
+
 class Emulator
     : protected NonCopyable
 {
 private:
     Emulator();
+    Atom::IOStream *stream;
+    Pump::Stdin *stdin;
+    Pump::Stdout *stdout;
     Device *root;
+    KeyboardAdaptor *keyboard;
     enum {Continue, QuitRequest, EventWaitError} loop_state;
 
     class QuitHandler
@@ -71,20 +79,16 @@ private:
         void handle(const SDL_Event &)
             {
                 LOG4CXX_INFO(cpptrace_log(), "ResetHandler::handle(...)");
-                if (state.root)
-                {
-                    state.root->pause();
-                    std::this_thread::yield();  // give it a change ...
-                    state.root->reset();
-                    state.root->resume();
-                }
+                state.reset();
             }
     } reset_handler;
 
-
 public:
     Emulator(int argc, char *argv[])
-        : root(0)
+        : stream(0)
+        , stdin(0)
+        , stdout(0)
+        , root(0)
         , quit_handler(*this)
         , reset_handler(*this)
         {
@@ -129,16 +133,16 @@ public:
             delete cfg;
             LOG4CXX_DEBUG(cpptrace_log(), PartsBin::instance());
 
-            auto stream = dynamic_cast<Atom::IOStream *>(PartsBin::instance()["stream"]);
-            Pump::Stdin stdin(stream, quit_handler);
-            Pump::Stdout stdout(stream);
+            stream = dynamic_cast<Atom::IOStream *>(PartsBin::instance()["stream"]);
+            stdin = new Pump::Stdin(stream, quit_handler);
+            stdout = new Pump::Stdout(stream);
 
             root = dynamic_cast<Device *>(PartsBin::instance()["root"]);
             assert (root);
 
             Ppia *ppia = dynamic_cast<Ppia *>(PartsBin::instance()["ppia"]);
             assert (ppia);
-            KeyboardAdaptor *keyboard = new KeyboardAdaptor(ppia, reset_handler);
+            keyboard = new KeyboardAdaptor(ppia, reset_handler);
 
 #if 0
             MCS6502 *mcs6502 = dynamic_cast<MCS6502 *>(PartsBin::instance()["mcs6502"]);
@@ -147,8 +151,11 @@ public:
             MCS6502::SetLogLevel(0xCEED, *mcs6502, log4cxx::Level::getInfo());
             LOG4CXX_WARN(cpptrace_log(), "2 => " << PartsBin::instance());
 #endif
+        }
 
-            LOG4CXX_INFO(cpptrace_log(), "Emulation is about to start ...");
+    void run()
+        {
+            LOG4CXX_INFO(cpptrace_log(), "Emulator::run()");
             root->reset();
             root->resume();
             SDL_Event event;
@@ -161,23 +168,62 @@ public:
                 else
                     Dispatcher::instance().dispatch(event);
             }
-            LOG4CXX_INFO(cpptrace_log(), "Emulation is about to stop ...");
             assert (loop_state == QuitRequest);
 
-            stdin.stop();
+            LOG4CXX_INFO(cpptrace_log(), "Emulator::run() finishing ...");
+            if (stdin)
+                stdin->stop();
             if (stream)
                 stream->unblock();
-            stdout.stop();
+            if (stdout)
+                stdout->stop();
             root->pause();
             while (not root->is_paused())
                 std::this_thread::yield();
-
-            delete keyboard;
+        }
+    
+    void reset()
+        {
+            if (root)
+            {
+                if (root->is_paused())
+                {
+                    root->reset();
+                }
+                else
+                {
+                    root->pause();
+                    if (!root->is_paused())
+                        std::this_thread::sleep_for(std::chrono::milliseconds(500));
+                    root->reset();
+                    root->resume();
+                }
+            }
         }
 
+    void pause()
+        {
+            if (root)
+                root->pause();
+        }
+
+    void resume()
+        {
+            if (root)
+                root->resume();
+        }
+
+    bool is_paused() const
+        {
+            return !root || root->is_paused();
+        }
+    
     virtual ~Emulator()
         {
             LOG4CXX_INFO(cpptrace_log(), "Emulator::~Emulator()");
+            delete stdout;
+            delete stdin;
+            delete keyboard;
             PartsBin::instance().clear();
             LOG4CXX_INFO(SDL::log(), "SDL_Quit");
             SDL_Quit();
@@ -206,10 +252,25 @@ void configure_logging(const char *command)
     free(command_copy);
 }
 
+void SIGUSR1_handler(int)
+{
+    if (emulator)
+        emulator->reset();
+}
+
 int main (int argc, char *argv[])
 {
     configure_logging(*argv);
     LOG4CXX_INFO(cpptrace_log(), "main(" << argc << ", " << argv << ")");
-    Emulator(argc, argv);
+    emulator = new Emulator(argc, argv);
+    assert (emulator);
+    struct sigaction reset_action;
+    reset_action.sa_handler = SIGUSR1_handler;
+    sigemptyset (&reset_action.sa_mask);
+    reset_action.sa_flags = 0;
+    const int rc = sigaction(SIGUSR1, &reset_action, NULL);
+    assert (rc==0);
+    emulator->run();
+    delete emulator;
     return EXIT_SUCCESS;
 }
