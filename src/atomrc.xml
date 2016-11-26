@@ -112,7 +112,7 @@
       </e:controller>
     </e:monitor>
 
-    <!-- e:stream/ -->
+    <e:stream/>
 
     <!-- e:tape/ -->
 

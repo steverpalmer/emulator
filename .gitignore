@@ -16,3 +16,7 @@
 /src/emulator_permissive.rng
 /src/emulator_strict.rng
 /src/*.jing.txt
+output.xml
+log.html
+report.html
+*.pyc
