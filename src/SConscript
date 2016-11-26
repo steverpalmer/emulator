@@ -14,8 +14,8 @@ common_env.rnc2rng('emulator_permissive', ['emulator_permissive', 'emulator_stri
 # common_env.jing('atomrc.jing.txt', [r'emulator_strict.rng', r'atomrc.xml'])
 # common_env.jing('atomrc_full.jing.txt', [r'emulator_strict.rng', r'atomrc_full.xml'])
 
-common_env.Command(r'plot.bmp', r'build_plot_bmp.py',
-                   "python3 $SOURCE $TARGET")
+common_env.Command(r'plot.bmp', r'build_plot_bmp.py', "python3 $SOURCE $TARGET")
+
 
 # Main Build
 
@@ -35,11 +35,12 @@ PARTSLIB = partslib_env.StaticLibrary(r'parts', [ r'part.cpp'
 
 emulator_gui_sdl_env = common_env.Clone()
 emulator_gui_sdl_env.ParseConfig("pkg-config --cflags --libs sdl2 libxml++-2.6")
-emulator_gui_sdl_env.Program('emulator', [ r'dispatcher.cpp'
-                                         , r'monitor_view.cpp'
-                                         , r'keyboard_adaptor.cpp'
-                                         , r'config_xml.cpp'
-                                         , r'emulator.cpp'
-                                         , PARTSLIB
-                                         ])
+EMULATOR = emulator_gui_sdl_env.Program('emulator', [ r'dispatcher.cpp'
+                                                    , r'monitor_view.cpp'
+                                                    , r'keyboard_adaptor.cpp'
+                                                    , r'config_xml.cpp'
+                                                    , r'emulator.cpp'
+                                                    , PARTSLIB
+                                                    ])
 
+# common_env.Command('ouptut.xml', ['test.robot', EMULATOR], "robot $SOURCE")

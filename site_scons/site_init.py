@@ -24,4 +24,6 @@ common_env['BUILDERS']['rnc2xsd'] = Builder(action='trang -I rnc -O xsd $SOURCE 
 
 common_env['BUILDERS']['jing'] = Builder(action='jing $SOURCES >$TARGET 2>/dev/null')
 
+# common_env['BUILDERS']['robot'] = Builder(action='robot $SOURCES', src_suffix='robot')
+
 Export('common_env')

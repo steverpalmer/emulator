@@ -26,8 +26,7 @@ void KeyboardAdaptor::DownHandler::handle(const SDL_Event &p_event)
         switch (key)
         {
         case AtomKeyboardInterface::BREAK:
-            if (state.reset_device)
-                state.reset_device->reset();
+            state.reset_handler.push();
             break;
         default:
             if (state.m_atom_keyboard)
@@ -69,11 +68,11 @@ void KeyboardAdaptor::UpHandler::handle(const SDL_Event &p_event)
     }
 }
 
-KeyboardAdaptor::KeyboardAdaptor(AtomKeyboardInterface *p_atom_keyboard, Device *p_reset_device)
+KeyboardAdaptor::KeyboardAdaptor(AtomKeyboardInterface *p_atom_keyboard, const Dispatcher::Handler &p_reset_handler)
     : m_atom_keyboard(p_atom_keyboard)
     , down_handler(*this)
     , up_handler(*this)
-    , reset_device(p_reset_device)
+    , reset_handler(p_reset_handler)
 {
     assert (m_atom_keyboard);
     LOG4CXX_INFO(cpptrace_log(), "KeyboardAdaptor::KeyboardAdaptor(" << p_atom_keyboard << ")");

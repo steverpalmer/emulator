@@ -38,6 +38,7 @@ class Emulator
 {
 private:
     Emulator();
+    Device *root;
     enum {Continue, QuitRequest, EventWaitError} loop_state;
 
     class QuitHandler
@@ -57,15 +58,68 @@ private:
             }
     } quit_handler;
 
+    class ResetHandler
+        : public Dispatcher::StateHandler<Emulator>
+    {
+    public:
+        explicit ResetHandler(Emulator &p_emulator)
+            : Dispatcher::StateHandler<Emulator>(p_emulator)
+            {
+                LOG4CXX_INFO(cpptrace_log(), "ResetHandler::ResetHandler(...)");
+            }
+    private:
+        void handle(const SDL_Event &)
+            {
+                LOG4CXX_INFO(cpptrace_log(), "ResetHandler::handle(...)");
+                if (state.root)
+                {
+                    state.root->pause();
+                    std::this_thread::yield();  // give it a change ...
+                    state.root->reset();
+                    state.root->resume();
+                }
+            }
+    } reset_handler;
+
+
 public:
     Emulator(int argc, char *argv[])
-        : quit_handler(*this)
+        : root(0)
+        , quit_handler(*this)
+        , reset_handler(*this)
         {
             LOG4CXX_INFO(cpptrace_log(), "Emulator::Emulator(" << argc << ", " << argv << ")");
 
             LOG4CXX_INFO(SDL::log(), "SDL_Init( SDL_INIT_VIDEO )");
             const int rv = SDL_Init( SDL_INIT_VIDEO );
             assert (!rv);
+
+            // Remove the most prolific events that are of no interest
+            (void)SDL_EventState(SDL_TEXTEDITING, SDL_IGNORE);
+            (void)SDL_EventState(SDL_TEXTINPUT, SDL_IGNORE);
+            (void)SDL_EventState(SDL_MOUSEMOTION, SDL_IGNORE);
+            (void)SDL_EventState(SDL_MOUSEBUTTONDOWN, SDL_IGNORE);
+            (void)SDL_EventState(SDL_MOUSEBUTTONUP, SDL_IGNORE);
+            (void)SDL_EventState(SDL_MOUSEWHEEL, SDL_IGNORE);
+            (void)SDL_EventState(SDL_JOYAXISMOTION, SDL_IGNORE);
+            (void)SDL_EventState(SDL_JOYBALLMOTION, SDL_IGNORE);
+            (void)SDL_EventState(SDL_JOYHATMOTION, SDL_IGNORE);
+            (void)SDL_EventState(SDL_JOYBUTTONDOWN, SDL_IGNORE);
+            (void)SDL_EventState(SDL_JOYBUTTONUP, SDL_IGNORE);
+            (void)SDL_EventState(SDL_JOYDEVICEADDED, SDL_IGNORE);
+            (void)SDL_EventState(SDL_JOYDEVICEREMOVED, SDL_IGNORE);
+            (void)SDL_EventState(SDL_CONTROLLERAXISMOTION, SDL_IGNORE);
+            (void)SDL_EventState(SDL_CONTROLLERBUTTONDOWN, SDL_IGNORE);
+            (void)SDL_EventState(SDL_CONTROLLERBUTTONUP, SDL_IGNORE);
+            (void)SDL_EventState(SDL_CONTROLLERDEVICEADDED, SDL_IGNORE);
+            (void)SDL_EventState(SDL_CONTROLLERDEVICEREMOVED, SDL_IGNORE);
+            (void)SDL_EventState(SDL_CONTROLLERDEVICEREMAPPED, SDL_IGNORE);
+            (void)SDL_EventState(SDL_FINGERDOWN, SDL_IGNORE);
+            (void)SDL_EventState(SDL_FINGERUP, SDL_IGNORE);
+            (void)SDL_EventState(SDL_FINGERMOTION, SDL_IGNORE);
+            (void)SDL_EventState(SDL_DOLLARGESTURE, SDL_IGNORE);
+            (void)SDL_EventState(SDL_DOLLARRECORD, SDL_IGNORE);
+            (void)SDL_EventState(SDL_MULTIGESTURE, SDL_IGNORE);
 
             const Configurator *cfg = new Xml::Configurator(argc, argv);  // FIXME: remove Xml::
             assert (cfg);
@@ -79,12 +133,12 @@ public:
             Pump::Stdin stdin(stream, quit_handler);
             Pump::Stdout stdout(stream);
 
-            Device *root = dynamic_cast<Device *>(PartsBin::instance()["root"]);
+            root = dynamic_cast<Device *>(PartsBin::instance()["root"]);
             assert (root);
 
             Ppia *ppia = dynamic_cast<Ppia *>(PartsBin::instance()["ppia"]);
             assert (ppia);
-            KeyboardAdaptor *keyboard = new KeyboardAdaptor(ppia, root);
+            KeyboardAdaptor *keyboard = new KeyboardAdaptor(ppia, reset_handler);
 
 #if 0
             MCS6502 *mcs6502 = dynamic_cast<MCS6502 *>(PartsBin::instance()["mcs6502"]);
@@ -117,7 +171,7 @@ public:
             root->pause();
             while (not root->is_paused())
                 std::this_thread::yield();
-            
+
             delete keyboard;
         }
 

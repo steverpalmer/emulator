@@ -38,13 +38,13 @@ public:
     AtomKeyboardInterface *m_atom_keyboard;
 private:
     std::map<SDL_Scancode, AtomKeyboardInterface::Key> keys;
-    const DownHandler down_handler;
-    const UpHandler   up_handler;
-    Device            *reset_device;
+    const DownHandler         down_handler;
+    const UpHandler           up_handler;
+    const Dispatcher::Handler &reset_handler;
     AtomKeyboardInterface::Key atom_key(SDL_Scancode);
     KeyboardAdaptor();
 public:
-    KeyboardAdaptor(AtomKeyboardInterface *, Device *p_reset_device = 0);
+    KeyboardAdaptor(AtomKeyboardInterface *, const Dispatcher::Handler &p_reset_handler);
     virtual ~KeyboardAdaptor() = default;
 };
 
