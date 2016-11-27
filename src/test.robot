@@ -8,16 +8,34 @@ Establish A Connection
       [Documentation]   Merely makes a connection to an emulator
       [Tags]            smoke
       Open Connection
+      Sleep             2      Settling Time, and time for something to go wrong
 
 Make And Close A Connection
-     [Documentation]    makes and closes a connection to an emulator
-     Open Connection
-     Close Connection
+      [Documentation]    makes and closes a connection to an emulator
+      [Tags]            smoke
+      Open Connection
+      Close Connection
 
 Check Boot Up Message
       [Documentation]   make a connection and read power-up message
+      [Tags]            smoke
       Open Connection
-      ${output} =       Read Line
-      Log               ${output}
+      ${output} =       Read Until Prompt
       Should Match      ${output}   *ACORN ATOM*
       Close Connection
+
+Hello World
+      [Documentation]   Check a simple command
+      [Tags]            smoke
+      Start Emulator
+      Write             P."HELLO WORLD"
+      ${output} =       Read Until Prompt
+      Should Be Equal   ${output}  HELLO WORLD
+      Close Connection
+
+*** Keywords ***
+Start Emulator
+      [Documentation]   Make the connection and check it is operating
+      Open Connection
+      ${bootmessage} =  Read Until Prompt
+      Should Match      ${bootmessage}     *ACORN ATOM*
