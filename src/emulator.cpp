@@ -89,6 +89,7 @@ public:
         , stdin(0)
         , stdout(0)
         , root(0)
+		, loop_state(Continue)
         , quit_handler(*this)
         , reset_handler(*this)
         {

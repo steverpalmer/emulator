@@ -100,7 +100,7 @@ public:
             LOG4CXX_INFO(cpptrace_log(), "SynchronizationQueue::nonblocking_pull(...)");
             bool result;
             std::unique_lock<std::mutex> lock(mutex);
-            if (result = !c.empty)
+            if ((result = !c.empty))
             {
                 p_item = c.front();
                 c.pop_front();

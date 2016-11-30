@@ -129,7 +129,7 @@ namespace Xml
                 LOG4CXX_INFO(cpptrace_log(), "Xml::PartConfigurator::PartConfigurator(" << p_id << ", " << p_node << ")");
                 if (p_node)
                     try { m_id = eval_to_string(p_node, "@name"); }
-                    catch (XpathNotFound e) {}
+                    catch (XpathNotFound &e) {}
             }
     public:
         virtual ~PartConfigurator() = default;
@@ -216,7 +216,7 @@ namespace Xml
                 assert (p_node);
                 m_size = eval_to_int(p_node, "e:size");
                 try { m_filename = eval_to_string(p_node, "e:filename"); }
-                catch (XpathNotFound e) {}
+                catch (XpathNotFound &e) {}
             }
         virtual ~RamConfigurator() = default;
         inline virtual word                size()      const { return m_size; }
@@ -241,7 +241,7 @@ namespace Xml
                 assert (p_node);
                 m_filename = eval_to_string(p_node, "e:filename");
                 try { m_size = eval_to_int(p_node, "e:size"); }
-                catch(XpathNotFound::exception e) {}
+                catch(XpathNotFound::exception &e) {}
             }
         virtual ~RomConfigurator() = default;
         inline virtual const Glib::ustring &filename() const { return m_filename; }
@@ -283,7 +283,7 @@ namespace Xml
                 LOG4CXX_INFO(cpptrace_log(), "Xml::AddressSpaceConfigurator::AddressSpaceConfigurator(" << p_node << ")");
                 assert (p_node);
                 try { m_size = eval_to_int(p_node, "e:size"); }
-                catch(XpathNotFound e) {}
+                catch(XpathNotFound &e) {}
                 for (auto *child: p_node->get_children())
                 {
                     const auto child_elm = dynamic_cast<const xmlpp::Element *>(child);
@@ -292,7 +292,7 @@ namespace Xml
                         AddressSpace::Configurator::Mapping *map = new AddressSpace::Configurator::Mapping(m_last_memory);
                         map->base = eval_to_int(child_elm, "e:base");
                         try { map->size = eval_to_int(child_elm, "e:size"); }
-                        catch (XpathNotFound e) { map->size = 0; }
+                        catch (XpathNotFound &e) { map->size = 0; }
                         const auto &ns(child_elm->find("e:ram|e:rom|e:ppia|e:address_space|e:memory", namespaces));
                         assert (ns.size() == 1);
                         map->memory = MemoryConfigurator::factory(ns[0]);
@@ -485,9 +485,9 @@ namespace Xml
                 if (p_node)
                 {
                     try { m_fontfilename = eval_to_string(p_node, "e:font/filename"); }
-                    catch (XpathNotFound e) {}
+                    catch (XpathNotFound &e) {}
                     try { m_window_title = eval_to_string(p_node, "e:window_title"); }
-                    catch (XpathNotFound e) {}
+                    catch (XpathNotFound &e) {}
                     const xmlpp::NodeSet video_memory_ns(p_node->find("e:video_memory", namespaces));
                     switch (video_memory_ns.size())
                     {
@@ -640,7 +640,7 @@ namespace Xml
                 }
             }
         }
-        catch (const std::exception& ex)
+        catch (const std::exception &ex)
         {
             LOG4CXX_ERROR(cpptrace_log(), ex.what());
             exit(1);

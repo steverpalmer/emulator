@@ -103,7 +103,7 @@ class EmulatorConnection:
     def __init__(self, prompt, log_level):
         self._prompt = prompt
         self._log_level = log_level
-        self._popen = subprocess.Popen(['./emulator'],
+        self._popen = subprocess.Popen(['/home/steve/workspace/emulator/src/emulator'],
                                        bufsize=0,
                                        stdin=subprocess.PIPE,
                                        stdout=subprocess.PIPE)

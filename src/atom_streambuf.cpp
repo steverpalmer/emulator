@@ -136,6 +136,7 @@ Atom::Streambuf::int_type Atom::Streambuf::underflow()
             current = &buffer[1];
             break;
         }
+        // no break on purpose
     case OneBehind:
         buffer[0] = buffer[1];
         LOG4CXX_DEBUG(cpptrace_log(), "Atom::Streambuf::underflow trying to pulled again");

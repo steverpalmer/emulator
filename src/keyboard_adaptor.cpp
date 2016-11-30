@@ -34,7 +34,7 @@ void KeyboardAdaptor::DownHandler::handle(const SDL_Event &p_event)
             break;
         }
     }
-    catch (std::out_of_range e)
+    catch (std::out_of_range &e)
     {
         LOG4CXX_WARN(cpptrace_log(), "KeyboardAdaptor::DownHandler::handle: Unknown key " << p_event.key.keysym.scancode);
     }
@@ -62,7 +62,7 @@ void KeyboardAdaptor::UpHandler::handle(const SDL_Event &p_event)
             break;
         }
     }
-    catch (std::out_of_range e)
+    catch (std::out_of_range &e)
     {
         LOG4CXX_WARN(cpptrace_log(), "KeyboardAdaptor::UpHandler::handle: Unknown key " << p_event.key.keysym.scancode);
     }

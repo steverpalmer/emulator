@@ -91,7 +91,7 @@ int Atom::Tape::OSSAVE_Adaptor::get_byte_hook(word, AccessType p_at)
             if (stream.fail()) throw Fail("OSSAVE Failed to close file");
             result = 0x60; // RTS
         }
-        catch(Fail e)
+        catch(Fail &e)
         {
             LOG4CXX_ERROR(cpptrace_log(), e.what());
             result = 0x00; // BRK
@@ -151,7 +151,7 @@ int Atom::Tape::OSLOAD_Adaptor::get_byte_hook(word, AccessType p_at)
             stream.close();
             result = 0x60; // RTS
         }
-        catch(Fail e)
+        catch(Fail &e)
         {
             LOG4CXX_ERROR(cpptrace_log(), e.what());
             result = 0x00; // BRK

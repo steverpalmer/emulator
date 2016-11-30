@@ -303,7 +303,7 @@ void Ppia::down(Key p_key)
         Scanpair &sp = key_mapping[p_key];
         m_keyboard.row[sp.first] &= ~sp.second;
     }
-    catch (std::out_of_range e)
+    catch (std::out_of_range &e)
     {
         LOG4CXX_WARN(cpptrace_log(), "[" << id() << "].Ppia::down: Unknown key: " << p_key);
     }
@@ -318,7 +318,7 @@ void Ppia::up(Key p_key)
         Scanpair &sp = key_mapping[p_key];
         m_keyboard.row[sp.first] |= sp.second;
     }
-    catch (std::out_of_range e)
+    catch (std::out_of_range &e)
     {
         LOG4CXX_WARN(cpptrace_log(), "[" << id() << "].Ppia::up: Unknown key: " << p_key);
     }

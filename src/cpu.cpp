@@ -48,6 +48,7 @@ void Cpu::thread_function()
             break;
         default:
             m_steps_to_go -= 1u;
+            // no break on purpose
         case FOREVER:
             m_is_stepping = true;
             m_mutex.unlock();

@@ -69,7 +69,7 @@ void Dispatcher::dispatch(SDL_Event &p_event)
         if (handler)
             handler->handle(p_event);
     }
-    catch (std::out_of_range e)
+    catch (std::out_of_range &e)
     {
         LOG4CXX_INFO(cpptrace_log(), "Dispatcher::dispatch: Unknown event");
     }
