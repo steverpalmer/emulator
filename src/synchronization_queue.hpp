@@ -51,10 +51,11 @@ public:
     typedef T         &reference;
     typedef const T   &const_reference;
 private:
-    std::mutex              m_mutex;
-    std::condition_variable m_queue_not_empty;
-    bool                    m_stop_blocking;
-    T                       m_last;
+    std::mutex                   mutex;
+    std::condition_variable      condition_variable;
+    enum {Blocking, NonBlocking} state;
+    int                          waiting_count;
+    T                            filler;
 protected:
     Container               c;
 private:
@@ -62,7 +63,8 @@ private:
 
 public:
     explicit SynchronizationQueue(int p_delay=100)
-        : m_stop_blocking(false)
+        : state(Blocking)
+        , waiting_count(0)
         , delay(p_delay)
         {
             LOG4CXX_INFO(cpptrace_log(), "SynchronizationQueue::SynchronizationQueue(" << p_delay << ")");
@@ -78,26 +80,26 @@ public:
     void nonblocking_push(const value_type &p_item)
         {
             LOG4CXX_INFO(cpptrace_log(), "SynchronizationQueue::nonblocking_push(" << p_item << ")");
-            std::unique_lock<std::mutex> lock(m_mutex);
+            std::unique_lock<std::mutex> lock(mutex);
             c.push_back(p_item);
             lock.unlock();
-            m_queue_not_empty.notify_one();
+            condition_variable.notify_one();
         }
 
     void nonblocking_push(const value_type&&p_item)
         {
             LOG4CXX_INFO(cpptrace_log(), "SynchronizationQueue::nonblocking_push(" << p_item << ")");
-            std::unique_lock<std::mutex> lock(m_mutex);
+            std::unique_lock<std::mutex> lock(mutex);
             c.push_back(p_item);
             lock.unlock();
-            m_queue_not_empty.notify_one();
+            condition_variable.notify_one();
         }
 
     bool nonblocking_pull(reference p_item)
         {
             LOG4CXX_INFO(cpptrace_log(), "SynchronizationQueue::nonblocking_pull(...)");
             bool result;
-            std::unique_lock<std::mutex> lock(m_mutex);
+            std::unique_lock<std::mutex> lock(mutex);
             if (result = !c.empty)
             {
                 p_item = c.front();
@@ -106,17 +108,28 @@ public:
             return result;
         }
 
+#if 0
     value_type blocking_pull()
         {
             LOG4CXX_INFO(cpptrace_log(), "SynchronizationQueue::blocking_pull()");
             value_type result;
-            std::unique_lock<std::mutex> lock(m_mutex);
-            LOG4CXX_DEBUG(cpptrace_log(), "SynchronizationQueue::blocking_pull() about to block");
-            while (!m_stop_blocking && c.empty())
-                (void) m_queue_not_empty.wait_for(lock, delay);
-            LOG4CXX_DEBUG(cpptrace_log(), "SynchronizationQueue::blocking_pull() unblocked");
-            if (m_stop_blocking)
-                result = m_last;
+            std::unique_lock<std::mutex> lock(mutex);
+            if (state == Blocking && c.empty())
+            {
+                LOG4CXX_DEBUG(cpptrace_log(), "SynchronizationQueue::blocking_pull() blocking");
+                waiting_count += 1;
+                do
+                {
+                    (void) condition_variable.wait_for(lock, delay);
+                }
+                while (state == Blocking && c.empty());
+                waiting_count -= 1;
+                if (state == NonBlocking && waiting_count == 0)
+                    state = Blocking;
+                LOG4CXX_DEBUG(cpptrace_log(), "SynchronizationQueue::blocking_pull() unblocked");
+            }
+            if (c.empty())
+                result = filler;
             else
             {
                 result = c.front();
@@ -125,38 +138,57 @@ public:
             LOG4CXX_INFO(cpptrace_log(), "SynchronizationQueue::blocking_pull() => " << result);
             return result;
         }
+#endif
 
-    void blocking_pull(reference p_item)
+    bool blocking_pull(reference p_item)
         {
             LOG4CXX_INFO(cpptrace_log(), "SynchronizationQueue::blocking_pull(...)");
-            std::unique_lock<std::mutex> lock(m_mutex);
-            while (!m_stop_blocking && c.empty())
-                (void) m_queue_not_empty.wait_for(lock, delay);
-            if (m_stop_blocking)
-                p_item = m_last;
-            else
+            std::unique_lock<std::mutex> lock(mutex);
+            if (state == Blocking && c.empty())
+            {
+                waiting_count += 1;
+                do
+                {
+                    (void) condition_variable.wait_for(lock, delay);
+                }
+                while (state == Blocking && c.empty());
+                waiting_count -= 1;
+                if (state == NonBlocking && waiting_count == 0)
+                    state = Blocking;
+            }
+            bool result;
+            if ((result = !c.empty()))
             {
                 p_item = c.front();
                 c.pop_front();
             }
+            return result;
         }
 
     template<class Rep, class Period>
     bool blocking_pull(reference p_item, std::chrono::duration<Rep, Period>&p_duration)
         {
             LOG4CXX_INFO(cpptrace_log(), "SynchronizationQueue::blocking_pull(..., duration)");
-            std::cv_status wait_rv(std::cv_status::no_timeout);
-            std::unique_lock<std::mutex> lock(m_mutex);
-            while (!m_stop_blocking && wait_rv == std::cv_status::no_timeout && c.empty())
-                wait_rv = m_queue_not_empty.wait_for(lock, p_duration);
+            std::unique_lock<std::mutex> lock(mutex);
+            if (state == Blocking && c.empty())
+            {
+                waiting_count += 1;
+                std::cv_status wait_rv;
+                do
+                {
+                    wait_rv = condition_variable.wait_for(lock, p_duration);
+                }
+                while (state == Blocking && wait_rv == std::cv_status::no_timeout && c.empty());
+                waiting_count -= 1;
+                if (state == NonBlocking && waiting_count == 0)
+                    state = Blocking;
+            }
             bool result;
-            if (result = !c.empty())
+            if ((result = !c.empty()))
             {
                 p_item = c.front();
                 c.pop_front();
             }
-            else
-                p_item = m_last;
             return result;
         }
 
@@ -164,43 +196,55 @@ public:
     bool blocking_pull(reference p_item, std::chrono::time_point<Clock, Duration>& p_timeout_time)
         {
             LOG4CXX_INFO(cpptrace_log(), "SynchronizationQueue::blocking_pull(..., time_out)");
-            std::cv_status wait_rv(std::cv_status::no_timeout);
-            std::unique_lock<std::mutex> lock(m_mutex);
-            while (!m_stop_blocking && wait_rv == std::cv_status::no_timeout && c.empty())
-                wait_rv = m_queue_not_empty.wait_until(lock, p_timeout_time);
+            std::unique_lock<std::mutex> lock(mutex);
+            if (state == Blocking && c.empty())
+            {
+                waiting_count += 1;
+                std::cv_status wait_rv;
+                do
+                {
+                    wait_rv = condition_variable.wait_until(lock, p_timeout_time);
+                }
+                while (state == Blocking && wait_rv == std::cv_status::no_timeout && c.empty());
+                waiting_count -= 1;
+                if (state == NonBlocking && waiting_count == 0)
+                    state = Blocking;
+            }
             bool result;
-            if (result = !c.empty())
+            if ((result = !c.empty()))
             {
                 p_item = c.front();
                 c.pop_front();
             }
-            else
-                p_item = m_last;
             return result;
-        }
-
-    void nonblocking_clear()
-        {
-            LOG4CXX_INFO(cpptrace_log(), "SynchronizationQueue::nonblocking_clear()");
-            std::unique_lock<std::mutex> lock(m_mutex);
-            c.clear();
         }
 
     void unblock()
         {
             LOG4CXX_INFO(cpptrace_log(), "SynchronizationQueue::unblock()");
-            std::unique_lock<std::mutex> lock(m_mutex);
-            m_stop_blocking = true;
-            m_queue_not_empty.notify_all();
+            std::unique_lock<std::mutex> lock(mutex);
+            state = NonBlocking;
+            condition_variable.notify_all();
             LOG4CXX_DEBUG(cpptrace_log(), "SynchronizationQueue::unblock() done");
         }
 
-    void unblock(T p_last)
+    void unblock(T p_filler)
         {
-            LOG4CXX_INFO(cpptrace_log(), "SynchronizationQueue::unblock(" << p_last << ")");
-            m_last = p_last;
-            unblock();
-            LOG4CXX_DEBUG(cpptrace_log(), "SynchronizationQueue::unblock(" << p_last << ") done");
+            LOG4CXX_INFO(cpptrace_log(), "SynchronizationQueue::unblock(" << p_filler << ")");
+            std::unique_lock<std::mutex> lock(mutex);
+            filler = p_filler;
+            state = NonBlocking;
+            condition_variable.notify_all();
+            LOG4CXX_DEBUG(cpptrace_log(), "SynchronizationQueue::unblock(" << p_filler << ") done");
+        }
+
+    void unblocking_clear()
+        {
+            LOG4CXX_INFO(cpptrace_log(), "SynchronizationQueue::nonblocking_clear()");
+            std::unique_lock<std::mutex> lock(mutex);
+            c.clear();
+            state = NonBlocking;
+            condition_variable.notify_all();
         }
 
     virtual ~SynchronizationQueue() = default;

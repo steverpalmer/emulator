@@ -30,8 +30,8 @@ int Atom::Streambuf::OSRDCH_Adaptor::get_byte_hook(word, AccessType p_at)
     int result(-1);
     if (p_at == AT_INSTRUCTION)
     {
-        int_type next_value = streambuf.put_queue.blocking_pull();
-        if (traits_type::not_eof(next_value))
+        int_type next_value;
+        if (streambuf.put_queue.blocking_pull(next_value) && traits_type::not_eof(next_value))
         {
             streambuf.mcs6502->m_register.A = next_value;
             result = 0x60 /* RTS */;
@@ -120,9 +120,13 @@ Atom::Streambuf::int_type Atom::Streambuf::underflow()
     case Nominal:
         buffer[0] = buffer[1];
         LOG4CXX_DEBUG(cpptrace_log(), "Atom::Streambuf::underflow trying to pulled");
-        buffer[1] = get_queue.blocking_pull();
-        LOG4CXX_DEBUG(cpptrace_log(), "Atom::Streambuf::underflow pulled a " << buffer[1]);
-        if (traits_type::not_eof(buffer[1]) && (buffer[1] == '\x0D'  || buffer[1] == '\x0A'))
+        if (!get_queue.blocking_pull(buffer[1]))
+        {
+            buffer[1] = traits_type::eof();
+            current = &buffer[1];
+            break;
+        }
+        else if (traits_type::not_eof(buffer[1]) && (buffer[1] == '\x0D'  || buffer[1] == '\x0A'))
         {
             state = OneBehind;
             // Don't break
@@ -135,9 +139,13 @@ Atom::Streambuf::int_type Atom::Streambuf::underflow()
     case OneBehind:
         buffer[0] = buffer[1];
         LOG4CXX_DEBUG(cpptrace_log(), "Atom::Streambuf::underflow trying to pulled again");
-        buffer[1] = get_queue.blocking_pull();
-        LOG4CXX_DEBUG(cpptrace_log(), "Atom::Streambuf::underflow pulled another " << int(buffer[1]));
-        if (!traits_type::not_eof(buffer[1]))
+        if (!get_queue.blocking_pull(buffer[1]))
+        {
+            buffer[1] = traits_type::eof();
+            current = &buffer[0];
+            state = CatchUp;
+        }
+        else if (!traits_type::not_eof(buffer[1]))
         {
             current = &buffer[0];
             state = CatchUp;

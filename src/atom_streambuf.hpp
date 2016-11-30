@@ -96,9 +96,8 @@ namespace Atom
 
         void reset()
             {
-                OSWRCH->is_paused = true;
-                put_queue.nonblocking_clear();
-                get_queue.nonblocking_clear();
+                put_queue.unblocking_clear();
+                get_queue.unblocking_clear();
             }
         void pause()
             {
