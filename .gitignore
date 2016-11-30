@@ -15,6 +15,8 @@
 /src/html
 /src/emulator_permissive.rng
 /src/emulator_strict.rng
+/src/emulator_permissive.xsd
+/src/emulator_strict.xsd
 /src/*.jing.txt
 output.xml
 log.html

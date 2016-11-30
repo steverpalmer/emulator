@@ -1,7 +1,7 @@
 <?xml version="1.0" ?>
+<emulator xmlns="http://www.srpalmer.me.uk/ns/emulator" version="0.05">
+<!-- emulator version="0.05" -->
 <!-- Copyright 2016 Steve Palmer -->
-<!-- emulator xmlns="http://www.srpalmer.me.uk/ns/emulator" version="0.05" -->
-<emulator version="0.05">
 
   <computer name="minimal_atom">
     <address_space name="address_space">
@@ -38,14 +38,17 @@
     <mcs6502 name="mcs6502"/>
   </computer>
 
-  <terminal name="terminal">
-    <memory name="video"/>
-    <controller name="ppia"/>
-    <scale>2.0</scale>
-    <fontfilename>mc6847.bmp</fontfilename>
-    <!-- refreshrate>10</refreshrate -->
-    <!-- key_copy>F1</key_copy -->
-    <!-- key_reset>F12</key_reset -->
-  </terminal>
+    <monitor name="monitor">
+      <font>
+        <filename>mc6847.bmp</filename>
+      </font>
+      <window_title>Acorn Atom Emulator</window_title>
+      <video_memory>
+        <memory href="video"/>
+      </video_memory>
+      <controller>
+        <memory href="ppia"/>
+      </controller>
+    </monitor>
 
 </emulator>

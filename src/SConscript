@@ -6,7 +6,9 @@ Import('common_env')
 # Ancilliaries
 
 common_env.rnc2rng('emulator_strict')
+#common_env.rnc2xsd('emulator_strict')
 common_env.rnc2rng('emulator_permissive', ['emulator_permissive', 'emulator_strict'])
+#common_env.rnc2xsd('emulator_permissive', ['emulator_permissive', 'emulator_strict'])
 
 # This fails in a non-deterministic way
 # common_env.jing('emulator_strict.jing.txt', r'emulator_strict.rng')
