@@ -26,7 +26,7 @@ public:
         VDG_LAST
     };
 
-    friend std::ostream &::operator<<(std::ostream &p_s, const VDGMode &p_mode)
+    friend std::ostream &operator<<(std::ostream &p_s, const VDGMode &p_mode)
         {
             if (p_mode >= 0 && p_mode < VDG_LAST) {
                 static const char *name[VDG_LAST] = {

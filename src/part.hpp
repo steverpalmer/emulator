@@ -41,7 +41,7 @@ public:
 		virtual const id_type &id() const = 0;
         virtual Part *part_factory() const = 0;
         virtual void serialize(std::ostream &) const;
-		friend std::ostream &::operator<<(std::ostream &p_s, const Configurator &p_cfgr)
+		friend std::ostream &operator<<(std::ostream &p_s, const Configurator &p_cfgr)
             { p_cfgr.serialize(p_s); return p_s; }
 	};
 
@@ -75,7 +75,7 @@ public:
     friend class PartsBin;
 
     virtual void serialize(std::ostream &) const;
-	friend std::ostream &::operator<<(std::ostream &p_s, const Part &p_p)
+	friend std::ostream &operator<<(std::ostream &p_s, const Part &p_p)
         { p_p.serialize(p_s); return p_s; }
 };
 
@@ -95,7 +95,7 @@ public:
         virtual const Part::Configurator *part(int i) const = 0;
 
         virtual void serialize(std::ostream &) const;
-        friend std::ostream &::operator<<(std::ostream &p_s, const Configurator &p_cfgr)
+        friend std::ostream &operator<<(std::ostream &p_s, const Configurator &p_cfgr)
             { p_cfgr.serialize(p_s); return p_s; }
     };
 public: // Types
@@ -259,7 +259,7 @@ public:
             return m_bin.find(key);
         }
     virtual void serialize(std::ostream &) const;
-    friend std::ostream &::operator<<(std::ostream &p_s, const PartsBin &p_pb)
+    friend std::ostream &operator<<(std::ostream &p_s, const PartsBin &p_pb)
         { p_pb.serialize(p_s); return p_s; }
 
 };

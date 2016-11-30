@@ -85,7 +85,7 @@ public:
             { return new MonitorView(*this); }
 
         virtual void serialize(std::ostream &) const;
-        friend std::ostream &::operator<<(std::ostream &p_s, const Configurator &p_cfgr)
+        friend std::ostream &operator<<(std::ostream &p_s, const Configurator &p_cfgr)
             { p_cfgr.serialize(p_s); return p_s; }
     };
 
@@ -117,7 +117,7 @@ private:
     virtual ~MonitorView();
 public:
     virtual void serialize(std::ostream &) const;
-    friend std::ostream &::operator<<(std::ostream &p_s, const MonitorView &p_mv)
+    friend std::ostream &operator<<(std::ostream &p_s, const MonitorView &p_mv)
         { p_mv.serialize(p_s); return p_s; }
 };
 
