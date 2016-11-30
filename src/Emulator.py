@@ -4,6 +4,7 @@
 # from __future__ import absolute_import, division, print_function, unicode_literals
 
 import sys
+import signal
 
 if sys.version_info.major == 2:
     import subprocess32 as subprocess
@@ -91,6 +92,9 @@ class Emulator:
         result = self._cache.get_connection().read_until_prompt(log_level)
         return result
 
+    def reset(self, log_level=None):
+        result = self._cache.get_connection().reset(log_level)
+        return result
 
 class EmulatorConnection:
     """Handles the state associated with a specific emulator run
@@ -194,3 +198,9 @@ class EmulatorConnection:
         self._read_log(result, log_level)
         result = result[:-len(self._prompt)]
         return result
+
+    def reset(self, log_level=None):
+        if self._popen:
+            self._popen.send_signal(signal.SIGUSR1)
+            # self._popen.stdin.write(" ")  # to unblock the processor
+            self._log("Connection Reset", log_level)

@@ -28,9 +28,17 @@ Hello World
       [Documentation]   Check a simple command
       [Tags]            smoke
       Start Emulator
-      Write             P."HELLO WORLD"
-      ${output} =       Read Until Prompt
-      Should Be Equal   ${output}  HELLO WORLD
+      ${result} =       Execute     P."HELLO WORLD"
+      Should Be Equal   ${result}   HELLO WORLD
+      Close Connection
+
+Reset Test
+      [Documentation]   Try reseting the Emulator
+      Start Emulator
+      Execute           P."RUNNING..."
+      Reset
+      ${result} =       Read Until Prompt
+      Should Match      ${result}       *ACORN ATOM*
       Close Connection
 
 *** Keywords ***
@@ -39,3 +47,10 @@ Start Emulator
       Open Connection
       ${bootmessage} =  Read Until Prompt
       Should Match      ${bootmessage}     *ACORN ATOM*
+
+Execute
+      [Arguments]       ${command}
+      [Documentation]   run a command a return the result
+      Write             ${command}
+      ${output} =       Read Until Prompt
+      [Return]          ${output}
