@@ -184,21 +184,27 @@ public:
     
     void reset()
         {
+            LOG4CXX_INFO(cpptrace_log(), "Emulator::reset()");
             if (root)
             {
                 if (root->is_paused())
                 {
+                    LOG4CXX_INFO(cpptrace_log(), "Emulator::reset() when paused");
                     root->reset();
                 }
                 else
                 {
+                    LOG4CXX_INFO(cpptrace_log(), "Emulator::reset() pausing ...");
                     root->pause();
                     if (!root->is_paused())
                         std::this_thread::sleep_for(std::chrono::milliseconds(500));
+                    LOG4CXX_INFO(cpptrace_log(), "Emulator::reset() reseting ...");
                     root->reset();
+                    LOG4CXX_INFO(cpptrace_log(), "Emulator::reset() resuming ...");
                     root->resume();
                 }
             }
+            LOG4CXX_INFO(cpptrace_log(), "Emulator::reset() done");
         }
 
     void pause()
@@ -254,6 +260,7 @@ void configure_logging(const char *command)
 
 void SIGUSR1_handler(int)
 {
+    LOG4CXX_INFO(cpptrace_log(), "SIGUSR1_handler(...)");
     if (emulator)
         emulator->reset();
 }
