@@ -1,19 +1,17 @@
 *** Settings ***
-# Library         OperatingSystem
 Library         Emulator.py
 Test Teardown   Close All Connections
 
+*** Variables ***
+${BOOT MESSAGE}         *ACORN ATOM*
+${TEST MESSAGE}         HELLO WORLD
+
 *** Test Cases ***
-Establish A Connection
-      [Documentation]   Merely makes a connection to an emulator
+Make And Close A Connection
+      [Documentation]   makes and closes a connection to an emulator
       [Tags]            smoke
       Open Connection
       Sleep             2      Settling Time, and time for something to go wrong
-
-Make And Close A Connection
-      [Documentation]    makes and closes a connection to an emulator
-      [Tags]            smoke
-      Open Connection
       Close Connection
 
 Check Boot Up Message
@@ -21,15 +19,15 @@ Check Boot Up Message
       [Tags]            smoke
       Open Connection
       ${output} =       Read Until Prompt
-      Should Match      ${output}   *ACORN ATOM*
+      Should Match      ${output}   ${BOOT MESSAGE}
       Close Connection
 
 Hello World
       [Documentation]   Check a simple command
       [Tags]            smoke
       Start Emulator
-      ${result} =       Execute     P."HELLO WORLD"
-      Should Be Equal   ${result}   HELLO WORLD
+      ${result} =       Execute     P."${TEST MESSAGE}"
+      Should Be Equal   ${result}   ${TEST MESSAGE}
       Close Connection
 
 Reset Test
@@ -38,7 +36,7 @@ Reset Test
       Execute           P."RUNNING..."
       Reset
       ${result} =       Read Until Prompt
-      Should Match      ${result}       *ACORN ATOM*
+      Should Match      ${result}   ${BOOT MESSAGE}
       Close Connection
 
 *** Keywords ***
