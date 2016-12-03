@@ -62,7 +62,6 @@ int Atom::Streambuf::OSWRCH_Adaptor::get_byte_hook(word, AccessType p_at)
     if (p_at == AT_INSTRUCTION /* && !is_paused */)
     {
         const int_type value(traits_type::to_int_type(streambuf.mcs6502->m_register.A));
-        LOG4CXX_DEBUG(cpptrace_log(), "OSWRCH_Adaptor::get_byte_hook pushing an " << value);
         streambuf.get_queue.nonblocking_push(value);
     }
     return -1;
@@ -119,10 +118,9 @@ Atom::Streambuf::int_type Atom::Streambuf::underflow()
     {
     case Nominal:
         buffer[0] = buffer[1];
-        LOG4CXX_DEBUG(cpptrace_log(), "Atom::Streambuf::underflow trying to pulled");
         if (!get_queue.blocking_pull(buffer[1]))
         {
-            buffer[1] = traits_type::eof();
+            buffer[1] = 0;
             current = &buffer[1];
             break;
         }
@@ -139,10 +137,9 @@ Atom::Streambuf::int_type Atom::Streambuf::underflow()
         // no break on purpose
     case OneBehind:
         buffer[0] = buffer[1];
-        LOG4CXX_DEBUG(cpptrace_log(), "Atom::Streambuf::underflow trying to pulled again");
         if (!get_queue.blocking_pull(buffer[1]))
         {
-            buffer[1] = traits_type::eof();
+            buffer[1] = 0;
             current = &buffer[0];
             state = CatchUp;
         }
@@ -179,7 +176,7 @@ Atom::Streambuf::int_type Atom::Streambuf::underflow()
         state = Nominal;
         break;
     }
-    LOG4CXX_INFO(cpptrace_log(), "Atom::Streambuf::underflow() => " << *current);
+    LOG4CXX_DEBUG(cpptrace_log(), "Atom::Streambuf::underflow() => " << *current);
     return *current;
 }
 

@@ -108,38 +108,6 @@ public:
             return result;
         }
 
-#if 0
-    value_type blocking_pull()
-        {
-            LOG4CXX_INFO(cpptrace_log(), "SynchronizationQueue::blocking_pull()");
-            value_type result;
-            std::unique_lock<std::mutex> lock(mutex);
-            if (state == Blocking && c.empty())
-            {
-                LOG4CXX_DEBUG(cpptrace_log(), "SynchronizationQueue::blocking_pull() blocking");
-                waiting_count += 1;
-                do
-                {
-                    (void) condition_variable.wait_for(lock, delay);
-                }
-                while (state == Blocking && c.empty());
-                waiting_count -= 1;
-                if (state == NonBlocking && waiting_count == 0)
-                    state = Blocking;
-                LOG4CXX_DEBUG(cpptrace_log(), "SynchronizationQueue::blocking_pull() unblocked");
-            }
-            if (c.empty())
-                result = filler;
-            else
-            {
-                result = c.front();
-                c.pop_front();
-            }
-            LOG4CXX_INFO(cpptrace_log(), "SynchronizationQueue::blocking_pull() => " << result);
-            return result;
-        }
-#endif
-
     bool blocking_pull(reference p_item)
         {
             LOG4CXX_INFO(cpptrace_log(), "SynchronizationQueue::blocking_pull(...)");
@@ -162,6 +130,7 @@ public:
                 p_item = c.front();
                 c.pop_front();
             }
+            LOG4CXX_DEBUG(cpptrace_log(), "SynchronizationQueue::blocking_pull(...) => " << result);
             return result;
         }
 
@@ -243,8 +212,11 @@ public:
             LOG4CXX_INFO(cpptrace_log(), "SynchronizationQueue::nonblocking_clear()");
             std::unique_lock<std::mutex> lock(mutex);
             c.clear();
-            state = NonBlocking;
-            condition_variable.notify_all();
+            if (waiting_count > 0)
+            {
+            	state = NonBlocking;
+            	condition_variable.notify_all();
+            }
         }
 
     virtual ~SynchronizationQueue() = default;
