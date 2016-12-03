@@ -35,7 +35,14 @@ class Emulator:
     """
     ROBOT_LIBRARY_SCOPE = 'TEST_SUITE'
 
-    def __init__(self, prompt=">", default_log_level='INFO', timeout=1.0):
+    def __init__(self,
+                 executable="./emulator",
+                 config_file="testrc.xml",
+                 prompt=">",
+                 default_log_level='INFO',
+                 timeout=1.0):
+        self._executable = executable
+        self._config_file = config_file
         self._default_prompt = prompt
         self._default_log_level = default_log_level
         self._timeout = timeout
@@ -55,8 +62,15 @@ class Emulator:
             self._cache.get_connection().reset(log_level)
         return result
 
-    def open_connection(self, alias=None, prompt=None, log_level=None, timeout=None):
-        connection = EmulatorConnection(prompt or self._default_prompt,
+    def open_connection(self, alias=None,
+                        executable=None,
+                        config_file=None,
+                        prompt=None,
+                        log_level=None,
+                        timeout=None):
+        connection = EmulatorConnection(executable or self._executable,
+                                        config_file or self._config_file,
+                                        prompt or self._default_prompt,
                                         log_level or self._default_log_level,
                                         timeout or self._timeout)
         result = self._cache.register(connection, alias)
@@ -147,11 +161,11 @@ class EmulatorConnection:
     """Handles the state associated with a specific emulator run
     """
 
-    def __init__(self, prompt, log_level, timeout):
+    def __init__(self, executable, config_file, prompt, log_level, timeout):
         self._prompt = prompt
         self._log_level = log_level
         self._timeout = timeout
-        self._popen = subprocess.Popen(['/home/steve/workspace/emulator/src/emulator'],
+        self._popen = subprocess.Popen([executable,'-f',config_file],
                                        bufsize=0,
                                        stdin=subprocess.PIPE,
                                        stdout=subprocess.PIPE)

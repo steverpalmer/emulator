@@ -1,0 +1,77 @@
+<?xml version="1.0" ?>
+<!-- Copyright 2016 Steve Palmer -->
+<e:emulator xmlns:e="http://www.srpalmer.me.uk/ns/emulator" version="0.05">
+
+  <e:computer name="root">
+    <e:mcs6502 name="mcs6502">
+      <e:address_space>
+        <e:map>
+          <e:base>#0000</e:base>
+          <e:ram name="block0">
+            <e:size>#0400</e:size>
+          </e:ram>
+        </e:map>
+        <e:map>
+          <e:base>#2800</e:base>
+          <e:ram name="lower">
+            <e:size>#1400</e:size>
+          </e:ram>
+        </e:map>
+        <e:map>
+          <e:base>#8000</e:base>
+          <e:ram name="video">
+            <e:size>#1800</e:size>
+          </e:ram>
+        </e:map>
+        <e:map>
+          <e:base>#A000</e:base>
+          <e:rom name="toolkit">
+            <e:filename>toolkit.rom</e:filename>
+          </e:rom>
+        </e:map>
+        <e:map>
+          <e:base>#B000</e:base>
+          <e:ppia name="ppia"/>
+          <e:size>#0400</e:size>
+        </e:map>
+        <e:map>
+          <e:base>#C000</e:base>
+          <e:rom name="interpreter">
+            <e:filename>basic.rom</e:filename>
+          </e:rom>
+        </e:map>
+        <e:map>
+          <e:base>#D000</e:base>
+          <e:rom name="float">
+            <e:filename>float.rom</e:filename>
+          </e:rom>
+        </e:map>
+        <e:map>
+          <e:base>#F000</e:base>
+          <e:rom name="kernel">
+            <e:filename>kernel.rom</e:filename>
+          </e:rom>
+        </e:map>
+      </e:address_space>
+    </e:mcs6502>
+
+    <e:monitor name="monitor">
+      <e:font>
+        <e:filename>mc6847.bmp</e:filename>
+      </e:font>
+      <e:window_title>Test Acorn Atom Emulator</e:window_title>
+      <e:video_memory>
+        <e:memory href="video"/>
+      </e:video_memory>
+      <e:controller>
+        <e:memory href="ppia"/>
+      </e:controller>
+    </e:monitor>
+
+    <e:stream/>
+
+    <!-- e:tape/ -->
+
+  </e:computer>
+
+</e:emulator>
