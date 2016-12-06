@@ -40,6 +40,31 @@ Reset Test
       Then output should match     ${BOOT MESSAGE}
       Close Connection
 
+Programming
+      [Documentation]              Enter and run a program
+      Given emulator started
+      When executing               10 P."HELLO WORLD"
+      and executing                20 E.
+      and executing                RUN
+      Then output should be        HELLO WORLD
+      Close Connection
+
+Syntax Error
+      [Documentation]              Make a syntax error
+      Given emulator started
+      When executing               badcommand
+      Then output should match     *ERROR 94*
+      Close Connection
+
+Save Test
+      [Documentation]              Try and save a file
+      Given emulator started
+      When executing               10 P."HELLO WORLD"
+      and executing                20 E.
+      and executing                SAVE "ROBOT.BAS"      timeout=5
+      Then output should be        ""
+      Close Connection
+
 Load Test
       [Documentation]              Try and load a file
       Given emulator started
