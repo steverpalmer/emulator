@@ -157,7 +157,10 @@ class Emulator:
     
     def emulator_should_be_stopped(self, alias=None, error_message="Emulator is running."):
         LOG.debug("Emulator.emulator_should_be_stopped")
-        asserts.assert_false(self._cache.get_connection(alias).is_running(), error_message)
+        try:
+            asserts.assert_false(self._cache.get_connection(alias).is_running(), error_message)
+        except:
+            pass
     
     def write_bare(self, text, alias=None, log_level=None, timeout=1.0):
         LOG.debug("Emulator.write_bare")

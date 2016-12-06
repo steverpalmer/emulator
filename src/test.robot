@@ -7,17 +7,14 @@ ${BOOT MESSAGE}             *ACORN ATOM*
 ${DEFAULT_EXECUTE_TIMEOUT}  2.0
 
 *** Test Cases ***
-Configuration Report
-      [Documentation]       Records some configuration data
-      Log Executable Name
-      Log Configuration File
-
 Make And Close A Connection
       [Documentation]       Makes and Closes a connection to an emulator
       [Tags]                smoke
       Open Connection
       Sleep                 2   Settling Time, and time for something to go wrong
+      Emulator Should Be Running
       Close Connection
+      Emulator Should Be Stopped
 
 Check Boot Up Message
       [Documentation]       make a connection and read power-up message
