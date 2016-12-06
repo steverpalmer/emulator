@@ -187,6 +187,11 @@ class Emulator:
         result = self._execute(alias, 'read_until_prompt', timeout, log_level)
         return result
 
+    def read_result(self, alias=None):
+        LOG.debug("Emulator.read_result")
+        result = self._cache.get_connection(alias).read_result
+        return result
+
     def reset(self, alias=None, log_level=None, timeout=5.0):
         LOG.debug("Emulator.reset")
         self._execute(alias, 'reset', timeout, log_level)
@@ -206,12 +211,16 @@ class EmulatorConnection:
         self._pid = self._popen.pid
         self._returncode = self._popen.returncode
         asserts.assert_none(self._returncode)
+        self._read_result = ""
 
     @property
     def prompt(self): return self._prompt
     
     @prompt.setter
     def prompt(self, prompt): self._prompt = prompt
+
+    @property
+    def read_result(self): return self._read_result
 
     def _log(self, msg, log_level):
         LOG.debug("EmulatorConnection._log")
@@ -248,6 +257,7 @@ class EmulatorConnection:
 
     def close_connection(self, log_level=None):
         LOG.debug("EmulatorConnection.close_connection")
+        result = ""
         if self._popen:
             self._popen.stdin.close()
             result = self.read(log_level)
@@ -273,6 +283,7 @@ class EmulatorConnection:
         self._write_log(text, log_level)
         if (self._popen):
             self._popen.stdin.write(text)
+        self._read_result = ""
 
     def write(self, text, log_level=None):
         LOG.debug("EmulatorConnection.write")
@@ -284,12 +295,14 @@ class EmulatorConnection:
         LOG.debug("EmulatorConnection.read")
         result = self._popen.stdout.read() if self._popen else ''
         self._read_log(result, log_level)
+        self._read_result = result
         return result
 
     def read_line(self, log_level=None):
         LOG.debug("EmulatorConnection.read_line")
         result = self._popen.stdout.readline() if self._popen else ''
         self._read_log(result, log_level)
+        self._read_result = result
         return result
 
     def _read_until(self, expected):
@@ -312,6 +325,7 @@ class EmulatorConnection:
             result = result[:-len(expected)]
         else:
             asserts.fail("Did not read expected response:%s" % result)
+        self._read_result = result
         return result
 
     def read_until_prompt(self, log_level=None):
@@ -322,6 +336,7 @@ class EmulatorConnection:
             result = result[:-len(self._prompt)]
         else:
             asserts.fail("Did not read prompt:%s" % result)
+        self._read_result = result
         return result
 
     def reset(self, log_level=None):
@@ -330,5 +345,6 @@ class EmulatorConnection:
             self._popen.send_signal(SIGUSR1)
             # self._popen.stdin.write(" ")  # to unblock the processor
             self._log("Connection Reset", log_level)
+        self._read_result = ""
 
 __all__ = ['Emulator']

@@ -4,7 +4,6 @@ Test Teardown               Close All Connections
 
 *** Variables ***
 ${BOOT MESSAGE}             *ACORN ATOM*
-${TEST MESSAGE}             HELLO WORLD
 ${DEFAULT_EXECUTE_TIMEOUT}  2.0
 
 *** Test Cases ***
@@ -29,40 +28,54 @@ Check Boot Up Message
       Close Connection
 
 Hello World
-      [Documentation]       Check a simple command
-      [Tags]                smoke
-      Start Emulator
-      ${result} =           Execute     P."${TEST MESSAGE}"
-      Should Be Equal       ${result}   ${TEST MESSAGE}
+      [Documentation]              Check a simple command
+      [Tags]                       smoke
+      Given emulator started
+      When executing               P."HELLO WORLD"
+      Then output should be        HELLO WORLD
       Close Connection
 
 Reset Test
-      [Documentation]       Try reseting the Emulator
-      Start Emulator
-      Execute               P."RUNNING..."
-      Reset
-      ${result} =           Read Until Prompt
-      Should Match          ${result}   ${BOOT MESSAGE}
+      [Documentation]              Try reseting the Emulator
+      Given emulator started
+      When executing               P."RUNNING..."
+      and emulator is reset
+      Then output should match     ${BOOT MESSAGE}
       Close Connection
 
 Load Test
-      [Documentation]       Try and load a file
-      Start Emulator
-      Execute               LOAD "ATAP4.1.BAS"    timeout=5
-      ${result} =           Execute     RUN
-      Should Be Equal       ${result}   A PROGRAM!
+      [Documentation]              Try and load a file
+      Given emulator started
+      When executing               LOAD "ATAP4.1.BAS"    timeout=5
+      and executing                RUN
+      Then output should be        A PROGRAM!
       Close Connection
 
 *** Keywords ***
-Start Emulator
+emulator started
       [Documentation]       Make the connection and check it is operating
       Open Connection
       ${bootmessage} =      Read Until Prompt
       Should Match          ${bootmessage}     ${BOOT MESSAGE}
 
-Execute
+executing
       [Arguments]           ${command}    ${timeout}=${DEFAULT_EXECUTE_TIMEOUT}
       [Documentation]       run a command a return the result
       Write                 ${command}
-      ${output} =           Read Until Prompt    timeout=${timeout}
-      [Return]              ${output}
+      Read Until Prompt     timeout=${timeout}
+
+emulator is reset
+      [Documentation]       Send reset to emulator and collect the bootmessage
+      Reset
+      Read Until Prompt
+      
+output should be
+      [Arguments]           ${expected}
+      ${actual} =           Read Result
+      Should Be Equal       ${actual}    ${expected}
+      
+output should match
+      [Arguments]           ${expected}
+      ${actual}             Read Result
+      Should Match          ${actual}    ${expected}
+      
