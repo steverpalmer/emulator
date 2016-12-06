@@ -9,6 +9,7 @@
 /src/plot.bmp
 /src/ctrace.log
 /src/ctrace.log.1
+/src/pytrace.log
 /src/emulator
 /src/libparts.a
 /src/**/*.o
