@@ -416,6 +416,9 @@ namespace Xml
             , m_mcs6502(0)
             {
                 LOG4CXX_INFO(cpptrace_log(), "Xml::AtomTapeConfigurator::AtomTapeConfigurator(" << p_node << ")");
+                assert (p_node);
+                try { m_directory = eval_to_string(p_node, "e:directory"); }
+                catch (XpathNotFound &e) {}
                 if (!m_mcs6502)
                     m_mcs6502 = new Device::ReferenceConfigurator("mcs6502");
             }
