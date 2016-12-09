@@ -28,9 +28,25 @@ void MonitorView::WindowHandler::handle(const SDL_Event &p_event)
     LOG4CXX_INFO(cpptrace_log(), "MonitorView::WindowHandler::handle(" << int(p_event.window.event) << ")");
     switch (p_event.window.event)
     {
+    case SDL_WINDOWEVENT_SHOWN:
+    case SDL_WINDOWEVENT_EXPOSED:
+    case SDL_WINDOWEVENT_MOVED:
+    case SDL_WINDOWEVENT_RESIZED:
     case SDL_WINDOWEVENT_SIZE_CHANGED:
+    case SDL_WINDOWEVENT_MAXIMIZED:
+    case SDL_WINDOWEVENT_RESTORED:
+    default:
         state.window_resize();
         break;
+    case SDL_WINDOWEVENT_MINIMIZED:
+    case SDL_WINDOWEVENT_NONE:
+    case SDL_WINDOWEVENT_HIDDEN:
+    case SDL_WINDOWEVENT_ENTER:
+    case SDL_WINDOWEVENT_LEAVE:
+    case SDL_WINDOWEVENT_FOCUS_GAINED:
+    case SDL_WINDOWEVENT_FOCUS_LOST:
+    case SDL_WINDOWEVENT_CLOSE:
+    	break;
     }
 }
 
