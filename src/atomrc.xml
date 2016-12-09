@@ -114,7 +114,9 @@
 
     <e:stream/>
 
-    <!-- e:tape/ -->
+    <e:tape>
+      <e:directory>../Basic</e:directory>
+    </e:tape>
 
   </e:computer>
 
