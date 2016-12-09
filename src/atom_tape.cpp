@@ -141,14 +141,17 @@ int Atom::Tape::OSLOAD_Adaptor::get_byte_hook(word, AccessType p_at)
                 word((reload_address_msb << 8) | reload_address_lsb)
                 );
             LOG4CXX_DEBUG(cpptrace_log(), "Loading to " << Hex(reload_address));
-            for (int i(0); stream.good(); i++)
+            std::ifstream::int_type ch;
+            for (int i(0); ch = stream.get(), stream.good(); i += 1)
             {
-                const auto ch(stream.get());
-                if (std::ifstream::traits_type::not_eof(ch))
-                    tape.address_space->set_byte(reload_address+i, ch);
+                LOG4CXX_DEBUG(cpptrace_log(), "Loaded: " << Hex(byte(ch)));
+                tape.address_space->set_byte(reload_address+i, ch);
             }
             if (!stream.eof()) throw Fail("OSLOAD Failed to read data");
             stream.close();
+            // Although not described in the ATAP
+            // #DD b6 and b7 are cleared on successful load
+            tape.address_space->set_byte(0xDD, tape.address_space->get_byte(0xDD) & 0x3F);
             result = 0x60; // RTS
         }
         catch(Fail &e)
