@@ -23,19 +23,19 @@ Atom::Tape::Filename::Filename(word addr, Memory &memory)
     // No more that 14 characters long
     // terminated by a #0D
     int i(0);
-    enum {More, EndOfFilename, EndOfBuffer} state(More);
+    enum class State {More, EndOfFilename, EndOfBuffer} state(State::More);
     do
     {
         cstr[i] = memory.get_byte(addr+i);
         if (cstr[i] == '\x0D')
-            state = EndOfFilename;
+            state = State::EndOfFilename;
         else if (++i == 14)
-            state = EndOfBuffer;
+            state = State::EndOfBuffer;
     }
-    while (state == More);
+    while (state == State::More);
     switch (state)
     {
-    case EndOfFilename:
+    case State::EndOfFilename:
         cstr[i] = 0;
         // FIXME: filename remapping for the OS
         break;
@@ -70,7 +70,7 @@ int Atom::Tape::OSSAVE_Adaptor::get_byte_hook(word, AccessType p_at)
 {
     LOG4CXX_INFO(cpptrace_log(), "Atom::Tape::OSSAVE_Adaptor::get_byte_hook(...)");
     int result(-1);
-    if (p_at == AT_INSTRUCTION)
+    if (p_at == AccessType::INSTRUCTION)
     {
         try
         {
@@ -117,7 +117,7 @@ int Atom::Tape::OSLOAD_Adaptor::get_byte_hook(word, AccessType p_at)
 {
     LOG4CXX_INFO(cpptrace_log(), "Atom::Tape::OSLOAD_Adaptor::get_byte_hook(...)");
     int result(-1);
-    if (p_at == AT_INSTRUCTION)
+    if (p_at == AccessType::INSTRUCTION)
     {
         try
         {

@@ -56,12 +56,12 @@ MonitorView::SetByteHandler::SetByteHandler(MonitorView &p_monitor_view)
     LOG4CXX_INFO(cpptrace_log(), "MonitorView::SetByteHandler::SetByteHandler(...)");
 }
 
-void MonitorView::SetByteHandler::push(Memory &p_memory, word p_addr, byte p_byte, Memory::AccessType p_at) const
+void MonitorView::SetByteHandler::push(Memory &p_memory, word p_addr, byte p_byte) const
 {
-    LOG4CXX_INFO(cpptrace_log(), "MonitorView::SetByteHandler::push(" << Hex(p_addr) << ", " << Hex(p_byte) << ", ...)");
+    LOG4CXX_INFO(cpptrace_log(), "MonitorView::SetByteHandler::push(" << Hex(p_addr) << ", " << Hex(p_byte) << ")");
     SDL_Event event;
     prepare(event);
-    event.user.code = p_addr | (p_byte << 16) | (p_at << 24);
+    event.user.code = p_addr | (p_byte << 16);
     event.user.data1 = &p_memory;
     Dispatcher::Handler::push(event);
 }
@@ -72,7 +72,6 @@ void MonitorView::SetByteHandler::handle(const SDL_Event &p_event)
     state.set_byte_update( *static_cast<Memory *>(p_event.user.data1)
                          , word(p_event.user.code)
                          , byte(p_event.user.code >> 16)
-                         , Memory::AccessType(p_event.user.code >> 24)
                          );
 }
 
@@ -82,12 +81,12 @@ MonitorView::VdgModeHandler::VdgModeHandler(MonitorView &p_monitor_view)
     LOG4CXX_INFO(cpptrace_log(), "MonitorView::VdgModeHandler::VdgModeHandler(...)");
 }
 
-void MonitorView::VdgModeHandler::push(AtomMonitorInterface &p_monitor, AtomMonitorInterface::VDGMode p_mode) const
+void MonitorView::VdgModeHandler::push(Atom::MonitorInterface &p_monitor, Atom::MonitorInterface::VDGMode p_mode) const
 {
     LOG4CXX_INFO(cpptrace_log(), "MonitorView::VdgModeHandler::push(" << p_mode << ")");
     SDL_Event event;
     prepare(event);
-    event.user.code = p_mode;
+    event.user.code = static_cast<int>(p_mode);
     event.user.data1 = &p_monitor;
     Dispatcher::Handler::push(event);
 }
@@ -95,8 +94,8 @@ void MonitorView::VdgModeHandler::push(AtomMonitorInterface &p_monitor, AtomMoni
 void MonitorView::VdgModeHandler::handle(const SDL_Event &p_event)
 {
     LOG4CXX_INFO(cpptrace_log(), "MonitorView::ModeHandler::handle(" << p_event.user.code << ")");
-    state.vdg_mode_update( *static_cast<AtomMonitorInterface *>(p_event.user.data1)
-                         , AtomMonitorInterface::VDGMode(p_event.user.code)
+    state.vdg_mode_update( *static_cast<Atom::MonitorInterface *>(p_event.user.data1)
+                         , Atom::MonitorInterface::VDGMode(p_event.user.code)
                          );
 }
 
@@ -111,17 +110,17 @@ MonitorView::Observer::Observer(const SetByteHandler &p_set_byte_handler,
 void MonitorView::Observer::set_byte_update( Memory &p_memory
                                            , word p_addr
                                            , byte p_byte
-                                           , Memory::AccessType p_at)
+                                           , Memory::AccessType)
 {
     LOG4CXX_INFO(cpptrace_log(), "MonitorView::Observer::set_byte_update(" << Hex(p_addr) << ", " << Hex(p_byte) << ")");
-    m_set_byte_handler.push(p_memory, p_addr, p_byte, p_at);
+    m_set_byte_handler.push(p_memory, p_addr, p_byte);
 }
 
-void MonitorView::Observer::vdg_mode_update( AtomMonitorInterface & p_atom_monitor
-                                           , AtomMonitorInterface::VDGMode p_mode)
+void MonitorView::Observer::vdg_mode_update( Atom::MonitorInterface & p_monitor
+                                           , Atom::MonitorInterface::VDGMode p_mode)
 {
     LOG4CXX_INFO(cpptrace_log(), "MonitorView::Observer::set_mode_update(" << p_mode << ")");
-    m_vdg_mode_handler.push(p_atom_monitor, p_mode);
+    m_vdg_mode_handler.push(p_monitor, p_mode);
 }
 
 
@@ -265,7 +264,7 @@ MonitorView::MonitorView(const Configurator &p_cfgr)
     LOG4CXX_INFO(Part::log(), "making [" << m_mode0->id() << "] child of [" << id() << "]");
 
     m_memory->attach(m_observer);
-    m_ppia->AtomMonitorInterface::attach(m_observer);
+    m_ppia->Atom::MonitorInterface::attach(m_observer);
 }
 
 MonitorView::~MonitorView()
@@ -297,7 +296,7 @@ void MonitorView::window_resize()
         m_mode->render();
 }
 
-void MonitorView::set_byte_update(Memory &, word p_addr, byte p_byte, Memory::AccessType)
+void MonitorView::set_byte_update(Memory &, word p_addr, byte p_byte)
 {
     LOG4CXX_INFO(cpptrace_log(), "MonitorView::set_byte_update(" << Hex(p_addr) << ", " << Hex(p_byte) << ")");
     if (m_mode)
@@ -305,12 +304,12 @@ void MonitorView::set_byte_update(Memory &, word p_addr, byte p_byte, Memory::Ac
             m_mode->set_byte_update(p_addr, p_byte);
 }
 
-void MonitorView::vdg_mode_update(AtomMonitorInterface &, AtomMonitorInterface::VDGMode p_mode)
+void MonitorView::vdg_mode_update(Atom::MonitorInterface &, Atom::MonitorInterface::VDGMode p_mode)
 {
     LOG4CXX_INFO(cpptrace_log(), "MonitorView::vdg_mode_update(" << p_mode << ")");
     switch (p_mode)
     {
-    case AtomMonitorInterface::VDG_MODE0:
+    case Atom::MonitorInterface::VDGMode::MODE0:
         m_mode = m_mode0;
         break;
     default:

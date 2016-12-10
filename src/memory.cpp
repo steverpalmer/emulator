@@ -420,17 +420,24 @@ void Memory::serialize(std::ostream &p_s) const
 
 std::ostream &operator<<(std::ostream &p_s, const Memory::AccessType p_at)
 {
-    if (p_at >= 0 && p_at < Memory::AT_LAST) {
-        static const char *name[Memory::AT_LAST] = {
-            "unknown",
-            "instruction",
-            "operand",
-            "data"
-        };
-        p_s << name[p_at];
-    }
-    else
-        p_s << int(p_at);
+	switch (p_at)
+	{
+	case Memory::AccessType::UNKNOWN:
+		p_s << "unknown";
+		break;
+	case Memory::AccessType::INSTRUCTION:
+		p_s << "instruction";
+		break;
+	case Memory::AccessType::OPERAND:
+		p_s << "operand";
+		break;
+	case Memory::AccessType::DATA:
+		p_s << "data";
+		break;
+	default:
+		p_s << "error";
+		break;
+	}
     return p_s;
 }
 

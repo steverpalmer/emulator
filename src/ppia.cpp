@@ -66,70 +66,70 @@ Ppia::Ppia(const Configurator &p_cfgr)
 {
     LOG4CXX_INFO(cpptrace_log(), "Ppia::Ppia(" << p_cfgr << ")");
 
-    key_mapping[AtomKeyboardInterface::SPACE              ] = Scanpair(9, 1<<0);
-    key_mapping[AtomKeyboardInterface::LEFTBRACKET        ] = Scanpair(8, 1<<0);
-    key_mapping[AtomKeyboardInterface::BACKSLASH          ] = Scanpair(7, 1<<0);
-    key_mapping[AtomKeyboardInterface::RIGHTBRACKET       ] = Scanpair(6, 1<<0);
-    key_mapping[AtomKeyboardInterface::CIRCUMFLEX         ] = Scanpair(5, 1<<0);
-    key_mapping[AtomKeyboardInterface::LOCK               ] = Scanpair(4, 1<<0);
-    key_mapping[AtomKeyboardInterface::LEFT_RIGHT         ] = Scanpair(3, 1<<0);
-    key_mapping[AtomKeyboardInterface::UP_DOWN            ] = Scanpair(2, 1<<0);
-    key_mapping[AtomKeyboardInterface::SPARE1             ] = Scanpair(1, 1<<0);
-    key_mapping[AtomKeyboardInterface::SPARE2             ] = Scanpair(0, 1<<0);
-    key_mapping[AtomKeyboardInterface::SPARE3             ] = Scanpair(9, 1<<1);
-    key_mapping[AtomKeyboardInterface::SPARE4             ] = Scanpair(8, 1<<1);
-    key_mapping[AtomKeyboardInterface::SPARE5             ] = Scanpair(7, 1<<1);
-    key_mapping[AtomKeyboardInterface::RETURN             ] = Scanpair(6, 1<<1);
-    key_mapping[AtomKeyboardInterface::COPY               ] = Scanpair(5, 1<<1);
-    key_mapping[AtomKeyboardInterface::DELETE             ] = Scanpair(4, 1<<1);
-    key_mapping[AtomKeyboardInterface::_0                 ] = Scanpair(3, 1<<1);
-    key_mapping[AtomKeyboardInterface::_1_EXCLAMATION     ] = Scanpair(2, 1<<1);
-    key_mapping[AtomKeyboardInterface::_2_DOUBLEQUOTE     ] = Scanpair(1, 1<<1);
-    key_mapping[AtomKeyboardInterface::_3_NUMBER          ] = Scanpair(0, 1<<1);
-    key_mapping[AtomKeyboardInterface::_4_DOLLAR          ] = Scanpair(9, 1<<2);
-    key_mapping[AtomKeyboardInterface::_5_PERCENT         ] = Scanpair(8, 1<<2);
-    key_mapping[AtomKeyboardInterface::_6_AMPERSAND       ] = Scanpair(7, 1<<2);
-    key_mapping[AtomKeyboardInterface::_7_SINGLEQUOTE     ] = Scanpair(6, 1<<2);
-    key_mapping[AtomKeyboardInterface::_8_LEFTPARENTHESIS ] = Scanpair(5, 1<<2);
-    key_mapping[AtomKeyboardInterface::_9_RIGHTPARENTHESIS] = Scanpair(4, 1<<2);
-    key_mapping[AtomKeyboardInterface::COLON_ASTERISK     ] = Scanpair(3, 1<<2);
-    key_mapping[AtomKeyboardInterface::SEMICOLON_PLUS     ] = Scanpair(2, 1<<2);
-    key_mapping[AtomKeyboardInterface::COMMA_LESSTHAN     ] = Scanpair(1, 1<<2);
-    key_mapping[AtomKeyboardInterface::MINUS_EQUALS       ] = Scanpair(0, 1<<2);
-    key_mapping[AtomKeyboardInterface::PERIOD_GREATERTHAN ] = Scanpair(9, 1<<3);
-    key_mapping[AtomKeyboardInterface::SLASH_QUESTION     ] = Scanpair(8, 1<<3);
-    key_mapping[AtomKeyboardInterface::AT                 ] = Scanpair(7, 1<<3);
-    key_mapping[AtomKeyboardInterface::A                  ] = Scanpair(6, 1<<3);
-    key_mapping[AtomKeyboardInterface::B                  ] = Scanpair(5, 1<<3);
-    key_mapping[AtomKeyboardInterface::C                  ] = Scanpair(4, 1<<3);
-    key_mapping[AtomKeyboardInterface::D                  ] = Scanpair(3, 1<<3);
-    key_mapping[AtomKeyboardInterface::E                  ] = Scanpair(2, 1<<3);
-    key_mapping[AtomKeyboardInterface::F                  ] = Scanpair(1, 1<<3);
-    key_mapping[AtomKeyboardInterface::G                  ] = Scanpair(0, 1<<3);
-    key_mapping[AtomKeyboardInterface::H                  ] = Scanpair(9, 1<<4);
-    key_mapping[AtomKeyboardInterface::I                  ] = Scanpair(8, 1<<4);
-    key_mapping[AtomKeyboardInterface::J                  ] = Scanpair(7, 1<<4);
-    key_mapping[AtomKeyboardInterface::K                  ] = Scanpair(6, 1<<4);
-    key_mapping[AtomKeyboardInterface::L                  ] = Scanpair(5, 1<<4);
-    key_mapping[AtomKeyboardInterface::M                  ] = Scanpair(4, 1<<4);
-    key_mapping[AtomKeyboardInterface::N                  ] = Scanpair(3, 1<<4);
-    key_mapping[AtomKeyboardInterface::O                  ] = Scanpair(2, 1<<4);
-    key_mapping[AtomKeyboardInterface::P                  ] = Scanpair(1, 1<<4);
-    key_mapping[AtomKeyboardInterface::Q                  ] = Scanpair(0, 1<<4);
-    key_mapping[AtomKeyboardInterface::R                  ] = Scanpair(9, 1<<5);
-    key_mapping[AtomKeyboardInterface::S                  ] = Scanpair(8, 1<<5);
-    key_mapping[AtomKeyboardInterface::T                  ] = Scanpair(7, 1<<5);
-    key_mapping[AtomKeyboardInterface::U                  ] = Scanpair(6, 1<<5);
-    key_mapping[AtomKeyboardInterface::V                  ] = Scanpair(5, 1<<5);
-    key_mapping[AtomKeyboardInterface::W                  ] = Scanpair(4, 1<<5);
-    key_mapping[AtomKeyboardInterface::X                  ] = Scanpair(3, 1<<5);
-    key_mapping[AtomKeyboardInterface::Y                  ] = Scanpair(2, 1<<5);
-    key_mapping[AtomKeyboardInterface::Z                  ] = Scanpair(1, 1<<5);
-    key_mapping[AtomKeyboardInterface::ESCAPE             ] = Scanpair(0, 1<<5);
+    key_mapping[Atom::KeyboardInterface::Key::SPACE              ] = Scanpair(9, 1<<0);
+    key_mapping[Atom::KeyboardInterface::Key::LEFTBRACKET        ] = Scanpair(8, 1<<0);
+    key_mapping[Atom::KeyboardInterface::Key::BACKSLASH          ] = Scanpair(7, 1<<0);
+    key_mapping[Atom::KeyboardInterface::Key::RIGHTBRACKET       ] = Scanpair(6, 1<<0);
+    key_mapping[Atom::KeyboardInterface::Key::CIRCUMFLEX         ] = Scanpair(5, 1<<0);
+    key_mapping[Atom::KeyboardInterface::Key::LOCK               ] = Scanpair(4, 1<<0);
+    key_mapping[Atom::KeyboardInterface::Key::LEFT_RIGHT         ] = Scanpair(3, 1<<0);
+    key_mapping[Atom::KeyboardInterface::Key::UP_DOWN            ] = Scanpair(2, 1<<0);
+    key_mapping[Atom::KeyboardInterface::Key::SPARE1             ] = Scanpair(1, 1<<0);
+    key_mapping[Atom::KeyboardInterface::Key::SPARE2             ] = Scanpair(0, 1<<0);
+    key_mapping[Atom::KeyboardInterface::Key::SPARE3             ] = Scanpair(9, 1<<1);
+    key_mapping[Atom::KeyboardInterface::Key::SPARE4             ] = Scanpair(8, 1<<1);
+    key_mapping[Atom::KeyboardInterface::Key::SPARE5             ] = Scanpair(7, 1<<1);
+    key_mapping[Atom::KeyboardInterface::Key::RETURN             ] = Scanpair(6, 1<<1);
+    key_mapping[Atom::KeyboardInterface::Key::COPY               ] = Scanpair(5, 1<<1);
+    key_mapping[Atom::KeyboardInterface::Key::DELETE             ] = Scanpair(4, 1<<1);
+    key_mapping[Atom::KeyboardInterface::Key::_0                 ] = Scanpair(3, 1<<1);
+    key_mapping[Atom::KeyboardInterface::Key::_1_EXCLAMATION     ] = Scanpair(2, 1<<1);
+    key_mapping[Atom::KeyboardInterface::Key::_2_DOUBLEQUOTE     ] = Scanpair(1, 1<<1);
+    key_mapping[Atom::KeyboardInterface::Key::_3_NUMBER          ] = Scanpair(0, 1<<1);
+    key_mapping[Atom::KeyboardInterface::Key::_4_DOLLAR          ] = Scanpair(9, 1<<2);
+    key_mapping[Atom::KeyboardInterface::Key::_5_PERCENT         ] = Scanpair(8, 1<<2);
+    key_mapping[Atom::KeyboardInterface::Key::_6_AMPERSAND       ] = Scanpair(7, 1<<2);
+    key_mapping[Atom::KeyboardInterface::Key::_7_SINGLEQUOTE     ] = Scanpair(6, 1<<2);
+    key_mapping[Atom::KeyboardInterface::Key::_8_LEFTPARENTHESIS ] = Scanpair(5, 1<<2);
+    key_mapping[Atom::KeyboardInterface::Key::_9_RIGHTPARENTHESIS] = Scanpair(4, 1<<2);
+    key_mapping[Atom::KeyboardInterface::Key::COLON_ASTERISK     ] = Scanpair(3, 1<<2);
+    key_mapping[Atom::KeyboardInterface::Key::SEMICOLON_PLUS     ] = Scanpair(2, 1<<2);
+    key_mapping[Atom::KeyboardInterface::Key::COMMA_LESSTHAN     ] = Scanpair(1, 1<<2);
+    key_mapping[Atom::KeyboardInterface::Key::MINUS_EQUALS       ] = Scanpair(0, 1<<2);
+    key_mapping[Atom::KeyboardInterface::Key::PERIOD_GREATERTHAN ] = Scanpair(9, 1<<3);
+    key_mapping[Atom::KeyboardInterface::Key::SLASH_QUESTION     ] = Scanpair(8, 1<<3);
+    key_mapping[Atom::KeyboardInterface::Key::AT                 ] = Scanpair(7, 1<<3);
+    key_mapping[Atom::KeyboardInterface::Key::A                  ] = Scanpair(6, 1<<3);
+    key_mapping[Atom::KeyboardInterface::Key::B                  ] = Scanpair(5, 1<<3);
+    key_mapping[Atom::KeyboardInterface::Key::C                  ] = Scanpair(4, 1<<3);
+    key_mapping[Atom::KeyboardInterface::Key::D                  ] = Scanpair(3, 1<<3);
+    key_mapping[Atom::KeyboardInterface::Key::E                  ] = Scanpair(2, 1<<3);
+    key_mapping[Atom::KeyboardInterface::Key::F                  ] = Scanpair(1, 1<<3);
+    key_mapping[Atom::KeyboardInterface::Key::G                  ] = Scanpair(0, 1<<3);
+    key_mapping[Atom::KeyboardInterface::Key::H                  ] = Scanpair(9, 1<<4);
+    key_mapping[Atom::KeyboardInterface::Key::I                  ] = Scanpair(8, 1<<4);
+    key_mapping[Atom::KeyboardInterface::Key::J                  ] = Scanpair(7, 1<<4);
+    key_mapping[Atom::KeyboardInterface::Key::K                  ] = Scanpair(6, 1<<4);
+    key_mapping[Atom::KeyboardInterface::Key::L                  ] = Scanpair(5, 1<<4);
+    key_mapping[Atom::KeyboardInterface::Key::M                  ] = Scanpair(4, 1<<4);
+    key_mapping[Atom::KeyboardInterface::Key::N                  ] = Scanpair(3, 1<<4);
+    key_mapping[Atom::KeyboardInterface::Key::O                  ] = Scanpair(2, 1<<4);
+    key_mapping[Atom::KeyboardInterface::Key::P                  ] = Scanpair(1, 1<<4);
+    key_mapping[Atom::KeyboardInterface::Key::Q                  ] = Scanpair(0, 1<<4);
+    key_mapping[Atom::KeyboardInterface::Key::R                  ] = Scanpair(9, 1<<5);
+    key_mapping[Atom::KeyboardInterface::Key::S                  ] = Scanpair(8, 1<<5);
+    key_mapping[Atom::KeyboardInterface::Key::T                  ] = Scanpair(7, 1<<5);
+    key_mapping[Atom::KeyboardInterface::Key::U                  ] = Scanpair(6, 1<<5);
+    key_mapping[Atom::KeyboardInterface::Key::V                  ] = Scanpair(5, 1<<5);
+    key_mapping[Atom::KeyboardInterface::Key::W                  ] = Scanpair(4, 1<<5);
+    key_mapping[Atom::KeyboardInterface::Key::X                  ] = Scanpair(3, 1<<5);
+    key_mapping[Atom::KeyboardInterface::Key::Y                  ] = Scanpair(2, 1<<5);
+    key_mapping[Atom::KeyboardInterface::Key::Z                  ] = Scanpair(1, 1<<5);
+    key_mapping[Atom::KeyboardInterface::Key::ESCAPE             ] = Scanpair(0, 1<<5);
 
-    key_mapping[AtomKeyboardInterface::CTRL               ] = Scanpair(10, 1<<6);
-    key_mapping[AtomKeyboardInterface::SHIFT              ] = Scanpair(10, 1<<7);
-    key_mapping[AtomKeyboardInterface::REPT               ] = Scanpair(11, 1<<6);
+    key_mapping[Atom::KeyboardInterface::Key::CTRL               ] = Scanpair(10, 1<<6);
+    key_mapping[Atom::KeyboardInterface::Key::SHIFT              ] = Scanpair(10, 1<<7);
+    key_mapping[Atom::KeyboardInterface::Key::REPT               ] = Scanpair(11, 1<<6);
 
     reset();
 }
@@ -201,22 +201,22 @@ void Ppia::set_PortA(byte p_byte)
     LOG4CXX_INFO(cpptrace_log(), "[" << id() << "].Ppia::set_PortA(" << Hex(p_byte) << ")");
     static const VDGMode mode_mapping[16] =
         {
-            VDG_MODE0,  // 0x0
-            VDG_MODE1A, // 0x1
-            VDG_MODE0,  // 0x2
-            VDG_MODE1,  // 0x3
-            VDG_MODE0,  // 0x4
-            VDG_MODE2A, // 0x5
-            VDG_MODE0,  // 0x6
-            VDG_MODE2,  // 0x7
-            VDG_MODE0,  // 0x8
-            VDG_MODE3A, // 0x9
-            VDG_MODE0,  // 0xA
-            VDG_MODE3,  // 0xB
-            VDG_MODE0,  // 0xC
-            VDG_MODE4A, // 0xD
-            VDG_MODE0,  // 0xE
-            VDG_MODE4,  // 0xF
+            VDGMode::MODE0,  // 0x0
+			VDGMode::MODE1A, // 0x1
+			VDGMode::MODE0,  // 0x2
+			VDGMode::MODE1,  // 0x3
+			VDGMode::MODE0,  // 0x4
+			VDGMode::MODE2A, // 0x5
+			VDGMode::MODE0,  // 0x6
+			VDGMode::MODE2,  // 0x7
+			VDGMode::MODE0,  // 0x8
+			VDGMode::MODE3A, // 0x9
+			VDGMode::MODE0,  // 0xA
+			VDGMode::MODE3,  // 0xB
+			VDGMode::MODE0,  // 0xC
+			VDGMode::MODE4A, // 0xD
+			VDGMode::MODE0,  // 0xE
+			VDGMode::MODE4,  // 0xF
         };
     const VDGMode new_mode(mode_mapping[p_byte >> 4 & 0x0F]);
     bool need_to_notify;
@@ -272,7 +272,7 @@ void Ppia::reset()
     }
     {
         std::lock_guard<std::recursive_mutex> lock(m_monitor.mutex);
-        m_monitor.vdg_mode = VDG_LAST; // force a notification
+        m_monitor.vdg_mode = VDGMode::UNKNOWN; // force a notification
     }
 
     // reset "Control" port first
@@ -286,7 +286,7 @@ void Ppia::reset()
     set_PortA(m_register[PortA]);
 }
 
-AtomMonitorInterface::VDGMode Ppia::vdg_mode() const
+Atom::MonitorInterface::VDGMode Ppia::vdg_mode() const
 {
     LOG4CXX_INFO(cpptrace_log(), "[" << id() << "].Ppia::vdg_mode()");
     std::lock_guard<std::recursive_mutex> lock(m_monitor.mutex);
@@ -296,7 +296,7 @@ AtomMonitorInterface::VDGMode Ppia::vdg_mode() const
 
 void Ppia::down(Key p_key)
 {
-    LOG4CXX_INFO(cpptrace_log(), "[" << id() << "].Ppia::down(" << p_key << ")");
+    LOG4CXX_INFO(cpptrace_log(), "[" << id() << "].Ppia::down(...)");
     std::lock_guard<std::recursive_mutex> lock(m_keyboard.mutex);
     try
     {
@@ -305,13 +305,13 @@ void Ppia::down(Key p_key)
     }
     catch (std::out_of_range &e)
     {
-        LOG4CXX_WARN(cpptrace_log(), "[" << id() << "].Ppia::down: Unknown key: " << p_key);
+        LOG4CXX_WARN(cpptrace_log(), "[" << id() << "].Ppia::down: Unknown key");
     }
 }
 
 void Ppia::up(Key p_key)
 {
-    LOG4CXX_INFO(cpptrace_log(), "[" << id() << "].Ppia::up(" << p_key << ")");
+    LOG4CXX_INFO(cpptrace_log(), "[" << id() << "].Ppia::up(...)");
     std::lock_guard<std::recursive_mutex> lock(m_keyboard.mutex);
     try
     {
@@ -320,7 +320,7 @@ void Ppia::up(Key p_key)
     }
     catch (std::out_of_range &e)
     {
-        LOG4CXX_WARN(cpptrace_log(), "[" << id() << "].Ppia::up: Unknown key: " << p_key);
+        LOG4CXX_WARN(cpptrace_log(), "[" << id() << "].Ppia::up: Unknown key");
     }
 }
 

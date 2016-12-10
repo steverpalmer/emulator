@@ -51,19 +51,18 @@ public:
     typedef T         &reference;
     typedef const T   &const_reference;
 private:
-    std::mutex                   mutex;
-    std::condition_variable      condition_variable;
-    enum {Blocking, NonBlocking} state;
-    int                          waiting_count;
-    T                            filler;
+    std::mutex                               mutex;
+    std::condition_variable                  condition_variable;
+    enum class State {Blocking, NonBlocking} state;
+    int                                      waiting_count;
 protected:
-    Container               c;
+    Container                                c;
 private:
     const std::chrono::duration<int,std::milli> delay;
 
 public:
     explicit SynchronizationQueue(int p_delay=100)
-        : state(Blocking)
+        : state(State::Blocking)
         , waiting_count(0)
         , delay(p_delay)
         {
@@ -112,17 +111,17 @@ public:
         {
             LOG4CXX_INFO(cpptrace_log(), "SynchronizationQueue::blocking_pull(...)");
             std::unique_lock<std::mutex> lock(mutex);
-            if (state == Blocking && c.empty())
+            if (state == State::Blocking && c.empty())
             {
                 waiting_count += 1;
                 do
                 {
                     (void) condition_variable.wait_for(lock, delay);
                 }
-                while (state == Blocking && c.empty());
+                while (state == State::Blocking && c.empty());
                 waiting_count -= 1;
-                if (state == NonBlocking && waiting_count == 0)
-                    state = Blocking;
+                if (state == State::NonBlocking && waiting_count == 0)
+                    state = State::Blocking;
             }
             bool result;
             if ((result = !c.empty()))
@@ -139,7 +138,7 @@ public:
         {
             LOG4CXX_INFO(cpptrace_log(), "SynchronizationQueue::blocking_pull(..., duration)");
             std::unique_lock<std::mutex> lock(mutex);
-            if (state == Blocking && c.empty())
+            if (state == State::Blocking && c.empty())
             {
                 waiting_count += 1;
                 std::cv_status wait_rv;
@@ -147,10 +146,10 @@ public:
                 {
                     wait_rv = condition_variable.wait_for(lock, p_duration);
                 }
-                while (state == Blocking && wait_rv == std::cv_status::no_timeout && c.empty());
+                while (state == State::Blocking && wait_rv == std::cv_status::no_timeout && c.empty());
                 waiting_count -= 1;
-                if (state == NonBlocking && waiting_count == 0)
-                    state = Blocking;
+                if (state == State::NonBlocking && waiting_count == 0)
+                    state = State::Blocking;
             }
             bool result;
             if ((result = !c.empty()))
@@ -166,7 +165,7 @@ public:
         {
             LOG4CXX_INFO(cpptrace_log(), "SynchronizationQueue::blocking_pull(..., time_out)");
             std::unique_lock<std::mutex> lock(mutex);
-            if (state == Blocking && c.empty())
+            if (state == State::Blocking && c.empty())
             {
                 waiting_count += 1;
                 std::cv_status wait_rv;
@@ -174,10 +173,10 @@ public:
                 {
                     wait_rv = condition_variable.wait_until(lock, p_timeout_time);
                 }
-                while (state == Blocking && wait_rv == std::cv_status::no_timeout && c.empty());
+                while (state == State::Blocking && wait_rv == std::cv_status::no_timeout && c.empty());
                 waiting_count -= 1;
-                if (state == NonBlocking && waiting_count == 0)
-                    state = Blocking;
+                if (state == State::NonBlocking && waiting_count == 0)
+                    state = State::Blocking;
             }
             bool result;
             if ((result = !c.empty()))
@@ -192,7 +191,7 @@ public:
         {
             LOG4CXX_INFO(cpptrace_log(), "SynchronizationQueue::unblock()");
             std::unique_lock<std::mutex> lock(mutex);
-            state = NonBlocking;
+            state = State::NonBlocking;
             condition_variable.notify_all();
             LOG4CXX_DEBUG(cpptrace_log(), "SynchronizationQueue::unblock() done");
         }
@@ -201,8 +200,7 @@ public:
         {
             LOG4CXX_INFO(cpptrace_log(), "SynchronizationQueue::unblock(" << p_filler << ")");
             std::unique_lock<std::mutex> lock(mutex);
-            filler = p_filler;
-            state = NonBlocking;
+            state = State::NonBlocking;
             condition_variable.notify_all();
             LOG4CXX_DEBUG(cpptrace_log(), "SynchronizationQueue::unblock(" << p_filler << ") done");
         }
@@ -214,7 +212,7 @@ public:
             c.clear();
             if (waiting_count > 0)
             {
-            	state = NonBlocking;
+            	state = State::NonBlocking;
             	condition_variable.notify_all();
             }
         }

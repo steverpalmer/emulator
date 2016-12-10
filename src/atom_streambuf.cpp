@@ -28,7 +28,7 @@ int Atom::Streambuf::OSRDCH_Adaptor::get_byte_hook(word, AccessType p_at)
 {
     LOG4CXX_INFO(cpptrace_log(), "Atom::Streambuf::OSRDCH_Adaptor::get_byte_hook(..., " << p_at << ")");
     int result(-1);
-    if (p_at == AT_INSTRUCTION)
+    if (p_at == AccessType::INSTRUCTION)
     {
         int_type next_value;
         if (streambuf.put_queue.blocking_pull(next_value) && traits_type::not_eof(next_value))
@@ -59,7 +59,7 @@ void Atom::Streambuf::OSWRCH_Adaptor::attach()
 int Atom::Streambuf::OSWRCH_Adaptor::get_byte_hook(word, AccessType p_at)
 {
     LOG4CXX_INFO(cpptrace_log(), "Atom::Streambuf::OSWRCH_Adaptor::get_byte_hook(..., " << p_at << ")");
-    if (p_at == AT_INSTRUCTION /* && !is_paused */)
+    if (p_at == AccessType::INSTRUCTION /* && !is_paused */)
     {
         const int_type value(traits_type::to_int_type(streambuf.mcs6502->m_register.A));
         streambuf.get_queue.nonblocking_push(value);
@@ -109,14 +109,14 @@ Atom::Streambuf::int_type Atom::Streambuf::overflow(int_type p_ch)
 Atom::Streambuf::int_type Atom::Streambuf::underflow()
 {
     LOG4CXX_INFO(cpptrace_log(), "Atom::Streambuf::underflow()");
-    static enum { Nominal, OneBehind, CatchUp}  state = Nominal;
+    static enum class State { Nominal, OneBehind, CatchUp} state(State::Nominal);
     static int_type         buffer[2];
     static std::mutex       mutex;
     std::lock_guard<std::mutex> lock(mutex);  // one at a time...
     int_type *current;
     switch (state)
     {
-    case Nominal:
+    case State::Nominal:
         buffer[0] = buffer[1];
         if (!get_queue.blocking_pull(buffer[1]))
         {
@@ -126,7 +126,7 @@ Atom::Streambuf::int_type Atom::Streambuf::underflow()
         }
         else if (traits_type::not_eof(buffer[1]) && (buffer[1] == '\x0D'  || buffer[1] == '\x0A'))
         {
-            state = OneBehind;
+            state = State::OneBehind;
             // Don't break
         }
         else
@@ -135,30 +135,30 @@ Atom::Streambuf::int_type Atom::Streambuf::underflow()
             break;
         }
         // no break on purpose
-    case OneBehind:
+    case State::OneBehind:
         buffer[0] = buffer[1];
         if (!get_queue.blocking_pull(buffer[1]))
         {
             buffer[1] = 0;
             current = &buffer[0];
-            state = CatchUp;
+            state = State::CatchUp;
         }
         else if (!traits_type::not_eof(buffer[1]))
         {
             current = &buffer[0];
-            state = CatchUp;
+            state = State::CatchUp;
         }
         else if (buffer[0] == '\x0D' && buffer[1] == '\x0A')
         {
             buffer[1] = '\n';
             current = &buffer[1];
-            state = Nominal;
+            state = State::Nominal;
         }
         else if (buffer[0] == '\x0A' && buffer[1] == '\x0D')
         {
             buffer[1] = '\n';
             current = &buffer[1];
-            state = Nominal;
+            state = State::Nominal;
         }
         else if (buffer[1] == '\x0D' || buffer[1] == '\x0A')
         {
@@ -168,12 +168,12 @@ Atom::Streambuf::int_type Atom::Streambuf::underflow()
         else
         {
             current = &buffer[0];
-            state = CatchUp;
+            state = State::CatchUp;
         }
         break;
-    case CatchUp:
+    case State::CatchUp:
         current = &buffer[1];
-        state = Nominal;
+        state = State::Nominal;
         break;
     }
     assert (current);

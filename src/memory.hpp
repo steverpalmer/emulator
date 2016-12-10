@@ -34,7 +34,7 @@ class Memory
 {
     // Types
 public:
-    enum AccessType {AT_UNKNOWN, AT_INSTRUCTION, AT_OPERAND, AT_DATA, AT_LAST};
+    enum class AccessType {UNKNOWN, INSTRUCTION, OPERAND, DATA};
     friend std::ostream &::operator<<(std::ostream &, const AccessType);
 
     /// The Device Observer is an interface to allow
@@ -92,17 +92,17 @@ protected:
     Memory();
     virtual ~Memory();
 private:
-    virtual void unobserved_set_byte(word p_addr, byte p_byte, AccessType p_at = AT_UNKNOWN) = 0;
+    virtual void unobserved_set_byte(word p_addr, byte p_byte, AccessType p_at = AccessType::UNKNOWN) = 0;
 public:
     virtual word size() const = 0;
 
     void attach(Observer &);
     void detach(Observer &);
 
-    virtual byte get_byte(word p_addr, AccessType p_at = AT_UNKNOWN) = 0;
-    void set_byte(word p_addr, byte p_byte, AccessType p_at = AT_UNKNOWN);
-    word get_word(word p_addr, AccessType p_at = AT_UNKNOWN);
-    void set_word(word p_addr, word p_word, AccessType p_at = AT_UNKNOWN);
+    virtual byte get_byte(word p_addr, AccessType p_at = AccessType::UNKNOWN) = 0;
+    void set_byte(word p_addr, byte p_byte, AccessType p_at = AccessType::UNKNOWN);
+    word get_word(word p_addr, AccessType p_at = AccessType::UNKNOWN);
+    void set_word(word p_addr, word p_word, AccessType p_at = AccessType::UNKNOWN);
 
     virtual void serialize(std::ostream &) const;
 };
@@ -175,10 +175,10 @@ private:
 public:
     virtual word size() const override
         { return m_storage.size(); }
-    virtual byte get_byte(word p_addr, AccessType p_at = AT_UNKNOWN) override
+    virtual byte get_byte(word p_addr, AccessType p_at = AccessType::UNKNOWN) override
         { return m_storage.get_byte(p_addr, p_at); }
 private:
-    virtual void unobserved_set_byte(word p_addr, byte p_byte, AccessType p_at = AT_UNKNOWN) override
+    virtual void unobserved_set_byte(word p_addr, byte p_byte, AccessType p_at = AccessType::UNKNOWN) override
         { m_storage.set_byte(p_addr, p_byte, p_at); }
 
 public:
@@ -224,10 +224,10 @@ private:
 public:
     virtual word size() const override
         { return m_storage.size(); }
-    virtual byte get_byte(word p_addr, AccessType p_at = AT_UNKNOWN) override
+    virtual byte get_byte(word p_addr, AccessType p_at = AccessType::UNKNOWN) override
         { return m_storage.get_byte(p_addr, p_at); }
 private:
-    virtual void unobserved_set_byte(word p_addr, byte p_byte, AccessType p_at = AT_UNKNOWN) override
+    virtual void unobserved_set_byte(word p_addr, byte p_byte, AccessType p_at = AccessType::UNKNOWN) override
         { /* Do Nothing! */ }
 
 public:
@@ -277,9 +277,9 @@ public:
     explicit AddressSpace(const id_type &, word p_size = 0);
     explicit AddressSpace(word p_size = 0);
     virtual word size() const  override{ return m_map.size(); }
-    virtual byte get_byte(word p_addr, AccessType p_at = AT_UNKNOWN) override;
+    virtual byte get_byte(word p_addr, AccessType p_at = AccessType::UNKNOWN) override;
 private:
-    virtual void unobserved_set_byte(word p_addr, byte p_byte, AccessType p_at = AT_UNKNOWN) override;
+    virtual void unobserved_set_byte(word p_addr, byte p_byte, AccessType p_at = AccessType::UNKNOWN) override;
 public:
     void add_child(word p_base, Memory &p_memory, word p_size = 0);
     void clear();
@@ -328,9 +328,9 @@ private:
 public:
     void fill(AddressSpace &p_as, word p_base);
     virtual word size() const override { return m_address_space->size(); }
-    virtual byte get_byte(word p_addr, AccessType p_at = AT_UNKNOWN) override;
+    virtual byte get_byte(word p_addr, AccessType p_at = AccessType::UNKNOWN) override;
 private:
-    virtual void unobserved_set_byte(word p_addr, byte p_byte, AccessType p_at = AT_UNKNOWN) override;
+    virtual void unobserved_set_byte(word p_addr, byte p_byte, AccessType p_at = AccessType::UNKNOWN) override;
 };
 
 #endif

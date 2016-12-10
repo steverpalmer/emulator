@@ -12,20 +12,18 @@
 #include "part.hpp"
 #include "memory.hpp"
 
-enum InterruptState { INTERRUPT_ON,
-                      INTERRUPT_OFF,
-                      INTERRUPT_PULSE
-};
+enum class InterruptState { ON, OFF, PULSE };
+
 extern std::ostream &operator<<(std::ostream&, const InterruptState&);
 
-enum  InterruptSource { NO_INTERRUPT          = 0,
-                        RESET_INTERRUPT_ON    = 1,
-                        RESET_INTERRUPT_PULSE = 2,
-                        NMI_INTERRUPT_ON      = 4,
-                        NMI_INTERRUPT_PULSE   = 8,
-                        IRQ_INTERRUPT_ON      = 16,
-                        IRQ_INTERRUPT_PULSE   = 32,
-                        BRK_INTERRUPT         = 64
+enum InterruptSource { NO_INTERRUPT          = 0,
+                       RESET_INTERRUPT_ON    = 1,
+                       RESET_INTERRUPT_PULSE = 2,
+                       NMI_INTERRUPT_ON      = 4,
+                       NMI_INTERRUPT_PULSE   = 8,
+                       IRQ_INTERRUPT_ON      = 16,
+                       IRQ_INTERRUPT_PULSE   = 32,
+                       BRK_INTERRUPT         = 64
 };
 extern std::ostream &operator<<(std::ostream&, const InterruptSource&);
 
@@ -68,9 +66,9 @@ public:
     virtual void single_step() = 0;
     virtual void reset(InterruptState) = 0;
     virtual void reset() override
-        { reset(INTERRUPT_PULSE); }
-    virtual void NMI(InterruptState p_is = INTERRUPT_PULSE) = 0;
-    virtual void IRQ(InterruptState p_is = INTERRUPT_PULSE) = 0;
+        { reset(InterruptState::PULSE); }
+    virtual void NMI(InterruptState p_is = InterruptState::PULSE) = 0;
+    virtual void IRQ(InterruptState p_is = InterruptState::PULSE) = 0;
 
     virtual void serialize(std::ostream &) const override;
 };
@@ -150,8 +148,8 @@ private:
 public:
     AddressSpace *address_space() const { return dynamic_cast<AddressSpace *>(m_memory); }
     virtual void reset(InterruptState p_is) override;
-    virtual void NMI(InterruptState p_is = INTERRUPT_PULSE) override;
-    virtual void IRQ(InterruptState p_is = INTERRUPT_PULSE) override;
+    virtual void NMI(InterruptState p_is = InterruptState::PULSE) override;
+    virtual void IRQ(InterruptState p_is = InterruptState::PULSE) override;
     virtual void single_step() override;
 
     virtual void serialize(std::ostream &) const override;

@@ -213,7 +213,7 @@ static const byte BIN_to_BCD[256] =
 /// Memory Locations
 
 inline word EA_ZPAGE(MCS6502 &p_6502)
-{ return p_6502.m_memory->get_byte(p_6502.m_register.PC++, Memory::AT_OPERAND); }
+{ return p_6502.m_memory->get_byte(p_6502.m_register.PC++, Memory::AccessType::OPERAND); }
 
 inline word EA_ZPAGE_X(MCS6502 &p_6502)
 { return EA_ZPAGE(p_6502) + p_6502.m_register.X; }
@@ -223,7 +223,7 @@ inline word EA_ZPAGE_Y(MCS6502 &p_6502)
 
 inline word EA_ABSOLUTE(MCS6502 &p_6502)
 {
-    const word result(p_6502.m_memory->get_word(p_6502.m_register.PC, Memory::AT_OPERAND));
+    const word result(p_6502.m_memory->get_word(p_6502.m_register.PC, Memory::AccessType::OPERAND));
     p_6502.m_register.PC += 2;
     return result;
 }
@@ -235,90 +235,90 @@ inline word EA_ABSOLUTE_Y(MCS6502 &p_6502)
 { return EA_ABSOLUTE(p_6502) + p_6502.m_register.Y; }
 
 inline word EA_INDIRECT_ZPAGE(MCS6502 &p_6502)
-{ return p_6502.m_memory->get_word(EA_ZPAGE(p_6502), Memory::AT_DATA); }
+{ return p_6502.m_memory->get_word(EA_ZPAGE(p_6502), Memory::AccessType::DATA); }
 
 inline word EA_INDIRECT_ZPAGE_X(MCS6502 &p_6502)
-{ return p_6502.m_memory->get_word(EA_ZPAGE_X(p_6502), Memory::AT_DATA); }
+{ return p_6502.m_memory->get_word(EA_ZPAGE_X(p_6502), Memory::AccessType::DATA); }
 
 inline word EA_INDIRECT_ZPAGE_Y(MCS6502 &p_6502)
 { return EA_INDIRECT_ZPAGE(p_6502) + p_6502.m_register.Y; }
 
 inline word EA_INDIRECT_ABSOLUTE(MCS6502 &p_6502)
-{ return p_6502.m_memory->get_word(EA_ABSOLUTE(p_6502), Memory::AT_DATA); }
+{ return p_6502.m_memory->get_word(EA_ABSOLUTE(p_6502), Memory::AccessType::DATA); }
 
 /// Bytes Values
 
 inline byte IMMEDIATE_BYTE(MCS6502 &p_6502)
-{ return p_6502.m_memory->get_byte(p_6502.m_register.PC++, Memory::AT_OPERAND); }
+{ return p_6502.m_memory->get_byte(p_6502.m_register.PC++, Memory::AccessType::OPERAND); }
 
 inline byte ZPAGE_BYTE(MCS6502 &p_6502)
-{ return p_6502.m_memory->get_byte(EA_ZPAGE(p_6502), Memory::AT_DATA); }
+{ return p_6502.m_memory->get_byte(EA_ZPAGE(p_6502), Memory::AccessType::DATA); }
 
 inline byte ZPAGE_X_BYTE(MCS6502 &p_6502)
-{ return p_6502.m_memory->get_byte(EA_ZPAGE_X(p_6502), Memory::AT_DATA); }
+{ return p_6502.m_memory->get_byte(EA_ZPAGE_X(p_6502), Memory::AccessType::DATA); }
 
 inline byte ZPAGE_Y_BYTE(MCS6502 &p_6502)
-{ return p_6502.m_memory->get_byte(EA_ZPAGE_Y(p_6502), Memory::AT_DATA); }
+{ return p_6502.m_memory->get_byte(EA_ZPAGE_Y(p_6502), Memory::AccessType::DATA); }
 
 inline byte ABSOLUTE_BYTE(MCS6502 &p_6502)
-{ return p_6502.m_memory->get_byte(EA_ABSOLUTE(p_6502), Memory::AT_DATA); }
+{ return p_6502.m_memory->get_byte(EA_ABSOLUTE(p_6502), Memory::AccessType::DATA); }
 
 inline byte ABSOLUTE_X_BYTE(MCS6502 &p_6502)
-{ return p_6502.m_memory->get_byte(EA_ABSOLUTE_X(p_6502), Memory::AT_DATA); }
+{ return p_6502.m_memory->get_byte(EA_ABSOLUTE_X(p_6502), Memory::AccessType::DATA); }
 
 inline byte ABSOLUTE_Y_BYTE(MCS6502 &p_6502)
-{ return p_6502.m_memory->get_byte(EA_ABSOLUTE_Y(p_6502), Memory::AT_DATA); }
+{ return p_6502.m_memory->get_byte(EA_ABSOLUTE_Y(p_6502), Memory::AccessType::DATA); }
 
 inline byte INDIRECT_ZPAGE_BYTE(MCS6502 &p_6502)
-{ return p_6502.m_memory->get_byte(EA_INDIRECT_ZPAGE(p_6502), Memory::AT_DATA); }
+{ return p_6502.m_memory->get_byte(EA_INDIRECT_ZPAGE(p_6502), Memory::AccessType::DATA); }
 
 inline byte INDIRECT_ZPAGE_X_BYTE(MCS6502 &p_6502)
-{ return p_6502.m_memory->get_byte(EA_INDIRECT_ZPAGE_X(p_6502), Memory::AT_DATA); }
+{ return p_6502.m_memory->get_byte(EA_INDIRECT_ZPAGE_X(p_6502), Memory::AccessType::DATA); }
 
 inline byte INDIRECT_ZPAGE_Y_BYTE(MCS6502 &p_6502)
-{ return p_6502.m_memory->get_byte(EA_INDIRECT_ZPAGE_Y(p_6502), Memory::AT_DATA); }
+{ return p_6502.m_memory->get_byte(EA_INDIRECT_ZPAGE_Y(p_6502), Memory::AccessType::DATA); }
 
 inline byte INDIRECT_ABSOLUTE_BYTE(MCS6502 &p_6502)
-{ return p_6502.m_memory->get_byte(EA_INDIRECT_ABSOLUTE(p_6502), Memory::AT_DATA); }
+{ return p_6502.m_memory->get_byte(EA_INDIRECT_ABSOLUTE(p_6502), Memory::AccessType::DATA); }
 
 /// Word Values
 
 inline word IMMEDIATE_WORD(MCS6502 &p_6502)
 {
-    const word result(p_6502.m_memory->get_word(p_6502.m_register.PC, Memory::AT_OPERAND));
+    const word result(p_6502.m_memory->get_word(p_6502.m_register.PC, Memory::AccessType::OPERAND));
     p_6502.m_register.PC += 2;
     return result;
 }
 
 inline word ZPAGE_WORD(MCS6502 &p_6502)
-{ return p_6502.m_memory->get_word(EA_ZPAGE(p_6502), Memory::AT_DATA); }
+{ return p_6502.m_memory->get_word(EA_ZPAGE(p_6502), Memory::AccessType::DATA); }
 
 inline word ZPAGE_X_WORD(MCS6502 &p_6502)
-{ return p_6502.m_memory->get_word(EA_ZPAGE_X(p_6502), Memory::AT_DATA); }
+{ return p_6502.m_memory->get_word(EA_ZPAGE_X(p_6502), Memory::AccessType::DATA); }
 
 inline word ZPAGE_Y_WORD(MCS6502 &p_6502)
-{ return p_6502.m_memory->get_word(EA_ZPAGE_Y(p_6502), Memory::AT_DATA); }
+{ return p_6502.m_memory->get_word(EA_ZPAGE_Y(p_6502), Memory::AccessType::DATA); }
 
 inline word ABSOLUTE_WORD(MCS6502 &p_6502)
-{ return p_6502.m_memory->get_word(EA_ABSOLUTE(p_6502), Memory::AT_DATA); }
+{ return p_6502.m_memory->get_word(EA_ABSOLUTE(p_6502), Memory::AccessType::DATA); }
 
 inline word ABSOLUTE_WORD_X(MCS6502 &p_6502)
-{ return p_6502.m_memory->get_word(EA_ABSOLUTE_X(p_6502), Memory::AT_DATA); }
+{ return p_6502.m_memory->get_word(EA_ABSOLUTE_X(p_6502), Memory::AccessType::DATA); }
 
 inline word ABSOLUTE_WORD_Y(MCS6502 &p_6502)
-{ return p_6502.m_memory->get_word(EA_ABSOLUTE_Y(p_6502), Memory::AT_DATA); }
+{ return p_6502.m_memory->get_word(EA_ABSOLUTE_Y(p_6502), Memory::AccessType::DATA); }
 
 inline word INDIRECT_ZPAGE_WORD(MCS6502 &p_6502)
-{ return p_6502.m_memory->get_word(EA_INDIRECT_ZPAGE(p_6502), Memory::AT_DATA); }
+{ return p_6502.m_memory->get_word(EA_INDIRECT_ZPAGE(p_6502), Memory::AccessType::DATA); }
 
 inline word INDIRECT_ZPAGE_X_WORD(MCS6502 &p_6502)
-{ return p_6502.m_memory->get_word(EA_INDIRECT_ZPAGE_X(p_6502), Memory::AT_DATA); }
+{ return p_6502.m_memory->get_word(EA_INDIRECT_ZPAGE_X(p_6502), Memory::AccessType::DATA); }
 
 inline word INDIRECT_ZPAGE_Y_WORD(MCS6502 &p_6502)
-{ return p_6502.m_memory->get_word(EA_INDIRECT_ZPAGE_Y(p_6502), Memory::AT_DATA); }
+{ return p_6502.m_memory->get_word(EA_INDIRECT_ZPAGE_Y(p_6502), Memory::AccessType::DATA); }
 
 inline word INDIRECT_ABSOLUTE_WORD(MCS6502 &p_6502)
-{ return p_6502.m_memory->get_word(EA_INDIRECT_ABSOLUTE(p_6502), Memory::AT_DATA); }
+{ return p_6502.m_memory->get_word(EA_INDIRECT_ABSOLUTE(p_6502), Memory::AccessType::DATA); }
 
 /// Condition Flags
 
@@ -349,10 +349,10 @@ inline bool VC_COND(MCS6502 &p_6502)
 /// Stack Utilities
 
 inline byte POP_BYTE(MCS6502 &p_6502)
-{ return p_6502.m_memory->get_byte(STACK_ADDRESS + ++p_6502.m_register.S, Memory::AT_DATA); }
+{ return p_6502.m_memory->get_byte(STACK_ADDRESS + ++p_6502.m_register.S, Memory::AccessType::DATA); }
 
 inline void PUSH_BYTE(MCS6502 &p_6502, byte p_byte)
-{ p_6502.m_memory->set_byte(STACK_ADDRESS + p_6502.m_register.S--, p_byte, Memory::AT_DATA); }
+{ p_6502.m_memory->set_byte(STACK_ADDRESS + p_6502.m_register.S--, p_byte, Memory::AccessType::DATA); }
 
 inline word POP_WORD(MCS6502 &p_6502)
 {
@@ -653,9 +653,9 @@ inline void ASL(MCS6502 &p_6502, byte &p_byte)
 
 inline void ASL_EA(MCS6502 &p_6502, word p_addr)
 {
-    byte data(p_6502.m_memory->get_byte(p_addr, Memory::AT_DATA));
+    byte data(p_6502.m_memory->get_byte(p_addr, Memory::AccessType::DATA));
     ASL(p_6502, data);
-    p_6502.m_memory->set_byte(p_addr, data, Memory::AT_DATA);
+    p_6502.m_memory->set_byte(p_addr, data, Memory::AccessType::DATA);
 }
 
 class Instr_ASL_A : public MCS6502::Instruction {
@@ -719,7 +719,7 @@ inline void BRANCH(MCS6502 &p_6502, bool p_cond)
     const word from(p_6502.m_register.PC-1);
 #endif
     if (p_cond) {
-        p_6502.m_register.PC += signed_byte(p_6502.m_memory->get_byte(p_6502.m_register.PC, Memory::AT_OPERAND));
+        p_6502.m_register.PC += signed_byte(p_6502.m_memory->get_byte(p_6502.m_register.PC, Memory::AccessType::OPERAND));
 #if JUMP_TRACE
         log4c_category_debug(p_6502.m_jumptracelog, JUMP_TRACE_LOGFORMAT,
                              "Bxx", from, p_6502.m_register.PC+1);
@@ -1072,9 +1072,9 @@ inline void DEC(MCS6502 &p_6502, byte &p_byte)
 
 inline void DEC_EA(MCS6502 &p_6502, word p_addr)
 {
-    byte data(p_6502.m_memory->get_byte(p_addr, Memory::AT_DATA));
+    byte data(p_6502.m_memory->get_byte(p_addr, Memory::AccessType::DATA));
     DEC(p_6502, data);
-    p_6502.m_memory->set_byte(p_addr, data, Memory::AT_DATA);
+    p_6502.m_memory->set_byte(p_addr, data, Memory::AccessType::DATA);
 }
 
 class Instr_DEC_ZERO : public MCS6502::Instruction {
@@ -1247,9 +1247,9 @@ inline void INC(MCS6502 &p_6502, byte &p_byte)
 
 inline void INC_EA(MCS6502 &p_6502, word p_addr)
 {
-    byte data(p_6502.m_memory->get_byte(p_addr, Memory::AT_DATA));
+    byte data(p_6502.m_memory->get_byte(p_addr, Memory::AccessType::DATA));
     INC(p_6502, data);
-    p_6502.m_memory->set_byte(p_addr, data, Memory::AT_DATA);
+    p_6502.m_memory->set_byte(p_addr, data, Memory::AccessType::DATA);
 }
 
 class Instr_INC_ZERO : public MCS6502::Instruction {
@@ -1579,9 +1579,9 @@ inline void LSR(MCS6502 &p_6502, byte &p_byte)
 
 inline void LSR_EA(MCS6502 &p_6502, word p_addr)
 {
-    byte data(p_6502.m_memory->get_byte(p_addr, Memory::AT_DATA));
+    byte data(p_6502.m_memory->get_byte(p_addr, Memory::AccessType::DATA));
     LSR(p_6502, data);
-    p_6502.m_memory->set_byte(p_addr, data, Memory::AT_DATA);
+    p_6502.m_memory->set_byte(p_addr, data, Memory::AccessType::DATA);
 }
 
 class Instr_LSR_A : public MCS6502::Instruction {
@@ -1812,9 +1812,9 @@ inline void ROL(MCS6502 &p_6502, byte &p_byte)
 
 inline void ROL_EA(MCS6502 &p_6502, word p_addr)
 {
-    byte data(p_6502.m_memory->get_byte(p_addr, Memory::AT_DATA));
+    byte data(p_6502.m_memory->get_byte(p_addr, Memory::AccessType::DATA));
     ROL(p_6502, data);
-    p_6502.m_memory->set_byte(p_addr, data, Memory::AT_DATA);
+    p_6502.m_memory->set_byte(p_addr, data, Memory::AccessType::DATA);
 }
 
 class Instr_ROL_A : public MCS6502::Instruction {
@@ -1888,9 +1888,9 @@ inline void ROR(MCS6502 &p_6502, byte &p_byte)
 
 inline void ROR_EA(MCS6502 &p_6502, word p_addr)
 {
-    byte data(p_6502.m_memory->get_byte(p_addr, Memory::AT_DATA));
+    byte data(p_6502.m_memory->get_byte(p_addr, Memory::AccessType::DATA));
     ROR(p_6502, data);
-    p_6502.m_memory->set_byte(p_addr, data, Memory::AT_DATA);
+    p_6502.m_memory->set_byte(p_addr, data, Memory::AccessType::DATA);
 }
 
 class Instr_ROR_A : public MCS6502::Instruction {
@@ -2142,7 +2142,7 @@ public:
     virtual void execute() const override
         {
             INSTRUCTION_TRACE("Instr_STA_ZERO::execute");
-            m_6502.m_memory->set_byte(EA_ZPAGE(m_6502), m_6502.m_register.A, Memory::AT_DATA);
+            m_6502.m_memory->set_byte(EA_ZPAGE(m_6502), m_6502.m_register.A, Memory::AccessType::DATA);
         };
 };
 
@@ -2152,7 +2152,7 @@ public:
     virtual void execute() const override
         {
             INSTRUCTION_TRACE("Instr_STA_ZERO_X::execute");
-            m_6502.m_memory->set_byte(EA_ZPAGE_X(m_6502), m_6502.m_register.A, Memory::AT_DATA);
+            m_6502.m_memory->set_byte(EA_ZPAGE_X(m_6502), m_6502.m_register.A, Memory::AccessType::DATA);
         };
 };
 
@@ -2162,7 +2162,7 @@ public:
     virtual void execute() const override
         {
             INSTRUCTION_TRACE("Instr_STA_ABS::execute");
-            m_6502.m_memory->set_byte(EA_ABSOLUTE(m_6502), m_6502.m_register.A, Memory::AT_DATA);
+            m_6502.m_memory->set_byte(EA_ABSOLUTE(m_6502), m_6502.m_register.A, Memory::AccessType::DATA);
         };
 };
 
@@ -2172,7 +2172,7 @@ public:
     virtual void execute() const override
         {
             INSTRUCTION_TRACE("Instr_STA_ABS_X::execute");
-            m_6502.m_memory->set_byte(EA_ABSOLUTE_X(m_6502), m_6502.m_register.A, Memory::AT_DATA);
+            m_6502.m_memory->set_byte(EA_ABSOLUTE_X(m_6502), m_6502.m_register.A, Memory::AccessType::DATA);
         };
 };
 
@@ -2182,7 +2182,7 @@ public:
     virtual void execute() const override
         {
             INSTRUCTION_TRACE("Instr_STA_ABS_Y::execute");
-            m_6502.m_memory->set_byte(EA_ABSOLUTE_Y(m_6502), m_6502.m_register.A, Memory::AT_DATA);
+            m_6502.m_memory->set_byte(EA_ABSOLUTE_Y(m_6502), m_6502.m_register.A, Memory::AccessType::DATA);
         };
 };
 
@@ -2192,7 +2192,7 @@ public:
     virtual void execute() const override
         {
             INSTRUCTION_TRACE("Instr_STA_PRE_INDEXED_INDIRECT::execute");
-            m_6502.m_memory->set_byte(EA_INDIRECT_ZPAGE_X(m_6502), m_6502.m_register.A, Memory::AT_DATA);
+            m_6502.m_memory->set_byte(EA_INDIRECT_ZPAGE_X(m_6502), m_6502.m_register.A, Memory::AccessType::DATA);
         };
 };
 
@@ -2202,7 +2202,7 @@ public:
     virtual void execute() const override
         {
             INSTRUCTION_TRACE("Instr_STA_POST_INDEXED_INDIRECT::execute");
-            m_6502.m_memory->set_byte(EA_INDIRECT_ZPAGE_Y(m_6502), m_6502.m_register.A, Memory::AT_DATA);
+            m_6502.m_memory->set_byte(EA_INDIRECT_ZPAGE_Y(m_6502), m_6502.m_register.A, Memory::AccessType::DATA);
         };
 };
 
@@ -2212,7 +2212,7 @@ public:
     virtual void execute() const override
         {
             INSTRUCTION_TRACE("Instr_STX_ZERO::execute");
-            m_6502.m_memory->set_byte(EA_ZPAGE(m_6502), m_6502.m_register.X, Memory::AT_DATA);
+            m_6502.m_memory->set_byte(EA_ZPAGE(m_6502), m_6502.m_register.X, Memory::AccessType::DATA);
         };
 };
 
@@ -2222,7 +2222,7 @@ public:
     virtual void execute() const override
         {
             INSTRUCTION_TRACE("Instr_STX_ZERO_Y::execute");
-            m_6502.m_memory->set_byte(EA_ZPAGE_Y(m_6502), m_6502.m_register.X, Memory::AT_DATA);
+            m_6502.m_memory->set_byte(EA_ZPAGE_Y(m_6502), m_6502.m_register.X, Memory::AccessType::DATA);
         };
 };
 
@@ -2232,7 +2232,7 @@ public:
     virtual void execute() const override
         {
             INSTRUCTION_TRACE("Instr_STX_ABS::execute");
-            m_6502.m_memory->set_byte(EA_ABSOLUTE(m_6502), m_6502.m_register.X, Memory::AT_DATA);
+            m_6502.m_memory->set_byte(EA_ABSOLUTE(m_6502), m_6502.m_register.X, Memory::AccessType::DATA);
         };
 };
 
@@ -2242,7 +2242,7 @@ public:
     virtual void execute() const override
         {
             INSTRUCTION_TRACE("Instr_STY_ZERO::execute");
-            m_6502.m_memory->set_byte(EA_ZPAGE(m_6502), m_6502.m_register.Y, Memory::AT_DATA);
+            m_6502.m_memory->set_byte(EA_ZPAGE(m_6502), m_6502.m_register.Y, Memory::AccessType::DATA);
         };
 };
 
@@ -2252,7 +2252,7 @@ public:
     virtual void execute() const override
         {
             INSTRUCTION_TRACE("Instr_STY_ZERO_X::execute");
-            m_6502.m_memory->set_byte(EA_ZPAGE_X(m_6502), m_6502.m_register.Y, Memory::AT_DATA);
+            m_6502.m_memory->set_byte(EA_ZPAGE_X(m_6502), m_6502.m_register.Y, Memory::AccessType::DATA);
         };
 };
 
@@ -2262,7 +2262,7 @@ public:
     virtual void execute() const override
         {
             INSTRUCTION_TRACE("Instr_STY_ABS::execute");
-            m_6502.m_memory->set_byte(EA_ABSOLUTE(m_6502), m_6502.m_register.Y, Memory::AT_DATA);
+            m_6502.m_memory->set_byte(EA_ABSOLUTE(m_6502), m_6502.m_register.Y, Memory::AccessType::DATA);
         };
 };
 
@@ -2573,7 +2573,7 @@ void MCS6502::single_step()
 #endif
             m_memory->reset();
             m_register.P |= IRQB;
-            m_register.PC = m_memory->get_word(VECTOR_RESET, Memory::AT_DATA);
+            m_register.PC = m_memory->get_word(VECTOR_RESET, Memory::AccessType::DATA);
             m_cycles += 7;
         }
         else if (m_InterruptSource & NMI_INTERRUPT_ON) { // Process NMI
@@ -2582,7 +2582,7 @@ void MCS6502::single_step()
             PUSH_WORD(*this, m_register.PC);
             PUSH_BYTE(*this, m_register.P);
             m_register.P |= IRQB;
-            m_register.PC = m_memory->get_word(VECTOR_NMI, Memory::AT_DATA);
+            m_register.PC = m_memory->get_word(VECTOR_NMI, Memory::AccessType::DATA);
             m_cycles += 7;
         }
         else if ((m_InterruptSource & IRQ_INTERRUPT_ON) && !(m_register.P & IRQB)) { // Process IRQ
@@ -2592,7 +2592,7 @@ void MCS6502::single_step()
             PUSH_BYTE(*this, m_register.P);
             m_register.P |= IRQB;
             m_register.P &= ~BREAK;
-            m_register.PC = m_memory->get_word(VECTOR_INTERRUPT, Memory::AT_DATA);
+            m_register.PC = m_memory->get_word(VECTOR_INTERRUPT, Memory::AccessType::DATA);
             m_cycles += 7;
         }
         else if (m_InterruptSource & BRK_INTERRUPT) { // Process BRK
@@ -2600,7 +2600,7 @@ void MCS6502::single_step()
             PUSH_WORD(*this, m_register.PC+1); // Obscure Point
             PUSH_BYTE(*this, m_register.P | BREAK);
             m_register.P |= IRQB;
-            m_register.PC = m_memory->get_word(VECTOR_INTERRUPT, Memory::AT_DATA);
+            m_register.PC = m_memory->get_word(VECTOR_INTERRUPT, Memory::AccessType::DATA);
             m_cycles += 7;
         }
 #if JUMP_TRACE
@@ -2609,7 +2609,7 @@ void MCS6502::single_step()
                                 "Interrupt!", from, m_6502.m_register.PC);
 #endif
     }
-    const byte opcode(m_memory->get_byte(m_register.PC++, Memory::AT_INSTRUCTION));
+    const byte opcode(m_memory->get_byte(m_register.PC++, Memory::AccessType::INSTRUCTION));
     const MCS6502::Instruction * const instr(m_opcode_mapping[opcode]);
     assert (instr);
     LOG4CXX_INFO(MCS6502::log(), *instr);
@@ -2621,15 +2621,15 @@ void MCS6502::reset(InterruptState p_is)
 {
     LOG4CXX_INFO(cpptrace_log(), "[" << id() << "].MCS6502::reset(" << p_is << ")");
     switch (p_is) {
-    case INTERRUPT_ON:
+    case InterruptState::ON:
         m_InterruptSource |= RESET_INTERRUPT_ON;
         m_InterruptSource &= ~RESET_INTERRUPT_PULSE;
         break;
-    case INTERRUPT_OFF:
+    case InterruptState::OFF:
         m_InterruptSource &= ~RESET_INTERRUPT_ON;
         m_InterruptSource &= ~RESET_INTERRUPT_PULSE;
         break;
-    case INTERRUPT_PULSE:
+    case InterruptState::PULSE:
         m_InterruptSource |= RESET_INTERRUPT_ON;
         m_InterruptSource |= RESET_INTERRUPT_PULSE;
         break;
@@ -2643,15 +2643,15 @@ void MCS6502::NMI(InterruptState p_is)
 {
     LOG4CXX_INFO(cpptrace_log(), "[" << id() << "].MCS6502::NMI(" << p_is << ")");
     switch (p_is) {
-    case INTERRUPT_ON:
+    case InterruptState::ON:
         m_InterruptSource |= NMI_INTERRUPT_ON;
         m_InterruptSource &= ~NMI_INTERRUPT_PULSE;
         break;
-    case INTERRUPT_OFF:
+    case InterruptState::OFF:
         m_InterruptSource &= ~NMI_INTERRUPT_ON;
         m_InterruptSource &= ~NMI_INTERRUPT_PULSE;
         break;
-    case INTERRUPT_PULSE:
+    case InterruptState::PULSE:
         m_InterruptSource |= NMI_INTERRUPT_ON;
         m_InterruptSource |= NMI_INTERRUPT_PULSE;
         break;
@@ -2665,15 +2665,15 @@ void MCS6502::IRQ(InterruptState p_is)
 {
     LOG4CXX_INFO(cpptrace_log(), "[" << id() << "].MCS6502::IRQ(" << p_is << ")");
     switch (p_is) {
-    case INTERRUPT_ON:
+    case InterruptState::ON:
         m_InterruptSource |= IRQ_INTERRUPT_ON;
         m_InterruptSource &= ~IRQ_INTERRUPT_PULSE;
         break;
-    case INTERRUPT_OFF:
+    case InterruptState::OFF:
         m_InterruptSource &= ~IRQ_INTERRUPT_ON;
         m_InterruptSource &= ~IRQ_INTERRUPT_PULSE;
         break;
-    case INTERRUPT_PULSE:
+    case InterruptState::PULSE:
         m_InterruptSource |= IRQ_INTERRUPT_ON;
         m_InterruptSource |= IRQ_INTERRUPT_PULSE;
         break;
@@ -2707,16 +2707,21 @@ void MCS6502::Configurator::serialize(std::ostream&p_s) const
 
 std::ostream &operator<<(std::ostream &p_s, const InterruptState &p_is)
 {
-    if (p_is >= 0 && p_is < 3) {
-        static const char *name[3] = {
-            "on",
-            "off",
-            "pulse"
-        };
-        p_s << name[p_is];
-    }
-    else
-        p_s << int(p_is);
+	switch (p_is)
+	{
+	case InterruptState::ON:
+		p_s << "on";
+		break;
+	case InterruptState::OFF:
+		p_s << "off";
+		break;
+	case InterruptState::PULSE:
+		p_s << "pulse";
+		break;
+	default:
+		p_s << "unkown";
+		break;
+	}
     return p_s;
 }
 

@@ -36,7 +36,7 @@ private:
     public:
         explicit SetByteHandler(MonitorView &);
         virtual ~SetByteHandler() = default;
-        void push(Memory &, word, byte, Memory::AccessType) const;
+        void push(Memory &, word, byte) const;
         virtual void handle(const SDL_Event &) override;
     };
 
@@ -47,12 +47,12 @@ private:
     public:
         explicit VdgModeHandler(MonitorView &);
         virtual ~VdgModeHandler() = default;
-        void push(AtomMonitorInterface &, AtomMonitorInterface::VDGMode) const;
+        void push(Atom::MonitorInterface &, Atom::MonitorInterface::VDGMode) const;
         virtual void handle(const SDL_Event &) override;
     };
 
     class Observer
-        : public virtual AtomMonitorInterface::Observer
+        : public virtual Atom::MonitorInterface::Observer
         , public virtual Memory::Observer
     {
     private:
@@ -65,8 +65,8 @@ private:
     private:
         // Memory::Observer
         virtual void set_byte_update(Memory &, word, byte, Memory::AccessType) override;
-        // AtomMonitorInterface::Observer
-        virtual void vdg_mode_update(AtomMonitorInterface &, AtomMonitorInterface::VDGMode) override;
+        // Atom::MonitorInterface::Observer
+        virtual void vdg_mode_update(Atom::MonitorInterface &, Atom::MonitorInterface::VDGMode) override;
     };
 
 public:
@@ -105,8 +105,8 @@ private:
     Observer             m_observer;
 public:
     void window_resize();
-    void set_byte_update(Memory &, word, byte, Memory::AccessType);
-    void vdg_mode_update(AtomMonitorInterface &, AtomMonitorInterface::VDGMode);
+    void set_byte_update(Memory &, word, byte);
+    void vdg_mode_update(Atom::MonitorInterface &, Atom::MonitorInterface::VDGMode);
 
 public:
     explicit MonitorView(const Configurator &);

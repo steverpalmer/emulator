@@ -16,8 +16,8 @@
 
 class Ppia
     : public Memory
-    , public virtual AtomKeyboardInterface
-    , public AtomMonitorInterface
+    , public virtual Atom::KeyboardInterface
+    , public Atom::MonitorInterface
 {
 public:
     class Configurator
@@ -49,7 +49,7 @@ private:
         std::array<byte, 12> row;
     } m_keyboard;
     typedef std::pair<int, byte> Scanpair;
-    std::map<AtomKeyboardInterface::Key, Scanpair> key_mapping;
+    std::map<Atom::KeyboardInterface::Key, Scanpair> key_mapping;
     // Methods
 private:
     byte get_PortB(int p_row);
@@ -65,9 +65,9 @@ private:
 public:
     virtual word size() const  override{ return 4; }
     virtual void reset() override;
-    virtual byte get_byte(word p_addr, AccessType p_at = AT_UNKNOWN) override;
+    virtual byte get_byte(word p_addr, AccessType p_at = AccessType::UNKNOWN) override;
 private:
-    virtual void unobserved_set_byte(word p_addr, byte p_byte, AccessType p_at = AT_UNKNOWN) override;
+    virtual void unobserved_set_byte(word p_addr, byte p_byte, AccessType p_at = AccessType::UNKNOWN) override;
 
     // AtomKeyboardInterface
 private:

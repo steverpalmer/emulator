@@ -47,7 +47,7 @@ private:
     Pump::Stdout *stdout;
     Device *root;
     KeyboardAdaptor *keyboard;
-    enum {Continue, QuitRequest, EventWaitError} loop_state;
+    enum class LoopState {Continue, QuitRequest, EventWaitError} loop_state;
 
     class QuitHandler
         : public Dispatcher::StateHandler<Emulator>
@@ -62,7 +62,7 @@ private:
         virtual void handle(const SDL_Event &) override
             {
                 LOG4CXX_INFO(cpptrace_log(), "QuitHandler::handle(...)");
-                state.loop_state = QuitRequest;
+                state.loop_state = LoopState::QuitRequest;
             }
     } quit_handler;
 
@@ -89,7 +89,7 @@ public:
         , stdin(nullptr)
         , stdout(nullptr)
         , root(nullptr)
-		, loop_state(Continue)
+		, loop_state(LoopState::Continue)
         , quit_handler(*this)
         , reset_handler(*this)
         {
@@ -160,16 +160,16 @@ public:
             root->reset();
             root->resume();
             SDL_Event event;
-            loop_state = Continue;
-            while (loop_state == Continue)
+            loop_state = LoopState::Continue;
+            while (loop_state == LoopState::Continue)
             {
                 LOG4CXX_INFO(SDL::log(), "SDL_WaitEvent(&event)");
                 if (!SDL_WaitEvent(&event))
-                    loop_state = EventWaitError;
+                    loop_state = LoopState::EventWaitError;
                 else
                     Dispatcher::instance().dispatch(event);
             }
-            assert (loop_state == QuitRequest);
+            assert (loop_state == LoopState::QuitRequest);
 
             LOG4CXX_INFO(cpptrace_log(), "Emulator::run() finishing ...");
             if (stdin)
