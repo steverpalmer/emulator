@@ -46,7 +46,7 @@ private:
     Pump::Stdin *stdin;
     Pump::Stdout *stdout;
     Device *root;
-    KeyboardAdaptor *keyboard;
+
     enum class LoopState {Continue, QuitRequest, EventWaitError} loop_state;
 
     class QuitHandler
@@ -140,18 +140,6 @@ public:
 
             root = dynamic_cast<Device *>(PartsBin::instance()["root"]);
             assert (root);
-
-            Ppia *ppia = dynamic_cast<Ppia *>(PartsBin::instance()["ppia"]);
-            assert (ppia);
-            keyboard = new KeyboardAdaptor(ppia, reset_handler);
-
-#if 0
-            MCS6502 *mcs6502 = dynamic_cast<MCS6502 *>(PartsBin::instance()["mcs6502"]);
-            assert (mcs6502);
-            LOG4CXX_WARN(cpptrace_log(), "1 => " << PartsBin::instance());
-            MCS6502::SetLogLevel(0xCEED, *mcs6502, log4cxx::Level::getInfo());
-            LOG4CXX_WARN(cpptrace_log(), "2 => " << PartsBin::instance());
-#endif
         }
 
     void run()
@@ -230,7 +218,6 @@ public:
             LOG4CXX_INFO(cpptrace_log(), "Emulator::~Emulator()");
             delete stdout;
             delete stdin;
-            delete keyboard;
             PartsBin::instance().clear();
             LOG4CXX_INFO(SDL::log(), "SDL_Quit");
             SDL_Quit();

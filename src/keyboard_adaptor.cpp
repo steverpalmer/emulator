@@ -26,11 +26,11 @@ void KeyboardAdaptor::DownHandler::handle(const SDL_Event &p_event)
         switch (key)
         {
         case Atom::KeyboardInterface::Key::BREAK:
-            state.reset_handler.push();
+            raise(SIGUSR1);
             break;
         default:
-            if (state.m_atom_keyboard)
-                state.m_atom_keyboard->down(key);
+            if (state.m_ppia)
+                state.m_ppia->down(key);
             break;
         }
     }
@@ -57,8 +57,8 @@ void KeyboardAdaptor::UpHandler::handle(const SDL_Event &p_event)
         case Atom::KeyboardInterface::Key::BREAK:
             break;
         default:
-            if (state.m_atom_keyboard)
-                state.m_atom_keyboard->up(key);
+            if (state.m_ppia)
+                state.m_ppia->up(key);
             break;
         }
     }
@@ -68,8 +68,9 @@ void KeyboardAdaptor::UpHandler::handle(const SDL_Event &p_event)
     }
 }
 
-KeyboardAdaptor::KeyboardAdaptor(Atom::KeyboardInterface *p_atom_keyboard, const Dispatcher::Handler &p_reset_handler)
-    : m_atom_keyboard(p_atom_keyboard)
+KeyboardAdaptor::KeyboardAdaptor(const Configurator &p_cfgr)
+    : Device(p_cfgr)
+    , m_ppia(dynamic_cast<Ppia *>(p_cfgr.ppia()->memory_factory()))
 	, keys{
 		{SDL_SCANCODE_A, Atom::KeyboardInterface::Key::A},
 		{SDL_SCANCODE_B, Atom::KeyboardInterface::Key::B},
@@ -148,8 +149,24 @@ KeyboardAdaptor::KeyboardAdaptor(Atom::KeyboardInterface *p_atom_keyboard, const
 	}
     , down_handler(*this)
     , up_handler(*this)
-    , reset_handler(p_reset_handler)
 {
-    assert (m_atom_keyboard);
-    LOG4CXX_INFO(cpptrace_log(), "KeyboardAdaptor::KeyboardAdaptor(" << p_atom_keyboard << ")");
+    LOG4CXX_INFO(cpptrace_log(), "KeyboardAdaptor::KeyboardAdaptor(" << p_cfgr << ")");
+    assert (m_ppia);
+}
+
+
+void KeyboardAdaptor::Configurator::serialize(std::ostream &p_s) const
+{
+    p_s << "<keyboard>"
+        << "<controller>" << *ppia() << "</controller"
+        << "</keyboard>";
+}
+
+void KeyboardAdaptor::serialize(std::ostream &p_s) const
+{
+    p_s << "KeyboardAdaptor(";
+#if 0
+    if (m_ppia) p_s << *m_ppia;
+#endif
+    p_s << ")";
 }

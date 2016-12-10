@@ -21,6 +21,7 @@
 #include "atom_streambuf.hpp"
 #include "atom_tape.hpp"
 #include "monitor_view.hpp"
+#include "keyboard_adaptor.hpp"
 
 static log4cxx::LoggerPtr cpptrace_log()
 {
@@ -547,6 +548,50 @@ namespace Xml
             { return new MonitorViewConfigurator(p_node); }
     };
 
+    class KeyboardAdaptorConfigurator
+        : public virtual KeyboardAdaptor::Configurator
+        , private DeviceConfigurator
+    {
+    private:
+        const Memory::Configurator *m_ppia;
+    public:
+        explicit KeyboardAdaptorConfigurator(const xmlpp::Node *p_node = nullptr)
+            : DeviceConfigurator("", p_node)
+            , m_ppia(nullptr)
+            {
+                LOG4CXX_INFO(cpptrace_log(), "Xml::KeyboardAdaptorConfigurator(" << p_node << ")");
+                if (p_node)
+                {
+                    const xmlpp::NodeSet controller_ns(p_node->find("e:controller", namespaces));
+                    switch (controller_ns.size())
+                    {
+                    case 0:
+                        break;
+                    case 1:
+                        for (auto child : controller_ns.front()->get_children())
+                        {
+                            m_ppia = MemoryConfigurator::factory(child);
+                            if (m_ppia)
+                                break;
+                        }
+                        break;
+                    default:
+                        assert (false);
+                        break;
+                    }
+                }
+                if (!m_ppia)
+                    m_ppia = new Memory::ReferenceConfigurator("ppia");
+            }
+        virtual ~KeyboardAdaptorConfigurator()
+            {
+                delete m_ppia;
+            }
+        virtual const Memory::Configurator *ppia() const override { return m_ppia; }
+        static const Device::Configurator *device_configurator_factory(const xmlpp::Node *p_node)
+            { return new KeyboardAdaptorConfigurator(p_node); }
+    };
+
     const Device::Configurator *DeviceConfigurator::factory(const xmlpp::Node *p_node)
     {
         LOG4CXX_INFO(cpptrace_log(), "Xml::DeviceConfigurator::factory(" << p_node << ")");
@@ -559,6 +604,7 @@ namespace Xml
             {"computer", ComputerConfigurator::device_configurator_factory},
             {"monitor",  MonitorViewConfigurator::device_configurator_factory},
             {"tape",     AtomTapeConfigurator::device_configurator_factory},
+            {"keyboard", KeyboardAdaptorConfigurator::device_configurator_factory},
         };
         factory_function *factory = factory_map[p_node->get_name()];
         const Device::Configurator *result(factory ? factory(p_node) : MemoryConfigurator::factory(p_node));

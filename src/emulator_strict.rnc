@@ -44,7 +44,7 @@ mcs6502.content = memory?
 
 device |= monitor.instance
 monitor.instance = element e:monitor { monitor.class }
-monitor.class = part.class, monitor.attributes, monitor.content
+monitor.class = device.class, monitor.attributes, monitor.content
 monitor.attributes = empty
 monitor.content = video-memory.instance?
                   & controller.instance?
@@ -66,6 +66,12 @@ window-title.instance = element e:window_title { window-title.class }
 window-title.class = window-title.attributes, window-title.content
 window-title.attributes = empty
 window-title.content = xsd:string
+
+device |= keyboard.instance
+keyboard.instance = element e:keyboard { keyboard.class }
+keyboard.class = device.class, keyboard.attributes, keyboard.content
+keyboard.attributes = empty
+keyboard.content = controller.instance?
 
 device |= stream.instance
 stream.instance = element e:stream { stream.class }

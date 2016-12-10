@@ -8,11 +8,12 @@
 
 #include "common.hpp"
 #include "device.hpp"
-#include "atom_keyboard_interface.hpp"
+#include "ppia.hpp"
+#include "memory.hpp"
 #include "dispatcher.hpp"
 
 class KeyboardAdaptor
-    : protected NonCopyable
+    : public Device
 {
     // Types
 private:
@@ -35,17 +36,33 @@ private:
     };
 
 public:
-    Atom::KeyboardInterface *m_atom_keyboard;
+    class Configurator
+        : public virtual Device::Configurator
+    {
+    protected:
+        Configurator() = default;
+    public:
+        virtual ~Configurator() = default;
+        virtual const Memory::Configurator *ppia() const = 0;
+        virtual Device *device_factory() const override
+            { return new KeyboardAdaptor(*this); }
+
+        virtual void serialize(std::ostream &) const override;
+    };
+
+public:
+    Atom::KeyboardInterface   *m_ppia;
 private:
     std::map<SDL_Scancode, Atom::KeyboardInterface::Key> keys;
     const DownHandler         down_handler;
     const UpHandler           up_handler;
-    const Dispatcher::Handler &reset_handler;
-    Atom::KeyboardInterface::Key atom_key(SDL_Scancode);
     KeyboardAdaptor();
 public:
-    KeyboardAdaptor(Atom::KeyboardInterface *, const Dispatcher::Handler &p_reset_handler);
+    explicit KeyboardAdaptor(const Configurator &);
+private:
     virtual ~KeyboardAdaptor() = default;
+public:
+    virtual void serialize(std::ostream &) const override;
 };
 
 #endif

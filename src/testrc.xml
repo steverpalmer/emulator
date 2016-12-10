@@ -68,6 +68,12 @@
       </e:controller>
     </e:monitor -->
 
+    <!-- e:keyboard>
+      <e:controller>
+        <e:memory href="ppia"/>
+      </e:controller>
+    </e:keyboard -->
+    
     <e:stream/>
 
     <e:tape/>

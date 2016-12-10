@@ -14,7 +14,7 @@
 #include "dispatcher.hpp"
 
 class MonitorView
-    : public virtual Device
+    : public Device
 {
     // Types
 private:
