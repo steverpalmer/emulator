@@ -276,7 +276,7 @@ int main (int argc, char *argv[])
     reset_action.sa_handler = SIGUSR1_handler;
     sigemptyset (&reset_action.sa_mask);
     reset_action.sa_flags = 0;
-    const int rc = sigaction(SIGUSR1, &reset_action, NULL);
+    const int rc = sigaction(SIGUSR1, &reset_action, nullptr);
     assert (rc==0);
     emulator->run();
     delete emulator;

@@ -109,7 +109,7 @@ namespace Xml
     float eval_to_int(const xmlpp::Node *p_node, const Glib::ustring &p_xpath)
     {
         const Glib::ustring str(eval_to_string(p_node, p_xpath));
-        const int result((!str.empty() && str[0] == '#')?std::stoi(str.c_str()+1, NULL, 16):std::atoi(str.c_str()));
+        const int result((!str.empty() && str[0] == '#')?std::stoi(str.c_str()+1, nullptr, 16):std::atoi(str.c_str()));
         return result;
     }
 
@@ -123,7 +123,7 @@ namespace Xml
     {
     protected:
         Part::id_type m_id;
-        explicit PartConfigurator(Part::id_type p_id, const xmlpp::Node *p_node=0)
+        explicit PartConfigurator(Part::id_type p_id, const xmlpp::Node *p_node=nullptr)
             : m_id(p_id)
             {
                 LOG4CXX_INFO(cpptrace_log(), "Xml::PartConfigurator::PartConfigurator(" << p_id << ", " << p_node << ")");
@@ -155,7 +155,7 @@ namespace Xml
         , protected PartConfigurator
     {
     protected:
-        explicit DeviceConfigurator(const Glib::ustring p_id, const xmlpp::Node *p_node=0)
+        explicit DeviceConfigurator(const Glib::ustring p_id, const xmlpp::Node *p_node=nullptr)
             : PartConfigurator(p_id, p_node)
             {}
     public:
@@ -180,7 +180,7 @@ namespace Xml
         , protected DeviceConfigurator
     {
     protected:
-        explicit MemoryConfigurator(const Glib::ustring p_id, const xmlpp::Node *p_node=0)
+        explicit MemoryConfigurator(const Glib::ustring p_id, const xmlpp::Node *p_node=nullptr)
             : DeviceConfigurator(p_id, p_node)
             {}
     public:
@@ -278,7 +278,7 @@ namespace Xml
         explicit AddressSpaceConfigurator(const xmlpp::Node *p_node)
             : MemoryConfigurator("address_space", p_node)
             , m_size(0)
-            , m_last_memory( { 0, 0, 0 } )
+            , m_last_memory{0, nullptr, 0}
             {
                 LOG4CXX_INFO(cpptrace_log(), "Xml::AddressSpaceConfigurator::AddressSpaceConfigurator(" << p_node << ")");
                 assert (p_node);
@@ -330,7 +330,7 @@ namespace Xml
             factory_map["address_space"] = AddressSpaceConfigurator::memory_configurator_factory;
         }
         factory_function *factory = factory_map[p_node->get_name()];
-        const Memory::Configurator *result(factory ? factory(p_node) : 0);
+        const Memory::Configurator *result(factory ? factory(p_node) : nullptr);
         return result;
     }
 
@@ -343,9 +343,9 @@ namespace Xml
     private:
         const Memory::Configurator *m_memory;
     public:
-        explicit MCS6502Configurator(const xmlpp::Node *p_node = 0)
+        explicit MCS6502Configurator(const xmlpp::Node *p_node = nullptr)
             : DeviceConfigurator("", p_node)
-            , m_memory(0)
+            , m_memory(nullptr)
             {
                 LOG4CXX_INFO(cpptrace_log(), "Xml::MCS6502Configurator::MCS6502Configurator(" << p_node << ")");
                 if (p_node)
@@ -382,9 +382,9 @@ namespace Xml
         const Device::Configurator *m_mcs6502;
         bool m_pause_output;
     public:
-        explicit AtomStreamConfigurator(const xmlpp::Node *p_node = 0)
+        explicit AtomStreamConfigurator(const xmlpp::Node *p_node = nullptr)
             : DeviceConfigurator("stream", p_node)
-            , m_mcs6502(0)
+            , m_mcs6502(nullptr)
             , m_pause_output(false)
             {
                 LOG4CXX_INFO(cpptrace_log(), "Xml::AtomStreamConfigurator::AtomStreamConfigurator(" << p_node << ")");
@@ -410,10 +410,10 @@ namespace Xml
         Glib::ustring m_directory;
         const Device::Configurator *m_mcs6502;
     public:
-        explicit AtomTapeConfigurator(const xmlpp::Node *p_node = 0)
+        explicit AtomTapeConfigurator(const xmlpp::Node *p_node = nullptr)
             : DeviceConfigurator("tape", p_node)
             , m_directory(".")
-            , m_mcs6502(0)
+            , m_mcs6502(nullptr)
             {
                 LOG4CXX_INFO(cpptrace_log(), "Xml::AtomTapeConfigurator::AtomTapeConfigurator(" << p_node << ")");
                 assert (p_node);
@@ -463,7 +463,7 @@ namespace Xml
                 m_devices.clear();
             }
         virtual const Device::Configurator *device(int i) const override
-            { return (i < int(m_devices.size())) ? m_devices[i] : 0; }
+            { return (i < int(m_devices.size())) ? m_devices[i] : nullptr; }
         static const Device::Configurator *device_configurator_factory(const xmlpp::Node *p_node)
             { return new ComputerConfigurator(p_node); }
 
@@ -479,7 +479,7 @@ namespace Xml
         const Memory::Configurator *m_memory;
         const Memory::Configurator *m_ppia;
     public:
-        explicit MonitorViewConfigurator(const xmlpp::Node *p_node = 0)
+        explicit MonitorViewConfigurator(const xmlpp::Node *p_node = nullptr)
             : DeviceConfigurator("", p_node)
             , m_fontfilename("")
             , m_window_title("")

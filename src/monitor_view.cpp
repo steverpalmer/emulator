@@ -272,21 +272,21 @@ MonitorView::~MonitorView()
 {
     LOG4CXX_INFO(cpptrace_log(), "MonitorView::~MonitorView()");
     LOG4CXX_INFO(Part::log(), "removing children of [" << id() << "]");
-    m_memory = 0;
-    m_ppia = 0;
-    m_mode = 0;
-    m_mode0 = 0;
+    m_memory = nullptr;
+    m_ppia = nullptr;
+    m_mode = nullptr;
+    m_mode0 = nullptr;
     if (m_renderer)
     {
         LOG4CXX_INFO(SDL::log(), "SDL_DestroyRenderer(...)");
         SDL_DestroyRenderer(m_renderer);
-        m_renderer = 0;
+        m_renderer = nullptr;
     }
     if (m_window)
     {
         LOG4CXX_INFO(SDL::log(), "SDL_DestroyWindow(...)");
         SDL_DestroyWindow(m_window);
-        m_window = 0;
+        m_window = nullptr;
     }
 }
 
@@ -314,7 +314,7 @@ void MonitorView::vdg_mode_update(AtomMonitorInterface &, AtomMonitorInterface::
         m_mode = m_mode0;
         break;
     default:
-        m_mode = 0;
+        m_mode = nullptr;
     }
     if (m_mode)
         m_mode->render();

@@ -63,12 +63,12 @@ namespace Pump
         const Dispatcher::Handler &quit_handler;
         // Methods
     private:
-        void process_one_character()
+        void process_one_character() override
             {
                 fd_set rfds;
                 FD_ZERO(&rfds);
                 FD_SET(STDIN_FILENO, &rfds);
-                const int select_return = select(STDIN_FILENO+1, &rfds, NULL, NULL, &timeout);
+                const int select_return = select(STDIN_FILENO+1, &rfds, nullptr, nullptr, &timeout);
                 assert (select_return != -1);
                 if (select_return)
                 {
@@ -96,12 +96,12 @@ namespace Pump
     {
         // Methods
     private:
-        void process_one_character()
+        void process_one_character() override
             {
                 fd_set wfds;
                 FD_ZERO(&wfds);
                 FD_SET(STDOUT_FILENO, &wfds);
-                const int select_return = select(STDOUT_FILENO+1, NULL, &wfds, NULL, &timeout);
+                const int select_return = select(STDOUT_FILENO+1, nullptr, &wfds, nullptr, &timeout);
                 assert (select_return != -1);
                 if (select_return)
                 {

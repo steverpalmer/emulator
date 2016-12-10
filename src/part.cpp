@@ -145,7 +145,7 @@ void PartsBin::clear()
     {
         LOG4CXX_DEBUG(Part::log(), "// Deleting:" << it->first);
         auto p(it->second);
-        it->second = 0;
+        it->second = nullptr;
         delete p;
     }
     LOG4CXX_DEBUG(Part::log(), *this);

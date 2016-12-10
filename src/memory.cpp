@@ -170,7 +170,7 @@ Rom::~Rom()
 AddressSpace::AddressSpace(const Configurator &p_cfgr)
     : Memory(p_cfgr)
     , m_base(SIZE(p_cfgr.size()), 0)
-    , m_map(SIZE(p_cfgr.size()), 0)
+    , m_map(SIZE(p_cfgr.size()), nullptr)
 {
     LOG4CXX_INFO(cpptrace_log(), "AddressSpace::AddressSpace(" << p_cfgr << ")");
     AddressSpace::Configurator::Mapping mapping;
@@ -185,7 +185,7 @@ AddressSpace::AddressSpace(const Configurator &p_cfgr)
 AddressSpace::AddressSpace(const id_type &p_id, word p_size)
     : Memory(p_id)
     , m_base(SIZE(p_size), 0)
-    , m_map(SIZE(p_size), 0)
+    , m_map(SIZE(p_size), nullptr)
 {
     LOG4CXX_INFO(cpptrace_log(), "AddressSpace::AddressSpace(" << p_size << ")");
 }
@@ -193,7 +193,7 @@ AddressSpace::AddressSpace(const id_type &p_id, word p_size)
 AddressSpace::AddressSpace(word p_size)
     : Memory()
     , m_base(SIZE(p_size), 0)
-    , m_map(SIZE(p_size), 0)
+    , m_map(SIZE(p_size), nullptr)
 {
     LOG4CXX_INFO(cpptrace_log(), "AddressSpace::AddressSpace(" << p_size << ")");
 }
@@ -234,7 +234,7 @@ void AddressSpace::clear()
 {
     LOG4CXX_INFO(cpptrace_log(), "[" << id() << "].AddressSpace::clear()");
     for (auto &m: m_map)
-        m = 0;
+        m = nullptr;
     for (auto &b: m_base)
         b = 0;
     LOG4CXX_INFO(Part::log(), "removing children of [" << id() << "]");
@@ -486,7 +486,7 @@ void AddressSpace::serialize(std::ostream &p_s) const
 #else
     p_s << "AddressSpace([";
     Memory::serialize(p_s);
-    Memory *previous_memory = 0;
+    Memory *previous_memory = nullptr;
     for (int addr=0; addr < int(m_map.size()); addr++) {
         Memory *cell(m_map[addr]);
         if (cell != previous_memory) {

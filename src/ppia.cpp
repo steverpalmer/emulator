@@ -61,7 +61,7 @@ enum Ports {
 
 Ppia::Ppia(const Configurator &p_cfgr)
     : Memory(p_cfgr)
-    , m_register( { 0, 0, 0, 0 } )
+    , m_register{ 0, 0, 0, 0 }
     , m_start( std::chrono::steady_clock::now())
 {
     LOG4CXX_INFO(cpptrace_log(), "Ppia::Ppia(" << p_cfgr << ")");
