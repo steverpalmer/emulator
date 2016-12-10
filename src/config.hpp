@@ -25,7 +25,7 @@ protected:
 protected:
     Configurator(int argc, char *argv[])
         : command(*argv)
-        , command_copy(0)
+        , command_copy(nullptr)
         {
             command_copy = (char *)malloc(command.length()+1);
             assert (command_copy);

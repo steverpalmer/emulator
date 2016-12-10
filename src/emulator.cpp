@@ -35,7 +35,7 @@ static log4cxx::LoggerPtr cpptrace_log()
     return result;
 }
 
-static class Emulator *emulator(0);
+static class Emulator *emulator(nullptr);
 
 class Emulator
     : protected NonCopyable
@@ -85,10 +85,10 @@ private:
 
 public:
     Emulator(int argc, char *argv[])
-        : stream(0)
-        , stdin(0)
-        , stdout(0)
-        , root(0)
+        : stream(nullptr)
+        , stdin(nullptr)
+        , stdout(nullptr)
+        , root(nullptr)
 		, loop_state(Continue)
         , quit_handler(*this)
         , reset_handler(*this)

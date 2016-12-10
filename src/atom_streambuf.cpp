@@ -113,7 +113,7 @@ Atom::Streambuf::int_type Atom::Streambuf::underflow()
     static int_type         buffer[2];
     static std::mutex       mutex;
     std::lock_guard<std::mutex> lock(mutex);  // one at a time...
-    int_type * current;
+    int_type *current;
     switch (state)
     {
     case Nominal:
@@ -176,6 +176,7 @@ Atom::Streambuf::int_type Atom::Streambuf::underflow()
         state = Nominal;
         break;
     }
+    assert (current);
     LOG4CXX_DEBUG(cpptrace_log(), "Atom::Streambuf::underflow() => " << *current);
     return *current;
 }
@@ -247,7 +248,7 @@ Atom::IStream::IStream(const Configurator &p_cfgr)
 Atom::IStream::~IStream()
 {
     LOG4CXX_INFO(cpptrace_log(), "Atom::IStream::~IStream()");
-    (void) rdbuf(0);
+    (void) rdbuf(nullptr);
 }
 
 // Atom::OStream
@@ -263,7 +264,7 @@ Atom::OStream::OStream(const Configurator &p_cfgr)
 Atom::OStream::~OStream()
 {
     LOG4CXX_INFO(cpptrace_log(), "Atom::OStream::~Atom::OStream()");
-    (void) rdbuf(0);
+    (void) rdbuf(nullptr);
 }
 
 // Atom::Stream
@@ -280,5 +281,5 @@ Atom::IOStream::IOStream(const Configurator &p_cfgr)
 Atom::IOStream::~IOStream()
 {
     LOG4CXX_INFO(cpptrace_log(), "Atom::IOStream::~IOStream()");
-    (void) rdbuf(0);
+    (void) rdbuf(nullptr);
 }
