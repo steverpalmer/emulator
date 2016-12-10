@@ -320,15 +320,14 @@ namespace Xml
     {
         LOG4CXX_INFO(cpptrace_log(), "Xml::MemoryConfigurator::factory(" << p_node << ")");
         typedef const Memory::Configurator *(factory_function)(const xmlpp::Node *);
-        static std::map<std::string, factory_function *> factory_map;
-        if (factory_map.size() == 0)
-        {
-            factory_map["memory"]        = MemoryRefConfigurator::memory_configurator_factory;
-            factory_map["ram"]           = RamConfigurator::memory_configurator_factory;
-            factory_map["rom"]           = RomConfigurator::memory_configurator_factory;
-            factory_map["ppia"]          = PpiaConfigurator::memory_configurator_factory;
-            factory_map["address_space"] = AddressSpaceConfigurator::memory_configurator_factory;
-        }
+        static std::map<std::string, factory_function *> factory_map
+		{
+        	{"memory",        MemoryRefConfigurator::memory_configurator_factory},
+			{"ram",           RamConfigurator::memory_configurator_factory},
+			{"rom",           RomConfigurator::memory_configurator_factory},
+			{"ppia",          PpiaConfigurator::memory_configurator_factory},
+			{"address_space", AddressSpaceConfigurator::memory_configurator_factory},
+        };
         factory_function *factory = factory_map[p_node->get_name()];
         const Memory::Configurator *result(factory ? factory(p_node) : nullptr);
         return result;
@@ -552,16 +551,15 @@ namespace Xml
     {
         LOG4CXX_INFO(cpptrace_log(), "Xml::DeviceConfigurator::factory(" << p_node << ")");
         typedef const Device::Configurator *(factory_function)(const xmlpp::Node *);
-        static std::map<Glib::ustring, factory_function *> factory_map;
-        if (factory_map.size() == 0)
-        {
-            factory_map["device"]   = DeviceRefConfigurator::device_configurator_factory;
-            factory_map["mcs6502"]  = MCS6502Configurator::device_configurator_factory;
-            factory_map["stream"]   = AtomStreamConfigurator::device_configurator_factory;
-            factory_map["computer"] = ComputerConfigurator::device_configurator_factory;
-            factory_map["monitor"]  = MonitorViewConfigurator::device_configurator_factory;
-            factory_map["tape"]     = AtomTapeConfigurator::device_configurator_factory;
-        }
+        static std::map<Glib::ustring, factory_function *> factory_map
+		{
+        	{"device",   DeviceRefConfigurator::device_configurator_factory},
+            {"mcs6502",  MCS6502Configurator::device_configurator_factory},
+            {"stream",   AtomStreamConfigurator::device_configurator_factory},
+            {"computer", ComputerConfigurator::device_configurator_factory},
+            {"monitor",  MonitorViewConfigurator::device_configurator_factory},
+            {"tape",     AtomTapeConfigurator::device_configurator_factory},
+        };
         factory_function *factory = factory_map[p_node->get_name()];
         const Device::Configurator *result(factory ? factory(p_node) : MemoryConfigurator::factory(p_node));
         return result;
@@ -573,7 +571,8 @@ namespace Xml
     {
         LOG4CXX_INFO(cpptrace_log(), "Xml::PartConfigurator::factory(" << p_node << ")");
         typedef const Part::Configurator *(factory_function)(const xmlpp::Node *);
-        static std::map<const Glib::ustring, factory_function *> factory_map;
+        static std::map<const Glib::ustring, factory_function *> factory_map{
+        };
         factory_function *factory = factory_map[p_node->get_name()];
         const Part::Configurator *result(factory ? factory(p_node) : DeviceConfigurator::factory(p_node));
         return result;

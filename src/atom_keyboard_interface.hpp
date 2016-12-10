@@ -53,7 +53,8 @@ namespace Atom
 			A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q, R, S, T, U, V, W, X, Y, Z,
 			ESCAPE,
 			CTRL = 0x80,
-			SHIFT,
+			LEFT_SHIFT,
+			RIGHT_SHIFT,
 			REPT,
 			BREAK = 0xC0
 		};
