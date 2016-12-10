@@ -40,7 +40,7 @@ namespace Atom
             OSRDCH_Adaptor(const Configurator &, Streambuf &);
             void attach();
         private:
-            virtual int get_byte_hook(word, AccessType);
+            virtual int get_byte_hook(word, AccessType) override;
         };
 
         class OSWRCH_Adaptor
@@ -66,7 +66,7 @@ namespace Atom
             OSWRCH_Adaptor(const Configurator &, Streambuf &);
             void attach();
         private:
-            virtual int get_byte_hook(word, AccessType p_at);
+            virtual int get_byte_hook(word, AccessType p_at) override;
         };
 
         class Configurator
@@ -112,9 +112,9 @@ namespace Atom
                 return OSWRCH->is_paused;
             }
 
-        virtual int_type overflow(int_type p_ch);
-        virtual int_type underflow();
-        virtual int_type uflow();
+        virtual int_type overflow(int_type p_ch) override;
+        virtual int_type underflow() override;
+        virtual int_type uflow() override;
     };
 
     class StreamDevice
@@ -134,12 +134,12 @@ namespace Atom
         explicit StreamDevice(const Configurator &);
         virtual ~StreamDevice();
     public:
-        virtual void reset();
-        virtual void pause();
-        virtual void resume();
-        virtual bool is_paused();
+        virtual void reset() override;
+        virtual void pause() override;
+        virtual void resume() override;
+        virtual bool is_paused() const override;
         void unblock();
-        virtual void terminating();
+        virtual void terminating() override;
     };
     
     class IStream
@@ -151,7 +151,7 @@ namespace Atom
         class Configurator
             : public virtual StreamDevice::Configurator
         {
-            virtual Device *device_factory() const
+            virtual Device *device_factory() const override
                 { return new IStream(*this); }
         };
 
@@ -172,7 +172,7 @@ namespace Atom
         class Configurator
             : public virtual StreamDevice::Configurator
         {
-            virtual Device *device_factory() const
+            virtual Device *device_factory() const override
                 { return new OStream(*this); }
         };
 
@@ -193,7 +193,7 @@ namespace Atom
         class Configurator
             : public virtual StreamDevice::Configurator
         {
-            virtual Device *device_factory() const
+            virtual Device *device_factory() const override
                 { return new IOStream(*this); }
         };
 

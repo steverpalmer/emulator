@@ -15,51 +15,48 @@ static log4cxx::LoggerPtr cpptrace_log()
 }
 
 const Part::id_type Part::anonymous_id("");
-int Part::anonymous_id_counter(1000);
 
 Part *Part::ReferenceConfigurator::part_factory() const
 {
     return PartsBin::instance()[m_ref_id];
 }
 
-
-Part::Part(const Part::Configurator &p_cfgr)
-    : m_id(p_cfgr.id())
+void Part::constructor_helper(const id_type &p_id)
 {
-    LOG4CXX_INFO(cpptrace_log(), "Part::Part(" << p_cfgr << ")");
-    assert (!dynamic_cast<const Part::ReferenceConfigurator *>(&p_cfgr));
-    if (m_id == anonymous_id)
-    {
+    static int anonymous_id_counter(1000);
+    if (p_id == anonymous_id)
         m_id = std::to_string(++anonymous_id_counter);
-    }
+    else
+    	m_id = p_id;
     LOG4CXX_INFO(Part::log(), "created [" << m_id << "]");
     assert (!PartsBin::instance()[m_id]);
     PartsBin::instance()[m_id] = this;
 }
 
+Part::Part(const Part::Configurator &p_cfgr)
+{
+    LOG4CXX_INFO(cpptrace_log(), "Part::Part(" << p_cfgr << ")");
+    assert (!dynamic_cast<const Part::ReferenceConfigurator *>(&p_cfgr));
+    constructor_helper(p_cfgr.id());
+}
+
 Part::Part(const id_type &p_id)
-    : m_id(p_id)
 {
     LOG4CXX_INFO(cpptrace_log(), "Part::Part(" << p_id << ")");
-    assert (m_id != anonymous_id);
-    LOG4CXX_INFO(Part::log(), "created [" << m_id << "]");
-    assert (!PartsBin::instance()[m_id]);
-    PartsBin::instance()[m_id] = this;
+    assert (p_id != anonymous_id);
+    constructor_helper(p_id);
 }
 
 Part::Part()
 {
     LOG4CXX_INFO(cpptrace_log(), "Part::Part()");
-    m_id = std::to_string(++anonymous_id_counter);
-    LOG4CXX_INFO(Part::log(), "created [" << m_id << "]");
-    assert (!PartsBin::instance()[m_id]);
-    PartsBin::instance()[m_id] = this;
+    constructor_helper(anonymous_id);
 }
 
 Part::~Part()
 {
     LOG4CXX_INFO(cpptrace_log(), "Part::~Part([" << id() << "])");
-    LOG4CXX_INFO(Part::log(), "destructed [" << m_id << "]");
+    LOG4CXX_INFO(Part::log(), "destroyed [" << m_id << "]");
 }
 
 const char Part::id_delimiter     = '.';

@@ -41,7 +41,7 @@ namespace Atom
             explicit OSSAVE_Adaptor(Tape &);
             void attach();
         private:
-            virtual int get_byte_hook(word, AccessType);
+            virtual int get_byte_hook(word, AccessType) override;
         };
                   
         class OSLOAD_Adaptor
@@ -56,7 +56,7 @@ namespace Atom
             explicit OSLOAD_Adaptor(Tape &);
             void attach();
         private:
-            virtual int get_byte_hook(word, AccessType p_at);
+            virtual int get_byte_hook(word, AccessType p_at) override;
         };
                   
     public:
@@ -69,7 +69,7 @@ namespace Atom
             virtual ~Configurator() = default;
             virtual const Glib::ustring &directory() const = 0;
             virtual const Device::Configurator *mcs6502() const = 0;
-            virtual Device *device_factory() const
+            virtual Device *device_factory() const override
                 { return new Tape(*this); }
         };
     private:

@@ -27,7 +27,7 @@ namespace Xml
     public:
         Configurator(int argc, char *argv[]);
         virtual ~Configurator();
-        virtual const Part::Configurator *part(int i) const
+        virtual const Part::Configurator *part(int i) const override
             { return (i < int(m_parts.size())) ? m_parts[i] : 0; }
     };
 

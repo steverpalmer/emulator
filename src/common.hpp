@@ -59,7 +59,7 @@ private:
 public:
     ExceptionWithReason(const Glib::ustring &p_reason) : reason(p_reason) {}
     virtual ~ExceptionWithReason() = default;
-    virtual const char *what() const noexcept { return reason.c_str(); }
+    virtual const char *what() const noexcept  override{ return reason.c_str(); }
 };
 
 // Streaming Utilitiy

@@ -62,10 +62,10 @@ public:
     	/// 1. Constructor Information - Name only at this level
     	/// 2. Factory Method
         virtual Memory *memory_factory() const = 0;
-        virtual Device *device_factory() const
+        virtual Device *device_factory() const override
             { return memory_factory(); }
 
-        virtual void serialize(std::ostream &) const;
+        virtual void serialize(std::ostream &) const override;
     };
 
     class ReferenceConfigurator
@@ -76,10 +76,10 @@ public:
         explicit ReferenceConfigurator(const id_type p_ref_id)
             : Device::ReferenceConfigurator(p_ref_id) {}
         virtual ~ReferenceConfigurator() = default;
-        virtual Part *part_factory() const;
-        virtual Device *device_factory() const;
-        virtual Memory *memory_factory() const;
-        virtual void serialize(std::ostream &) const;
+        virtual Part *part_factory() const override;
+        virtual Device *device_factory() const override;
+        virtual Memory *memory_factory() const override;
+        virtual void serialize(std::ostream &) const override;
     };
 
     // Attributes
@@ -156,10 +156,10 @@ public:
     	virtual word size() const = 0;
         virtual const Glib::ustring &filename() const = 0;
     	/// 2. Factory Method
-        virtual Memory *memory_factory() const
+        virtual Memory *memory_factory() const override
             { return new Ram(*this); }
 
-        virtual void serialize(std::ostream &) const;
+        virtual void serialize(std::ostream &) const override;
     };
     // Attributes
 private:
@@ -173,16 +173,16 @@ public:
 private:
     virtual ~Ram();
 public:
-    virtual word size() const
+    virtual word size() const override
         { return m_storage.size(); }
-    virtual byte get_byte(word p_addr, AccessType p_at = AT_UNKNOWN)
+    virtual byte get_byte(word p_addr, AccessType p_at = AT_UNKNOWN) override
         { return m_storage.get_byte(p_addr, p_at); }
 private:
-    virtual void unobserved_set_byte(word p_addr, byte p_byte, AccessType p_at = AT_UNKNOWN)
+    virtual void unobserved_set_byte(word p_addr, byte p_byte, AccessType p_at = AT_UNKNOWN) override
         { m_storage.set_byte(p_addr, p_byte, p_at); }
 
 public:
-    virtual void serialize(std::ostream &) const;
+    virtual void serialize(std::ostream &) const override;
 };
 
 
@@ -206,10 +206,10 @@ public:
         virtual const Glib::ustring &filename() const = 0;
     	virtual word size() const = 0;
         /// 2. Factory Method
-        virtual Memory *memory_factory() const
+        virtual Memory *memory_factory() const override
             { return new Rom(*this); }
 
-        virtual void serialize(std::ostream &) const;
+        virtual void serialize(std::ostream &) const override;
     };
     // Attributes
 private:
@@ -222,16 +222,16 @@ public:
 private:
     virtual ~Rom();
 public:
-    virtual word size() const
+    virtual word size() const override
         { return m_storage.size(); }
-    virtual byte get_byte(word p_addr, AccessType p_at = AT_UNKNOWN)
+    virtual byte get_byte(word p_addr, AccessType p_at = AT_UNKNOWN) override
         { return m_storage.get_byte(p_addr, p_at); }
 private:
-    virtual void unobserved_set_byte(word p_addr, byte p_byte, AccessType p_at = AT_UNKNOWN)
+    virtual void unobserved_set_byte(word p_addr, byte p_byte, AccessType p_at = AT_UNKNOWN) override
         { /* Do Nothing! */ }
 
 public:
-    virtual void serialize(std::ostream &) const;
+    virtual void serialize(std::ostream &) const override;
 };
 
 
@@ -261,10 +261,10 @@ public:
         };
         virtual const Mapping &mapping(int i) const = 0;
         /// 2. Factory Method
-        virtual Memory *memory_factory() const
+        virtual Memory *memory_factory() const override
             { return new AddressSpace(*this); }
 
-        virtual void serialize(std::ostream &) const;
+        virtual void serialize(std::ostream &) const override;
     };
     // Attributes
 private:
@@ -276,22 +276,22 @@ public:
     explicit AddressSpace(const Configurator &);
     explicit AddressSpace(const id_type &, word p_size = 0);
     explicit AddressSpace(word p_size = 0);
-    virtual word size() const { return m_map.size(); }
-    virtual byte get_byte(word p_addr, AccessType p_at = AT_UNKNOWN);
+    virtual word size() const  override{ return m_map.size(); }
+    virtual byte get_byte(word p_addr, AccessType p_at = AT_UNKNOWN) override;
 private:
-    virtual void unobserved_set_byte(word p_addr, byte p_byte, AccessType p_at = AT_UNKNOWN);
+    virtual void unobserved_set_byte(word p_addr, byte p_byte, AccessType p_at = AT_UNKNOWN) override;
 public:
     void add_child(word p_base, Memory &p_memory, word p_size = 0);
     void clear();
 private:
     virtual ~AddressSpace();
 public:
-    virtual void reset();
-    virtual void pause();
-    virtual void resume();
-    virtual bool is_paused() const;
+    virtual void reset() override;
+    virtual void pause() override;
+    virtual void resume() override;
+    virtual bool is_paused() const override;
 
-    virtual void serialize(std::ostream &) const;
+    virtual void serialize(std::ostream &) const override;
 
     friend class Hook;
 };
@@ -311,7 +311,7 @@ public:
     	/// 1. Constructor Information
         virtual word size() const = 0;
         /// 2. Factory Method
-        virtual Memory *memory_factory() const
+        virtual Memory *memory_factory() const override
             { return new Hook(*this); }
     };
 private:
@@ -327,10 +327,10 @@ private:
     virtual int set_byte_hook(word p_addr, byte p_byte, AccessType p_at) { return -1; }
 public:
     void fill(AddressSpace &p_as, word p_base);
-    virtual word size() const { return m_address_space->size(); }
-    virtual byte get_byte(word p_addr, AccessType p_at = AT_UNKNOWN);
+    virtual word size() const override { return m_address_space->size(); }
+    virtual byte get_byte(word p_addr, AccessType p_at = AT_UNKNOWN) override;
 private:
-    virtual void unobserved_set_byte(word p_addr, byte p_byte, AccessType p_at = AT_UNKNOWN);
+    virtual void unobserved_set_byte(word p_addr, byte p_byte, AccessType p_at = AT_UNKNOWN) override;
 };
 
 #endif

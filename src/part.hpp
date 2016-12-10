@@ -53,14 +53,13 @@ public:
     public:
         explicit ReferenceConfigurator(const id_type p_ref_id) : m_ref_id(p_ref_id) {}
         virtual ~ReferenceConfigurator() = default;
-        virtual const id_type &id() const { return anonymous_id; }
-        virtual Part *part_factory() const;
-        virtual void serialize(std::ostream &) const;
+        virtual const id_type &id() const override { return anonymous_id; }
+        virtual Part *part_factory() const override;
+        virtual void serialize(std::ostream &) const override;
     };
 
 private:
 	id_type m_id;
-    static int anonymous_id_counter;
 public:
 	const id_type &id() const { return m_id; }
 protected:
@@ -69,6 +68,7 @@ protected:
     Part();
     virtual ~Part();
 private:
+    void constructor_helper(const id_type &);
     virtual void terminating() {}
 public:
 

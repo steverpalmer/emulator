@@ -41,7 +41,7 @@ public:
         Configurator() = default;
     public:
         virtual ~Configurator() = default;
-        virtual void serialize(std::ostream &) const;
+        virtual void serialize(std::ostream &) const override;
     };
     // Attributes
 private:
@@ -58,21 +58,21 @@ private:
     Cpu();
 protected:
     explicit Cpu(const Configurator &);
-    virtual void terminating();
+    virtual void terminating() override;
     virtual ~Cpu();
 public:
-    virtual void resume();
-    virtual void pause();
-    virtual bool is_paused() const;
+    virtual void resume() override;
+    virtual void pause() override;
+    virtual bool is_paused() const override;
     virtual void step(int cnt = 1);
     virtual void single_step() = 0;
     virtual void reset(InterruptState) = 0;
-    virtual void reset()
+    virtual void reset() override
         { reset(INTERRUPT_PULSE); }
     virtual void NMI(InterruptState p_is = INTERRUPT_PULSE) = 0;
     virtual void IRQ(InterruptState p_is = INTERRUPT_PULSE) = 0;
 
-    virtual void serialize(std::ostream &) const;
+    virtual void serialize(std::ostream &) const override;
 };
 
 class MCS6502
@@ -96,7 +96,7 @@ public:
                 as->add_child(addr, *this);
             }
     private:
-        virtual int get_byte_hook(word, AccessType p_at)
+        virtual int get_byte_hook(word, AccessType p_at) override
             {
                 if (p_at == AT_INSTRUCTION)
                 {
@@ -114,9 +114,9 @@ public:
     public:
         virtual ~Configurator() = default;
         virtual const Memory::Configurator *memory() const = 0;
-        virtual Device *device_factory() const
+        virtual Device *device_factory() const override
             { return new MCS6502(*this); }
-        virtual void serialize(std::ostream &) const;
+        virtual void serialize(std::ostream &) const override;
     };
     class Instruction;
     // Attributes
@@ -149,12 +149,12 @@ private:
     virtual ~MCS6502();
 public:
     AddressSpace *address_space() const { return dynamic_cast<AddressSpace *>(m_memory); }
-    virtual void reset(InterruptState p_is);
-    virtual void NMI(InterruptState p_is = INTERRUPT_PULSE);
-    virtual void IRQ(InterruptState p_is = INTERRUPT_PULSE);
-    virtual void single_step();
+    virtual void reset(InterruptState p_is) override;
+    virtual void NMI(InterruptState p_is = INTERRUPT_PULSE) override;
+    virtual void IRQ(InterruptState p_is = INTERRUPT_PULSE) override;
+    virtual void single_step() override;
 
-    virtual void serialize(std::ostream &) const;
+    virtual void serialize(std::ostream &) const override;
 };
 
 #endif

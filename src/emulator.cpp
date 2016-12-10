@@ -59,7 +59,7 @@ private:
                 LOG4CXX_INFO(cpptrace_log(), "QuitHandler::QuitHandler(...)");
             }
     private:
-        void handle(const SDL_Event &)
+        virtual void handle(const SDL_Event &) override
             {
                 LOG4CXX_INFO(cpptrace_log(), "QuitHandler::handle(...)");
                 state.loop_state = QuitRequest;
@@ -76,7 +76,7 @@ private:
                 LOG4CXX_INFO(cpptrace_log(), "ResetHandler::ResetHandler(...)");
             }
     private:
-        void handle(const SDL_Event &)
+        virtual void handle(const SDL_Event &) override
             {
                 LOG4CXX_INFO(cpptrace_log(), "ResetHandler::handle(...)");
                 state.reset();

@@ -26,7 +26,7 @@ private:
     public:
         explicit WindowHandler(MonitorView &);
         virtual ~WindowHandler() = default;
-        virtual void handle(const SDL_Event &);
+        virtual void handle(const SDL_Event &) override;
     };
 
     class SetByteHandler
@@ -37,7 +37,7 @@ private:
         explicit SetByteHandler(MonitorView &);
         virtual ~SetByteHandler() = default;
         void push(Memory &, word, byte, Memory::AccessType) const;
-        virtual void handle(const SDL_Event &);
+        virtual void handle(const SDL_Event &) override;
     };
 
     class VdgModeHandler
@@ -48,7 +48,7 @@ private:
         explicit VdgModeHandler(MonitorView &);
         virtual ~VdgModeHandler() = default;
         void push(AtomMonitorInterface &, AtomMonitorInterface::VDGMode) const;
-        virtual void handle(const SDL_Event &);
+        virtual void handle(const SDL_Event &) override;
     };
 
     class Observer
@@ -64,9 +64,9 @@ private:
         virtual ~Observer() = default;
     private:
         // Memory::Observer
-        virtual void set_byte_update(Memory &, word, byte, Memory::AccessType);
+        virtual void set_byte_update(Memory &, word, byte, Memory::AccessType) override;
         // AtomMonitorInterface::Observer
-        virtual void vdg_mode_update(AtomMonitorInterface &, AtomMonitorInterface::VDGMode);
+        virtual void vdg_mode_update(AtomMonitorInterface &, AtomMonitorInterface::VDGMode) override;
     };
 
 public:
@@ -81,12 +81,10 @@ public:
         virtual const Glib::ustring        &window_title() const = 0;
         virtual const Memory::Configurator *memory() const = 0;
         virtual const Memory::Configurator *ppia() const = 0;
-        virtual Device *device_factory() const
+        virtual Device *device_factory() const override
             { return new MonitorView(*this); }
 
-        virtual void serialize(std::ostream &) const;
-        friend std::ostream &operator<<(std::ostream &p_s, const Configurator &p_cfgr)
-            { p_cfgr.serialize(p_s); return p_s; }
+        virtual void serialize(std::ostream &) const override;
     };
 
     class Mode;
@@ -116,9 +114,7 @@ private:
     MonitorView();
     virtual ~MonitorView();
 public:
-    virtual void serialize(std::ostream &) const;
-    friend std::ostream &operator<<(std::ostream &p_s, const MonitorView &p_mv)
-        { p_mv.serialize(p_s); return p_s; }
+    virtual void serialize(std::ostream &) const override;
 };
 
 

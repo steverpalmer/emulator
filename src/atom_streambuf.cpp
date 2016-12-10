@@ -212,7 +212,7 @@ void Atom::StreamDevice::resume()
     streambuf->resume();
 }
 
-bool Atom::StreamDevice::is_paused()
+bool Atom::StreamDevice::is_paused() const
 {
     return streambuf->is_paused();
 }

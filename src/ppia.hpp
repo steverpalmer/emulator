@@ -29,10 +29,10 @@ public:
         virtual ~Configurator() = default;
         /// 1. Constructor Information - Name only
         /// 2. Factory Method
-        virtual Memory *memory_factory() const
+        virtual Memory *memory_factory() const override
             { return new Ppia(*this); }
 
-        virtual void serialize(std::ostream &) const;
+        virtual void serialize(std::ostream &) const override;
     };
     // Attributes
 private:
@@ -63,23 +63,23 @@ private:
 
     // Device
 public:
-    virtual word size() const { return 4; }
-    virtual void reset();
-    virtual byte get_byte(word p_addr, AccessType p_at = AT_UNKNOWN);
+    virtual word size() const  override{ return 4; }
+    virtual void reset() override;
+    virtual byte get_byte(word p_addr, AccessType p_at = AT_UNKNOWN) override;
 private:
-    virtual void unobserved_set_byte(word p_addr, byte p_byte, AccessType p_at = AT_UNKNOWN);
+    virtual void unobserved_set_byte(word p_addr, byte p_byte, AccessType p_at = AT_UNKNOWN) override;
 
     // AtomKeyboardInterface
 private:
-    virtual void down(Key);
-    virtual void up(Key);
+    virtual void down(Key) override;
+    virtual void up(Key) override;
 
     // AtomMonitorInterface
 public:
-    virtual Part::id_type id() const { return Device::id(); }
-    virtual VDGMode vdg_mode() const;
+    virtual Part::id_type id() const  override{ return Device::id(); }
+    virtual VDGMode vdg_mode() const override;
 
-    virtual void serialize(std::ostream &) const;
+    virtual void serialize(std::ostream &) const override;
 };
 
 #endif

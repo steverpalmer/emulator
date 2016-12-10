@@ -171,7 +171,7 @@ public:
             LOG4CXX_INFO(SDL::log(), "SDL_DestroyTexture(...)");
             SDL_DestroyTexture(m_font);
         }
-    virtual void set_byte_update(word p_addr, byte p_byte)
+    virtual void set_byte_update(word p_addr, byte p_byte) override
         {
             LOG4CXX_INFO(cpptrace_log()
                          , "MonitorView::Mode0::set_byte_update("
@@ -196,7 +196,7 @@ public:
             LOG4CXX_INFO(SDL::log(), "SDL_PresentRender(...)");
             SDL_RenderPresent(m_state->m_renderer);
         }
-    virtual void render()
+    virtual void render() override
         {
             LOG4CXX_INFO(cpptrace_log(), "MonitorView::Mode0::render()");
             if (m_state->m_memory) {

@@ -31,10 +31,10 @@ public:
     	/// 1. Constructor Information - Name only at this level
     	/// 2. Factory Method
         virtual Device *device_factory() const = 0;
-        virtual Part *part_factory() const
+        virtual Part *part_factory() const override
             { return device_factory(); }
 
-        virtual void serialize(std::ostream &) const;
+        virtual void serialize(std::ostream &) const override;
     };
 
     class ReferenceConfigurator
@@ -45,9 +45,9 @@ public:
         explicit ReferenceConfigurator(const id_type p_ref_id)
             : Part::ReferenceConfigurator(p_ref_id) {}
         virtual ~ReferenceConfigurator() = default;
-        virtual Part *part_factory() const;
-        virtual Device *device_factory() const;
-        virtual void serialize(std::ostream &) const;
+        virtual Part *part_factory() const override;
+        virtual Device *device_factory() const override;
+        virtual void serialize(std::ostream &) const override;
     };
 
     // Methods
@@ -62,7 +62,7 @@ public:
     virtual void resume() {};
     virtual bool is_paused() const { return true; }
 
-    virtual void serialize(std::ostream &) const;
+    virtual void serialize(std::ostream &) const override;
 };
 
 
@@ -84,10 +84,10 @@ public:
     	/// 1. Constructor Information
         virtual const Device::Configurator *device(int) const = 0;
         /// 2. Factory Method
-        virtual Device *device_factory() const
+        virtual Device *device_factory() const override
             { return new Computer(*this); }
 
-        virtual void serialize(std::ostream &) const;
+        virtual void serialize(std::ostream &) const override;
     };
     // Attributes
 private:
@@ -103,12 +103,12 @@ public:
     void add_child(Device &);
     void clear();
 
-    virtual void reset();
-    virtual void pause();
-    virtual void resume();
-    virtual bool is_paused() const;
+    virtual void reset() override;
+    virtual void pause() override;
+    virtual void resume() override;
+    virtual bool is_paused() const override;
 
-    virtual void serialize(std::ostream &) const;
+    virtual void serialize(std::ostream &) const override;
 };
 
 
