@@ -24,8 +24,6 @@
 #include "part.hpp"
 #include "device.hpp"
 #include "atom_streambuf.hpp"
-#include "ppia.hpp"
-#include "keyboard_adaptor.hpp"
 #include "dispatcher.hpp"
 #include "pump.hpp"
 

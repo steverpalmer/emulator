@@ -40,17 +40,17 @@
             <e:size>#0800</e:size>
           </e:ram>
         </e:map -->
-        <!-- e:map>
+        <e:map>
           <e:base>#2800</e:base>
           <e:ram name="lower">
             <e:size>#1400</e:size>
           </e:ram>
-        </e:map -->
+        </e:map>
         <e:map>
           <e:base>#8000</e:base>
           <e:ram name="video">
-            <e:size>#0400</e:size>
-            <!-- e:size>#1800</e:size -->
+            <!-- e:size>#0400</e:size -->
+            <e:size>#1800</e:size>
           </e:ram>
         </e:map>
         <!-- #9800 to #9FFF: undefined -->
@@ -118,7 +118,7 @@
       </e:controller>
     </e:keyboard>
 
-    <!-- e:stream/ -->
+    <e:stream/>
 
     <e:tape>
       <e:directory>../Basic</e:directory>
