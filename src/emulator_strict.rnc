@@ -48,6 +48,7 @@ monitor.class = device.class, monitor.attributes, monitor.content
 monitor.attributes = empty
 monitor.content = video-memory.instance?
                   & controller.instance?
+                  & scale.instance?
                   & font.instance?
                   & window-title.instance?
 video-memory.instance = element e:video_memory { video-memory.class }
@@ -58,6 +59,10 @@ controller.instance = element e:controller { controller.class }
 controller.class = controller.attributes, controller.content
 controller.attributes = empty
 controller.content = memory
+scale.instance = element e:scale { scale.class }
+scale.class = scale.attributes, scale.content
+scale.attributes = empty
+scale.content = scale.value
 font.instance = element e:font { font.class }
 font.class = font.attributes, font.content
 font.attributes = empty
@@ -178,3 +183,4 @@ address.value = ( hexidecimal-address.value | interger-address.value )
 hexidecimal-address.value = xsd:token { pattern = "#[a-fA-F0-9]{1,4}" }
 interger-address.value = xsd:unsignedShort
 path.value = xsd:anyURI
+scale.value = xsd:decimal { minInclusive = "1.0" }

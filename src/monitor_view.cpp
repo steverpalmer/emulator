@@ -226,6 +226,89 @@ public:
         }
 };
 
+class MonitorView::Mode4
+    : public Mode
+{
+private:
+    SDL_Texture * m_font;
+public:
+    Mode4(MonitorView *p_state, const MonitorView::Configurator &p_cfgr)
+        : Mode("Mode 4", p_state)
+        {
+            LOG4CXX_INFO(cpptrace_log(), "MonitorView::Mode4::Mode4(" << &p_state << ", " << p_cfgr << ")");
+            LOG4CXX_INFO(SDL::log(), "SDL_LoadBMP(...)");
+            SDL_Surface *fontfile(SDL_LoadBMP("plot.bmp"));
+            assert (fontfile);
+            assert (fontfile->w == 8);
+            assert (fontfile->h == 256);
+            LOG4CXX_INFO(SDL::log(), "SDL_CreateTextureFromSurface(...)");
+            m_font = SDL_CreateTextureFromSurface(m_state->m_renderer, fontfile);
+            assert (m_font);
+            LOG4CXX_INFO(SDL::log(), "SDL_FreeSurface(...)");
+            SDL_FreeSurface(fontfile);
+        }
+    virtual ~Mode4()
+        {
+            LOG4CXX_INFO(cpptrace_log(), "MonitorView::Mode4::~Mode4()");
+            LOG4CXX_INFO(SDL::log(), "SDL_DestroyTexture(...)");
+            SDL_DestroyTexture(m_font);
+        }
+    virtual void set_byte_update(word p_addr, byte p_byte) override
+        {
+            LOG4CXX_INFO(cpptrace_log()
+                         , "MonitorView::Mode4::set_byte_update("
+                         << Hex(p_addr)
+                         << ", "
+                         << Hex(p_byte)
+                         << ")");
+            SDL_Rect texture;
+            texture.w = 8;
+            texture.h = 1;
+            texture.x = 0;
+            texture.y = p_byte;
+            SDL_Rect window;
+            window.w = 8;
+            window.h = 1;
+            window.x = (p_addr & ((1u << 5u) - 1u)) * window.w;
+            window.y = (p_addr >> 5u);
+            LOG4CXX_INFO(SDL::log(), "SDL_RenderCopy(...)");
+            const int rv = SDL_RenderCopy(m_state->m_renderer, m_font, &texture, &window);
+            assert (!rv);
+            m_state->m_rendered[p_addr] = p_byte;
+            LOG4CXX_INFO(SDL::log(), "SDL_PresentRender(...)");
+            SDL_RenderPresent(m_state->m_renderer);
+        }
+    virtual void render() override
+        {
+            LOG4CXX_INFO(cpptrace_log(), "MonitorView::Mode4::render()");
+            if (m_state->m_memory) {
+                LOG4CXX_INFO(SDL::log(), "SDL_RenderClear(...)");
+                int rv = SDL_RenderClear(m_state->m_renderer);
+                assert (!rv);
+                SDL_Rect texture;
+                texture.w = 8;
+                texture.h = 1;
+                SDL_Rect window;
+                window.w = 8;
+                window.h = 1;
+                for (int addr = 0; addr < 0x1800; addr++)
+                {
+                    const byte ch = m_state->m_memory->get_byte(addr);
+                    texture.x = 0;
+                    texture.y = ch;
+                    window.x = (addr & ((1u << 5u) - 1u)) * window.w;
+                    window.y = (addr >> 5u);
+                    LOG4CXX_INFO(SDL::log(), "SDL_RenderCopy(...)");
+                    int rv = SDL_RenderCopy(m_state->m_renderer, m_font, &texture, &window);
+                    assert (!rv);
+                    m_state->m_rendered[addr] = ch;
+                }
+                LOG4CXX_INFO(SDL::log(), "SDL_PresentRender(...)");
+                SDL_RenderPresent(m_state->m_renderer);
+            }
+        }
+};
+
 MonitorView::MonitorView(const Configurator &p_cfgr)
     : Device(p_cfgr)
     , m_ppia(dynamic_cast<Ppia *>(p_cfgr.ppia()->memory_factory()))
@@ -233,6 +316,7 @@ MonitorView::MonitorView(const Configurator &p_cfgr)
     , m_rendered(m_memory->size())
     , m_mode(nullptr)
     , m_mode0(nullptr)
+	, m_mode4(nullptr)
     , m_window_handler(*this)
     , m_set_byte_handler(*this)
     , m_vdg_mode_handler(*this)
@@ -247,7 +331,7 @@ MonitorView::MonitorView(const Configurator &p_cfgr)
     LOG4CXX_INFO(SDL::log(), "SDL_CreateWindow(...)");
     m_window = SDL_CreateWindow(p_cfgr.window_title().c_str(),
                                 SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
-                                512, 384,
+                                int(256 * p_cfgr.initial_scale()), int(192 * p_cfgr.initial_scale()),
                                 SDL_WINDOW_RESIZABLE);
     assert (m_window);
     LOG4CXX_INFO(SDL::log(), "SDL_CreateRenderer(...)");
@@ -256,11 +340,22 @@ MonitorView::MonitorView(const Configurator &p_cfgr)
                                     SDL_RENDERER_ACCELERATED);
     assert (m_renderer);
     LOG4CXX_INFO(SDL::log(), "SDL_RenderSetLogicalSize(..., 256, 192)");
-    const int rv = SDL_RenderSetLogicalSize(m_renderer, 256, 192);
+    int rv = SDL_RenderSetLogicalSize(m_renderer, 256, 192);
     assert (!rv);
+#if 0
+    LOG4CXX_INFO(SDL::log(), "SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, \"0\")");
+    rv = SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "0");
+    assert (rv);
+
+    LOG4CXX_INFO(SDL::log(), "SDL_RenderSetIntegerScale(..., SDL_TRUE");
+    rv = SDL_RenderSetIntegerScale(m_renderer, SDL_TRUE);
+    assert (!rv);
+#endif
     std::fill(m_rendered.begin(), m_rendered.end(), -1); // (un)Initialise cache
     m_mode0 = new Mode0(this, p_cfgr);
     assert (m_mode0);
+    m_mode4 = new Mode4(this, p_cfgr);
+    assert (m_mode4);
     LOG4CXX_INFO(Part::log(), "making [" << m_mode0->id() << "] child of [" << id() << "]");
 
     m_memory->attach(m_observer);
@@ -275,6 +370,7 @@ MonitorView::~MonitorView()
     m_ppia = nullptr;
     m_mode = nullptr;
     m_mode0 = nullptr;
+    m_mode4 = nullptr;
     if (m_renderer)
     {
         LOG4CXX_INFO(SDL::log(), "SDL_DestroyRenderer(...)");
@@ -312,6 +408,9 @@ void MonitorView::vdg_mode_update(Atom::MonitorInterface &, Atom::MonitorInterfa
     case Atom::MonitorInterface::VDGMode::MODE0:
         m_mode = m_mode0;
         break;
+    case Atom::MonitorInterface::VDGMode::MODE4:
+        m_mode = m_mode4;
+        break;
     default:
         m_mode = nullptr;
     }
@@ -325,6 +424,7 @@ void MonitorView::Configurator::serialize(std::ostream &p_s) const
     p_s << "<monitor>"
         << "<controller>" << *ppia() << "</controller>"
         << "<video>" << *memory() << "</video>"
+		<< "<scale>" << initial_scale() << "</scale>"
         << "<fontfilename>" << fontfilename() << "</fontfilename>"
         << "<windowtitle>"  << window_title() << "</windowtitle>"
         << "</monitor>";

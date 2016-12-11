@@ -476,6 +476,7 @@ namespace Xml
     private:
         Glib::ustring m_fontfilename;
         Glib::ustring m_window_title;
+        float         m_initial_scale;
         const Memory::Configurator *m_memory;
         const Memory::Configurator *m_ppia;
     public:
@@ -483,6 +484,7 @@ namespace Xml
             : DeviceConfigurator("", p_node)
             , m_fontfilename("")
             , m_window_title("")
+        	, m_initial_scale(2.0)
             {
                 LOG4CXX_INFO(cpptrace_log(), "Xml::MonitorViewConfigurator::MonitorViewConfigurator(" << p_node << ")");
                 if (p_node)
@@ -490,6 +492,8 @@ namespace Xml
                     try { m_fontfilename = eval_to_string(p_node, "e:font/filename"); }
                     catch (XpathNotFound &e) {}
                     try { m_window_title = eval_to_string(p_node, "e:window_title"); }
+                    catch (XpathNotFound &e) {}
+                    try { m_initial_scale = eval_to_float(p_node, "e:scale"); }
                     catch (XpathNotFound &e) {}
                     const xmlpp::NodeSet video_memory_ns(p_node->find("e:video_memory", namespaces));
                     switch (video_memory_ns.size())
@@ -542,6 +546,7 @@ namespace Xml
             }
         virtual const Glib::ustring        &fontfilename() const override { return m_fontfilename; }
         virtual const Glib::ustring        &window_title() const override { return m_window_title; }
+        virtual float                      initial_scale() const override { return m_initial_scale; }
         virtual const Memory::Configurator *memory()       const override { return m_memory; }
         virtual const Memory::Configurator *ppia()         const override { return m_ppia; }
         static const Device::Configurator *device_configurator_factory(const xmlpp::Node *p_node)

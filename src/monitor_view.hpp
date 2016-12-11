@@ -79,6 +79,7 @@ public:
         virtual ~Configurator() = default;
         virtual const Glib::ustring        &fontfilename() const = 0;
         virtual const Glib::ustring        &window_title() const = 0;
+        virtual float                      initial_scale() const = 0;
         virtual const Memory::Configurator *memory() const = 0;
         virtual const Memory::Configurator *ppia() const = 0;
         virtual Device *device_factory() const override
@@ -89,6 +90,7 @@ public:
 
     class Mode;
     class Mode0;
+    class Mode4;
 
 private:
     Ppia             *m_ppia;
@@ -98,6 +100,7 @@ private:
     std::vector<int> m_rendered;
     Mode             *m_mode;
     Mode0            *m_mode0;
+    Mode4            *m_mode4;
 
     const WindowHandler  m_window_handler;
     const SetByteHandler m_set_byte_handler;

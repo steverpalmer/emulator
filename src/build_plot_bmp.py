@@ -16,6 +16,7 @@ PLOT_IMG = Image.new("1", (8,256))
 for y in range(256):
     for x in range(8):
         if y & (128>>x):
-            PLOT_IMG.putpixel((7-x,y),1)
+#            PLOT_IMG.putpixel((7-x,y),1)
+            PLOT_IMG.putpixel((x,y),1)
 
 PLOT_IMG.save(ARGS.target)
