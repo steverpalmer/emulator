@@ -91,6 +91,9 @@ public:
 
     class Mode;
     class Mode0;
+    class Mode1;
+    class Mode2;
+    class Mode3;
     class Mode4;
 
 private:
@@ -101,6 +104,9 @@ private:
     std::vector<int> m_rendered;
     Mode             *m_mode;
     Mode0            *m_mode0;
+    Mode1            *m_mode1;
+    Mode2            *m_mode2;
+    Mode3            *m_mode3;
     Mode4            *m_mode4;
 
     const WindowHandler  m_window_handler;

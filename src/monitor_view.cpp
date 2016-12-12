@@ -226,6 +226,255 @@ public:
         }
 };
 
+class MonitorView::Mode1
+    : public Mode
+{
+private:
+    SDL_Texture * m_font;
+public:
+    Mode1(MonitorView *p_state, const MonitorView::Configurator &p_cfgr)
+        : Mode("Mode 1", p_state)
+        {
+            LOG4CXX_INFO(cpptrace_log(), "MonitorView::Mode1::Mode1(" << &p_state << ", " << p_cfgr << ")");
+            LOG4CXX_INFO(SDL::log(), "SDL_LoadBMP(...)");
+            SDL_Surface *fontfile(SDL_LoadBMP("plot.bmp"));
+            assert (fontfile);
+            assert (fontfile->w == 8);
+            assert (fontfile->h == 256);
+            LOG4CXX_INFO(SDL::log(), "SDL_CreateTextureFromSurface(...)");
+            m_font = SDL_CreateTextureFromSurface(m_state->m_renderer, fontfile);
+            assert (m_font);
+            LOG4CXX_INFO(SDL::log(), "SDL_FreeSurface(...)");
+            SDL_FreeSurface(fontfile);
+        }
+    virtual ~Mode1()
+        {
+            LOG4CXX_INFO(cpptrace_log(), "MonitorView::Mode1::~Mode1()");
+            LOG4CXX_INFO(SDL::log(), "SDL_DestroyTexture(...)");
+            SDL_DestroyTexture(m_font);
+        }
+    virtual void set_byte_update(word p_addr, byte p_byte) override
+        {
+            LOG4CXX_INFO(cpptrace_log()
+                         , "MonitorView::Mode1::set_byte_update("
+                         << Hex(p_addr)
+                         << ", "
+                         << Hex(p_byte)
+                         << ")");
+            SDL_Rect texture;
+            texture.w = 8;
+            texture.h = 1;
+            texture.x = 0;
+            texture.y = p_byte;
+            SDL_Rect window;
+            window.w = 16;
+            window.h = 3;
+            window.x = (p_addr & ((1u << 4u) - 1u)) * window.w;
+            window.y = (p_addr >> 4u) * window.h;
+            LOG4CXX_INFO(SDL::log(), "SDL_RenderCopy(...)");
+            const int rv = SDL_RenderCopy(m_state->m_renderer, m_font, &texture, &window);
+            assert (!rv);
+            m_state->m_rendered[p_addr] = p_byte;
+            LOG4CXX_INFO(SDL::log(), "SDL_PresentRender(...)");
+            SDL_RenderPresent(m_state->m_renderer);
+        }
+    virtual void render() override
+        {
+            LOG4CXX_INFO(cpptrace_log(), "MonitorView::Mode1::render()");
+            if (m_state->m_memory) {
+                LOG4CXX_INFO(SDL::log(), "SDL_RenderClear(...)");
+                int rv = SDL_RenderClear(m_state->m_renderer);
+                assert (!rv);
+                SDL_Rect texture;
+                texture.w = 8;
+                texture.h = 1;
+                SDL_Rect window;
+                window.w = 16;
+                window.h = 3;
+                for (int addr = 0; addr < 0x0400; addr++)
+                {
+                    const byte ch = m_state->m_memory->get_byte(addr);
+                    texture.x = 0;
+                    texture.y = ch;
+                    window.x = (addr & ((1u << 4u) - 1u)) * window.w;
+                    window.y = (addr >> 4u) * window.h;
+                    LOG4CXX_INFO(SDL::log(), "SDL_RenderCopy(...)");
+                    int rv = SDL_RenderCopy(m_state->m_renderer, m_font, &texture, &window);
+                    assert (!rv);
+                    m_state->m_rendered[addr] = ch;
+                }
+                LOG4CXX_INFO(SDL::log(), "SDL_PresentRender(...)");
+                SDL_RenderPresent(m_state->m_renderer);
+            }
+        }
+};
+
+class MonitorView::Mode2
+    : public Mode
+{
+private:
+    SDL_Texture * m_font;
+public:
+    Mode2(MonitorView *p_state, const MonitorView::Configurator &p_cfgr)
+        : Mode("Mode 2", p_state)
+        {
+            LOG4CXX_INFO(cpptrace_log(), "MonitorView::Mode2::Mode2(" << &p_state << ", " << p_cfgr << ")");
+            LOG4CXX_INFO(SDL::log(), "SDL_LoadBMP(...)");
+            SDL_Surface *fontfile(SDL_LoadBMP("plot.bmp"));
+            assert (fontfile);
+            assert (fontfile->w == 8);
+            assert (fontfile->h == 256);
+            LOG4CXX_INFO(SDL::log(), "SDL_CreateTextureFromSurface(...)");
+            m_font = SDL_CreateTextureFromSurface(m_state->m_renderer, fontfile);
+            assert (m_font);
+            LOG4CXX_INFO(SDL::log(), "SDL_FreeSurface(...)");
+            SDL_FreeSurface(fontfile);
+        }
+    virtual ~Mode2()
+        {
+            LOG4CXX_INFO(cpptrace_log(), "MonitorView::Mode2::~Mode2()");
+            LOG4CXX_INFO(SDL::log(), "SDL_DestroyTexture(...)");
+            SDL_DestroyTexture(m_font);
+        }
+    virtual void set_byte_update(word p_addr, byte p_byte) override
+        {
+            LOG4CXX_INFO(cpptrace_log()
+                         , "MonitorView::Mode2::set_byte_update("
+                         << Hex(p_addr)
+                         << ", "
+                         << Hex(p_byte)
+                         << ")");
+            SDL_Rect texture;
+            texture.w = 8;
+            texture.h = 1;
+            texture.x = 0;
+            texture.y = p_byte;
+            SDL_Rect window;
+            window.w = 16;
+            window.h = 2;
+            window.x = (p_addr & ((1u << 4u) - 1u)) * window.w;
+            window.y = (p_addr >> 4u) * window.h;
+            LOG4CXX_INFO(SDL::log(), "SDL_RenderCopy(...)");
+            const int rv = SDL_RenderCopy(m_state->m_renderer, m_font, &texture, &window);
+            assert (!rv);
+            m_state->m_rendered[p_addr] = p_byte;
+            LOG4CXX_INFO(SDL::log(), "SDL_PresentRender(...)");
+            SDL_RenderPresent(m_state->m_renderer);
+        }
+    virtual void render() override
+        {
+            LOG4CXX_INFO(cpptrace_log(), "MonitorView::Mode2::render()");
+            if (m_state->m_memory) {
+                LOG4CXX_INFO(SDL::log(), "SDL_RenderClear(...)");
+                int rv = SDL_RenderClear(m_state->m_renderer);
+                assert (!rv);
+                SDL_Rect texture;
+                texture.w = 8;
+                texture.h = 1;
+                SDL_Rect window;
+                window.w = 16;
+                window.h = 2;
+                for (int addr = 0; addr < 0x0600; addr++)
+                {
+                    const byte ch = m_state->m_memory->get_byte(addr);
+                    texture.x = 0;
+                    texture.y = ch;
+                    window.x = (addr & ((1u << 4u) - 1u)) * window.w;
+                    window.y = (addr >> 4u) * window.h;
+                    LOG4CXX_INFO(SDL::log(), "SDL_RenderCopy(...)");
+                    int rv = SDL_RenderCopy(m_state->m_renderer, m_font, &texture, &window);
+                    assert (!rv);
+                    m_state->m_rendered[addr] = ch;
+                }
+                LOG4CXX_INFO(SDL::log(), "SDL_PresentRender(...)");
+                SDL_RenderPresent(m_state->m_renderer);
+            }
+        }
+};
+
+class MonitorView::Mode3
+    : public Mode
+{
+private:
+    SDL_Texture * m_font;
+public:
+    Mode3(MonitorView *p_state, const MonitorView::Configurator &p_cfgr)
+        : Mode("Mode 3", p_state)
+        {
+            LOG4CXX_INFO(cpptrace_log(), "MonitorView::Mode3::Mode3(" << &p_state << ", " << p_cfgr << ")");
+            LOG4CXX_INFO(SDL::log(), "SDL_LoadBMP(...)");
+            SDL_Surface *fontfile(SDL_LoadBMP("plot.bmp"));
+            assert (fontfile);
+            assert (fontfile->w == 8);
+            assert (fontfile->h == 256);
+            LOG4CXX_INFO(SDL::log(), "SDL_CreateTextureFromSurface(...)");
+            m_font = SDL_CreateTextureFromSurface(m_state->m_renderer, fontfile);
+            assert (m_font);
+            LOG4CXX_INFO(SDL::log(), "SDL_FreeSurface(...)");
+            SDL_FreeSurface(fontfile);
+        }
+    virtual ~Mode3()
+        {
+            LOG4CXX_INFO(cpptrace_log(), "MonitorView::Mode3::~Mode3()");
+            LOG4CXX_INFO(SDL::log(), "SDL_DestroyTexture(...)");
+            SDL_DestroyTexture(m_font);
+        }
+    virtual void set_byte_update(word p_addr, byte p_byte) override
+        {
+            LOG4CXX_INFO(cpptrace_log()
+                         , "MonitorView::Mode3::set_byte_update("
+                         << Hex(p_addr)
+                         << ", "
+                         << Hex(p_byte)
+                         << ")");
+            SDL_Rect texture;
+            texture.w = 8;
+            texture.h = 1;
+            texture.x = 0;
+            texture.y = p_byte;
+            SDL_Rect window;
+            window.w = 16;
+            window.h = 1;
+            window.x = (p_addr & ((1u << 4u) - 1u)) * window.w;
+            window.y = (p_addr >> 4u);
+            LOG4CXX_INFO(SDL::log(), "SDL_RenderCopy(...)");
+            const int rv = SDL_RenderCopy(m_state->m_renderer, m_font, &texture, &window);
+            assert (!rv);
+            m_state->m_rendered[p_addr] = p_byte;
+            LOG4CXX_INFO(SDL::log(), "SDL_PresentRender(...)");
+            SDL_RenderPresent(m_state->m_renderer);
+        }
+    virtual void render() override
+        {
+            LOG4CXX_INFO(cpptrace_log(), "MonitorView::Mode3::render()");
+            if (m_state->m_memory) {
+                LOG4CXX_INFO(SDL::log(), "SDL_RenderClear(...)");
+                int rv = SDL_RenderClear(m_state->m_renderer);
+                assert (!rv);
+                SDL_Rect texture;
+                texture.w = 8;
+                texture.h = 1;
+                SDL_Rect window;
+                window.w = 16;
+                window.h = 1;
+                for (int addr = 0; addr < 0x0C00; addr++)
+                {
+                    const byte ch = m_state->m_memory->get_byte(addr);
+                    texture.x = 0;
+                    texture.y = ch;
+                    window.x = (addr & ((1u << 4u) - 1u)) * window.w;
+                    window.y = (addr >> 4u);
+                    LOG4CXX_INFO(SDL::log(), "SDL_RenderCopy(...)");
+                    int rv = SDL_RenderCopy(m_state->m_renderer, m_font, &texture, &window);
+                    assert (!rv);
+                    m_state->m_rendered[addr] = ch;
+                }
+                LOG4CXX_INFO(SDL::log(), "SDL_PresentRender(...)");
+                SDL_RenderPresent(m_state->m_renderer);
+            }
+        }
+};
+
 class MonitorView::Mode4
     : public Mode
 {
@@ -316,6 +565,9 @@ MonitorView::MonitorView(const Configurator &p_cfgr)
     , m_rendered(m_memory->size())
     , m_mode(nullptr)
     , m_mode0(nullptr)
+	, m_mode1(nullptr)
+	, m_mode2(nullptr)
+	, m_mode3(nullptr)
 	, m_mode4(nullptr)
     , m_window_handler(*this)
     , m_set_byte_handler(*this)
@@ -354,18 +606,15 @@ MonitorView::MonitorView(const Configurator &p_cfgr)
     LOG4CXX_INFO(SDL::log(), "SDL_RenderSetLogicalSize(..., 256, 192)");
     int rv = SDL_RenderSetLogicalSize(m_renderer, 256, 192);
     assert (!rv);
-#if 0
-    LOG4CXX_INFO(SDL::log(), "SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, \"0\")");
-    rv = SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "0");
-    assert (rv);
-
-    LOG4CXX_INFO(SDL::log(), "SDL_RenderSetIntegerScale(..., SDL_TRUE");
-    rv = SDL_RenderSetIntegerScale(m_renderer, SDL_TRUE);
-    assert (!rv);
-#endif
     std::fill(m_rendered.begin(), m_rendered.end(), -1); // (un)Initialise cache
     m_mode0 = new Mode0(this, p_cfgr);
     assert (m_mode0);
+    m_mode1 = new Mode1(this, p_cfgr);
+    assert (m_mode1);
+    m_mode2 = new Mode2(this, p_cfgr);
+    assert (m_mode2);
+    m_mode3 = new Mode3(this, p_cfgr);
+    assert (m_mode3);
     m_mode4 = new Mode4(this, p_cfgr);
     assert (m_mode4);
     LOG4CXX_INFO(Part::log(), "making [" << m_mode0->id() << "] child of [" << id() << "]");
@@ -382,6 +631,9 @@ MonitorView::~MonitorView()
     m_ppia = nullptr;
     m_mode = nullptr;
     m_mode0 = nullptr;
+    m_mode1 = nullptr;
+    m_mode2 = nullptr;
+    m_mode3 = nullptr;
     m_mode4 = nullptr;
     if (m_renderer)
     {
@@ -419,6 +671,15 @@ void MonitorView::vdg_mode_update(Atom::MonitorInterface &, Atom::MonitorInterfa
     {
     case Atom::MonitorInterface::VDGMode::MODE0:
         m_mode = m_mode0;
+        break;
+    case Atom::MonitorInterface::VDGMode::MODE1:
+        m_mode = m_mode1;
+        break;
+    case Atom::MonitorInterface::VDGMode::MODE2:
+        m_mode = m_mode2;
+        break;
+    case Atom::MonitorInterface::VDGMode::MODE3:
+        m_mode = m_mode3;
         break;
     case Atom::MonitorInterface::VDGMode::MODE4:
         m_mode = m_mode4;
