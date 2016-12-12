@@ -80,6 +80,7 @@ public:
         virtual const Glib::ustring        &fontfilename() const = 0;
         virtual const Glib::ustring        &window_title() const = 0;
         virtual float                      initial_scale() const = 0;
+        virtual int                        sdl_renderer() const = 0;
         virtual const Memory::Configurator *memory() const = 0;
         virtual const Memory::Configurator *ppia() const = 0;
         virtual Device *device_factory() const override

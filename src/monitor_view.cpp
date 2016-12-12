@@ -328,6 +328,18 @@ MonitorView::MonitorView(const Configurator &p_cfgr)
     assert (m_ppia);
     LOG4CXX_INFO(Part::log(), "making [" << m_ppia->id() << "] child of [" << id() << "]");
 
+    LOG4CXX_INFO(SDL::log(), "SDL_GetNumRenderDrivers(...)");
+    const int num_render_drivers(SDL_GetNumRenderDrivers());
+    assert (num_render_drivers >= 1);
+    for (int i(0); i < num_render_drivers; i += 1)
+    {
+    	SDL_RendererInfo renderer_info;
+        LOG4CXX_INFO(SDL::log(), "SDL_GetRenderDriverInfo(" << i << ", ...)");
+    	const int rc = SDL_GetRenderDriverInfo(i, &renderer_info);
+    	assert (!rc);
+    	LOG4CXX_DEBUG(SDL::log(), renderer_info.name);
+    }
+
     LOG4CXX_INFO(SDL::log(), "SDL_CreateWindow(...)");
     m_window = SDL_CreateWindow(p_cfgr.window_title().c_str(),
                                 SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
@@ -336,8 +348,8 @@ MonitorView::MonitorView(const Configurator &p_cfgr)
     assert (m_window);
     LOG4CXX_INFO(SDL::log(), "SDL_CreateRenderer(...)");
     m_renderer = SDL_CreateRenderer(m_window,
-                                    -1,
-                                    SDL_RENDERER_ACCELERATED);
+    		                        p_cfgr.sdl_renderer(),
+									0);
     assert (m_renderer);
     LOG4CXX_INFO(SDL::log(), "SDL_RenderSetLogicalSize(..., 256, 192)");
     int rv = SDL_RenderSetLogicalSize(m_renderer, 256, 192);
@@ -425,6 +437,7 @@ void MonitorView::Configurator::serialize(std::ostream &p_s) const
         << "<controller>" << *ppia() << "</controller>"
         << "<video>" << *memory() << "</video>"
 		<< "<scale>" << initial_scale() << "</scale>"
+		<< "<sdl_renderer>" << sdl_renderer() << "</sdl_renderer>"
         << "<fontfilename>" << fontfilename() << "</fontfilename>"
         << "<windowtitle>"  << window_title() << "</windowtitle>"
         << "</monitor>";
@@ -434,6 +447,9 @@ void MonitorView::serialize(std::ostream &p_s) const
 {
     p_s << "MonitorView(";
     p_s << "Mode(" << (m_mode?m_mode->id():"?") << ")";
+    SDL_RendererInfo renderer_info;
+    if (!SDL_GetRendererInfo(m_renderer, &renderer_info))
+    	p_s << ", " << renderer_info.name;
     if (m_ppia) p_s << ", " << *m_ppia;
     if (m_memory) p_s << "," << *m_memory;
     p_s << ")";

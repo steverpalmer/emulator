@@ -37,6 +37,17 @@ private:
     Configurator();
 public:
     virtual ~Configurator() = default;
+    virtual bool build_only() const = 0;
+    virtual void serialize(std::ostream &p_s) const
+    {
+    	p_s << "<emulator>";
+    	if (build_only())
+    		p_s << "<build_only/>";
+    	PartsBin::Configurator::serialize(p_s);
+    	p_s << "</emulator>";
+    }
+    friend std::ostream &operator<<(std::ostream &p_s, const Configurator &p_cfgr)
+        { p_cfgr.serialize(p_s); return p_s; }
 };
 
 #endif

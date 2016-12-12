@@ -11,7 +11,13 @@ emulator.instance = element e:emulator { emulator.class }
 emulator.class = emulator.attributes, emulator.content
 emulator.attributes = version.instance
 emulator.content = part*
+                   & build_only.instance?
 
+build_only.instance = element e:build_only { build_only.class }
+build_only.class = build_only.attributes, build_only.content
+build_only.attributes = empty
+build_only.content = empty
+                          
 part = empty
 part.class = part.attributes, part.content
 part.attributes = name.instance?
@@ -49,6 +55,7 @@ monitor.attributes = empty
 monitor.content = video-memory.instance?
                   & controller.instance?
                   & scale.instance?
+                  & sdl_renderer.instance?
                   & font.instance?
                   & window-title.instance?
 video-memory.instance = element e:video_memory { video-memory.class }
@@ -63,6 +70,10 @@ scale.instance = element e:scale { scale.class }
 scale.class = scale.attributes, scale.content
 scale.attributes = empty
 scale.content = scale.value
+sdl_renderer.instance = element e:sdl_renderer { sdl_renderer.class }
+sdl_renderer.class = sdl_renderer.attributes, sdl_renderer.content
+sdl_renderer.attributes = empty
+sdl_renderer.content = xsd:integer { minInclusive = "-1" }
 font.instance = element e:font { font.class }
 font.class = font.attributes, font.content
 font.attributes = empty

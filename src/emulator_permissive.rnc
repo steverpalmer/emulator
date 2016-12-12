@@ -7,6 +7,7 @@ namespace local = ""
 include "emulator_strict.rnc"
 { version.value = xsd:decimal { pattern = "[^.]+\.[^.]{2}" } }
 emulator.attributes &= attribute * - version { text }*
+build_only.attributes &= any-attributes
 video-memory.attributes &= any-attributes
 controller.attributes &= any-attributes
 font.attributes &= any-attributes
@@ -19,6 +20,7 @@ size.attributes &=any-attributes
 filename.attributes &= any-attributes
 part-reference.attributes &= attribute * - (name|href) { text }*
 
+emulator.content &= element * - (e:build_only|e:computer|e:mcs6502|e:monitor|e:keyboard|e:stream|e:tape|e:address_space|e:ram|e:rom|e:ppia|e:memory|e:device) { anything }*
 video-memory.content &= element * - (e:address_space|e:ram|e:rom|e:ppia|e:memory) { anything }*
 controller.content &= element * - (e:address_space|e:ram|e:rom|e:ppia|e:memory) { anything }*
 font.content &= element * - e:filename { anything }*

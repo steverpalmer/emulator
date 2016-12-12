@@ -2,6 +2,8 @@
 <!-- Copyright 2016 Steve Palmer -->
 <e:emulator xmlns:e="http://www.srpalmer.me.uk/ns/emulator" version="0.05">
 
+  <!-- e:build_only/ -->
+
   <e:computer name="root">
     <e:mcs6502 name="mcs6502">
       <e:address_space>
@@ -104,7 +106,8 @@
         <e:filename>mc6847.bmp</e:filename>
       </e:font>
       <e:window_title>Acorn Atom Emulator</e:window_title>
-      <e:scale>2.0</e:scale>
+      <e:scale>2</e:scale>
+      <e:sdl_renderer>-1</e:sdl_renderer>
       <e:video_memory>
         <e:memory href="video"/>
       </e:video_memory>

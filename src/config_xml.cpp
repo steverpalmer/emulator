@@ -107,7 +107,7 @@ namespace Xml
         return result;
     }
 
-    float eval_to_int(const xmlpp::Node *p_node, const Glib::ustring &p_xpath)
+    int eval_to_int(const xmlpp::Node *p_node, const Glib::ustring &p_xpath)
     {
         const Glib::ustring str(eval_to_string(p_node, p_xpath));
         const int result((!str.empty() && str[0] == '#')?std::stoi(str.c_str()+1, nullptr, 16):std::atoi(str.c_str()));
@@ -477,6 +477,7 @@ namespace Xml
         Glib::ustring m_fontfilename;
         Glib::ustring m_window_title;
         float         m_initial_scale;
+        int           m_sdl_renderer;
         const Memory::Configurator *m_memory;
         const Memory::Configurator *m_ppia;
     public:
@@ -485,6 +486,7 @@ namespace Xml
             , m_fontfilename("")
             , m_window_title("")
         	, m_initial_scale(2.0)
+        	, m_sdl_renderer(-1)
             {
                 LOG4CXX_INFO(cpptrace_log(), "Xml::MonitorViewConfigurator::MonitorViewConfigurator(" << p_node << ")");
                 if (p_node)
@@ -494,6 +496,8 @@ namespace Xml
                     try { m_window_title = eval_to_string(p_node, "e:window_title"); }
                     catch (XpathNotFound &e) {}
                     try { m_initial_scale = eval_to_float(p_node, "e:scale"); }
+                    catch (XpathNotFound &e) {}
+                    try { m_sdl_renderer = eval_to_int(p_node, "e:sdl_renderer"); }
                     catch (XpathNotFound &e) {}
                     const xmlpp::NodeSet video_memory_ns(p_node->find("e:video_memory", namespaces));
                     switch (video_memory_ns.size())
@@ -547,6 +551,7 @@ namespace Xml
         virtual const Glib::ustring        &fontfilename() const override { return m_fontfilename; }
         virtual const Glib::ustring        &window_title() const override { return m_window_title; }
         virtual float                      initial_scale() const override { return m_initial_scale; }
+        virtual int                        sdl_renderer()  const override { return m_sdl_renderer; }
         virtual const Memory::Configurator *memory()       const override { return m_memory; }
         virtual const Memory::Configurator *ppia()         const override { return m_ppia; }
         static const Device::Configurator *device_configurator_factory(const xmlpp::Node *p_node)
@@ -690,6 +695,8 @@ namespace Xml
                     auto child_cfgr = PartConfigurator::factory(child_elm);
                     if (child_cfgr)
                         m_parts.push_back(child_cfgr);
+                    else if (child_elm->get_name() == "build_only")
+                    	m_build_only = true;
                 }
             }
         }
@@ -757,6 +764,7 @@ namespace Xml
     Configurator::Configurator(int argc, char *argv[])
         : ::Configurator(argc, argv)
         , m_XMLfilename("atomrc.xml")
+    	, m_build_only(false)
     {
         LOG4CXX_INFO(cpptrace_log(), "Xml::Configurator::Configurator(" << argc << ", " << argv << ")");
         process_command_line(argc, argv);

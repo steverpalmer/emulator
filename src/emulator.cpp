@@ -126,11 +126,16 @@ public:
 
             const Configurator *cfg = new Xml::Configurator(argc, argv);  // FIXME: remove Xml::
             assert (cfg);
-            LOG4CXX_DEBUG(cpptrace_log(), *cfg);
+            if (cfg->build_only())
+            	LOG4CXX_INFO(cpptrace_log(), *cfg);
 
             PartsBin::instance().build(*cfg);
+            if (cfg->build_only())
+            {
+            	LOG4CXX_INFO(cpptrace_log(), PartsBin::instance());
+            	exit(EXIT_FAILURE);
+            }
             delete cfg;
-            LOG4CXX_DEBUG(cpptrace_log(), PartsBin::instance());
 
             stream = dynamic_cast<Atom::IOStream *>(PartsBin::instance()["stream"]);
             stdin = new Pump::Stdin(stream, quit_handler);

@@ -19,6 +19,7 @@ namespace Xml
     private:  // Attributes
         Glib::ustring m_XMLfilename;
         std::vector<const Part::Configurator *>m_parts;
+        bool m_build_only;
     private:  // Methods
         void process_command_line(int argc, char *argv[]);
         void process_XML();
@@ -27,6 +28,7 @@ namespace Xml
     public:
         Configurator(int argc, char *argv[]);
         virtual ~Configurator();
+        virtual bool build_only() const override { return m_build_only; }
         virtual const Part::Configurator *part(int i) const override
             { return (i < int(m_parts.size())) ? m_parts[i] : nullptr; }
     };
