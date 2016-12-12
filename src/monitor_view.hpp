@@ -90,11 +90,6 @@ public:
     };
 
     class Mode;
-    class Mode0;
-    class Mode1;
-    class Mode2;
-    class Mode3;
-    class Mode4;
 
 private:
     Ppia             *m_ppia;
@@ -103,11 +98,7 @@ private:
     SDL_Renderer     *m_renderer;
     std::vector<int> m_rendered;
     Mode             *m_mode;
-    Mode0            *m_mode0;
-    Mode1            *m_mode1;
-    Mode2            *m_mode2;
-    Mode3            *m_mode3;
-    Mode4            *m_mode4;
+    std::map<Atom::MonitorInterface::VDGMode, Mode *> m_mode_map;
 
     const WindowHandler  m_window_handler;
     const SetByteHandler m_set_byte_handler;
