@@ -75,7 +75,10 @@ public:
 	explicit Hex(word p_v) : m_v(p_v), m_w(4) {}
 	friend std::ostream &operator<<(std::ostream &p_s, const Hex& p_n)
 	{
-		return p_s << std::hex << std::setw(p_n.m_w) << std::setfill('0') << std::uppercase << p_n.m_v;
+		std::ios_base::fmtflags save_flags(p_s.flags());
+		p_s << std::hex << std::setw(p_n.m_w) << std::setfill('0') << std::uppercase << p_n.m_v;
+		(void)p_s.flags(save_flags);
+		return p_s;
 	}
 };
 
