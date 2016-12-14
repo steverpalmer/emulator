@@ -207,20 +207,25 @@ namespace Xml
     {
     private:
         word          m_size;
+        unsigned int  m_seed;
         Glib::ustring m_filename;
     public:
         explicit RamConfigurator(const xmlpp::Node *p_node)
             : MemoryConfigurator("", p_node)
+        	, m_seed(0)
             , m_filename("")
             {
                 LOG4CXX_INFO(cpptrace_log(), "Xml::RamConfigurator::RamConfigurator(" << p_node << ")");
                 assert (p_node);
                 m_size = eval_to_int(p_node, "e:size");
+                try { m_seed = eval_to_int(p_node, "e:seed"); }
+                catch (XpathNotFound &e) {}
                 try { m_filename = eval_to_string(p_node, "e:filename"); }
                 catch (XpathNotFound &e) {}
             }
         virtual ~RamConfigurator() = default;
         virtual word                size()      const override { return m_size; }
+        virtual unsigned int        seed()      const override { return m_seed; }
         virtual const Glib::ustring &filename() const override { return m_filename; }
         static const Memory::Configurator *memory_configurator_factory(const xmlpp::Node *p_node)
             { return new RamConfigurator(p_node); }

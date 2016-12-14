@@ -4,6 +4,7 @@
 #include <cassert>
 #include <fstream>
 #include <iomanip>
+#include <random>
 
 #include "memory.hpp"
 
@@ -93,6 +94,15 @@ void Memory::set_word(word p_addr, word p_word, AccessType p_at)
 
 // Storage Methods
 
+void Storage::randomize(unsigned int seed)
+{
+	if (seed == 0)
+		seed = std::mt19937::default_seed;
+	std::mt19937 rnd(seed);
+	for(auto &b : m_storage)
+		b = byte(rnd());
+}
+
 bool Storage::load(const Glib::ustring &p_filename)
 {
     LOG4CXX_INFO(cpptrace_log(), "Storage::load(" << p_filename << ")");
@@ -140,7 +150,10 @@ Ram::Ram(const Configurator &p_cfgr)
     , m_filename(p_cfgr.filename())
 {
     LOG4CXX_INFO(cpptrace_log(), "Ram::Ram(" << p_cfgr << ")");
-    (void) m_storage.load(m_filename);
+    if (m_filename.empty())
+    	m_storage.randomize(p_cfgr.seed());
+    else
+    	(void) m_storage.load(m_filename);
 }
 
 Ram::~Ram()

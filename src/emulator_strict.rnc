@@ -129,7 +129,7 @@ ram.instance = element e:ram { ram.class }
 ram.class = memory.class, ram.attributes, ram.content
 ram.attributes = empty
 ram.content = size.instance
-              & filename.instance?
+              & ( seed.instance | filename.instance )?
 
 memory |= rom.instance
 rom.instance = element e:rom { rom.class }
@@ -177,6 +177,10 @@ size.instance = element e:size { size.class }
 size.class = size.attributes, size.content
 size.attributes = empty
 size.content = address.value
+seed.instance = element e:seed { seed.class }
+seed.class = seed.attributes, seed.content
+seed.attributes = empty
+seed.content = seed.value
 filename.instance = element e:filename { filename.class }
 filename.class = filename.attributes, filename.content
 filename.attributes = empty
@@ -195,3 +199,4 @@ hexidecimal-address.value = xsd:token { pattern = "#[a-fA-F0-9]{1,4}" }
 interger-address.value = xsd:unsignedShort
 path.value = xsd:anyURI
 scale.value = xsd:decimal { minInclusive = "1.0" }
+seed.value = xsd:nonNegativeInteger

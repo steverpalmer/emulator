@@ -122,7 +122,7 @@ class Storage
 private:
     Storage();
 public:
-    Storage(int size) : m_storage(size, 0) {}
+    Storage(int size) : m_storage(size) {}
     virtual ~Storage() = default;
     inline word size() const
         { return m_storage.size(); }
@@ -130,6 +130,7 @@ public:
         { return m_storage[p_addr]; }
     inline void set_byte(word p_addr, byte p_byte, Memory::AccessType p_at)
         { m_storage[p_addr] = p_byte; }
+    void randomize(unsigned int seed = 0);
     bool load(const Glib::ustring &p_filename);
     bool save(const Glib::ustring &p_filename) const;
 
@@ -154,6 +155,7 @@ public:
         virtual ~Configurator() = default;
     	/// 1. Constructor Information
     	virtual word size() const = 0;
+    	virtual unsigned int seed() const = 0;
         virtual const Glib::ustring &filename() const = 0;
     	/// 2. Factory Method
         virtual Memory *memory_factory() const override

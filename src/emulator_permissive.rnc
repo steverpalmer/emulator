@@ -19,6 +19,7 @@ base.attributes &= any-attributes
 size.attributes &=any-attributes
 filename.attributes &= any-attributes
 part-reference.attributes &= attribute * - (name|href) { text }*
+seed.attributes &= any-attributes
 
 emulator.content &= element * - (e:build_only|e:computer|e:mcs6502|e:monitor|e:keyboard|e:stream|e:tape|e:address_space|e:ram|e:rom|e:ppia|e:memory|e:device) { anything }*
 video-memory.content &= element * - (e:address_space|e:ram|e:rom|e:ppia|e:memory) { anything }*
@@ -31,11 +32,12 @@ stream.content &= any-content
 tape.content &= element * - (e:processor|e:directory) { anything }*
 address-space.content &= element * - (e:map|e:size) { anything }*
 address-space.map.content &= element * - (e:base|e:address_space|e:ram|e:rom|e:ppia|e:memory|e:size) { anything }*
-ram.content &= element * - (e:size|e:filename) { anything }*
+ram.content &= element * - (e:size|e:filename|e:seed) { anything }*
 rom.content &= element * - (e:size|e:filename|e:content) { anything }*
 ppia.content &= any-content
 part-reference.content &= any-content
-
+seed.content &= any-content
+                              
 any-attributes =  attribute * { text }*
 any-content = ( element * { anything } | text )*
 anything = ( element * { anything } | attribute * - (name|href) { text } | text )*

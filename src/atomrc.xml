@@ -11,6 +11,7 @@
           <e:base>#0000</e:base>
           <e:ram name="block0">
             <e:size>#0400</e:size>
+            <e:seed>1</e:seed>
           </e:ram>
         </e:map>
         <!-- e:map>
