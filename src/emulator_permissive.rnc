@@ -36,7 +36,6 @@ ram.content &= element * - (e:size|e:filename|e:seed) { anything }*
 rom.content &= element * - (e:size|e:filename|e:content) { anything }*
 ppia.content &= any-content
 part-reference.content &= any-content
-seed.content &= any-content
                               
 any-attributes =  attribute * { text }*
 any-content = ( element * { anything } | text )*

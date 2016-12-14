@@ -96,11 +96,19 @@ void Memory::set_word(word p_addr, word p_word, AccessType p_at)
 
 void Storage::randomize(unsigned int seed)
 {
+    LOG4CXX_INFO(cpptrace_log(), "Storage::randomize(" << seed << ")");
 	if (seed == 0)
 		seed = std::mt19937::default_seed;
 	std::mt19937 rnd(seed);
 	for(auto &b : m_storage)
 		b = byte(rnd());
+}
+
+void Storage::initialize(const std::vector<byte> &content)
+{
+    LOG4CXX_INFO(cpptrace_log(), "Storage::initialize(...)");
+	assert (m_storage.size() == 0);
+	m_storage = content;
 }
 
 bool Storage::load(const Glib::ustring &p_filename)
@@ -169,7 +177,13 @@ Rom::Rom(const Configurator &p_cfgr)
     , m_storage(p_cfgr.size())
 {
     LOG4CXX_INFO(cpptrace_log(), "Rom::Rom(" << p_cfgr << ")");
-    assert (m_storage.load(p_cfgr.filename()));
+    if (not p_cfgr.filename().empty())
+    {
+    	const bool rc = m_storage.load(p_cfgr.filename());
+        assert (rc);
+    }
+    else
+    	m_storage.initialize(p_cfgr.content());
 }
 
 Rom::~Rom()
@@ -383,10 +397,20 @@ void Rom::Configurator::serialize(std::ostream &p_s) const
 #else
     p_s << "<rom ";
     Memory::Configurator::serialize(p_s);
-    p_s << ">"
-        << "<filename>" << filename() << "</filename>";
-    if (size())
-        p_s << "<size>" << Hex(size()) << "</size>";
+    p_s << ">";
+    if (!filename().empty())
+    {
+        p_s << "<filename>" << filename() << "</filename>";
+        if (size())
+        	p_s << "<size>" << Hex(size()) << "</size>";
+    }
+    else
+    {
+    	p_s << "<content type=\"hexBinary\">";
+    	for (auto b : content())
+    		p_s << Hex(b);
+    	p_s << "</content>";
+    }
     p_s << "</rom>";
 #endif
 }

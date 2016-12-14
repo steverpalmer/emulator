@@ -8,6 +8,7 @@
 #include <cassert>
 #include <exception>
 #include <cstdlib>
+#include <sstream>
 
 #include <libxml++/libxml++.h>
 #include <libxml++/validators/relaxngvalidator.h>
@@ -236,8 +237,9 @@ namespace Xml
         , private MemoryConfigurator
     {
     private:
-        word          m_size;
-        Glib::ustring m_filename;
+        word              m_size;
+        Glib::ustring     m_filename;
+        std::vector<byte> m_content;
     public:
         explicit RomConfigurator(const xmlpp::Node *p_node)
             : MemoryConfigurator("", p_node)
@@ -245,13 +247,33 @@ namespace Xml
             {
                 LOG4CXX_INFO(cpptrace_log(), "Xml::RomConfigurator::RomConfigurator(" << p_node << ")");
                 assert (p_node);
-                m_filename = eval_to_string(p_node, "e:filename");
-                try { m_size = eval_to_int(p_node, "e:size"); }
-                catch(XpathNotFound::exception &e) {}
+                try { m_filename = eval_to_string(p_node, "e:filename"); }
+                catch (XpathNotFound::exception &e) {}
+                if (!m_filename.empty())
+                {
+                	try { m_size = eval_to_int(p_node, "e:size"); }
+                	catch(XpathNotFound::exception &e) {}
+                }
+                else
+                {
+                	std::istringstream hexBinary(eval_to_string(p_node, "e:content"));
+                	char hexbyte[3];
+                	hexbyte[2] = 0;
+                	while (true)
+                	{
+                		hexbyte[0] = hexBinary.get();
+                		hexbyte[1] = hexBinary.get();
+                		if (hexBinary.eof()) break;
+                		const byte b(std::stoi(hexbyte, nullptr, 16));
+                		m_content.push_back(b);
+                        LOG4CXX_INFO(cpptrace_log(), "Xml::RomConfigurator::RomConfigurator content:" << Hex(b));
+                	}
+                }
             }
         virtual ~RomConfigurator() = default;
-        virtual const Glib::ustring &filename() const override { return m_filename; }
-        virtual word                size()      const override { return m_size; }
+        virtual const Glib::ustring     &filename() const override { return m_filename; }
+        virtual word                    size()      const override { return m_size; }
+        virtual const std::vector<byte> &content()  const override { return m_content; }
         static const Memory::Configurator *memory_configurator_factory(const xmlpp::Node *p_node)
             { return new RomConfigurator(p_node); }
     };

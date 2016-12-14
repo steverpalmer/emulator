@@ -131,6 +131,7 @@ public:
     inline void set_byte(word p_addr, byte p_byte, Memory::AccessType p_at)
         { m_storage[p_addr] = p_byte; }
     void randomize(unsigned int seed = 0);
+    void initialize(const std::vector<byte> &);
     bool load(const Glib::ustring &p_filename);
     bool save(const Glib::ustring &p_filename) const;
 
@@ -207,6 +208,7 @@ public:
     	/// 1. Constructor Information
         virtual const Glib::ustring &filename() const = 0;
     	virtual word size() const = 0;
+    	virtual const std::vector<byte> &content() const = 0;
         /// 2. Factory Method
         virtual Memory *memory_factory() const override
             { return new Rom(*this); }

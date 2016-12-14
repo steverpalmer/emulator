@@ -139,8 +139,7 @@ rom.content = rom-file.content
               | rom-inline.content
 rom-file.content = filename.instance
                    & size.instance?
-rom-inline.content = element e:content { ( attribute type {"hexBinary"}, xsd:hexBinary )
-                                         | ( attribute type {"base64Binary"}, xsd:base64Binary ) }
+rom-inline.content = content.instance
 
 memory |= ppia.instance
 ppia.instance = element e:ppia { ppia.class }
@@ -185,6 +184,9 @@ filename.instance = element e:filename { filename.class }
 filename.class = filename.attributes, filename.content
 filename.attributes = empty
 filename.content = path.value
+content.instance = element e:content { hexbinarycontent.class | base64binarycontent.class}
+hexbinarycontent.class = attribute type {"hexBinary"}, xsd:hexBinary
+base64binarycontent.class =  attribute type {"base64binary"}, xsd:base64Binary
 directory.instance = element e:directory { directory.class }
 directory.class = directory.attributes, directory.content
 directory.attributes = empty
