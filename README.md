@@ -9,11 +9,12 @@ my first computer and, as was common in the day, I got to know it in a
 lot of detail.  Since then, I've owned many computers, but have become
 more and more distanced from the details of the machine.
 
-Around to late 90's early 2000 I thought that writing an emulation of
-my Atom could be an interesting little project.  I started an
-Object-based C implementation using
-[ncurses](https://en.wikipedia.org/wiki/Ncurses) for the display.
-Since then the program has evolved and been rewritten *many* times.
+Around 2000, I thought that writing an emulation of my Atom could be
+an interesting little project.  I started an
+[Object-based](https://en.wikipedia.org/wiki/Object-based_language) C
+implementation using [ncurses](https://en.wikipedia.org/wiki/Ncurses)
+for the display.  Since then the program has evolved and been
+rewritten *many* times.
 
 It now makes use of the following:
 * [git](https://git-scm.com/) for version control ☺;
@@ -34,14 +35,14 @@ It now makes use of the following:
   the compact schema to the XML schema files;
   * I tried using
     [Jing](http://www.thaiopensource.com/relaxng/jing.html) to
-    validate the schemas, but it sometimes passed and something failed.
+    validate the schemas, but it sometimes passed and sometimes failed.
 * [Robot Framework](http://robotframework.org/) to provide an
   acceptance test framework;
 * [Python](https://www.python.org/) for ad hoc utilities;
 * Various ROM files that I've scoured the Web for.
 
 Indeed, in many ways the project has evolved in to tool that I've used
-to explore various libraries since the emulator it self was largely
+to explore various libraries since the emulator itself was largely
 complete many years ago.
 
 It is still a _Work-In-Progress_ but I thought I'd publish and be
