@@ -45,7 +45,8 @@ Indeed, in many ways the project has evolved in to tool that I've used
 to explore various libraries since the emulator itself was largely
 complete many years ago.
 
-It is still a _Work-In-Progress_ but I thought I'd publish and be
-damned.
+The emulator is highly configurable, does all the monochrome graphics
+modes, and has a Tape simulation.  It is still a _Work-In-Progress_
+but I thought I'd publish and be damned.
 
 Steve Palmer
