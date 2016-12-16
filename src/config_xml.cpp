@@ -225,9 +225,11 @@ namespace Xml
                 catch (XpathNotFound &e) {}
             }
         virtual ~RamConfigurator() = default;
+    private:
         virtual word                size()      const override { return m_size; }
         virtual unsigned int        seed()      const override { return m_seed; }
         virtual const Glib::ustring &filename() const override { return m_filename; }
+    public:
         static const Memory::Configurator *memory_configurator_factory(const xmlpp::Node *p_node)
             { return new RamConfigurator(p_node); }
     };
@@ -271,9 +273,11 @@ namespace Xml
                 }
             }
         virtual ~RomConfigurator() = default;
+    private:
         virtual const Glib::ustring     &filename() const override { return m_filename; }
         virtual word                    size()      const override { return m_size; }
         virtual const std::vector<byte> &content()  const override { return m_content; }
+    public:
         static const Memory::Configurator *memory_configurator_factory(const xmlpp::Node *p_node)
             { return new RomConfigurator(p_node); }
     };
@@ -337,9 +341,11 @@ namespace Xml
                 }
                 assert (m_memory.empty());
             }
+    private:
         virtual word size() const override { return m_size; }
         virtual const AddressSpace::Configurator::Mapping &mapping(int i) const override
             { return (i < int(m_memory.size())) ? *m_memory[i] : m_last_memory; }
+    public:
         static const Memory::Configurator *memory_configurator_factory(const xmlpp::Node *p_node)
             { return new AddressSpaceConfigurator(p_node); }
     };
@@ -395,8 +401,10 @@ namespace Xml
             }
         virtual ~MCS6502Configurator()
             { delete m_memory; }
+    private:
         virtual const Memory::Configurator *memory() const override
             { return m_memory; }
+    public:
         static const Device::Configurator *device_configurator_factory(const xmlpp::Node *p_node)
             { return new MCS6502Configurator(p_node); }
     };
@@ -422,9 +430,10 @@ namespace Xml
             {
                 delete m_mcs6502;
             }
+    private:
         virtual const Device::Configurator *mcs6502() const override { return m_mcs6502; }
         virtual bool pause_output() const override { return m_pause_output; }
-
+    public:
         static const Device::Configurator *device_configurator_factory(const xmlpp::Node *p_node)
             { return new AtomStreamConfigurator(p_node); }
     };
@@ -453,9 +462,10 @@ namespace Xml
             {
                 delete m_mcs6502;
             }
+    private:
         virtual const Glib::ustring &directory() const override { return m_directory; }
         virtual const Device::Configurator *mcs6502() const override { return m_mcs6502; }
-
+    public:
         static const Device::Configurator *device_configurator_factory(const xmlpp::Node *p_node)
             { return new AtomTapeConfigurator(p_node); }
     };
@@ -489,8 +499,10 @@ namespace Xml
                     delete device;
                 m_devices.clear();
             }
+    private:
         virtual const Device::Configurator *device(int i) const override
             { return (i < int(m_devices.size())) ? m_devices[i] : nullptr; }
+    public:
         static const Device::Configurator *device_configurator_factory(const xmlpp::Node *p_node)
             { return new ComputerConfigurator(p_node); }
 
@@ -575,12 +587,14 @@ namespace Xml
                 delete m_memory;
                 delete m_ppia;
             }
+    private:
         virtual const Glib::ustring        &fontfilename() const override { return m_fontfilename; }
         virtual const Glib::ustring        &window_title() const override { return m_window_title; }
         virtual float                      initial_scale() const override { return m_initial_scale; }
         virtual int                        sdl_renderer()  const override { return m_sdl_renderer; }
         virtual const Memory::Configurator *memory()       const override { return m_memory; }
         virtual const Memory::Configurator *ppia()         const override { return m_ppia; }
+    public:
         static const Device::Configurator *device_configurator_factory(const xmlpp::Node *p_node)
             { return new MonitorViewConfigurator(p_node); }
     };
@@ -624,7 +638,9 @@ namespace Xml
             {
                 delete m_ppia;
             }
+    private:
         virtual const Memory::Configurator *ppia() const override { return m_ppia; }
+    public:
         static const Device::Configurator *device_configurator_factory(const xmlpp::Node *p_node)
             { return new KeyboardAdaptorConfigurator(p_node); }
     };
