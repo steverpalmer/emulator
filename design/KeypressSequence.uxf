@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?><diagram program="umlet" version="13.3">
+  <zoom_level>9</zoom_level>
+  <element>
+    <type>com.baselet.element.old.allinone.SequenceDiagram</type>
+    <coordinates>
+      <x>72</x>
+      <y>9</y>
+      <w>1323</w>
+      <h>963</h>
+    </coordinates>
+    <panel_attributes>title: Keypress
+_Emulator~emu_|_SDL_~sdl|_Dispatcher~dis_|_DownHandler~down_|_UpHandler~up_|_KeyboardInterface_~ki
+iframe{:Press
+emu-&gt;sdl:emu,sdl:SDL_WaitEvent()
+sdl.&gt;emu:emu,sdl:SDL_KEYDOWN event
+emu-&gt;dis:emu,dis:[success] dispatch(event)
+dis-&gt;down:emu,dis,down:[Handler attached] handle(event)
+down-&gt;down:emu,dis,down:key=keys[event.scandcode]
+down-&gt;ki:emu,dis,down,ki:[key not BREAK] down(key)
+ki.&gt;down:emu,dis,down,ki
+down.&gt;dis:emu,dis,down
+dis.&gt;emu:emu,dis
+iframe}
+
+iframe{:Release
+emu-&gt;sdl:emu,sdl:SDL_WaitEvent()
+sdl.&gt;emu:emu,sdl:SDL_KEYUP event
+emu-&gt;dis:emu,dis:[success] dispatch(event)
+dis-&gt;up:emu,dis,up:[Handler attached] handle(event)
+up-&gt;up:emu,dis,up:key=keys[event.scandcode]
+up-&gt;ki:emu,dis,up,ki:up(key)
+ki.&gt;up:emu,dis,up,ki
+up.&gt;dis:emu,dis,up
+dis.&gt;emu:emu,dis
+iframe}
+
+iframe{:Reset
+emu-&gt;sdl:emu,sdl:SDL_WaitEvent()
+sdl.&gt;emu:emu,sdl:SDL_KEYDOWN event
+emu-&gt;dis:emu,dis:[success] dispatch(event)
+dis-&gt;down:emu,dis,down:[Handler attached] handle(event)
+down-&gt;down:emu,dis,down:key=keys[event.scandcode]
+down-&gt;down:emu,dis,down:[key is BREAK] raise(SIGUSR1)
+down.&gt;dis:emu,dis,down
+dis.&gt;emu:emu,dis
+iframe}
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLNote</id>
+    <coordinates>
+      <x>72</x>
+      <y>981</y>
+      <w>216</w>
+      <h>45</h>
+    </coordinates>
+    <panel_attributes>KeypressSequences
+Copyright 2016 Steve Palmer</panel_attributes>
+    <additional_attributes/>
+  </element>
+</diagram>

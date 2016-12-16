@@ -1,0 +1,299 @@
+<?xml version="1.0" encoding="UTF-8"?><diagram program="umlet" version="13.3">
+  <zoom_level>8</zoom_level>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>392</x>
+      <y>104</y>
+      <w>224</w>
+      <h>112</h>
+    </coordinates>
+    <panel_attributes>&lt;&lt;configurable&gt;&gt;
+/A/
+--
+-attr1
+#attr2
+--
+#A(const A::Configurator &amp;p_cfgr)
+#mthd1(...)
++mthd2(...)</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>728</x>
+      <y>104</y>
+      <w>168</w>
+      <h>88</h>
+    </coordinates>
+    <panel_attributes>&lt;&lt;interface&gt;&gt;
+/A::Configurator/
+--
+--
+/+param1() = 0/
+/+param2() = 0/
+/+A *factory() = 0/</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>392</x>
+      <y>312</y>
+      <w>232</w>
+      <h>168</h>
+    </coordinates>
+    <panel_attributes>&lt;&lt;configurable&gt;&gt;
+B
+--
+-attr3
+-attr4
+--
++B(const B::Configurator &amp;p_cfgr)
+    : A(p_cfgr)
+    , m_c(p_cfgr.c().factory()) {}
++mthd3(...)
++mthd4(...)
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>488</x>
+      <y>208</y>
+      <w>24</w>
+      <h>120</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;-</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;130.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>728</x>
+      <y>312</y>
+      <w>168</w>
+      <h>112</h>
+    </coordinates>
+    <panel_attributes>&lt;&lt;interface&gt;&gt;
+/B::Configurator/
+--
+--
+/+param3() = 0/
+/+param4() = 0/
+/+const C:Configurator &amp;c()/
++A *factory()
+    { new B(*this); }</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>800</x>
+      <y>184</y>
+      <w>56</w>
+      <h>144</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;-
+virtual</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;160.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>1000</x>
+      <y>104</y>
+      <w>200</w>
+      <h>72</h>
+    </coordinates>
+    <panel_attributes>ConcreteAConfigurator
+--
+--
+ConcreteAConfigurator(....)
+-param1() override
+-param2() override
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>888</x>
+      <y>96</y>
+      <w>128</w>
+      <h>32</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;-
+virtual</panel_attributes>
+    <additional_attributes>10.0;20.0;140.0;20.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>1000</x>
+      <y>312</y>
+      <w>200</w>
+      <h>112</h>
+    </coordinates>
+    <panel_attributes>ConcreteBConfigurator
+--
+C::Configurator m_c
+--
+ConcerteBConfigurator(...)
+-param3() override
+-param4() override
+-const C:Configurator &amp;c() override
+    { return m_c; }
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>888</x>
+      <y>304</y>
+      <w>128</w>
+      <h>32</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;-
+virtual</panel_attributes>
+    <additional_attributes>10.0;20.0;140.0;20.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>1088</x>
+      <y>168</y>
+      <w>24</w>
+      <h>160</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;-</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;180.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>400</x>
+      <y>536</y>
+      <w>224</w>
+      <h>112</h>
+    </coordinates>
+    <panel_attributes>&lt;&lt;configurable&gt;&gt;
+C
+--
+attr5
+attr6
+--
++C(const C::Configurator &amp;p_cfgr)
+mthd5
+mthd6</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>720</x>
+      <y>536</y>
+      <w>184</w>
+      <h>96</h>
+    </coordinates>
+    <panel_attributes>&lt;&lt;interface&gt;&gt;
+/C::Configurator/
+--
+--
+/+param5() = 0/
+/+param6() = 0/
++ C *factory()
+    { new C(*this); }</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>488</x>
+      <y>472</y>
+      <w>40</w>
+      <h>80</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;&lt;&lt;&lt;-
+m_c</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;80.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>1000</x>
+      <y>536</y>
+      <w>200</w>
+      <h>72</h>
+    </coordinates>
+    <panel_attributes>ConcreteCConfigurator
+--
+--
+ConcerteCConfigurator(...)
+-param5() override
+-param6() override
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>896</x>
+      <y>528</y>
+      <w>120</w>
+      <h>32</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;-
+virtual</panel_attributes>
+    <additional_attributes>10.0;20.0;130.0;20.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLNote</id>
+    <coordinates>
+      <x>400</x>
+      <y>664</y>
+      <w>728</w>
+      <h>168</h>
+    </coordinates>
+    <panel_attributes>Configurability
+Copyright 2016 Steve Palmer
+
+Each Configurable object declares a "Configurator" interface class that provides all the parameters needed by the objects
+constructor.  The Configurators follow a symetric structure to the main class structure.  The configurators also have a 
+factory method to build a new instance based on itself.
+
+Concrete configurators can get the parameters from whatever source they like.
+For example, I get the parameters from an XML file.  They could be parsed Eagerly or Lazily (on demand).
+
+Although this will cause Deadly Diamonds, since at least half of the classes are interfaces, they can be virtually inherited
+without causing any problems.</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>1088</x>
+      <y>416</y>
+      <w>40</w>
+      <h>136</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;&lt;&lt;&lt;-
+m_c</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;150.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>800</x>
+      <y>416</y>
+      <w>40</w>
+      <h>136</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;&lt;&lt;&lt;-
+c()</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;150.0</additional_attributes>
+  </element>
+</diagram>

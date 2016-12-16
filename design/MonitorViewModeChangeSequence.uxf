@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?><diagram program="umlet" version="13.3">
+  <zoom_level>8</zoom_level>
+  <element>
+    <type>com.baselet.element.old.allinone.SequenceDiagram</type>
+    <coordinates>
+      <x>0</x>
+      <y>0</y>
+      <w>1576</w>
+      <h>808</h>
+    </coordinates>
+    <panel_attributes>title: MonitorModeChangeSequence
+_Ppia~ppia_|_MonitorView::Observer~mvo_|_VDGModeHandler~hnd_|_Dispatcher~dis_|_Emulator~emu_|_MontorView~mv_|_Mode:m_mode~mode_|_SDL~sdl_|
+
+iframe{:ModeSet
+ppia-&gt;ppia:ppia:set_PortA
+ppia-&gt;ppia:ppia:[need to notify]vdg_mode_notify(mode)
+ppia-&gt;mvo:ppia,mvo:vdg_mode_update(mode)
+mvo-&gt;hnd:ppia,mvo,hnd:push(mode)
+hnd-&gt;dis:ppia,mvo,hnd,dis:prepare(event)
+dis.&gt;hnd:ppia,mvo,hnd,dis
+hnd-&gt;hnd:ppia,mvo,hnd:event.user.code = mode
+hnd-&gt;dis:ppia,mvo,hnd,dis:push(event)
+dis-&gt;sdl:ppia,mvo,hnd,dis,sdl:SDL_PushEvent(event)
+sdl.&gt;dis:ppia,mvo,hnd,dis,sdl
+dis.&gt;hnd:ppia,mvo,hnd,dis
+hnd.&gt;mvo:ppia,mvo,hnd
+mvo.&gt;ppia:ppia,mvo
+iframe}
+
+iframe{:VDGMode Change Event
+emu-&gt;sdl:emu,sdl:SDL_WaitEvent()
+sdl.&gt;emu:emu,sdl:event
+emu-&gt;dis:emu,dis:[success] dispatch(event)
+dis-&gt;hnd:emu,dis,hnd: [Handler attached]handle(event)
+hnd-&gt;mv:emu,dis,hnd,mv:vdg_mode_update(mode)
+mv-&gt;mv:emu,dis,hnd,mv:m_mode = m_mode_map[mode]
+mv-&gt;mode:emu,dis,hnd,mv,mode:[mode not Null] render()
+mode-&gt;sdl:emu,dis,hnd,mv,mode,sdl:SDL_RenderClear, Copy &amp; Present
+sdl.&gt;mode:emu,dis,hnd,mv,mode,sdl
+mode.&gt;mv:emu,dis,hnd,mv,mode
+mv.&gt;hnd:emu,dis,hnd,mv
+hnd.&gt;dis:emu,dis,hnd
+dis.&gt;emu:emu,dis
+iframe}
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLNote</id>
+    <coordinates>
+      <x>0</x>
+      <y>816</y>
+      <w>384</w>
+      <h>88</h>
+    </coordinates>
+    <panel_attributes>MonitorViewModeChangeSequence
+Copyright 2016 Steve Palmer
+
+Because SDL commands must execute from a single thread,
+and Mode changes may occur in the CPU thread, the change
+is indicated in an SDL event to the main loop.</panel_attributes>
+    <additional_attributes/>
+  </element>
+</diagram>

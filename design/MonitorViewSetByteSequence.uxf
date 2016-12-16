@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?><diagram program="umlet" version="13.3">
+  <zoom_level>8</zoom_level>
+  <element>
+    <type>com.baselet.element.old.allinone.SequenceDiagram</type>
+    <coordinates>
+      <x>0</x>
+      <y>0</y>
+      <w>1664</w>
+      <h>808</h>
+    </coordinates>
+    <panel_attributes>title: MonitorSetByteSequence
+_RAM:video~ram_|_MonitorView::Observer~mvo_|_SetByteHandler~hnd_|_Dispatcher~dis_|_Emulator~emu_|_MontorView~mv_|_Mode:m_mode~mode_|_SDL~sdl_|
+
+iframe{:Video RAM byte write
+ram-&gt;ram:ram:set_byte(addr, byte)
+ram-&gt;mvo:ram,mvo:set_byte_update(addr, byte)
+mvo-&gt;hnd:ram,mvo,hnd:push(addr, byte)
+hnd-&gt;dis:ram,mvo,hnd,dis:prepare(event)
+dis.&gt;hnd:ram,mvo,hnd,dis
+hnd-&gt;hnd:ram,mvo,hnd:event.user.code = addr, byte
+hnd-&gt;dis:ram,mvo,hnd,dis:push(event)
+dis-&gt;sdl:ram,mvo,hnd,dis,sdl:SDL_PushEvent(event)
+sdl.&gt;dis:ram,mvo,hnd,dis,sdl
+dis.&gt;hnd:ram,mvo,hnd,dis
+hnd.&gt;mvo:ram,mvo,hnd
+mvo.&gt;ram:ram,mvo
+iframe}
+
+iframe{:Byte Change Event
+emu-&gt;sdl:emu,sdl:SDL_WaitEvent()
+sdl.&gt;emu:emu,sdl:event
+emu-&gt;dis:emu,dis:[success] dispatch(event)
+dis-&gt;hnd:emu,dis,hnd: [Handler attached]handle(event)
+hnd-&gt;mv:emu,dis,hnd,mv:set_byte_update(addr, byte)
+mv-&gt;mv:emu,dis,hnd,mv:byte @ addr has changed
+mv-&gt;mode:emu,dis,hnd,mv,mode:[mode not Null] set_byte(addr, byte)
+mode-&gt;mode:emu,dis,hnd,mv,mode:render_one(addr, byte)
+mode-&gt;sdl:emu,dis,hnd,mv,mode,sdl:SDL_RenderCopy &amp; Present
+sdl.&gt;mode:emu,dis,hnd,mv,mode,sdl
+mode.&gt;mv:emu,dis,hnd,mv,mode
+mv.&gt;hnd:emu,dis,hnd,mv
+hnd.&gt;dis:emu,dis,hnd
+dis.&gt;emu:emu,dis
+iframe}
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLNote</id>
+    <coordinates>
+      <x>0</x>
+      <y>816</y>
+      <w>384</w>
+      <h>88</h>
+    </coordinates>
+    <panel_attributes>MonitorViewSetByteSequence
+Copyright 2016 Steve Palmer
+
+Because SDL commands must execute from a single thread,
+and the Set bytes will occur in the CPU thread, the change
+is indicated in an SDL event to the main loop.</panel_attributes>
+    <additional_attributes/>
+  </element>
+</diagram>

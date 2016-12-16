@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?><diagram program="umlet" version="13.3">
+  <zoom_level>9</zoom_level>
+  <element>
+    <type>com.baselet.element.old.allinone.SequenceDiagram</type>
+    <coordinates>
+      <x>63</x>
+      <y>18</y>
+      <w>1287</w>
+      <h>693</h>
+    </coordinates>
+    <panel_attributes>title: MonitorViewResizeSequence
+_Emulator~emu_|_Dispatcher~dis_|_WindowHandler~wh_|_MontorView~mv_|_Mode~mode_|_SDL~sdl_|
+
+iframe{:Resize
+emu-&gt;sdl:emu,sdl:SDL_WaitEvent()
+sdl.&gt;emu:emu,sdl:SDL_WINDOWEVENT
+emu-&gt;dis:emu,dis:[success] dispatch(event)
+dis-&gt;wh:emu,dis,wh: [Handler attached]handle(event)
+wh-&gt;mv:emu,dis,wh,mv:[redraw req'd] screen_resize()
+mv-&gt;mode:emu,dis,wh,mv,mode:[mode not Null] render()
+mode-&gt;sdl:emu,sdl,dis,wh,mv,mode:SDL_RenderClear()
+sdl.&gt;mode:emu,sdl,dis,wh,mv,mode
+iframe{:loop
+mode-&gt;mode:emu,dis,wh,mv,mode:render_one(addr, byte)
+mode-&gt;sdl:emu,sdl,dis,wh,mv,mode:SDL_RenderCopy()
+sdl.&gt;mode:emu,sdl,dis,wh,mv,mode
+mode.&gt;mode:emu,dis,wh,mv,mode
+iframe}
+mode-&gt;sdl:emu,sdl,dis,wh,mv,mode:SDL_PresentRender()
+sdl.&gt;mode:emu,sdl,dis,wh,mv,mode
+mode.&gt;mv:emu,dis,wh,mv,mode
+mv.&gt;wh:emu,dis,wh,mv
+wh.&gt;dis:emu,dis,wh
+dis.&gt;emu:emu,dis
+iframe}
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLNote</id>
+    <coordinates>
+      <x>63</x>
+      <y>720</y>
+      <w>216</w>
+      <h>45</h>
+    </coordinates>
+    <panel_attributes>MonitorViewResizeSequence
+Copyright 2016 Steve Palmer</panel_attributes>
+    <additional_attributes/>
+  </element>
+</diagram>
