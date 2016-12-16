@@ -64,23 +64,6 @@ private:
             }
     } quit_handler;
 
-    class ResetHandler
-        : public Dispatcher::StateHandler<Emulator>
-    {
-    public:
-        explicit ResetHandler(Emulator &p_emulator)
-            : Dispatcher::StateHandler<Emulator>(p_emulator)
-            {
-                LOG4CXX_INFO(cpptrace_log(), "ResetHandler::ResetHandler(...)");
-            }
-    private:
-        virtual void handle(const SDL_Event &) override
-            {
-                LOG4CXX_INFO(cpptrace_log(), "ResetHandler::handle(...)");
-                state.reset();
-            }
-    } reset_handler;
-
 public:
     Emulator(int argc, char *argv[])
         : stream(nullptr)
@@ -89,7 +72,6 @@ public:
         , root(nullptr)
 		, loop_state(LoopState::Continue)
         , quit_handler(*this)
-        , reset_handler(*this)
         {
             LOG4CXX_INFO(cpptrace_log(), "Emulator::Emulator(" << argc << ", " << argv << ")");
 
