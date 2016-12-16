@@ -23,6 +23,7 @@ private:
     public:
         DownHandler(const KeyboardAdaptor &);
         virtual ~DownHandler() = default;
+    private:
         virtual void handle(const SDL_Event &) override;
     };
 
@@ -32,6 +33,7 @@ private:
     public:
         UpHandler(const KeyboardAdaptor &);
         virtual ~UpHandler() = default;
+    private:
         virtual void handle(const SDL_Event &) override;
     };
 

@@ -26,6 +26,7 @@ private:
     public:
         explicit WindowHandler(MonitorView &);
         virtual ~WindowHandler() = default;
+    private:
         virtual void handle(const SDL_Event &) override;
     };
 
@@ -37,6 +38,7 @@ private:
         explicit SetByteHandler(MonitorView &);
         virtual ~SetByteHandler() = default;
         void push(Memory &, word, byte) const;
+    private:
         virtual void handle(const SDL_Event &) override;
     };
 
@@ -48,6 +50,7 @@ private:
         explicit VdgModeHandler(MonitorView &);
         virtual ~VdgModeHandler() = default;
         void push(Atom::MonitorInterface &, Atom::MonitorInterface::VDGMode) const;
+    private:
         virtual void handle(const SDL_Event &) override;
     };
 
