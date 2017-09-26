@@ -17,7 +17,7 @@ for the display.  Since then the program has evolved and been
 rewritten *many* times.
 
 It now makes use of the following:
-* [git](https://git-scm.com/) for version control ☺;
+* [git](https://git-scm.com/) for version control;
 * [UMLet](http://www.umlet.com/) for the UML design diagrams;
 * [SCons](http://scons.org/) for the build system;
 * C++ and the Standard Template Libraries;
