@@ -122,7 +122,7 @@ emulator is reset
       [Documentation]       Send reset to emulator and collect the bootmessage
       Reset
       Read Until Prompt
-      
+
 output should be
       [Arguments]           ${expected}
       ${actual} =           Read Result
@@ -132,4 +132,3 @@ output should match
       [Arguments]           ${expected}
       ${actual}             Read Result
       Should Match          ${actual}    ${expected}
-      
