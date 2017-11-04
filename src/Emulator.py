@@ -1,11 +1,6 @@
 # Emulator.py
 # Copyright 2016 Steve Palmer
 
-import logging.config
-logging.config.fileConfig(r'logging.conf')
-LOG = logging.getLogger() if __name__ == '__main__' else logging.getLogger(__name__)
-
-
 from sys import version_info
 from os.path import exists
 from threading import Timer
@@ -36,7 +31,7 @@ class Emulator:
                  config_file="testrc.xml",
                  prompt=">",
                  log_level='INFO'):
-        LOG.debug("Emulator.__init__")
+        # print("Emulator.__init__")
         self._executable = executable
         self._config_file = config_file
         self._default_prompt = prompt
@@ -45,27 +40,27 @@ class Emulator:
         self._execute_connection = None
 
     def _log(self, msg, log_level=None):
-        LOG.debug("Emulator._log")
+        # print("Emulator._log")
         msg = msg.strip()
         if (msg):
             logger.write(msg, log_level or self._log_level)
 
     def log_executable_name(self, log_level=None):
-        LOG.debug("Emulator.log_executable_name")
+        # print("Emulator.log_executable_name")
         self._log(self._executable, log_level)
     
     def log_configuration_file(self, log_level=None):
-        LOG.debug("Emulator.log_configuration_file")
+        # print("Emulator.log_configuration_file")
         self._log(self._config_file, log_level)
 
     def _timed_out(self, msg="Timed Out"):
-        LOG.debug("Emulator._timed_out")
+        # print("Emulator._timed_out")
         if self._execute_connection is not None:
             # self._execute_connection.reset()
             self._execute_connection.close_connection()
 
     def _execute(self, alias, function, timeout, *args):
-        LOG.debug("Emulator._execute")
+        # print("Emulator._execute")
         result = None
         asserts.assert_not_none(function, "Unknown Function")
         if timeout is None or isinstance(timeout, int) or isinstance(timeout, float):
@@ -96,7 +91,7 @@ class Emulator:
                         prompt=None,
                         log_level=None,
                         timeout=5.0):
-        LOG.debug("Emulator.open_connection")
+        # print("Emulator.open_connection")
         executable = executable or self._executable
         config_file = config_file or self._config_file
         asserts.assert_true(exists(executable), "Executable does not exist")
@@ -108,7 +103,7 @@ class Emulator:
         return result
 
     def switch_connection(self, alias, log_level=None):
-        LOG.debug("Emulator.switch_connection")
+        # print("Emulator.switch_connection")
         old_index = self._cache.current_index
         self._cache.switch(alias)
         self._log("Active Connection: %s" % repr(self._cache.current_index), log_level)
@@ -125,78 +120,78 @@ class Emulator:
         After this keyword, new indexes returned by `Open Connection`
         keyword are reset to 1.
         """
-        LOG.debug("Emulator.close_all_connections")
+        # print("Emulator.close_all_connections")
         self._conn = self._cache.close_all()
 
     def close_connection(self, alias=None, log_level=None, timeout=5.0):
         """Closes the current connection"""
-        LOG.debug("Emulator.close_connection")
+        # print("Emulator.close_connection")
         self._execute(alias, 'close_connection', timeout, log_level)
         self._cache.current_index = None
         self._log("Active Connection: %s" % repr(self._cache.current_index), log_level)
 
     def set_prompt(self, alias=None, prompt=None):
-        LOG.debug("Emulator.set_prompt")
+        # print("Emulator.set_prompt")
         self._cache.get_connection(alias).prompt = prompt or self._default_prompt
 
     def set_log_level(self, alias=None, log_level=None):
-        LOG.debug("Emulator.set_log_level")
+        # print("Emulator.set_log_level")
         self._cache.get_connection(alias).log_level = log_level or self._log_level
 
     def get_emulator_id(self, alias=None):
-        LOG.debug("Emulator.get_emulator_id")
+        # print("Emulator.get_emulator_id")
         return self._cache.get_connection(alias).get_id()
     
     def is_emulator_running(self, alias=None):
-        LOG.debug("Emulator.is_emulator_running")
+        # print("Emulator.is_emulator_running")
         return self._cache.get_connection(alias).is_running()
 
     def emulator_should_be_running(self, alias=None, error_message="Emulator is not running."):
-        LOG.debug("Emulator.emulator_should_be_running")
+        # print("Emulator.emulator_should_be_running")
         asserts.assert_true(self._cache.get_connection(alias).is_running(), error_message)
     
     def emulator_should_be_stopped(self, alias=None, error_message="Emulator is running."):
-        LOG.debug("Emulator.emulator_should_be_stopped")
+        # print("Emulator.emulator_should_be_stopped")
         try:
             asserts.assert_false(self._cache.get_connection(alias).is_running(), error_message)
         except:
             pass
     
     def write_bare(self, text, alias=None, log_level=None, timeout=1.0):
-        LOG.debug("Emulator.write_bare")
+        # print("Emulator.write_bare")
         self._execute(alias, 'write_bare', timeout, text, log_level)
 
     def write(self, text, alias=None, log_level=None, timeout=1.0):
-        LOG.debug("Emulator.write")
+        # print("Emulator.write")
         self._execute(alias, 'write', timeout, text, log_level)
 
     def read(self, alias=None, log_level=None, timeout=None):
-        LOG.debug("Emulator.read")
+        # print("Emulator.read")
         result = self._execute(alias, 'read', timeout, log_level)
         return result
 
     def read_line(self, alias=None, log_level=None, timeout=None):
-        LOG.debug("Emulator.read_line")
+        # print("Emulator.read_line")
         result = self._execute(alias, 'read_line', timeout, log_level)
         return result
 
     def read_until(self, expect, alias=None, log_level=None, timeout=None):
-        LOG.debug("Emulator.read_until")
+        # print("Emulator.read_until")
         result = self._execute(alias, 'read_until', timeout, expect, log_level)
         return result
 
     def read_until_prompt(self, alias=None, log_level=None, timeout=None):
-        LOG.debug("Emulator.read_until_prompt")
+        # print("Emulator.read_until_prompt")
         result = self._execute(alias, 'read_until_prompt', timeout, log_level)
         return result
 
     def read_result(self, alias=None):
-        LOG.debug("Emulator.read_result")
+        # print("Emulator.read_result")
         result = self._cache.get_connection(alias).read_result
         return result
 
     def reset(self, alias=None, log_level=None, timeout=5.0):
-        LOG.debug("Emulator.reset")
+        # print("Emulator.reset")
         self._execute(alias, 'reset', timeout, log_level)
 
 class EmulatorConnection:
@@ -204,7 +199,7 @@ class EmulatorConnection:
     """
 
     def __init__(self, executable, config_file, prompt, log_level):
-        LOG.debug("EmulatorConnection.__init__")
+        # print("EmulatorConnection.__init__")
         self._prompt = prompt
         self._log_level = log_level
         command = [executable,'-f',config_file]
@@ -226,21 +221,21 @@ class EmulatorConnection:
     def read_result(self): return self._read_result
 
     def _log(self, msg, log_level):
-        LOG.debug("EmulatorConnection._log")
+        # print("EmulatorConnection._log")
         msg = msg.strip()
         if (msg):
             logger.write(msg, log_level or self._log_level)
 
     def _read_log(self, text, log_level):
-        LOG.debug("EmulatorConnection._read_log")
+        # print("EmulatorConnection._read_log")
         self._log("Rx:" + text, log_level)
 
     def _write_log(self, text, log_level):
-        LOG.debug("EmulatorConnection._write_log")
+        # print("EmulatorConnection._write_log")
         self._log("Tx:" + text, log_level)
 
     def close(self, log_level=None):
-        LOG.debug("EmulatorConnection.close")
+        # print("EmulatorConnection.close")
         if self._popen:
             asserts.assert_none(self._returncode)
             self._popen.terminate()
@@ -259,7 +254,7 @@ class EmulatorConnection:
             self._log("Return Code:" + repr(self._returncode), log_level)
 
     def close_connection(self, log_level=None):
-        LOG.debug("EmulatorConnection.close_connection")
+        # print("EmulatorConnection.close_connection")
         result = ""
         if self._popen:
             self._popen.stdin.close()
@@ -274,54 +269,63 @@ class EmulatorConnection:
         return result
 
     def get_id(self):
-        LOG.debug("EmulatorConnection.get_id")
+        # print("EmulatorConnection.get_id")
         return self._pid
 
     def is_running(self):
-        LOG.debug("EmulatorConnection.is_running")
+        # print("EmulatorConnection.is_running")
         return self._returncode is None
 
     def write_bare(self, text, log_level=None):
-        LOG.debug("EmulatorConnection.write_bare")
+        # print("EmulatorConnection.write_bare")
         self._write_log(text, log_level)
+        if isinstance(text, str):
+            text = text.encode('ascii')
         if (self._popen):
             self._popen.stdin.write(text)
         self._read_result = ""
 
     def write(self, text, log_level=None):
-        LOG.debug("EmulatorConnection.write")
+        # print("EmulatorConnection.write")
         text += '\n'
         self.write_bare(text, log_level)
         self.read_until(text, log_level)
 
     def read(self, log_level=None):
-        LOG.debug("EmulatorConnection.read")
+        # print("EmulatorConnection.read")
         result = self._popen.stdout.read() if self._popen else ''
+        if isinstance(result, bytes):
+            result = result.decode(encoding='ascii')
+        # print(repr(result))
         self._read_log(result, log_level)
         self._read_result = result
         return result
 
     def read_line(self, log_level=None):
-        LOG.debug("EmulatorConnection.read_line")
+        # print("EmulatorConnection.read_line")
         result = self._popen.stdout.readline() if self._popen else ''
+        if isinstance(result, bytes):
+            result = result.decode(encoding='ascii')
         self._read_log(result, log_level)
         self._read_result = result
         return result
 
     def _read_until(self, expected):
-        LOG.debug("EmulatorConnection._read_until")
+        # print("EmulatorConnection._read_until")
         result = ''
         while True:
             if self._popen is None: break
             next_char = self._popen.stdout.read(1)
+            if isinstance(next_char, bytes):
+                next_char = next_char.decode(encoding='ascii')
             if next_char=='': break
             result += next_char
             if result.endswith(expected): break
-        LOG.debug("EmulatorConnection._read_until => %s", repr(result))
+        # print("EmulatorConnection._read_until => %s", repr(result))
         return result
 
     def read_until(self, expected, log_level=None):
-        LOG.debug("EmulatorConnection.read_until")
+        # print("EmulatorConnection.read_until")
         result = self._read_until(expected)
         self._read_log(result, log_level)
         if result.endswith(expected):
@@ -332,7 +336,7 @@ class EmulatorConnection:
         return result
 
     def read_until_prompt(self, log_level=None):
-        LOG.debug("EmulatorConnection.read_until_prompt")
+        # print("EmulatorConnection.read_until_prompt")
         result = self._read_until(self._prompt)
         self._read_log(result, log_level)
         if result.endswith(self._prompt):
@@ -343,7 +347,7 @@ class EmulatorConnection:
         return result
 
     def reset(self, log_level=None):
-        LOG.debug("EmulatorConnection.reset")
+        # print("EmulatorConnection.reset")
         if self._popen:
             self._popen.send_signal(SIGUSR1)
             # self._popen.stdin.write(" ")  # to unblock the processor
