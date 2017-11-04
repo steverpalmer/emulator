@@ -88,7 +88,7 @@ Load Test and List
       and emulator is reset
       When executing               LOAD "${FILENAME}"      timeout=5
       and executing                LIST
-      Then output should BE        ${SPACE * 3}10 P."HELLO WORLD"\n${SPACE * 3}20 E.\n
+      Then output should be        ${SPACE * 3}10 P."HELLO WORLD"\n${SPACE * 3}20 E.\n
       Remove File                  ${FILENAME}
       Close Connection
 
