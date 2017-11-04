@@ -1,23 +1,33 @@
 %YAML 1.2
 # minimal.yaml
-# Copyright 2016 Steve Palmer
+# Copyright 2017 Steve Palmer
 #
 # A Minimal Atom has only
 # - 2K of Ram,
 # - no VIA
 # - the Basic Interpreter and Kernel ROMs
 ---
-schemaVersion: 0.05
+schema.name: http://www.srpalmer.me.uk/ns/emulator.configuration0
+schema.version: 1
 computer:
   mcs6502:
     address_space:
-      - {base: 0x0000, ram: {size: 0x0400}}
-      - {base: 0x8000, ram: &video {size: 0x0400}}
-      - {base: 0xB000, ppia: &ppia, size: 0x0400}
+      - {base: 0x0000, ram: {size: 0x0400, seed: 1}}
+      - {base: 0x8000, ram: {name: video, size: 0x0400}}
+      - {base: 0xB000, ppia: {name: ppia, size: 0x0400}}
       - {base: 0xC000, rom: {filename: basic.rom}}
       - {base: 0xF000, rom: {filename: kernel.rom}}
-terminal:
-  memory: *video
-  controller: *ppia
-  scale: 2.0
-  fontfilename: mc6847.bmp
+  monitor:
+    font: {filename: mc6847.bmp}
+    window_title: Acorn Atom Emulator
+    scale: 2
+    sdl_renderer: -1
+    video_memory: video
+    controller: ppia
+  keyboard:
+    controller: ppia
+
+  stream:
+
+  tape:
+    directory: ../Basic
