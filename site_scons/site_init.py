@@ -10,6 +10,8 @@ import subprocess
 
 common_env = Environment()
 
+common_env.AppendENVPath('PATH', common_env['ENV']['HOME'] + '/bin')
+
 common_env['BUILDERS']['uxf2png'] = Builder(action='umlet -action=convert -format=png -filename=$SOURCE',
                                             suffix='uxf.png', src_suffix='uxf')
 
