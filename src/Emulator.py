@@ -204,7 +204,7 @@ class EmulatorConnection:
         self._log_level = log_level
         command = [executable,'-f',config_file]
         self._log("Exec:" + (" ".join(command)), log_level)
-        self._popen = subprocess.Popen(command, bufsize=0, stdin=subprocess.PIPE, stdout=subprocess.PIPE)
+        self._popen = subprocess.Popen(command, bufsize=0, stdin=subprocess.PIPE, stdout=subprocess.PIPE, universal_newlines=True)
         self._popen.poll()
         self._pid = self._popen.pid
         self._returncode = self._popen.returncode
@@ -279,8 +279,6 @@ class EmulatorConnection:
     def write_bare(self, text, log_level=None):
         # print("EmulatorConnection.write_bare")
         self._write_log(text, log_level)
-        if isinstance(text, str):
-            text = text.encode('ascii')
         if (self._popen):
             self._popen.stdin.write(text)
         self._read_result = ""
@@ -294,9 +292,6 @@ class EmulatorConnection:
     def read(self, log_level=None):
         # print("EmulatorConnection.read")
         result = self._popen.stdout.read() if self._popen else ''
-        if isinstance(result, bytes):
-            result = result.decode(encoding='ascii')
-        # print(repr(result))
         self._read_log(result, log_level)
         self._read_result = result
         return result
@@ -304,8 +299,6 @@ class EmulatorConnection:
     def read_line(self, log_level=None):
         # print("EmulatorConnection.read_line")
         result = self._popen.stdout.readline() if self._popen else ''
-        if isinstance(result, bytes):
-            result = result.decode(encoding='ascii')
         self._read_log(result, log_level)
         self._read_result = result
         return result
@@ -316,8 +309,6 @@ class EmulatorConnection:
         while True:
             if self._popen is None: break
             next_char = self._popen.stdout.read(1)
-            if isinstance(next_char, bytes):
-                next_char = next_char.decode(encoding='ascii')
             if next_char=='': break
             result += next_char
             if result.endswith(expected): break
