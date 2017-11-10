@@ -11,7 +11,7 @@
 
 /** A thread-safe, blocking std::queue-like object.
  *
- * A BlockingQueue provides a similar interface to the std::queue
+ * A SynchronizationQueue provides a similar interface to the std::queue
  * adaptor, but only allows thread-safe interface functions.
  * For example, push is allowed, but front isn't because
  * its results may be wrong immediately the function returns.
@@ -207,7 +207,7 @@ public:
 
     void unblocking_clear()
         {
-            LOG4CXX_INFO(cpptrace_log(), "SynchronizationQueue::nonblocking_clear()");
+            LOG4CXX_INFO(cpptrace_log(), "SynchronizationQueue::unblocking_clear()");
             std::unique_lock<std::mutex> lock(mutex);
             c.clear();
             if (waiting_count > 0)
