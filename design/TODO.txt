@@ -1,2 +1,0 @@
-Stream Input and Output
-Tape Save and Load
